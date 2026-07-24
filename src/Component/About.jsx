@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { 
   Award, 
   Users, 
@@ -20,6 +20,8 @@ import {
   UserCheck
 } from 'lucide-react'
 
+const MotionLink = motion.create ? motion.create(Link) : motion(Link);
+
 /**
  * CelestialDivider Component
  * Elegant visual separator designed with gold gradient lines and a central star symbol.
@@ -34,11 +36,41 @@ function CelestialDivider() {
   )
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 25, scale: 0.96 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 120,
+      damping: 18
+    }
+  }
+};
+
 /**
  * About Component
  * Premium luxury About page for Astrologer Kundan Singh.
  */
 function About() {
+  const { scrollY } = useScroll()
+  const yLeft = useTransform(scrollY, [0, 1000], [0, -30])
+  const yRight = useTransform(scrollY, [0, 1000], [0, -70])
+  const yZodiac = useTransform(scrollY, [0, 1000], [0, -90])
+  const rZodiac = useTransform(scrollY, [0, 1000], [0, 45])
+
   // Expertise Section Grid Data (6 premium cards)
   const expertiseData = [
     {
@@ -117,7 +149,7 @@ function About() {
         
         {/* Glow & Luxury SVG Decor Background */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(252,185,0,0.08),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.05] flex justify-center items-center">
+        <motion.div style={{ y: yZodiac, rotate: rZodiac }} className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.05] flex justify-center items-center">
           <svg className="w-[500px] h-[500px] text-[#A6755D] animate-[spin_200s_linear_infinite]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.4">
             <circle cx="100" cy="100" r="90" strokeDasharray="3 3" />
             <circle cx="100" cy="100" r="70" />
@@ -125,7 +157,7 @@ function About() {
             <line x1="100" y1="10" x2="100" y2="190" />
             <line x1="10" y1="100" x2="190" y2="100" />
           </svg>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
@@ -134,6 +166,7 @@ function About() {
             initial={{ opacity: 0, scale: 0.95, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
+            style={{ y: yLeft }}
             className="lg:col-span-5 flex justify-center relative w-full pt-2 lg:pt-4"
           >
             {/* Elegant outer frames */}
@@ -145,7 +178,7 @@ function About() {
             <div className="absolute bottom-6 left-2 text-[#A6755D]/40"><Sparkles size={16} /></div>
 
             {/* Premium Compact Frame */}
-            <div className="relative w-full max-w-[260px] sm:max-w-[300px] lg:max-w-[340px] aspect-[4/5] rounded-[20px] overflow-hidden border border-[#fcb900]/50 bg-gradient-to-tr from-[#2A132E] to-[#55393F] shadow-xl flex items-center justify-center group">
+            <div className="relative w-full max-w-[230px] sm:max-w-[280px] md:max-w-[300px] lg:max-w-[340px] aspect-[4/5] rounded-[20px] overflow-hidden border border-[#fcb900]/50 bg-gradient-to-tr from-[#2A132E] to-[#55393F] shadow-[0_20px_50px_rgba(42,19,46,0.3),_0_0_20px_rgba(252,185,0,0.2)] hover:shadow-[0_25px_60px_rgba(42,19,46,0.35),_0_0_35px_rgba(252,185,0,0.45)] transition-all duration-500 flex items-center justify-center group">
               {/* Actual Image Tag */}
               <img 
                 src="" 
@@ -179,6 +212,7 @@ function About() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+            style={{ y: yRight }}
             className="lg:col-span-7 flex flex-col text-left justify-start pt-2"
           >
             {/* Small decorative label */}
@@ -209,21 +243,27 @@ function About() {
 
             {/* CTA Buttons Row - Styled exactly like the homepage */}
             <div className="flex flex-wrap gap-4 pt-6">
-              <Link 
+              <MotionLink 
                 to="/booking" 
-                className="bg-[#2A132E] hover:bg-[#fcb900] text-white hover:text-[#2A132E] border border-[#2A132E] hover:border-[#fcb900] font-semibold px-6 py-3 rounded-lg flex items-center gap-2 transition duration-300 shadow-md cursor-pointer group text-sm"
+                whileHover={{ scale: 1.05, y: -2, boxShadow: "0 10px 25px rgba(42, 19, 46, 0.2), 0 0 20px rgba(252, 185, 0, 0.4)" }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 450, damping: 15 }}
+                className="bg-[#2A132E] hover:bg-[#fcb900] text-white hover:text-[#2A132E] border border-[#2A132E] hover:border-[#fcb900] font-semibold px-6 py-3 rounded-lg flex items-center gap-2 shadow-md cursor-pointer group text-sm"
               >
                 <Calendar size={18} className="text-[#fcb900] group-hover:text-[#2A132E] transition-colors" />
                 <span>Book Consultation</span>
-              </Link>
+              </MotionLink>
 
-              <Link 
+              <MotionLink 
                 to="/contact" 
-                className="bg-white hover:bg-[#FCF3ED] text-[#55393F] border border-[#fcb900] hover:border-[#A6755D] font-semibold px-6 py-3 rounded-lg flex items-center gap-2 transition duration-300 shadow-sm cursor-pointer text-sm"
+                whileHover={{ scale: 1.05, y: -2, boxShadow: "0 10px 20px rgba(42, 19, 46, 0.1), 0 0 15px rgba(166, 117, 93, 0.3)" }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 450, damping: 15 }}
+                className="bg-white hover:bg-[#FCF3ED] text-[#55393F] border border-[#fcb900] hover:border-[#A6755D] font-semibold px-6 py-3 rounded-lg flex items-center gap-2 shadow-sm cursor-pointer text-sm"
               >
                 <Phone size={18} className="text-[#A6755D]" />
                 <span>Call Now</span>
-              </Link>
+              </MotionLink>
             </div>
 
             {/* 4 Premium Stat Cards */}
@@ -292,15 +332,23 @@ function About() {
           </div>
 
           {/* Grid of 6 Professional, Beautiful, Tighter Expertise Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full z-10">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full z-10"
+          >
             {expertiseData.map((item, index) => (
               <motion.div 
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.6, delay: index * 0.08 }}
-                className="relative bg-gradient-to-br from-white to-[#FCF3ED]/40 border border-[#E7D3CE]/70 hover:border-[#fcb900] rounded-2xl p-6 flex flex-col items-start text-left gap-4 transition-all duration-500 shadow-sm hover:shadow-lg hover:-translate-y-1.5 group cursor-pointer overflow-hidden"
+                variants={itemVariants}
+                whileHover={{ 
+                  y: -8, 
+                  borderColor: "#fcb900", 
+                  boxShadow: "0 25px 40px -15px rgba(85, 57, 63, 0.15), 0 0 25px rgba(252, 185, 0, 0.25)" 
+                }}
+                className="relative bg-gradient-to-br from-white to-[#FCF3ED]/40 border border-[#E7D3CE]/70 rounded-2xl p-6 flex flex-col items-start text-left gap-4 transition-all duration-500 shadow-sm group cursor-pointer overflow-hidden"
               >
                 {/* Background Decor Sparkle */}
                 <div className="absolute top-4 right-4 text-[#fcb900]/10 group-hover:text-[#fcb900]/40 transition-colors duration-300">
@@ -340,7 +388,7 @@ function About() {
                 </div>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 

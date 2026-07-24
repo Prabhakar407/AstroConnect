@@ -1,6 +1,30 @@
 import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 25, scale: 0.96 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 120,
+      damping: 18
+    }
+  }
+};
 
 /**
  * Testimonial Component
@@ -10,6 +34,11 @@ import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
  * Optimized with compact vertical spacing to load completely above the fold.
  */
 function Testimonial() {
+  const { scrollY } = useScroll()
+  const yZodiac = useTransform(scrollY, [0, 1000], [0, -80])
+  const rZodiac = useTransform(scrollY, [0, 1000], [0, 30])
+  const yStage = useTransform(scrollY, [0, 1000], [0, -35])
+
   const reviews = [
     {
       name: "ANU",
@@ -106,7 +135,10 @@ function Testimonial() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(252,185,0,0.06),transparent_70%)] rounded-full pointer-events-none -z-10"></div>
 
       {/* Rotating Background Zodiac Motif */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.04] flex justify-center items-center">
+      <motion.div 
+        style={{ y: yZodiac, rotate: rZodiac }}
+        className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.04] flex justify-center items-center"
+      >
         <svg className="w-[550px] h-[550px] text-[#A6755D] animate-[spin_260s_linear_infinite]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.4">
           <circle cx="100" cy="100" r="95" strokeDasharray="3 3" />
           <circle cx="100" cy="100" r="75" />
@@ -114,16 +146,23 @@ function Testimonial() {
           <line x1="100" y1="5" x2="100" y2="195" />
           <line x1="5" y1="100" x2="195" y2="100" />
         </svg>
-      </div>
+      </motion.div>
 
       {/* ========================================================= */}
       {/* SECTION HEADER                                            */}
       {/* ========================================================= */}
-      <div className="text-center max-w-2xl mb-4 relative z-10 flex flex-col items-center">
-        {/* Large Heading */}
-        <h1 className="text-2xl md:text-4xl font-serif text-[#55393F] font-bold tracking-wide">
-          Client Testimonials
-        </h1>
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-100px" }}
+        className="w-full max-w-4xl relative z-10 flex flex-col items-center"
+      >
+        <motion.div variants={itemVariants} className="text-center max-w-2xl mb-4 relative z-10 flex flex-col items-center">
+          {/* Large Heading */}
+          <h1 className="text-2xl md:text-4xl font-serif text-[#55393F] font-bold tracking-wide">
+            Client Testimonials
+          </h1>
 
         {/* Small decorative divider */}
         <div className="w-12 h-[1px] bg-[#fcb900] shadow-[0_0_8px_#fcb900] mx-auto mt-2 mb-2 rounded-full"></div>
@@ -134,13 +173,14 @@ function Testimonial() {
           <span className="font-sans text-[11px] sm:text-xs font-semibold text-[#55393F] tracking-wide">
             4.9 Rating from 150+ Reviews
           </span>
-        </div>
-      </div>
+          </div>
+        </motion.div>
+      </motion.div>
 
       {/* ========================================================= */}
       {/* TESTIMONIAL DISPLAY STAGE (No borders, open & spacious)    */}
       {/* ========================================================= */}
-      <div className="w-full max-w-4xl relative z-10 min-h-[220px] flex items-center justify-center px-4">
+      <motion.div variants={itemVariants} style={{ y: yStage }} className="w-full max-w-4xl relative z-10 min-h-[220px] flex items-center justify-center px-4">
         
         {/* Decorative Quote Icon behind/beside the quote */}
         <span className="absolute top-2 left-4 text-[#fcb900]/6 text-[10rem] font-serif leading-none select-none pointer-events-none">
@@ -192,21 +232,23 @@ function Testimonial() {
           </motion.div>
         </AnimatePresence>
 
-      </div>
+      </motion.div>
 
       {/* ========================================================= */}
       {/* INTERACTIVE CONTROLS & NAVIGATION                         */}
       {/* ========================================================= */}
-      <div className="flex items-center gap-6 mt-6 relative z-10">
+      <motion.div variants={itemVariants} className="flex items-center gap-6 mt-6 relative z-10">
         
         {/* Previous Button */}
-        <button 
+        <motion.button 
           onClick={handlePrev}
-          className="w-9 h-9 rounded-full border border-[#fcb900] bg-white flex items-center justify-center text-[#A6755D] hover:bg-[#FCF3ED] hover:text-[#55393F] transition duration-300 cursor-pointer shadow-sm active:scale-95 shrink-0"
+          whileHover={{ scale: 1.1, borderColor: "#fcb900", boxShadow: "0 0 10px rgba(252, 185, 0, 0.45)" }}
+          whileTap={{ scale: 0.95 }}
+          className="w-9 h-9 rounded-full border border-[#fcb900] bg-white flex items-center justify-center text-[#A6755D] hover:text-[#55393F] transition-colors duration-300 cursor-pointer shadow-sm shrink-0"
           aria-label="Previous Testimonial"
         >
           <ChevronLeft size={16} />
-        </button>
+        </motion.button>
 
         {/* Bullet Dot Indicators */}
         <div className="flex items-center gap-2">
@@ -225,15 +267,17 @@ function Testimonial() {
         </div>
 
         {/* Next Button */}
-        <button 
+        <motion.button 
           onClick={handleNext}
-          className="w-9 h-9 rounded-full border border-[#fcb900] bg-white flex items-center justify-center text-[#A6755D] hover:bg-[#FCF3ED] hover:text-[#55393F] transition duration-300 cursor-pointer shadow-sm active:scale-95 shrink-0"
+          whileHover={{ scale: 1.1, borderColor: "#fcb900", boxShadow: "0 0 10px rgba(252, 185, 0, 0.45)" }}
+          whileTap={{ scale: 0.95 }}
+          className="w-9 h-9 rounded-full border border-[#fcb900] bg-white flex items-center justify-center text-[#A6755D] hover:text-[#55393F] transition-colors duration-300 cursor-pointer shadow-sm shrink-0"
           aria-label="Next Testimonial"
         >
           <ChevronRight size={16} />
-        </button>
-      </div>
-
+        </motion.button>
+      </motion.div>
+ 
     </div>
   )
 }

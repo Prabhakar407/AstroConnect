@@ -1,22 +1,305 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import logoImg from "../assets/logos/Logo.png";
+import featureBg from "../assets/images/Feature.png";
 
 /**
  * CelestialDivider Component
- * Elegant visual separator designed with gold gradient lines and a central star symbol.
+ * Redefined to return null per user request to remove section divider lines.
  */
 function CelestialDivider() {
-  return (
-    <div className="w-full flex items-center justify-center py-10 gap-4">
-      <div className="h-[1px] flex-grow max-w-[150px] bg-gradient-to-r from-transparent to-[#fcb900]/40"></div>
-      <div className="text-[#fcb900]/50 text-xs tracking-widest select-none">✦ ❖ ✦</div>
-      <div className="h-[1px] flex-grow max-w-[150px] bg-gradient-to-l from-transparent to-[#fcb900]/40"></div>
-    </div>
-  )
+  return null;
 }
+
+// Service Carousel Slider Data - Ordered to match the mockup exactly on initial load
+const allServices = [
+  { 
+    id: 1, 
+    title: 'LOVE & MARRIAGE CONSULTATION', 
+    text: 'Detailed kundli matching (Gun Milan), relationship compatibility analysis, resolving delays in marriage, and practical remedies for peace in personal connections.', 
+    iconKey: 'heart' 
+  },
+  { 
+    id: 2, 
+    title: 'GEMSTONE RECOMMENDATION', 
+    text: 'Identify auspicious stones (like Yellow Sapphire or Ruby) that strengthen beneficial planets in your chart to enhance health, focus, and overall career success.', 
+    iconKey: 'gem' 
+  },
+  { 
+    id: 3, 
+    title: 'KUNDLI ANALYSIS', 
+    text: 'Comprehensive evaluation of planetary positions, houses, and transits (Janam Kundli) to clarify your destiny, strengths, weaknesses, and future timelines.', 
+    iconKey: 'file' 
+  },
+  { 
+    id: 4, 
+    title: 'VASTU CONSULTATION', 
+    text: 'Optimize the flow of energy at home or work. Align rooms, elements, and layouts to clear blocking influences and invite growth, harmony, and prosperity.', 
+    iconKey: 'home' 
+  },
+  { 
+    id: 5, 
+    title: 'CAREER GUIDANCE', 
+    text: 'Navigate job transitions, promotion cycles, new business ventures, or study paths by identifying favorable dashas and suitable industries based on your 10th house.', 
+    iconKey: 'briefcase' 
+  },
+  { 
+    id: 6, 
+    title: 'NUMEROLOGY READING', 
+    text: 'Uncover the hidden patterns of your life path, destiny, and name frequencies. Align your personal vibrations to unlock career opportunities and wealth luck.', 
+    iconKey: 'hash' 
+  }
+];
+
+// Helper to render gold vector icons based on index mapping
+const renderServiceIcon = (iconKey, isOutline) => {
+  const iconClass = isOutline ? "text-[#fcb900]" : "text-[#2A132E]";
+  switch (iconKey) {
+    case 'heart':
+      return <Heart className={iconClass} size={24} />;
+    case 'gem':
+      return <Gem className={iconClass} size={24} />;
+    case 'file':
+      return <FileText className={iconClass} size={24} />;
+    case 'home':
+      return <HomeIcon className={iconClass} size={24} />;
+    case 'hash':
+      return <Hash className={iconClass} size={24} />;
+    case 'briefcase':
+      return <Briefcase className={iconClass} size={24} />;
+    default:
+      return <Sparkles className={iconClass} size={24} />;
+  }
+};
+
+
+const ServiceSlider = () => {
+  const [startIndex, setStartIndex] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(5);
+
+  // Resize listener for responsive visible count
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setVisibleCount(1);
+      } else if (window.innerWidth < 1200) {
+        setVisibleCount(3);
+      } else {
+        setVisibleCount(5);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const centerIndex = Math.floor(visibleCount / 2);
+
+  const getVisibleItems = () => {
+    const items = [];
+    for (let i = 0; i < visibleCount; i++) {
+      items.push(allServices[(startIndex + i) % allServices.length]);
+    }
+    return items;
+  };
+
+  const handleNext = () => {
+    setStartIndex((prevIndex) => (prevIndex + 1) % allServices.length);
+  };
+
+  const handlePrev = () => {
+    setStartIndex((prevIndex) => (prevIndex - 1 + allServices.length) % allServices.length);
+  };
+
+  // 4-second auto-slide interval that resets when manually navigated
+  useEffect(() => {
+    const timer = setInterval(() => {
+      handleNext();
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [startIndex]);
+
+  const visibleServices = getVisibleItems();
+
+  // Helper to determine color layout dynamically
+  const getCardStyles = (index) => {
+    if (visibleCount === 5) {
+      if (index < 2) return 'navy';
+      if (index === 2) return 'holo';
+      return 'burgundy';
+    } else if (visibleCount === 3) {
+      if (index === 0) return 'navy';
+      if (index === 1) return 'holo';
+      return 'burgundy';
+    } else {
+      return 'holo';
+    }
+  };
+
+  return (
+    <div className="w-full relative max-w-7xl mx-auto px-12 sm:px-16 md:px-24 py-6 overflow-visible select-none">
+      {/* Left Navigation Button - positioned outside of the content row inside container padding */}
+      <button 
+        onClick={handlePrev} 
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2.5 rounded-full shadow-md border border-gray-200 z-20 hover:scale-105 active:scale-95 transition-all text-[#2A132E] cursor-pointer animate-fade-in"
+        aria-label="Previous Service"
+      >
+        <ChevronLeft size={18} />
+      </button>
+
+      {/* Slider Container */}
+      <div className="relative w-full">
+        <div className="flex justify-center items-center gap-4 overflow-visible relative min-h-[380px]">
+          <AnimatePresence initial={false} mode="popLayout">
+            {visibleServices.map((service, index) => {
+              const isCenter = index === centerIndex;
+              const cardStyle = getCardStyles(index);
+
+              // Determine classes & styles based on computed card layout position
+              let bgClass = "";
+              let titleClass = "";
+              let textClass = "";
+              let borderStyle = {};
+              let iconContainerClass = "";
+              let isOutlineIcon = false;
+
+              if (cardStyle === 'navy') {
+                bgClass = "bg-[#131F37] text-white";
+                borderStyle = { border: '1px solid rgba(252, 185, 0, 0.35)' };
+                titleClass = "text-[#fcb900]";
+                textClass = "text-[#E7D3CE]/90";
+                iconContainerClass = "border border-[#fcb900]/40";
+                isOutlineIcon = true;
+              } else if (cardStyle === 'holo') {
+                bgClass = "text-[#2A132E]";
+                borderStyle = { 
+                  background: 'linear-gradient(135deg, #FFF5EC 0%, #F5E6FF 30%, #E6F0FF 70%, #FFF5EC 100%)',
+                  border: '1px solid #fcb900'
+                };
+                titleClass = "text-[#2A132E]";
+                textClass = "text-[#55393F] font-semibold";
+                iconContainerClass = "bg-gradient-to-b from-[#e6c07b] to-[#bfa054] shadow-sm";
+                isOutlineIcon = false;
+              } else { // burgundy
+                bgClass = "bg-[#4A121A] text-white";
+                borderStyle = { border: '1px solid rgba(252, 185, 0, 0.35)' };
+                titleClass = "text-[#fcb900]";
+                textClass = "text-[#E7D3CE]/90";
+                iconContainerClass = "bg-gradient-to-b from-[#e6c07b] to-[#bfa054] shadow-sm";
+                isOutlineIcon = false;
+              }
+
+              // Calculate 3D z-axis depth values dynamically based on distance from center card
+              const distance = Math.abs(index - centerIndex);
+              let scale = 1.0;
+              let y = 0;
+              let x = 0;
+              let zIndex = 1;
+              let opacity = 1;
+              let boxShadow = "0 10px 15px -3px rgba(0, 0, 0, 0.1)";
+
+              if (distance === 0) {
+                scale = 1.1;
+                y = -10;
+                zIndex = 10;
+                opacity = 1;
+                boxShadow = '0 25px 50px -12px rgba(252, 185, 0, 0.4), 0 12px 24px -10px rgba(252, 185, 0, 0.25)';
+              } else if (distance === 1) {
+                scale = 0.95;
+                y = 0;
+                zIndex = 5;
+                opacity = 0.85;
+                boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+              } else { // distance === 2 (outer-most cards scaled down and faded to appear deep in z-axis)
+                scale = 0.8;
+                y = 10;
+                zIndex = 1;
+                opacity = 0.6;
+                boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.05)';
+              }
+
+              // Apply translation x to bring outer cards closer to adjacent cards
+              if (visibleCount === 5) {
+                if (index === 0) x = 32;       // Shift card 1 right, closer to card 2
+                else if (index === 4) x = -32;  // Shift card 5 left, closer to card 4
+              } else if (visibleCount === 3) {
+                if (index === 0) x = 16;        // Shift card 1 right, closer to card 2
+                else if (index === 2) x = -16;  // Shift card 3 left, closer to card 2
+              }
+
+              return (
+                <motion.div
+                  key={service.id}
+                  layout
+                  animate={{
+                    scale,
+                    y,
+                    x,
+                    zIndex,
+                    opacity,
+                    boxShadow
+                  }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  style={borderStyle}
+                  className={`
+                    flex-none w-[195px] h-[320px] rounded-2xl p-6 flex flex-col justify-between 
+                    cursor-pointer transition-colors duration-300 text-center items-center relative
+                    ${bgClass}
+                  `}
+                >
+                  {/* Pearlescent Active Glow Blast */}
+                  {isCenter && (
+                    <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(252,185,0,0.3)_0%,transparent_60%)] blur-3xl scale-[1.7] animate-pulse pointer-events-none" />
+                  )}
+
+                  <div className="flex flex-col gap-4 text-center items-center">
+                    {/* Circle Icon Badge */}
+                    <div className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 ${iconContainerClass}`}>
+                      {renderServiceIcon(service.iconKey, isOutlineIcon)}
+                    </div>
+                    <div className={`text-sm font-bold tracking-wide font-serif leading-tight ${titleClass}`}>
+                      {service.title}
+                    </div>
+                    <p className={`text-[11px] leading-relaxed font-sans line-clamp-6 ${textClass}`}>
+                      {service.text}
+                    </p>
+                  </div>
+
+                  <div className={`text-[9px] font-bold tracking-wider uppercase mt-2 ${isCenter ? 'text-[#2A132E]' : 'text-[#fcb900]/80'}`}>
+                    {isCenter ? 'ACTIVE ✦' : 'EXPLORE'}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Right Navigation Button - positioned outside of the content row inside container padding */}
+      <button 
+        onClick={handleNext} 
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2.5 rounded-full shadow-md border border-gray-200 z-20 hover:scale-105 active:scale-95 transition-all text-[#2A132E] cursor-pointer animate-fade-in"
+        aria-label="Next Service"
+      >
+        <ChevronRight size={18} />
+      </button>
+
+      {/* Slide Navigation Link */}
+      <div className="text-center mt-6 text-xs text-gray-500">
+        <button 
+          onClick={handleNext} 
+          className="underline text-[#fcb900] hover:text-[#fcb900]/80 font-medium cursor-pointer"
+        >
+          Slide Next ✦
+        </button>
+      </div>
+    </div>
+  );
+};
+
 
 /**
  * Home Component
@@ -329,52 +612,31 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="w-full bg-[radial-gradient(ellipse_at_center,#2d1331_0%,#170718_100%)] border-t border-[#4A2A50] py-16 relative overflow-hidden z-10 shadow-xl flex justify-center"
+        style={{ backgroundImage: `url(${featureBg})` }}
+        className="w-full bg-cover bg-center bg-no-repeat border-t border-[#4A2A50] py-20 md:py-28 relative overflow-hidden z-10 shadow-xl flex justify-center items-center"
       >
-        {/* Subtle curved gold decorative lines flowing from top-left and bottom-right corners */}
-        <div className="absolute top-0 left-0 w-80 h-80 text-[#fcb900]/15 select-none pointer-events-none z-0">
-          <svg className="w-full h-full" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.5">
-            <defs>
-              <linearGradient id="gold-curve-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#fcb900" stopOpacity="0.3" />
-                <stop offset="50%" stopColor="#A6755D" stopOpacity="0.1" />
-                <stop offset="100%" stopColor="#170718" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            <path d="M 0 0 C 60 40, 120 120, 200 200" stroke="url(#gold-curve-grad-1)" strokeWidth="0.75" />
-            <path d="M 0 0 C 30 50, 100 130, 200 200" stroke="url(#gold-curve-grad-1)" strokeWidth="0.5" />
-            <path d="M 0 0 C 90 30, 140 110, 200 200" stroke="url(#gold-curve-grad-1)" strokeWidth="0.5" />
-            <circle cx="0" cy="0" r="100" stroke="url(#gold-curve-grad-1)" strokeWidth="0.5" strokeDasharray="3,3" />
-            <circle cx="0" cy="0" r="150" stroke="url(#gold-curve-grad-1)" strokeWidth="0.25" />
-          </svg>
-        </div>
-        <div className="absolute bottom-0 right-0 w-80 h-80 text-[#fcb900]/15 select-none pointer-events-none z-0 transform rotate-180">
-          <svg className="w-full h-full" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.5">
-            <defs>
-              <linearGradient id="gold-curve-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#fcb900" stopOpacity="0.3" />
-                <stop offset="50%" stopColor="#A6755D" stopOpacity="0.1" />
-                <stop offset="100%" stopColor="#170718" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            <path d="M 0 0 C 60 40, 120 120, 200 200" stroke="url(#gold-curve-grad-2)" strokeWidth="0.75" />
-            <path d="M 0 0 C 30 50, 100 130, 200 200" stroke="url(#gold-curve-grad-2)" strokeWidth="0.5" />
-            <path d="M 0 0 C 90 30, 140 110, 200 200" stroke="url(#gold-curve-grad-2)" strokeWidth="0.5" />
-            <circle cx="0" cy="0" r="100" stroke="url(#gold-curve-grad-2)" strokeWidth="0.5" strokeDasharray="3,3" />
-            <circle cx="0" cy="0" r="150" stroke="url(#gold-curve-grad-2)" strokeWidth="0.25" />
-          </svg>
-        </div>
+        {/* Radiating Light Flare Overlay */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(252,185,0,0.22)_0%,transparent_65%)] mix-blend-screen pointer-events-none z-0 animate-pulse" style={{ animationDuration: '4s' }} />
+        {/* Dark Starry Overlay to blend background */}
+        <div className="absolute inset-0 bg-black/35 pointer-events-none z-0" />
 
         <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
           {featuresData.map((item, index) => (
-            <div 
+            <motion.div 
               key={index} 
-              className="bg-[#2A132E]/30 backdrop-blur-sm border border-[#fcb900]/20 hover:border-[#fcb900]/80 rounded-2xl p-6 md:p-8 flex flex-col items-start text-left gap-4 transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-1 group cursor-pointer"
+              animate={{ y: [0, -8, 0] }}
+              transition={{
+                duration: 3 + index * 0.4,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "easeInOut"
+              }}
+              className="bg-[#060814]/55 backdrop-blur-md border border-[#fcb900]/25 hover:border-[#fcb900]/80 rounded-2xl p-6 md:p-8 flex flex-col items-start text-left gap-4 transition-all duration-300 shadow-lg hover:shadow-[0_15px_30px_rgba(252,185,0,0.15)] group cursor-pointer"
             >
               {/* Top Row: Icon and Title on same line */}
               <div className="flex items-center gap-3 w-full">
                 {/* Gold Circular Outlined Icon Container */}
-                <div className="w-10 h-10 rounded-full border border-[#fcb900]/60 group-hover:border-[#fcb900] flex items-center justify-center text-[#fcb900] bg-[#241027]/60 shrink-0 group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(252,185,0,0.3)] transition-all duration-300">
+                <div className="w-10 h-10 rounded-full border border-[#fcb900]/60 group-hover:border-[#fcb900] flex items-center justify-center text-[#fcb900] bg-[#060814]/65 shrink-0 group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(252,185,0,0.3)] transition-all duration-300">
                   {item.icon}
                 </div>
                 {/* Title */}
@@ -384,10 +646,10 @@ export default function Home() {
               </div>
 
               {/* Subtext below */}
-              <p className="text-[13px] md:text-sm text-[#F4EAE3]/90 leading-relaxed font-sans w-full">
+              <p className="text-[13px] md:text-sm text-[#FDF9F7]/95 leading-relaxed font-sans w-full">
                 {item.desc}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </motion.section>
@@ -412,46 +674,16 @@ export default function Home() {
           
           {/* Section Header */}
           <div className="text-center mb-16 space-y-3">
-            <div className="flex items-center justify-center gap-3">
-              <div className="h-[1px] w-8 sm:w-16 bg-[#fcb900]"></div>
-              <span className="text-xs tracking-[0.25em] font-bold text-[#fcb900] uppercase font-sans flex items-center gap-1.5">
-                ✦ Our Services ✦
-              </span>
-              <div className="h-[1px] w-8 sm:w-16 bg-[#fcb900]"></div>
-            </div>
+            <span className="text-xs tracking-[0.25em] font-bold text-[#fcb900] uppercase font-sans flex items-center justify-center gap-1.5">
+              ✦ Our Services ✦
+            </span>
             <h3 className="text-3xl md:text-4xl font-serif font-bold text-[#2A132E] tracking-wide">
               Guidance for Every Aspect of Life
             </h3>
           </div>
 
-          {/* 3-Column Services Grid with box format */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
-            {services.map((service, index) => (
-              <motion.div 
-                key={index} 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.05 }}
-                className="bg-white border border-[#BDA9A8]/25 hover:border-[#fcb900] rounded-2xl p-6 md:p-8 flex flex-col items-start text-left gap-4 transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1 group cursor-pointer"
-              >
-                {/* Top Row: Icon and Title on same line */}
-                <div className="flex items-center gap-3.5 w-full">
-                  <div className="w-11 h-11 rounded-full bg-[#2A132E] border border-[#4A2A50] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
-                    {service.icon}
-                  </div>
-                  <h4 className="font-serif text-[#2A132E] font-bold text-base md:text-lg tracking-wide transition-colors group-hover:text-[#fcb900]">
-                    {service.title}
-                  </h4>
-                </div>
-
-                {/* Subtext below */}
-                <p className="text-xs md:text-sm text-[#55393F]/90 leading-relaxed font-sans w-full">
-                  {service.desc}
-                </p>
-              </motion.div>
-            ))}
-          </div>
+          {/* Responsive Carousel Slider */}
+          <ServiceSlider />
 
         </div>
       </motion.section>

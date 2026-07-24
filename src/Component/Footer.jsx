@@ -10,7 +10,7 @@ import logoImg from "../assets/logos/Logo.png";
  */
 export default function Footer() {
   return (
-    <footer className="w-full bg-gradient-to-r from-[#2A132E] to-[#55393F] text-[#FDF9F7] border-t border-[#4A2A50] relative overflow-hidden pt-16 pb-8">
+    <footer className="w-full bg-gradient-to-r from-[#2A132E] to-[#55393F] text-[#FDF9F7] border-t border-[#4A2A50] relative overflow-hidden pt-10 pb-6">
       
       {/* Decorative Golden Stars Background */}
       <div className="absolute top-10 right-10 text-[#fcb900]/10 text-3xl select-none pointer-events-none">✦</div>
