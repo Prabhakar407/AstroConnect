@@ -62,3 +62,67 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
   color: var(--color-royal-purple);
 }
+
+/* ========================================================= */
+/* FLUID RESPONSIVE LAYOUT & CONTAINER MEDIA QUERIES         */
+/* ========================================================= */
+
+/* Ensure box-sizing border-box globally */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Ensure html and body take full width and prevent scroll leakage */
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Redefine max-w-7xl and max-w-6xl to scale fluidly on larger/ultra-wide screens */
+@media (min-width: 1280px) {
+  .max-w-7xl {
+    max-width: 1280px !important;
+  }
+  .max-w-6xl {
+    max-width: 1152px !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  .max-w-7xl {
+    max-width: 1400px !important;
+  }
+  .max-w-6xl {
+    max-width: 1260px !important;
+  }
+}
+
+@media (min-width: 1600px) {
+  .max-w-7xl {
+    max-width: 1540px !important;
+  }
+  .max-w-6xl {
+    max-width: 1380px !important;
+  }
+}
+
+@media (min-width: 1920px) {
+  .max-w-7xl {
+    max-width: 1820px !important;
+  }
+  .max-w-6xl {
+    max-width: 1620px !important;
+  }
+}
+
+@media (min-width: 2560px) {
+  .max-w-7xl {
+    max-width: 2420px !important;
+  }
+  .max-w-6xl {
+    max-width: 2120px !important;
+  }
+}
+

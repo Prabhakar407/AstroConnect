@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send } from "lucide-react";
+import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send, Mail, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoImg from "../assets/logos/Logo.png";
 import featureBg from "../assets/images/Feature.png";
+import astrologerPortrait from "../assets/images/astrologer_portrait.jpg";
+import zodiacWheel from "../assets/images/zodiac_wheel.jpg";
 
 /**
  * CelestialDivider Component
@@ -415,13 +417,12 @@ export default function Home() {
   // Contact Form State
   const [formData, setFormData] = useState({
     name: "",
-    phone: "",
+    dob: "",
     email: "",
-    selectedServices: [],
+    selectedService: "",
     comment: ""
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
-
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({
@@ -430,33 +431,20 @@ export default function Home() {
     }))
   }
 
-  const handleServiceCheckboxChange = (serviceTitle) => {
-    setFormData((prev) => {
-      const alreadySelected = prev.selectedServices.includes(serviceTitle)
-      if (alreadySelected) {
-        return {
-          ...prev,
-          selectedServices: prev.selectedServices.filter((s) => s !== serviceTitle)
-        }
-      } else {
-        return {
-          ...prev,
-          selectedServices: [...prev.selectedServices, serviceTitle]
-        }
-      }
-    })
-  }
-
   const handleFormSubmit = (e) => {
     e.preventDefault()
+    if (!formData.selectedService) {
+      alert("Please select a service of interest.")
+      return
+    }
     console.log("Contact Form Submitted Data:", formData)
     setIsSubmitted(true)
     setTimeout(() => {
       setFormData({
         name: "",
-        phone: "",
+        dob: "",
         email: "",
-        selectedServices: [],
+        selectedService: "",
         comment: ""
       })
       setIsSubmitted(false)
@@ -576,9 +564,12 @@ export default function Home() {
           <Sparkles className="absolute top-10 right-10 text-[#fcb900]/60 animate-bounce" size={24} />
           <Sparkles className="absolute bottom-20 left-10 text-[#A6755D]/40" size={18} />
 
-          <div className="relative w-72 h-72 sm:w-96 sm:h-96 rounded-full border-2 border-dashed border-[#fcb900]/50 flex items-center justify-center animate-[spin_100s_linear_infinite]">
-            <div className="absolute inset-4 rounded-full border border-[#fcb900]/30"></div>
-            <div className="absolute inset-8 rounded-full border border-dashed border-[#A6755D]/20"></div>
+          <div className="relative w-72 h-72 sm:w-96 sm:h-96 rounded-full border-2 border-dashed border-[#fcb900]/50 flex items-center justify-center animate-[spin_100s_linear_infinite] overflow-hidden">
+            <img 
+              src={zodiacWheel} 
+              alt="Zodiac Wheel Layout" 
+              className="w-full h-full object-cover opacity-35"
+            />
             <div className="absolute inset-0 flex justify-center items-center text-[10px] text-[#A6755D]/40 font-serif">
               <span className="absolute top-2">♈</span>
               <span className="absolute right-2">♋</span>
@@ -587,18 +578,12 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="absolute w-60 h-60 sm:w-80 sm:h-80 rounded-full overflow-hidden border-4 border-[#fcb900] bg-gradient-to-tr from-[#2A132E] to-[#55393F] shadow-2xl flex items-center justify-center group">
+          <div className="absolute w-60 h-60 sm:w-80 sm:h-80 rounded-full overflow-hidden border-4 border-[#fcb900] bg-gradient-to-tr from-[#2A132E] to-[#55393F] shadow-2xl flex items-center justify-center group hover:scale-[1.02] transition-all duration-500 hover:shadow-[0_20px_45px_rgba(252,185,0,0.3)]">
             <img 
-              src="" 
-              alt="Astrologer Kundan Singh" 
-              className="w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              onError={(e) => { e.target.style.display = 'none'; }}
+              src={astrologerPortrait} 
+              alt="Astrologer Kundan Singh at work" 
+              className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
             />
-            <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
-              <span className="text-4xl mb-2 text-[#fcb900]">✨</span>
-              <span className="font-serif text-sm tracking-widest text-[#FDF9F7] uppercase font-semibold">Astrologer Portrait</span>
-              <span className="text-[10px] text-[#EBDCD4] mt-1">(Image Space Reserved)</span>
-            </div>
           </div>
         </motion.div>
 
@@ -838,19 +823,12 @@ export default function Home() {
           >
             <div className="absolute -inset-2 border-2 border-dashed border-[#fcb900]/40 rounded-3xl -z-10"></div>
             
-            <div className="w-full max-w-md aspect-[3/4] rounded-3xl overflow-hidden border-4 border-[#fcb900] bg-gradient-to-tr from-[#2A132E] to-[#55393F] shadow-2xl flex items-center justify-center relative group">
+            <div className="w-full max-w-[290px] sm:max-w-xs md:max-w-sm aspect-[4/5] rounded-3xl overflow-hidden border-4 border-[#fcb900] bg-gradient-to-tr from-[#2A132E] to-[#55393F] shadow-xl hover:shadow-[0_20px_45px_rgba(252,185,0,0.35)] flex items-center justify-center relative group hover:scale-[1.03] transition-all duration-500">
               <img 
-                src="" 
+                src={astrologerPortrait} 
                 alt="Astrologer Kundan Singh at work" 
-                className="w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                onError={(e) => { e.target.style.display = 'none'; }}
+                className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
               />
-              <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-8">
-                <span className="text-5xl mb-4 text-[#fcb900]">🔮</span>
-                <span className="font-serif text-lg tracking-widest text-[#FDF9F7] uppercase font-semibold">Kundan Singh</span>
-                <span className="text-xs text-[#EBDCD4] tracking-wider mt-1">Vedic Astrologer Profile</span>
-                <span className="text-[10px] text-[#fcb900]/80 mt-6">(Portrait Image Space Reserved)</span>
-              </div>
             </div>
           </motion.div>
 
@@ -928,57 +906,177 @@ export default function Home() {
       <CelestialDivider />
 
       {/* ========================================================= */}
-      {/* 8. QUICK CONNECT / CONTACT FORM SECTION                   */}
+      {/* 8. DYNAMIC COSMIC CONTACT / QUICK CONNECT SECTION         */}
       {/* ========================================================= */}
       <motion.section 
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full bg-gradient-to-b from-[#FCF3ED] to-[#FDF9F7] py-20 relative overflow-hidden flex flex-col items-center border-t border-[#BDA9A8]/10"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1 }}
+        className="w-full bg-[#05060f] py-14 relative overflow-hidden flex flex-col items-center border-t border-white/5"
       >
-        {/* Decorative backdrop elements */}
-        <div className="absolute top-20 right-[-100px] w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(252,185,0,0.06),transparent_70%)] rounded-full -z-10 animate-pulse"></div>
-        <div className="absolute bottom-10 left-[-100px] w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(85,57,63,0.04),transparent_70%)] rounded-full -z-10"></div>
+        {/* Exact Nebula Overlays Matching Contact_Form.png */}
+        <div className="absolute top-0 right-0 w-[80%] h-[80%] bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.16)_0%,transparent_70%)] rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute bottom-0 left-0 w-[80%] h-[80%] bg-[radial-gradient(circle_at_bottom_left,rgba(219,39,119,0.08)_0%,transparent_70%)] rounded-full blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.05)_0%,transparent_65%)] rounded-full blur-3xl pointer-events-none -z-10" />
 
-        <div className="w-full max-w-4xl mx-auto px-6 lg:px-8 flex flex-col items-center">
+        {/* Scattered SVG Stars backdrop */}
+        <div className="absolute inset-0 opacity-40 pointer-events-none -z-10">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10%" cy="15%" r="1" fill="#fff" />
+            <circle cx="30%" cy="80%" r="1" fill="#fff" />
+            <circle cx="55%" cy="25%" r="0.75" fill="#fff" />
+            <circle cx="75%" cy="60%" r="1.25" fill="#fcb900" className="animate-pulse" />
+            <circle cx="85%" cy="15%" r="1" fill="#fff" />
+            <circle cx="95%" cy="75%" r="0.5" fill="#fff" />
+            <circle cx="15%" cy="65%" r="1" fill="#fcb900" />
+            <circle cx="45%" cy="85%" r="0.75" fill="#fff" />
+          </svg>
+        </div>
+
+        <div className="w-full max-w-5xl mx-auto px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch relative z-10">
           
-          {/* Section Header */}
-          <div className="text-center mb-12 space-y-3">
-            <span className="text-xs tracking-[0.25em] font-bold text-[#fcb900] uppercase font-sans block">
-              ✦ QUICK CONNECT ✦
-            </span>
-            <h3 className="text-3xl md:text-4xl font-serif font-bold text-[#2A132E] tracking-wide">
-              Start Your Astrology Journey
-            </h3>
-            <p className="text-sm text-[#55393F]/80 max-w-md mx-auto">
-              Have a question or looking to schedule a private reading? Fill out the details below.
-            </p>
+          {/* Left Panel: Services Selection Section (Hidden on mobile <768px per user request) */}
+          <div
+            className="hidden md:flex flex-col justify-between bg-[#0b0f19]/35 backdrop-blur-md border border-[#ec4899]/30 rounded-2xl p-5 lg:p-6 text-left shadow-[0_10px_25px_rgba(99,102,241,0.08),_0_0_15px_rgba(236,72,153,0.04)] hover:border-[#fcb900]/85 hover:shadow-[0_15px_35px_rgba(99,102,241,0.12),_0_0_25px_rgba(236,72,153,0.08)] transition-all duration-300 relative group overflow-hidden"
+          >
+            {/* Soft highlight sweep */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.01] to-transparent pointer-events-none" />
+
+            <div className="space-y-3">
+              {/* Header Title */}
+              <div className="space-y-1">
+                <span className="text-[10px] tracking-[0.2em] font-bold text-[#fcb900] uppercase font-sans block">
+                  ✦ TRUSTED & CONFIDENTIAL ✦
+                </span>
+                <h3 className="text-xl font-serif font-bold text-white tracking-wide">
+                  Select Vedic Service*
+                </h3>
+                <p className="text-[11px] text-[#EBDCD4]/85 leading-relaxed font-sans">
+                  Select a service below to request your consultation. Selection is compulsory.
+                </p>
+              </div>
+
+              {/* Services Selector Grid */}
+              <div className="grid grid-cols-2 gap-2 py-1">
+                {services.map((item, idx) => {
+                  const isSelected = formData.selectedService === item.title;
+                  return (
+                    <button 
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          selectedService: item.title,
+                          comment: prev.comment || `I am requesting a consultation for ${item.title}.`
+                        }));
+                      }}
+                      className={`flex items-center gap-2 p-2.5 rounded-xl border text-[10px] transition-all duration-300 cursor-pointer ${
+                        isSelected 
+                          ? "bg-[#fcb900]/15 border-[#fcb900] text-white shadow-[0_0_10px_rgba(252,185,0,0.2)]" 
+                          : "bg-white/[0.02] border-white/5 text-white/80 hover:bg-white/10 hover:border-white/20"
+                      }`}
+                    >
+                      <div className="text-xs shrink-0">{item.icon}</div>
+                      <span className="font-semibold tracking-wide truncate">{item.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Astrologer Details & Links (reduced sizing) */}
+            <div className="border-t border-white/5 pt-4 mt-4 space-y-3">
+              <div className="space-y-0.5">
+                <span className="text-[10px] text-[#fcb900]/80 font-bold uppercase tracking-widest font-sans block">
+                  ASTROLOGER
+                </span>
+                <span className="text-sm font-serif font-bold text-white tracking-wide">
+                  Astrologer Kundan Singh
+                </span>
+              </div>
+
+              <div className="space-y-1.5 text-[11px] text-[#EBDCD4]/80 font-sans">
+                <div className="flex items-center gap-2">
+                  <Mail size={12} className="text-[#fcb900] shrink-0" />
+                  <span className="truncate">astrologerkundan@gmail.com</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Phone size={12} className="text-[#fcb900] shrink-0" />
+                  <span>+91 94520 62153</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin size={12} className="text-[#fcb900] shrink-0" />
+                  <span>Varanasi, Uttar Pradesh, India</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Form Card */}
-          <div className="w-full max-w-2xl bg-white border border-[#BDA9A8]/20 rounded-3xl p-6 md:p-10 shadow-xl relative z-10">
+          {/* Right Panel: Contact Form */}
+          <div
+            className="flex flex-col justify-between bg-[#0b0f19]/35 backdrop-blur-md border border-[#ec4899]/30 rounded-2xl p-5 lg:p-6 text-left shadow-[0_10px_25px_rgba(99,102,241,0.08),_0_0_15px_rgba(236,72,153,0.04)] hover:border-[#fcb900]/85 hover:shadow-[0_15px_35px_rgba(99,102,241,0.12),_0_0_25px_rgba(236,72,153,0.08)] transition-all duration-300 relative overflow-hidden"
+          >
+            {/* Live Orbiting Planetary Decor */}
+            <div className="absolute top-3 right-3 w-20 h-20 pointer-events-none select-none opacity-40 z-0">
+              <svg className="w-full h-full" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="7" className="fill-[#fcb900] animate-pulse" />
+                <circle cx="50" cy="50" r="20" className="stroke-white/10 stroke-[0.5] fill-none" />
+                <circle cx="50" cy="50" r="35" className="stroke-white/10 stroke-[0.5] fill-none" strokeDasharray="3,3" />
+                
+                {/* Orbiting Planet 1 */}
+                <motion.circle 
+                  cx="50" cy="50" r="2" className="fill-[#a78bfa]"
+                  animate={{
+                    cx: [50 + 20 * Math.cos(0), 50 + 20 * Math.cos(2*Math.PI)],
+                    cy: [50 + 20 * Math.sin(0), 50 + 20 * Math.sin(2*Math.PI)],
+                  }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+                />
+                {/* Orbiting Planet 2 */}
+                <motion.circle 
+                  cx="50" cy="50" r="2.5" className="fill-[#f472b6]"
+                  animate={{
+                    cx: [50 + 35 * Math.cos(0), 50 + 35 * Math.cos(2*Math.PI)],
+                    cy: [50 + 35 * Math.sin(0), 50 + 35 * Math.sin(2*Math.PI)],
+                  }}
+                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                />
+              </svg>
+            </div>
+
             {isSubmitted ? (
               <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center justify-center text-center py-12 space-y-4"
+                className="flex flex-col items-center justify-center text-center py-16 space-y-3"
               >
-                <div className="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-500 flex items-center justify-center text-emerald-500 text-3xl">
+                <div className="w-12 h-12 rounded-full bg-[#fcb900]/10 border-2 border-[#fcb900] flex items-center justify-center text-[#fcb900] text-xl shadow-[0_0_12px_rgba(252,185,0,0.3)] animate-pulse">
                   ✓
                 </div>
-                <h4 className="font-serif text-[#2A132E] font-bold text-2xl">Message Sent Successfully!</h4>
-                <p className="text-sm text-[#55393F]/90 max-w-sm">
-                  Thank you for reaching out. Astrologer Kundan Singh will review your request and get back to you shortly via phone or WhatsApp.
+                <h4 className="font-serif text-white font-bold text-xl">Request Dispatched</h4>
+                <p className="text-[11px] text-[#EBDCD4]/90 max-w-xs leading-relaxed">
+                  Your cosmic chart request has been sent successfully. Astrologer Kundan Singh will analyze your alignments and contact you soon.
                 </p>
               </motion.div>
             ) : (
-              <form onSubmit={handleFormSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <form onSubmit={handleFormSubmit} className="space-y-3.5 z-10 relative">
+                {/* Header info */}
+                <div className="space-y-0.5">
+                  <span className="text-[10px] tracking-[0.25em] font-bold text-[#fcb900] uppercase font-sans block">
+                    ✦ ACCURATE PREDICTIONS ✦
+                  </span>
+                  <p className="text-[10.5px] text-[#EBDCD4]/85 leading-relaxed font-sans">
+                    Fill in your details below. Fields marked with * are required.
+                  </p>
+                </div>
+
+                <div className="space-y-2.5">
                   {/* Name field */}
-                  <div className="space-y-2">
-                    <label htmlFor="form-name" className="block text-sm font-semibold text-[#55393F] text-left">
-                      Full Name <span className="text-[#fcb900]">*</span>
+                  <div className="space-y-0.5 text-left">
+                    <label htmlFor="form-name" className="block text-[10px] font-bold text-[#fcb900] uppercase tracking-wide">
+                      Your Name*
                     </label>
                     <input 
                       type="text" 
@@ -987,98 +1085,101 @@ export default function Home() {
                       required
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Your name"
-                      className="w-full bg-[#FDF9F7] border border-[#BDA9A8]/30 rounded-xl px-4 py-3 text-sm text-[#2A132E] focus:outline-none focus:border-[#fcb900] focus:ring-1 focus:ring-[#fcb900] transition"
+                      placeholder="Enter full name"
+                      className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3.5 py-2 text-[11px] text-white placeholder-white/30 focus:outline-none focus:border-[#fcb900]/80 focus:bg-white/[0.06] transition-all duration-300"
                     />
                   </div>
 
-                  {/* Phone/WhatsApp field */}
-                  <div className="space-y-2">
-                    <label htmlFor="form-phone" className="block text-sm font-semibold text-[#55393F] text-left">
-                      Phone / WhatsApp <span className="text-[#fcb900]">*</span>
+                  {/* DOB field */}
+                  <div className="space-y-0.5 text-left">
+                    <label htmlFor="form-dob" className="block text-[10px] font-bold text-[#fcb900] uppercase tracking-wide">
+                      Date of Birth (YYYY-MM-DD)*
                     </label>
                     <input 
-                      type="tel" 
-                      id="form-phone"
-                      name="phone"
+                      type="date" 
+                      id="form-dob"
+                      name="dob"
                       required
-                      value={formData.phone}
+                      value={formData.dob}
                       onChange={handleInputChange}
-                      placeholder="Phone or WhatsApp number"
-                      className="w-full bg-[#FDF9F7] border border-[#BDA9A8]/30 rounded-xl px-4 py-3 text-sm text-[#2A132E] focus:outline-none focus:border-[#fcb900] focus:ring-1 focus:ring-[#fcb900] transition"
+                      className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3.5 py-2 text-[11px] text-white focus:outline-none focus:border-[#fcb900]/80 focus:bg-white/[0.06] transition-all duration-300"
                     />
                   </div>
-                </div>
 
-                {/* Email field (Optional) */}
-                <div className="space-y-2">
-                  <label htmlFor="form-email" className="block text-sm font-semibold text-[#55393F] text-left">
-                    Email Address <span className="text-xs text-[#A6755D]/75 font-normal">(Optional)</span>
-                  </label>
-                  <input 
-                    type="email" 
-                    id="form-email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="Your email address"
-                    className="w-full bg-[#FDF9F7] border border-[#BDA9A8]/30 rounded-xl px-4 py-3 text-sm text-[#2A132E] focus:outline-none focus:border-[#fcb900] focus:ring-1 focus:ring-[#fcb900] transition"
-                  />
-                </div>
-
-                {/* Services interested in (Multiple choice check buttons) */}
-                <div className="space-y-3">
-                  <label className="block text-sm font-semibold text-[#55393F] text-left">
-                    Services of Interest <span className="text-xs text-[#A6755D]/75 font-normal">(Select multiple option checks)</span>
-                  </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-                    {services.map((item, idx) => {
-                      const isChecked = formData.selectedServices.includes(item.title)
-                      return (
-                        <label 
-                          key={idx} 
-                          className={`flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none ${
-                            isChecked 
-                              ? "bg-[#fcb900]/10 border-[#fcb900] text-[#2A132E] font-semibold" 
-                              : "bg-[#FDF9F7]/70 border-[#BDA9A8]/20 text-[#55393F] hover:bg-[#FCF3ED]/40"
-                          }`}
-                        >
-                          <input 
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => handleServiceCheckboxChange(item.title)}
-                            className="w-4 h-4 rounded text-[#fcb900] focus:ring-[#fcb900] border-[#BDA9A8]/40 accent-[#2A132E] cursor-pointer"
-                          />
-                          <span className="text-xs md:text-sm">{item.title}</span>
-                        </label>
-                      )
-                    })}
+                  {/* Email field */}
+                  <div className="space-y-0.5 text-left">
+                    <label htmlFor="form-email" className="block text-[10px] font-bold text-[#fcb900] uppercase tracking-wide">
+                      Email Address*
+                    </label>
+                    <input 
+                      type="email" 
+                      id="form-email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="Enter email address"
+                      className="w-full bg-white/[0.04] border border-white/10 rounded-lg px-3.5 py-2 text-[11px] text-white placeholder-white/35 focus:outline-none focus:border-[#fcb900]/80 focus:bg-white/[0.06] transition-all duration-300"
+                    />
                   </div>
-                </div>
 
-                {/* Comment section */}
-                <div className="space-y-2">
-                  <label htmlFor="form-comment" className="block text-sm font-semibold text-[#55393F] text-left">
-                    Your Question / Message <span className="text-xs text-[#A6755D]/75 font-normal">(Free text field)</span>
-                  </label>
-                  <textarea 
-                    id="form-comment"
-                    name="comment"
-                    rows="4"
-                    value={formData.comment}
-                    onChange={handleInputChange}
-                    placeholder="Enter details of your query, birth details, or preferred consultation dates..."
-                    className="w-full bg-[#FDF9F7] border border-[#BDA9A8]/30 rounded-xl px-4 py-3 text-sm text-[#2A132E] focus:outline-none focus:border-[#fcb900] focus:ring-1 focus:ring-[#fcb900] transition resize-none"
-                  ></textarea>
+                  {/* Services selector visible only on mobile (<768px) */}
+                  <div className="block md:hidden space-y-1 text-left">
+                    <label className="block text-[10px] font-bold text-[#fcb900] uppercase tracking-wider">
+                      Select Service of Interest (Required)*
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {services.map((item, idx) => {
+                        const isSelected = formData.selectedService === item.title;
+                        return (
+                          <button 
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              setFormData(prev => ({
+                                ...prev,
+                                selectedService: item.title,
+                                comment: prev.comment || `I am requesting a consultation for ${item.title}.`
+                              }));
+                            }}
+                            className={`flex items-center gap-2 px-2.5 py-2 border rounded-xl text-[9px] transition-all duration-300 shadow-sm cursor-pointer ${
+                              isSelected 
+                                ? "bg-[#fcb900]/15 border-[#fcb900] text-white shadow-[0_0_10px_rgba(252,185,0,0.2)]" 
+                                : "bg-white/[0.02] border-white/5 text-white/80 hover:bg-white/10 hover:border-white/20"
+                            }`}
+                          >
+                            <span className="text-[10px] shrink-0">{item.icon}</span>
+                            <span className="font-semibold tracking-wide truncate">{item.title}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Cosmic Comment */}
+                  <div className="space-y-0.5 text-left">
+                    <label htmlFor="form-comment" className="block text-[10px] font-bold text-[#fcb900] uppercase tracking-wide">
+                      Cosmic Comment / Vedic Inquiry
+                    </label>
+                    <textarea 
+                      id="form-comment"
+                      name="comment"
+                      rows="2.5"
+                      value={formData.comment}
+                      onChange={handleInputChange}
+                      placeholder="Describe your query, focus area, or gemstones interest details..."
+                      className="w-full bg-[#05060f]/20 border border-[#fcb900]/25 rounded-lg px-3.5 py-2 text-[11px] text-white placeholder-white/35 focus:outline-none focus:border-[#fcb900] focus:ring-1 focus:ring-[#fcb900]/30 transition-all duration-300 resize-none font-sans"
+                    ></textarea>
+                  </div>
                 </div>
 
                 {/* Submit button */}
                 <button 
                   type="submit"
-                  className="w-full bg-[#2A132E] hover:bg-[#fcb900] text-white hover:text-[#2A132E] border border-[#2A132E] hover:border-[#fcb900] font-semibold py-3.5 rounded-xl transition duration-300 shadow-md cursor-pointer flex items-center justify-center gap-2 mt-4"
+                  className="w-full bg-gradient-to-r from-[#fcb900] to-[#A6755D] text-[#2A132E] hover:from-[#fcb900] hover:to-[#fcb900] font-bold py-2.5 rounded-lg transition-all duration-300 shadow-md hover:shadow-[0_0_15px_rgba(252,185,0,0.3)] cursor-pointer flex items-center justify-center gap-2 mt-3 text-[10.5px] tracking-wider uppercase"
                 >
-                  <Send size={16} />
-                  <span>Send Consultation Request</span>
+                  <Send size={11} />
+                  <span>Send Vedic Inquiry Request</span>
                 </button>
               </form>
             )}
@@ -1086,7 +1187,6 @@ export default function Home() {
 
         </div>
       </motion.section>
-
     </div>
   )
 }

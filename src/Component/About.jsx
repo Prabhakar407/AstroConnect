@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { 
   Award, 
   Users, 
@@ -15,9 +15,8 @@ import {
   Gem, 
   Hash, 
   Home as HomeIcon,
-  ShieldCheck,
-  TrendingUp,
-  UserCheck
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 
 const MotionLink = motion.create ? motion.create(Link) : motion(Link);
@@ -36,28 +35,227 @@ function CelestialDivider() {
   )
 }
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.12
-    }
-  }
-};
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 25, scale: 0.96 },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      type: "spring",
-      stiffness: 120,
-      damping: 18
+const ExpertiseSlider = ({ expertiseData }) => {
+  const [visibleCount, setVisibleCount] = useState(5)
+  const [startIndex, setStartIndex] = useState(0)
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setVisibleCount(1);
+      } else if (window.innerWidth < 1200) {
+        setVisibleCount(3);
+      } else {
+        setVisibleCount(5);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const centerIndex = Math.floor(visibleCount / 2);
+
+  const getVisibleItems = () => {
+    const items = [];
+    for (let i = 0; i < visibleCount; i++) {
+      items.push(expertiseData[(startIndex + i) % expertiseData.length]);
     }
-  }
+    return items;
+  };
+
+  const handleNext = () => {
+    setStartIndex((prevIndex) => (prevIndex + 1) % expertiseData.length);
+  };
+
+  const handlePrev = () => {
+    setStartIndex((prevIndex) => (prevIndex - 1 + expertiseData.length) % expertiseData.length);
+  };
+
+  // 4-second auto-slide interval that resets when manually navigated
+  useEffect(() => {
+    const timer = setInterval(() => {
+      handleNext();
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [startIndex, expertiseData.length]);
+
+  const visibleExpertise = getVisibleItems();
+
+  const getCardStyles = (index) => {
+    if (visibleCount === 5) {
+      if (index < 2) return 'navy';
+      if (index === 2) return 'holo';
+      return 'burgundy';
+    } else if (visibleCount === 3) {
+      if (index === 0) return 'navy';
+      if (index === 1) return 'holo';
+      return 'burgundy';
+    } else {
+      return 'holo';
+    }
+  };
+
+  return (
+    <div className="w-full relative max-w-7xl mx-auto px-12 sm:px-16 md:px-24 py-6 overflow-visible select-none">
+      {/* Left Navigation Button */}
+      <button 
+        onClick={handlePrev} 
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2.5 rounded-full shadow-md border border-gray-200 z-20 hover:scale-105 active:scale-95 transition-all text-[#2A132E] cursor-pointer"
+        aria-label="Previous Expertise"
+      >
+        <ChevronLeft size={18} />
+      </button>
+
+      {/* Slider Container */}
+      <div className="relative w-full">
+        <div className="flex justify-center items-center gap-4 overflow-visible relative min-h-[380px]">
+          <AnimatePresence initial={false} mode="popLayout">
+            {visibleExpertise.map((item, index) => {
+              const isCenter = index === centerIndex;
+              const cardStyle = getCardStyles(index);
+
+              // Determine classes & styles based on computed card layout position
+              let bgClass = "";
+              let titleClass = "";
+              let textClass = "";
+              let borderStyle = {};
+              let iconContainerClass = "";
+
+              if (cardStyle === 'navy') {
+                bgClass = "bg-[#131F37] text-white";
+                borderStyle = { border: '1px solid rgba(252, 185, 0, 0.35)' };
+                titleClass = "text-[#fcb900]";
+                textClass = "text-[#E7D3CE]/90";
+                iconContainerClass = "border border-[#fcb900]/40";
+              } else if (cardStyle === 'holo') {
+                bgClass = "text-[#2A132E]";
+                borderStyle = { 
+                  background: 'linear-gradient(135deg, #FFF5EC 0%, #F5E6FF 30%, #E6F0FF 70%, #FFF5EC 100%)',
+                  border: '1px solid #fcb900'
+                };
+                titleClass = "text-[#2A132E]";
+                textClass = "text-[#55393F] font-semibold";
+                iconContainerClass = "bg-gradient-to-b from-[#e6c07b] to-[#bfa054] shadow-sm";
+              } else { // burgundy
+                bgClass = "bg-[#4A121A] text-white";
+                borderStyle = { border: '1px solid rgba(252, 185, 0, 0.35)' };
+                titleClass = "text-[#fcb900]";
+                textClass = "text-[#E7D3CE]/90";
+                iconContainerClass = "bg-gradient-to-b from-[#e6c07b] to-[#bfa054] shadow-sm";
+              }
+
+              // Calculate 3D z-axis depth values dynamically based on distance from center card
+              const distance = Math.abs(index - centerIndex);
+              let scale = 1.0;
+              let y = 0;
+              let x = 0;
+              let zIndex = 1;
+              let opacity = 1;
+              let boxShadow = "0 10px 15px -3px rgba(0, 0, 0, 0.1)";
+
+              if (distance === 0) {
+                scale = 1.1;
+                y = -10;
+                zIndex = 10;
+                opacity = 1;
+                boxShadow = '0 25px 50px -12px rgba(252, 185, 0, 0.4), 0 12px 24px -10px rgba(252, 185, 0, 0.25)';
+              } else if (distance === 1) {
+                scale = 0.95;
+                y = 0;
+                zIndex = 5;
+                opacity = 0.85;
+                boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+              } else { // distance === 2
+                scale = 0.8;
+                y = 10;
+                zIndex = 1;
+                opacity = 0.6;
+                boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.05)';
+              }
+
+              // Apply translation x to bring outer cards closer to adjacent cards
+              if (visibleCount === 5) {
+                if (index === 0) x = 32;
+                else if (index === 4) x = -32;
+              } else if (visibleCount === 3) {
+                if (index === 0) x = 16;
+                else if (index === 2) x = -16;
+              }
+
+              // Helper to clone icon dynamically
+              const renderClonedIcon = () => {
+                if (!item.icon) return null;
+                let colorClass = "text-[#fcb900]";
+                if (cardStyle === 'holo' || cardStyle === 'burgundy') {
+                  colorClass = "text-white";
+                }
+                return React.cloneElement(item.icon, {
+                  className: `${colorClass} shrink-0`,
+                  size: 20
+                });
+              };
+
+              return (
+                <motion.div
+                  key={item.title}
+                  layout
+                  animate={{
+                    scale,
+                    y,
+                    x,
+                    zIndex,
+                    opacity,
+                    boxShadow
+                  }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  style={borderStyle}
+                  className={`
+                    flex-none w-[195px] h-[320px] rounded-2xl p-6 flex flex-col justify-between 
+                    cursor-pointer transition-colors duration-300 text-center items-center relative
+                    ${bgClass}
+                  `}
+                >
+                  {/* Pearlescent Active Glow Blast */}
+                  {isCenter && (
+                    <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(252,185,0,0.3)_0%,transparent_60%)] blur-3xl scale-[1.7] animate-pulse pointer-events-none" />
+                  )}
+
+                  <div className="flex flex-col gap-4 text-center items-center">
+                    {/* Circle Icon Badge */}
+                    <div className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 ${iconContainerClass}`}>
+                      {renderClonedIcon()}
+                    </div>
+                    <div className={`text-sm font-bold tracking-wide font-serif leading-tight ${titleClass}`}>
+                      {item.title}
+                    </div>
+                    <p className={`text-[11px] leading-relaxed font-sans line-clamp-6 ${textClass}`}>
+                      {item.desc}
+                    </p>
+                  </div>
+
+                  <div className={`text-[9px] font-bold tracking-wider uppercase mt-2 ${isCenter ? 'text-[#2A132E]' : 'text-[#fcb900]/80'}`}>
+                    {isCenter ? 'ACTIVE ✦' : 'EXPLORE'}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Right Navigation Button */}
+      <button 
+        onClick={handleNext} 
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2.5 rounded-full shadow-md border border-gray-200 z-20 hover:scale-105 active:scale-95 transition-all text-[#2A132E] cursor-pointer"
+        aria-label="Next Expertise"
+      >
+        <ChevronRight size={18} />
+      </button>
+    </div>
+  );
 };
 
 /**
@@ -331,64 +529,10 @@ function About() {
             </p>
           </div>
 
-          {/* Grid of 6 Professional, Beautiful, Tighter Expertise Cards */}
-          <motion.div 
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full z-10"
-          >
-            {expertiseData.map((item, index) => (
-              <motion.div 
-                key={index}
-                variants={itemVariants}
-                whileHover={{ 
-                  y: -8, 
-                  borderColor: "#fcb900", 
-                  boxShadow: "0 25px 40px -15px rgba(85, 57, 63, 0.15), 0 0 25px rgba(252, 185, 0, 0.25)" 
-                }}
-                className="relative bg-gradient-to-br from-white to-[#FCF3ED]/40 border border-[#E7D3CE]/70 rounded-2xl p-6 flex flex-col items-start text-left gap-4 transition-all duration-500 shadow-sm group cursor-pointer overflow-hidden"
-              >
-                {/* Background Decor Sparkle */}
-                <div className="absolute top-4 right-4 text-[#fcb900]/10 group-hover:text-[#fcb900]/40 transition-colors duration-300">
-                  <Sparkles size={16} />
-                </div>
-                
-                {/* Subtle bottom-right gradient glow on hover */}
-                <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-[#fcb900]/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                {/* Card Header Row: Icon and Title on same line */}
-                <div className="flex items-center gap-4 w-full">
-                  {/* Hexagon/Circular Gold Icon Wrapper */}
-                  <div className="relative w-11 h-11 rounded-xl border border-dashed border-[#fcb900]/40 group-hover:border-[#fcb900] flex items-center justify-center bg-white text-[#fcb900] group-hover:scale-105 group-hover:shadow-[0_0_12px_rgba(252,185,0,0.25)] transition-all duration-500 shrink-0">
-                    <div className="absolute inset-0.5 rounded-lg border border-[#fcb900]/5 group-hover:border-[#fcb900]/25"></div>
-                    {item.icon}
-                  </div>
-
-                  <div className="space-y-1">
-                    {/* Card Title */}
-                    <h3 className="font-serif text-[#2A132E] font-bold text-base md:text-lg group-hover:text-[#A6755D] transition-colors duration-300">
-                      {item.title}
-                    </h3>
-                    {/* Gold Divider Line */}
-                    <div className="w-6 h-[1.5px] bg-[#fcb900]/30 group-hover:w-12 transition-all duration-500 rounded-full"></div>
-                  </div>
-                </div>
-
-                {/* Card Description */}
-                <p className="text-xs sm:text-[13px] text-[#55393F]/90 leading-relaxed font-sans mt-0.5">
-                  {item.desc}
-                </p>
-
-                {/* Read More Link */}
-                <div className="mt-auto pt-2 flex items-center gap-1.5 text-[11px] font-semibold tracking-wider text-[#A6755D] group-hover:text-[#fcb900] uppercase font-sans transition-colors duration-300">
-                  <span>Explore Guidance</span>
-                  <span className="transform translate-x-0 group-hover:translate-x-1.5 transition-transform duration-300">✦</span>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+          {/* Areas of Expertise Carousel Slider */}
+          <div className="w-full z-10">
+            <ExpertiseSlider expertiseData={expertiseData} />
+          </div>
         </div>
       </section>
 
