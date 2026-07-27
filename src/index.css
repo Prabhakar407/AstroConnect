@@ -5,17 +5,16 @@
   --font-sans: "Outfit", sans-serif;
 
   /* Brand Color Palette */
-  --color-royal-purple: #2A132E;
-  --color-dark-plum: #55393F;
-  --color-rich-gold: #fcb900;
-  --color-antique-gold: #A6755D;
-  --color-warm-ivory: #FDF9F7;
-  --color-soft-cream: #FCF3ED;
-  --color-blush-beige: #E7D3CE;
-  --color-misty-rose: #F0E4E3;
-  --color-champagne: #EBDCD4;
-  --color-dusty-taupe: #BDA9A8;
-  --color-peach-beige: #F7F0EE;
+  --color-cream-bg: #FDFCF5;
+  --color-navy-band: #06091B;
+  --color-bronze-accent: #AB7A57;
+  --color-plum-plate: #181122;
+  --color-headline-white: #FFFFFF;
+  --color-lavender-sub: #D8CFEB;
+  --color-icon-cream: #FFFDEE;
+  --color-icon-silver: #BDBDBD;
+  --color-gold-aura: #D3AF54;
+  --color-glass-frosted: #EAEAEA;
 
   /* Custom Large Screen Breakpoints */
   --breakpoint-3xl: 1920px;
@@ -58,14 +57,13 @@
 
 body {
   font-family: var(--font-sans);
-  background: linear-gradient(135deg, #1c0e2d 0%, #090b1c 50%, #250d1d 100%) no-repeat fixed;
-  background-color: #090b1c;
-  color: #EBDCD4;
+  background-color: var(--color-cream-bg);
+  color: var(--color-plum-plate);
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
-  color: #ffffff;
+  color: var(--color-plum-plate);
 }
 
 /* ========================================================= */

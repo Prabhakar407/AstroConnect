@@ -43,12 +43,12 @@ export default function Navbar() {
 
   // Custom CSS variables for cyberpunk glassmorphic styling
   const navStyles = {
-    "--nav-bg": "linear-gradient(to right, rgba(28, 14, 45, 0.85), rgba(9, 11, 28, 0.85))",
-    "--nav-border": "rgba(255, 255, 255, 0.05)",
-    "--pill-bg-start": "rgba(252, 185, 0, 0.1)",
-    "--pill-bg-end": "rgba(252, 185, 0, 0.02)",
-    "--pill-border": "rgba(252, 185, 0, 0.4)",
-    "--pill-glow": "rgba(252, 185, 0, 0.15)"
+    "--nav-bg": "linear-gradient(to right, rgba(24, 17, 34, 0.95), rgba(6, 9, 27, 0.95))",
+    "--nav-border": "rgba(171, 122, 87, 0.15)",
+    "--pill-bg-start": "rgba(211, 175, 84, 0.12)",
+    "--pill-bg-end": "rgba(211, 175, 84, 0.02)",
+    "--pill-border": "rgba(211, 175, 84, 0.5)",
+    "--pill-glow": "rgba(211, 175, 84, 0.2)"
   };
 
   return (
@@ -59,7 +59,7 @@ export default function Navbar() {
         backdropFilter: "blur(12px)",
         ...navStyles
       }}
-      className="text-white border-b sticky top-0 z-50 shadow-[0_4px_30px_rgba(252,185,0,0.06)] transition-all duration-300"
+      className="text-white border-b sticky top-0 z-50 shadow-[0_4px_30px_rgba(211,175,84,0.06)] transition-all duration-300"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-21">
@@ -74,10 +74,10 @@ export default function Navbar() {
 
             {/* Vertical Alignment: Astroadvice by (above), Kundan Singh (below) */}
             <div className="flex flex-col justify-center">
-              <span className="text-[10px] text-[#F4EAE3]/80 tracking-widest uppercase font-medium leading-none">
+              <span className="text-[10px] text-[#D8CFEB] tracking-widest uppercase font-medium leading-none">
                 Astroadvice by
               </span>
-              <span className="text-lg md:text-xl font-bold text-[#fcb900] font-serif tracking-wide mt-1 leading-none block">
+              <span className="text-lg md:text-xl font-bold text-[#D3AF54] font-serif tracking-wide mt-1 leading-none block">
                 Kundan Singh
               </span>
             </div>
@@ -117,29 +117,29 @@ export default function Navbar() {
                     </button>
                     
                     {/* Dropdown Options */}
-                    <div className="absolute top-full left-0 mt-2 w-56 bg-[#0e131f]/95 border border-white/10 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 backdrop-blur-md">
+                    <div className="absolute top-full left-0 mt-2 w-56 bg-[#181122]/95 border border-[#AB7A57]/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 backdrop-blur-md">
                       <div className="py-2">
                         <Link
                           to="/services"
-                          className="block px-5 py-2 text-sm text-slate-300 hover:text-[#fcb900] hover:bg-white/5 transition-colors"
+                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
                         >
                           Kundli Analysis
                         </Link>
                         <Link
                           to="/services"
-                          className="block px-5 py-2 text-sm text-slate-300 hover:text-[#fcb900] hover:bg-white/5 transition-colors"
+                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
                         >
                           Career Guidance
                         </Link>
                         <Link
                           to="/services"
-                          className="block px-5 py-2 text-sm text-slate-300 hover:text-[#fcb900] hover:bg-white/5 transition-colors"
+                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
                         >
                           Love & Marriage
                         </Link>
                         <Link
                           to="/services"
-                          className="block px-5 py-2 text-sm text-slate-300 hover:text-[#fcb900] hover:bg-white/5 transition-colors"
+                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
                         >
                           Vastu Consultation
                         </Link>
@@ -182,7 +182,7 @@ export default function Navbar() {
           {/* Desktop Right Action Panel */}
           <div className="hidden lg:flex flex-col items-end gap-1">
             {/* Contact Phone */}
-            <div className="flex items-center gap-1.5 text-[#fcb900] text-xs font-semibold">
+            <div className="flex items-center gap-1.5 text-[#D3AF54] text-xs font-semibold">
               <span>☎</span>
               <span>9999999999</span>
             </div>
@@ -190,9 +190,9 @@ export default function Navbar() {
             {/* Booking Options CTA */}
             <MotionLink 
               to="/booking"
-              whileHover={{ scale: 1.05, y: -1, boxShadow: "0 0 15px rgba(252, 185, 0, 0.45)" }}
+              whileHover={{ scale: 1.05, y: -1, boxShadow: "0 0 15px rgba(211, 175, 84, 0.45)" }}
               whileTap={{ scale: 0.98 }}
-              className="bg-[#fcb900] text-[#0e131f] font-semibold px-4 py-1.5 rounded-lg flex items-center gap-2 transition text-xs cursor-pointer shadow-[0_0_15px_rgba(252,185,0,0.25)]"
+              className="bg-[#D3AF54] text-[#181122] font-semibold px-4 py-1.5 rounded-lg flex items-center gap-2 transition text-xs cursor-pointer shadow-[0_0_15px_rgba(211, 175, 84, 0.25)]"
             >
               <Calendar size={14} />
               Book Appointment
@@ -202,7 +202,7 @@ export default function Navbar() {
           {/* Responsive Hamburger Toggle for Mobile/Tablet */}
           <button 
             onClick={toggleMenu} 
-            className="lg:hidden text-[#fcb900] hover:text-[#e0a500] focus:outline-none p-1 cursor-pointer"
+            className="lg:hidden text-[#D3AF54] hover:text-[#D3AF54]/80 focus:outline-none p-1 cursor-pointer"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -214,7 +214,7 @@ export default function Navbar() {
       {isOpen && (
         <div 
           style={{
-            backgroundColor: "rgba(14, 19, 31, 0.92)",
+            backgroundColor: "rgba(24, 17, 34, 0.97)",
             borderColor: "var(--nav-border)",
             backdropFilter: "blur(12px)",
           }}
@@ -279,7 +279,7 @@ export default function Navbar() {
                         <Link
                           to="/services"
                           onClick={() => setIsOpen(false)}
-                          className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
+                          className="block text-xs text-[#D8CFEB] hover:text-white py-1.5 transition-colors"
                         >
                           Vastu Consultation
                         </Link>
@@ -323,7 +323,7 @@ export default function Navbar() {
           {/* Drawer Call Actions Footer */}
           <div className="border-t border-white/10 pt-4 flex flex-col items-center gap-2">
             {/* Phone */}
-            <div className="flex items-center gap-1.5 text-[#fcb900] text-sm font-medium">
+            <div className="flex items-center gap-1.5 text-[#D3AF54] text-sm font-medium">
               <span>☎</span>
               <span>9999999999</span>
             </div>
@@ -332,7 +332,7 @@ export default function Navbar() {
             <Link 
               to="/booking"
               onClick={() => setIsOpen(false)}
-              className="bg-[#fcb900] hover:bg-[#fcb900]/90 text-[#0e131f] font-semibold px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition text-sm w-full shadow-[0_0_15px_rgba(252,185,0,0.25)]"
+              className="bg-[#D3AF54] hover:bg-[#D3AF54]/90 text-[#181122] font-semibold px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition text-sm w-full shadow-[0_0_15px_rgba(211,175,84,0.25)]"
             >
               <Calendar size={16} />
               Booking Options

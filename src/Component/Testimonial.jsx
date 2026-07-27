@@ -104,14 +104,14 @@ function Testimonial() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-transparent relative overflow-hidden flex flex-col items-center justify-start px-6 pt-6 md:pt-8 pb-12 font-sans">
+    <div className="w-full min-h-screen bg-[#FDFCF5] relative overflow-hidden flex flex-col items-center justify-start px-6 pt-6 md:pt-8 pb-12 font-sans text-[#181122]">
       
       {/* ========================================================= */}
       {/* DECORATIVE BACKGROUND ELEMENTS                            */}
       {/* ========================================================= */}
       
       {/* Subtle mandala patterns in corners */}
-      <div className="absolute -top-20 -left-20 w-80 h-80 text-[#fcb900]/8 pointer-events-none select-none opacity-30">
+      <div className="absolute -top-20 -left-20 w-80 h-80 text-[#AB7A57]/8 pointer-events-none select-none opacity-30">
         <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.5">
           <circle cx="50" cy="50" r="40" strokeDasharray="1,1" />
           <circle cx="50" cy="50" r="30" />
@@ -121,7 +121,7 @@ function Testimonial() {
         </svg>
       </div>
 
-      <div className="absolute -bottom-20 -right-20 w-80 h-80 text-[#fcb900]/8 pointer-events-none select-none opacity-30">
+      <div className="absolute -bottom-20 -right-20 w-80 h-80 text-[#AB7A57]/8 pointer-events-none select-none opacity-30">
         <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.5">
           <circle cx="50" cy="50" r="40" strokeDasharray="1,1" />
           <circle cx="50" cy="50" r="30" />
@@ -132,14 +132,14 @@ function Testimonial() {
       </div>
 
       {/* Faint gold decorative glow in the center */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(252,185,0,0.06),transparent_70%)] rounded-full pointer-events-none -z-10"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.04),transparent_70%)] rounded-full pointer-events-none -z-10"></div>
 
       {/* Rotating Background Zodiac Motif */}
       <motion.div 
         style={{ y: yZodiac, rotate: rZodiac }}
-        className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.04] flex justify-center items-center"
+        className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.02] flex justify-center items-center"
       >
-        <svg className="w-[550px] h-[550px] text-[#A6755D] animate-[spin_260s_linear_infinite]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.4">
+        <svg className="w-[550px] h-[550px] text-[#AB7A57] animate-[spin_260s_linear_infinite]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.4">
           <circle cx="100" cy="100" r="95" strokeDasharray="3 3" />
           <circle cx="100" cy="100" r="75" />
           <circle cx="100" cy="100" r="55" strokeDasharray="2 2" />
@@ -160,19 +160,19 @@ function Testimonial() {
       >
         <motion.div variants={itemVariants} className="text-center max-w-2xl mb-4 relative z-10 flex flex-col items-center">
           {/* Large Heading */}
-          <h1 className="text-2xl md:text-4xl font-serif text-white font-bold tracking-wide">
+          <h1 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif text-[#181122] font-bold tracking-wide leading-tight">
             Client Testimonials
           </h1>
 
-        {/* Small decorative divider */}
-        <div className="w-12 h-[1px] bg-[#fcb900] shadow-[0_0_8px_#fcb900] mx-auto mt-2 mb-2 rounded-full"></div>
+          {/* Small decorative divider */}
+          <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-2 mb-2 rounded-full"></div>
 
-        {/* Rating Summary */}
-        <div className="flex items-center justify-center gap-1.5 mt-1 bg-white/[0.04] px-3.5 py-1 rounded-full border border-[#fcb900]/20">
-          <Star size={12} className="fill-[#fcb900] text-[#fcb900]" />
-          <span className="font-sans text-[11px] sm:text-xs font-semibold text-[#fcb900] tracking-wide">
-            4.9 Rating from 150+ Reviews
-          </span>
+          {/* Rating Summary */}
+          <div className="flex items-center justify-center gap-1.5 mt-1 bg-[#181122] px-3.5 py-1.5 rounded-full border border-[#D3AF54]/30 shadow-md">
+            <Star size={12} className="fill-[#D3AF54] text-[#D3AF54]" />
+            <span className="font-sans text-[11px] sm:text-xs font-semibold text-[#D3AF54] tracking-wide">
+              4.9 Rating from 150+ Reviews
+            </span>
           </div>
         </motion.div>
       </motion.div>
@@ -183,7 +183,7 @@ function Testimonial() {
       <motion.div variants={itemVariants} style={{ y: yStage }} className="w-full max-w-4xl relative z-10 min-h-[220px] flex items-center justify-center px-4">
         
         {/* Decorative Quote Icon behind/beside the quote */}
-        <span className="absolute top-2 left-4 text-[#fcb900]/6 text-[10rem] font-serif leading-none select-none pointer-events-none">
+        <span className="absolute top-2 left-4 text-[#D3AF54]/10 text-[10rem] font-serif leading-none select-none pointer-events-none">
           “
         </span>
 
@@ -196,36 +196,31 @@ function Testimonial() {
             transition={{ duration: 0.5, ease: "easeInOut" }}
             className="w-full flex flex-col items-center text-center px-2 py-2 sm:px-12 relative"
           >
-            {/* Client Image Placeholder (Blank as requested) */}
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border border-dashed border-[#fcb900]/30 bg-white/[0.02] backdrop-blur-sm shadow-inner mb-3 overflow-hidden relative shrink-0">
-              <img 
-                src="" 
-                alt={reviews[currentIndex].name} 
-                className="w-full h-full object-cover absolute inset-0 z-10"
-                onError={(e) => { e.target.style.display = 'none'; }}
-              />
+            {/* Client Image Placeholder */}
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border border-dashed border-[#AB7A57]/45 bg-white flex items-center justify-center shadow-inner mb-3 overflow-hidden relative shrink-0 text-2xl">
+              <span>👤</span>
             </div>
 
             {/* Rating Stars */}
             <div className="flex items-center gap-1 mb-3.5">
               {[...Array(reviews[currentIndex].rating)].map((_, i) => (
-                <Star key={i} size={15} className="fill-[#fcb900] text-[#fcb900]" />
+                <Star key={i} size={15} className="fill-[#D3AF54] text-[#D3AF54]" />
               ))}
             </div>
 
             {/* Review Text */}
             <blockquote className="max-w-3xl">
-              <p className="font-serif italic text-[#EBDCD4]/85 text-base md:text-lg lg:text-xl leading-relaxed tracking-wide mb-5 font-medium">
+              <p className="font-serif italic text-[#181122]/90 text-base md:text-lg lg:text-xl leading-relaxed tracking-wide mb-5 font-medium">
                 "{reviews[currentIndex].text}"
               </p>
             </blockquote>
 
             {/* Client Information */}
             <div className="mt-1 flex flex-col items-center">
-              <span className="font-serif font-bold uppercase tracking-widest text-white text-sm md:text-base block">
+              <span className="font-serif font-bold uppercase tracking-widest text-[#181122] text-sm md:text-base block">
                 {reviews[currentIndex].name}
               </span>
-              <span className="text-[10px] sm:text-[11px] text-[#fcb900]/80 font-sans font-semibold tracking-widest block mt-1 uppercase">
+              <span className="text-[10px] sm:text-[11px] text-[#AB7A57] font-sans font-semibold tracking-widest block mt-1 uppercase">
                 {reviews[currentIndex].date} • {reviews[currentIndex].service}
               </span>
             </div>
@@ -242,9 +237,9 @@ function Testimonial() {
         {/* Previous Button */}
         <motion.button 
           onClick={handlePrev}
-          whileHover={{ scale: 1.1, borderColor: "#fcb900", boxShadow: "0 0 10px rgba(252, 185, 0, 0.45)" }}
+          whileHover={{ scale: 1.1, borderColor: "#D3AF54", boxShadow: "0 0 10px rgba(211, 175, 84, 0.3)" }}
           whileTap={{ scale: 0.95 }}
-          className="w-9 h-9 rounded-full border border-[#fcb900]/40 bg-white/[0.04] flex items-center justify-center text-[#fcb900] hover:bg-[#fcb900] hover:text-[#2A132E] transition-all duration-300 cursor-pointer shadow-sm shrink-0"
+          className="w-9 h-9 rounded-full border border-[#AB7A57]/30 bg-white flex items-center justify-center text-[#181122] hover:bg-[#D3AF54] hover:text-[#181122] hover:border-[#D3AF54] transition-all duration-300 cursor-pointer shadow-sm shrink-0"
           aria-label="Previous Testimonial"
         >
           <ChevronLeft size={16} />
@@ -258,8 +253,8 @@ function Testimonial() {
               onClick={() => setCurrentIndex(idx)}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 idx === currentIndex 
-                  ? 'bg-[#fcb900] scale-110 shadow-[0_0_6px_rgba(252,185,0,0.5)]' 
-                  : 'bg-[#fcb900]/25 hover:bg-[#fcb900]/60'
+                  ? 'bg-[#D3AF54] scale-110 shadow-[0_0_6px_rgba(211,175,84,0.5)]' 
+                  : 'bg-[#AB7A57]/25 hover:bg-[#AB7A57]/60'
               }`}
               aria-label={`Go to testimonial ${idx + 1}`}
             ></button>
@@ -269,9 +264,9 @@ function Testimonial() {
         {/* Next Button */}
         <motion.button 
           onClick={handleNext}
-          whileHover={{ scale: 1.1, borderColor: "#fcb900", boxShadow: "0 0 10px rgba(252, 185, 0, 0.45)" }}
+          whileHover={{ scale: 1.1, borderColor: "#D3AF54", boxShadow: "0 0 10px rgba(211, 175, 84, 0.3)" }}
           whileTap={{ scale: 0.95 }}
-          className="w-9 h-9 rounded-full border border-[#fcb900]/40 bg-white/[0.04] flex items-center justify-center text-[#fcb900] hover:bg-[#fcb900] hover:text-[#2A132E] transition-all duration-300 cursor-pointer shadow-sm shrink-0"
+          className="w-9 h-9 rounded-full border border-[#AB7A57]/30 bg-white flex items-center justify-center text-[#181122] hover:bg-[#D3AF54] hover:text-[#181122] hover:border-[#D3AF54] transition-all duration-300 cursor-pointer shadow-sm shrink-0"
           aria-label="Next Testimonial"
         >
           <ChevronRight size={16} />
