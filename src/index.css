@@ -17,6 +17,10 @@
   --color-dusty-taupe: #BDA9A8;
   --color-peach-beige: #F7F0EE;
 
+  /* Custom Large Screen Breakpoints */
+  --breakpoint-3xl: 1920px;
+  --breakpoint-4xl: 2560px;
+
   /* Custom Animations */
   --animate-fade-in: fade-in 0.6s ease-out forwards;
   --animate-marquee: marquee 30s linear infinite;
@@ -54,13 +58,14 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-warm-ivory);
-  color: var(--color-dark-plum);
+  background: linear-gradient(135deg, #1c0e2d 0%, #090b1c 50%, #250d1d 100%) no-repeat fixed;
+  background-color: #090b1c;
+  color: #EBDCD4;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
-  color: var(--color-royal-purple);
+  color: #ffffff;
 }
 
 /* ========================================================= */

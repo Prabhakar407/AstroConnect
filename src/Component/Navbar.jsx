@@ -43,12 +43,12 @@ export default function Navbar() {
 
   // Custom CSS variables for cyberpunk glassmorphic styling
   const navStyles = {
-    "--nav-bg": "rgba(14, 19, 31, 0.75)",
-    "--nav-border": "rgba(255, 255, 255, 0.08)",
-    "--pill-bg-start": "rgba(99, 102, 241, 0.15)",
-    "--pill-bg-end": "rgba(236, 72, 153, 0.15)",
-    "--pill-border": "rgba(99, 102, 241, 0.4)",
-    "--pill-glow": "rgba(99, 102, 241, 0.25)"
+    "--nav-bg": "linear-gradient(to right, rgba(28, 14, 45, 0.85), rgba(9, 11, 28, 0.85))",
+    "--nav-border": "rgba(255, 255, 255, 0.05)",
+    "--pill-bg-start": "rgba(252, 185, 0, 0.1)",
+    "--pill-bg-end": "rgba(252, 185, 0, 0.02)",
+    "--pill-border": "rgba(252, 185, 0, 0.4)",
+    "--pill-glow": "rgba(252, 185, 0, 0.15)"
   };
 
   return (
@@ -59,7 +59,7 @@ export default function Navbar() {
         backdropFilter: "blur(12px)",
         ...navStyles
       }}
-      className="text-white border-b sticky top-0 z-50 shadow-lg transition-all duration-300"
+      className="text-white border-b sticky top-0 z-50 shadow-[0_4px_30px_rgba(252,185,0,0.06)] transition-all duration-300"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-21">

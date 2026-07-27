@@ -17,7 +17,7 @@ function App() {
   return (
     <Router>
       {/* Set app background to luxury brand Warm Ivory (#FDF9F7) and body text to Plum (#55393F) */}
-      <div className="min-h-screen bg-[#FDF9F7] text-[#55393F] flex flex-col font-sans">
+      <div className="min-h-screen bg-[#090b1c] text-[#EBDCD4] flex flex-col font-sans">
         
         {/* Navigation Section */}
         <Navbar />

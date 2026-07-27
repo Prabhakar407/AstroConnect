@@ -100,7 +100,7 @@ function Service() {
   ]
 
   return (
-    <div className="w-full min-h-screen bg-[#FDF9F7] relative overflow-hidden flex flex-col items-center px-6 py-12 font-sans">
+    <div className="w-full min-h-screen bg-transparent relative overflow-hidden flex flex-col items-center px-6 py-12 font-sans">
       
       {/* ========================================================= */}
       {/* DECORATIVE BACKGROUNDS & PARALLAX                         */}
@@ -135,11 +135,11 @@ function Service() {
         <span className="text-[#fcb900] text-xs tracking-[0.25em] font-bold uppercase block mb-3 font-sans">
           ✦ CELESTIAL SERVICES ✦
         </span>
-        <h1 className="text-3xl md:text-5xl font-serif font-bold text-[#2A132E] tracking-wide">
+        <h1 className="text-3xl md:text-5xl font-serif font-bold text-white tracking-wide">
           Guidance & Remedial Consultation
         </h1>
         <div className="w-12 h-[1px] bg-[#fcb900] mx-auto mt-4 mb-4"></div>
-        <p className="text-sm md:text-base text-[#55393F]/90 leading-relaxed font-sans max-w-xl mx-auto">
+        <p className="text-sm md:text-base text-[#EBDCD4]/85 leading-relaxed font-sans max-w-xl mx-auto">
           Embark on your personal path to alignment. Explore our premium consultations structured to address every key sector of life with accuracy and confidentiality.
         </p>
       </motion.div>
@@ -161,45 +161,45 @@ function Service() {
             whileHover={{ 
               y: -8, 
               borderColor: "#fcb900", 
-              boxShadow: "0 25px 40px -15px rgba(85, 57, 63, 0.15), 0 0 25px rgba(252, 185, 0, 0.25)" 
+              boxShadow: "0 25px 40px -15px rgba(252, 185, 0, 0.05), 0 0 25px rgba(252, 185, 0, 0.2)" 
             }}
-            className="bg-white border border-[#BDA9A8]/25 rounded-3xl p-6 md:p-8 flex flex-col justify-between text-left gap-6 transition-all duration-300 shadow-sm cursor-pointer relative group"
+            className="bg-[#0b0f19]/35 border border-white/5 rounded-3xl p-6 md:p-8 flex flex-col justify-between text-left gap-6 transition-all duration-300 shadow-sm cursor-pointer relative group"
           >
             {/* Top row elements */}
             <div className="space-y-4">
               {/* Header block with icon and price tag */}
               <div className="flex items-center justify-between w-full">
-                <div className="w-12 h-12 rounded-2xl bg-[#2A132E] border border-[#4A2A50] flex items-center justify-center shadow-inner group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(252,185,0,0.3)] transition-all duration-300 shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#2A132E] to-[#55393F] border border-[#fcb900]/40 flex items-center justify-center shadow-inner group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(252,185,0,0.3)] transition-all duration-300 shrink-0">
                   {item.icon}
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-[#A6755D] uppercase tracking-wider block font-semibold leading-none">{item.duration}</span>
-                  <span className="text-sm font-bold text-[#fcb900] bg-[#2A132E]/5 border border-[#fcb900]/25 px-2.5 py-1 rounded-full mt-1.5 inline-block font-sans">{item.price}</span>
+                  <span className="text-[10px] text-[#fcb900]/80 uppercase tracking-wider block font-semibold leading-none">{item.duration}</span>
+                  <span className="text-sm font-bold text-[#fcb900] bg-white/[0.04] border border-[#fcb900]/25 px-2.5 py-1 rounded-full mt-1.5 inline-block font-sans">{item.price}</span>
                 </div>
               </div>
 
               {/* Title & Divider */}
               <div className="space-y-1">
-                <h3 className="font-serif text-[#2A132E] font-bold text-lg group-hover:text-[#A6755D] transition-colors duration-300">
+                <h3 className="font-serif text-white font-bold text-lg group-hover:text-[#fcb900] transition-colors duration-300">
                   {item.title}
                 </h3>
                 <div className="w-8 h-[1.5px] bg-[#fcb900]/30 group-hover:w-16 transition-all duration-500 rounded-full"></div>
               </div>
 
               {/* Description */}
-              <p className="text-xs sm:text-[13px] text-[#55393F]/90 leading-relaxed font-sans mt-0.5">
+              <p className="text-xs sm:text-[13px] text-[#EBDCD4]/85 leading-relaxed font-sans mt-0.5">
                 {item.desc}
               </p>
             </div>
 
             {/* Bottom Row action link */}
-            <div className="border-t border-[#BDA9A8]/10 pt-4 mt-auto flex justify-between items-center w-full">
-              <span className="text-[11px] font-semibold tracking-wider text-[#A6755D] uppercase font-sans">Vedic Alignment</span>
+            <div className="border-t border-white/5 pt-4 mt-auto flex justify-between items-center w-full">
+              <span className="text-[11px] font-semibold tracking-wider text-[#fcb900]/80 uppercase font-sans">Vedic Alignment</span>
               <MotionLink 
                 to="/booking"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-[#2A132E] group-hover:bg-[#fcb900] text-white group-hover:text-[#2A132E] border border-[#2A132E] group-hover:border-[#fcb900] text-[10px] uppercase font-bold tracking-widest px-4 py-2 rounded-lg transition-colors duration-300"
+                className="bg-[#fcb900]/10 hover:bg-[#fcb900] text-[#fcb900] hover:text-[#2A132E] border border-[#fcb900]/40 text-[10px] uppercase font-bold tracking-widest px-4 py-2 rounded-lg transition-colors duration-300"
               >
                 Book Now
               </MotionLink>
@@ -220,24 +220,24 @@ function Service() {
         viewport={{ once: true }}
         className="w-full max-w-4xl mx-auto mt-6"
       >
-        <div className="bg-gradient-to-r from-[#2A132E] to-[#55393F] border border-[#4A2A50] rounded-3xl p-8 relative overflow-hidden shadow-[0_20px_50px_rgba(42,19,46,0.25),_0_0_20px_rgba(252,185,0,0.15)] flex flex-col md:flex-row items-center justify-between gap-6 group">
+        <div className="bg-gradient-to-r from-[#0b0c16] via-[#121324] to-[#0b0c16] border border-[#fcb900]/25 rounded-3xl p-8 relative overflow-hidden shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#fcb900]/5 rounded-full blur-2xl"></div>
           
           <div className="space-y-2 text-left">
             <span className="text-xl md:text-2xl font-serif font-bold text-white tracking-wide block">
               Not Sure Which Consultation Suits You?
             </span>
-            <p className="text-xs text-[#EBDCD4] leading-relaxed max-w-lg">
+            <p className="text-xs text-[#EBDCD4]/85 leading-relaxed max-w-lg">
               Reach out to us directly. We will review your birth credentials and suggest the ideal reading structure.
             </p>
           </div>
 
           <MotionLink 
             to="/contact"
-            whileHover={{ scale: 1.05, y: -2, boxShadow: "0 10px 20px rgba(252, 185, 0, 0.4)" }}
+            whileHover={{ scale: 1.05, y: -2, boxShadow: "0 10px 20px rgba(252, 185, 0, 0.2)" }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 400, damping: 15 }}
-            className="bg-[#fcb900] text-[#2A132E] font-bold px-6 py-3 rounded-xl flex items-center justify-center gap-2 tracking-wide text-xs w-full md:w-auto shrink-0"
+            className="bg-[#fcb900] hover:bg-[#e0a600] text-[#2A132E] font-bold px-6 py-3 rounded-xl flex items-center justify-center gap-2 tracking-wide text-xs w-full md:w-auto shrink-0"
           >
             <Calendar size={14} />
             <span>Connect Personally</span>

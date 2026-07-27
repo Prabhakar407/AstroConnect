@@ -338,7 +338,7 @@ function About() {
   ]
 
   return (
-    <div className="w-full bg-[#FDF9F7] relative overflow-hidden flex flex-col items-center font-sans">
+    <div className="w-full bg-transparent relative overflow-hidden flex flex-col items-center font-sans">
       
       {/* ========================================================= */}
       {/* 1. INTRO / BIOGRAPHY SECTION (Highly visible on load)      */}
@@ -346,7 +346,7 @@ function About() {
       <section className="w-full max-w-7xl mx-auto px-6 lg:px-8 pt-4 md:pt-6 pb-12 relative z-10">
         
         {/* Glow & Luxury SVG Decor Background */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(252,185,0,0.08),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.08),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
         <motion.div style={{ y: yZodiac, rotate: rZodiac }} className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.05] flex justify-center items-center">
           <svg className="w-[500px] h-[500px] text-[#A6755D] animate-[spin_200s_linear_infinite]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.4">
             <circle cx="100" cy="100" r="90" strokeDasharray="3 3" />
@@ -386,7 +386,7 @@ function About() {
               />
               
               {/* Luxury Frame Overlay */}
-              <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-6 z-10 bg-[#2A132E]/35 backdrop-blur-[1px]">
+              <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-6 z-10 bg-[#0b0f19]/35 backdrop-blur-[1px]">
                 {/* Subtle Inner Gold Border */}
                 <div className="absolute inset-3.5 border border-[#fcb900]/25 rounded-xl pointer-events-none"></div>
                 
@@ -398,7 +398,7 @@ function About() {
                 
                 {/* Placeholder Typography */}
                 <span className="text-4xl mb-3 text-[#fcb900] filter drop-shadow-[0_0_6px_rgba(252,185,0,0.35)]">✨</span>
-                <h3 className="font-serif text-xl tracking-widest text-[#FDF9F7] uppercase font-bold">Kundan Singh</h3>
+                <h3 className="font-serif text-xl tracking-widest text-white uppercase font-bold">Kundan Singh</h3>
                 <span className="text-[10px] text-[#EBDCD4] mt-1.5 font-sans tracking-widest uppercase font-semibold">Vedic Astrology Expert</span>
                 <span className="text-[9px] text-[#fcb900]/80 mt-4 uppercase tracking-[0.2em] bg-white/5 px-3 py-1.5 rounded-full border border-white/10">Portrait Frame</span>
               </div>
@@ -414,15 +414,15 @@ function About() {
             className="lg:col-span-7 flex flex-col text-left justify-start pt-2"
           >
             {/* Small decorative label */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#2A132E]/5 border border-[#fcb900]/30 rounded-full w-fit mb-4">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/[0.04] border border-[#fcb900]/30 rounded-full w-fit mb-4">
               <span className="w-1.5 h-1.5 bg-[#fcb900] rounded-full animate-pulse"></span>
-              <span className="text-[9px] tracking-[0.2em] font-semibold text-[#55393F] uppercase font-sans">
+              <span className="text-[9px] tracking-[0.2em] font-semibold text-[#fcb900] uppercase font-sans">
                 ABOUT THE ASTROLOGER
               </span>
             </div>
 
             {/* Large Heading */}
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif text-[#2A132E] font-bold leading-tight mb-5">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif text-white font-bold leading-tight mb-5">
               A Renowned Vedic Astrologer <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-[#fcb900] via-[#A6755D] to-[#fcb900] bg-clip-text text-transparent drop-shadow-sm">
                 Dedicated to Your Success
@@ -430,7 +430,7 @@ function About() {
             </h1>
 
             {/* Biography paragraphs */}
-            <div className="space-y-4 text-sm md:text-base text-[#55393F] leading-relaxed font-sans opacity-95">
+            <div className="space-y-4 text-sm md:text-base text-[#EBDCD4]/85 leading-relaxed font-sans opacity-95">
               <p>
                 Astrologer Kundan Singh is a distinguished Vedic Astrology consultant with over 25 years of experience. Combining traditional Vedic wisdom with modern analytical insights, he has guided thousands of seekers worldwide to find clarity, direction, and practical solutions in career, relationships, and health.
               </p>
@@ -443,59 +443,59 @@ function About() {
             <div className="flex flex-wrap gap-4 pt-6">
               <MotionLink 
                 to="/booking" 
-                whileHover={{ scale: 1.05, y: -2, boxShadow: "0 10px 25px rgba(42, 19, 46, 0.2), 0 0 20px rgba(252, 185, 0, 0.4)" }}
+                whileHover={{ scale: 1.05, y: -2, boxShadow: "0 10px 25px rgba(252, 185, 0, 0.25)" }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 450, damping: 15 }}
-                className="bg-[#2A132E] hover:bg-[#fcb900] text-white hover:text-[#2A132E] border border-[#2A132E] hover:border-[#fcb900] font-semibold px-6 py-3 rounded-lg flex items-center gap-2 shadow-md cursor-pointer group text-sm"
+                className="bg-[#fcb900] hover:bg-[#e0a600] text-[#2A132E] border border-[#fcb900] hover:border-[#e0a600] font-semibold px-6 py-3 rounded-lg flex items-center gap-2 shadow-md cursor-pointer group text-sm"
               >
-                <Calendar size={18} className="text-[#fcb900] group-hover:text-[#2A132E] transition-colors" />
+                <Calendar size={18} className="text-[#2A132E]" />
                 <span>Book Consultation</span>
               </MotionLink>
 
               <MotionLink 
                 to="/contact" 
-                whileHover={{ scale: 1.05, y: -2, boxShadow: "0 10px 20px rgba(42, 19, 46, 0.1), 0 0 15px rgba(166, 117, 93, 0.3)" }}
+                whileHover={{ scale: 1.05, y: -2, boxShadow: "0 10px 20px rgba(252, 185, 0, 0.15)" }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 450, damping: 15 }}
-                className="bg-white hover:bg-[#FCF3ED] text-[#55393F] border border-[#fcb900] hover:border-[#A6755D] font-semibold px-6 py-3 rounded-lg flex items-center gap-2 shadow-sm cursor-pointer text-sm"
+                className="bg-white/[0.04] hover:bg-white/[0.08] text-white border border-[#fcb900]/60 hover:border-[#fcb900] font-semibold px-6 py-3 rounded-lg flex items-center gap-2 shadow-sm cursor-pointer text-sm"
               >
-                <Phone size={18} className="text-[#A6755D]" />
+                <Phone size={18} className="text-[#fcb900]" />
                 <span>Call Now</span>
               </MotionLink>
             </div>
 
             {/* 4 Premium Stat Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8 pt-6 border-t border-[#BDA9A8]/30">
-              <div className="flex flex-col items-start gap-1 p-3 bg-[#FCF3ED]/80 border border-[#E7D3CE]/60 rounded-xl">
-                <div className="w-7 h-7 rounded-full border border-[#fcb900] flex items-center justify-center text-[#A6755D] bg-white/80 shrink-0">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-8 pt-6 border-t border-white/5">
+              <div className="flex flex-col items-start gap-1 p-3 bg-[#0b0f19]/35 border border-white/5 rounded-xl">
+                <div className="w-7 h-7 rounded-full border border-[#fcb900]/40 flex items-center justify-center text-[#fcb900] bg-white/[0.04] shrink-0">
                   <Award size={12} />
                 </div>
-                <span className="text-sm font-bold text-[#2A132E] mt-1 font-serif">25+ Years</span>
-                <span className="text-[9px] uppercase text-[#55393F]/90 tracking-wider font-semibold">Experience</span>
+                <span className="text-sm font-bold text-white mt-1 font-serif">25+ Years</span>
+                <span className="text-[9px] uppercase text-[#EBDCD4]/70 tracking-wider font-semibold">Experience</span>
               </div>
 
-              <div className="flex flex-col items-start gap-1 p-3 bg-[#FCF3ED]/80 border border-[#E7D3CE]/60 rounded-xl">
-                <div className="w-7 h-7 rounded-full border border-[#fcb900] flex items-center justify-center text-[#A6755D] bg-white/80 shrink-0">
+              <div className="flex flex-col items-start gap-1 p-3 bg-[#0b0f19]/35 border border-white/5 rounded-xl">
+                <div className="w-7 h-7 rounded-full border border-[#fcb900]/40 flex items-center justify-center text-[#fcb900] bg-white/[0.04] shrink-0">
                   <Users size={12} />
                 </div>
-                <span className="text-sm font-bold text-[#2A132E] mt-1 font-serif">50,000+</span>
-                <span className="text-[9px] uppercase text-[#55393F]/90 tracking-wider font-semibold">Consults</span>
+                <span className="text-sm font-bold text-white mt-1 font-serif">50,000+</span>
+                <span className="text-[9px] uppercase text-[#EBDCD4]/70 tracking-wider font-semibold">Consults</span>
               </div>
 
-              <div className="flex flex-col items-start gap-1 p-3 bg-[#FCF3ED]/80 border border-[#E7D3CE]/60 rounded-xl">
-                <div className="w-7 h-7 rounded-full border border-[#fcb900] flex items-center justify-center text-[#A6755D] bg-white/80 shrink-0">
+              <div className="flex flex-col items-start gap-1 p-3 bg-[#0b0f19]/35 border border-white/5 rounded-xl">
+                <div className="w-7 h-7 rounded-full border border-[#fcb900]/40 flex items-center justify-center text-[#fcb900] bg-white/[0.04] shrink-0">
                   <Globe size={12} />
                 </div>
-                <span className="text-sm font-bold text-[#2A132E] mt-1 font-serif">Global</span>
-                <span className="text-[9px] uppercase text-[#55393F]/90 tracking-wider font-semibold">Clients</span>
+                <span className="text-sm font-bold text-white mt-1 font-serif">Global</span>
+                <span className="text-[9px] uppercase text-[#EBDCD4]/70 tracking-wider font-semibold">Clients</span>
               </div>
 
-              <div className="flex flex-col items-start gap-1 p-3 bg-[#FCF3ED]/80 border border-[#E7D3CE]/60 rounded-xl">
-                <div className="w-7 h-7 rounded-full border border-[#fcb900] flex items-center justify-center text-[#A6755D] bg-white/80 shrink-0">
+              <div className="flex flex-col items-start gap-1 p-3 bg-[#0b0f19]/35 border border-white/5 rounded-xl">
+                <div className="w-7 h-7 rounded-full border border-[#fcb900]/40 flex items-center justify-center text-[#fcb900] bg-white/[0.04] shrink-0">
                   <Star size={12} className="fill-[#fcb900] text-[#fcb900]" />
                 </div>
-                <span className="text-sm font-bold text-[#2A132E] mt-1 font-serif">4.9 / 5</span>
-                <span className="text-[9px] uppercase text-[#55393F]/90 tracking-wider font-semibold">Rating</span>
+                <span className="text-sm font-bold text-white mt-1 font-serif">4.9 / 5</span>
+                <span className="text-[9px] uppercase text-[#EBDCD4]/70 tracking-wider font-semibold">Rating</span>
               </div>
             </div>
           </motion.div>
@@ -509,22 +509,22 @@ function About() {
       {/* ========================================================= */}
       {/* 2. EXPERTISE SECTION (Professional, Modern & Beautiful)   */}
       {/* ========================================================= */}
-      <section className="w-full bg-gradient-to-b from-[#FCF3ED]/30 via-[#F5E6DD]/40 to-[#FCF3ED]/30 border-y border-[#E7D3CE]/45 py-12 md:py-16 relative overflow-hidden">
+      <section className="w-full bg-transparent border-y border-white/5 py-12 md:py-16 relative overflow-hidden">
         {/* Glowing visual background highlights */}
-        <div className="absolute top-1/3 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(252,185,0,0.08),transparent_70%)] rounded-full pointer-events-none"></div>
-        <div className="absolute bottom-1/3 right-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(166,117,93,0.06),transparent_70%)] rounded-full pointer-events-none"></div>
+        <div className="absolute top-1/3 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.08),transparent_70%)] rounded-full pointer-events-none animate-pulse"></div>
+        <div className="absolute bottom-1/3 right-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(252,185,0,0.06),transparent_70%)] rounded-full pointer-events-none"></div>
 
         <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 flex flex-col items-center">
           {/* Section Header */}
           <div className="text-center max-w-2xl mb-10 md:mb-12 relative z-10">
-            <span className="text-[#A6755D] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
+            <span className="text-[#fcb900] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
               AREAS OF EXPERTISE
             </span>
-            <h2 className="text-2xl md:text-3xl font-serif text-[#2A132E] font-bold mb-3 tracking-wide leading-tight">
+            <h2 className="text-2xl md:text-3xl font-serif text-white font-bold mb-3 tracking-wide leading-tight">
               Areas of Expertise
             </h2>
             <div className="w-12 h-[1px] bg-[#fcb900] mx-auto mt-3 mb-3"></div>
-            <p className="text-xs md:text-sm text-[#55393F] font-sans leading-relaxed italic opacity-90">
+            <p className="text-xs md:text-sm text-[#EBDCD4]/85 font-sans leading-relaxed italic opacity-90">
               "Comprehensive guidance for every important aspect of life."
             </p>
           </div>
@@ -542,12 +542,12 @@ function About() {
       {/* ========================================================= */}
       {/* 3. AWARDS & RECOGNITION (Snug card sizes, blank image div) */}
       {/* ========================================================= */}
-      <section className="w-full py-16 bg-[#FCF3ED]/30 border-y border-[#E7D3CE]/40 overflow-hidden relative">
+      <section className="w-full py-16 bg-transparent border-y border-white/5 overflow-hidden relative">
         <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 mb-10 text-center">
-          <span className="text-[#A6755D] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
+          <span className="text-[#fcb900] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
             HONORS & DISTINCTIONS
           </span>
-          <h2 className="text-2xl md:text-3xl font-serif text-[#2A132E] font-bold">
+          <h2 className="text-2xl md:text-3xl font-serif text-white font-bold">
             Awards & Recognition
           </h2>
           <div className="w-12 h-[1px] bg-[#fcb900] mx-auto mt-3"></div>
@@ -560,10 +560,10 @@ function About() {
             {awardsData.map((item, idx) => (
               <div 
                 key={idx} 
-                className="w-[450px] sm:w-[500px] bg-white border border-[#E7D3CE]/60 rounded-3xl p-6 flex items-start gap-6 shadow-sm shrink-0 whitespace-normal hover:border-[#fcb900]/60 transition-colors cursor-pointer group"
+                className="w-[450px] sm:w-[500px] bg-[#0b0f19]/35 border border-white/5 rounded-3xl p-6 flex items-start gap-6 shadow-sm shrink-0 whitespace-normal hover:border-[#fcb900]/60 transition-colors cursor-pointer group"
               >
                 {/* Large Square Image Frame (Completely Blank/Empty) */}
-                <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl bg-gradient-to-tr from-[#FCF3ED] to-[#F7F0EE] border border-[#fcb900]/30 shrink-0 overflow-hidden relative shadow-inner">
+                <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl bg-white/[0.02] border border-white/5 shrink-0 overflow-hidden relative shadow-inner">
                   <img 
                     src="" 
                     alt={item.title} 
@@ -572,8 +572,8 @@ function About() {
                   />
                 </div>
                 <div className="flex-grow pt-1">
-                  <h4 className="font-serif text-[#2A132E] font-bold text-sm sm:text-base leading-snug">{item.title}</h4>
-                  <p className="text-xs sm:text-sm text-[#55393F] mt-2.5 font-sans leading-relaxed opacity-90">{item.desc}</p>
+                  <h4 className="font-serif text-white font-bold text-sm sm:text-base leading-snug">{item.title}</h4>
+                  <p className="text-xs sm:text-sm text-[#EBDCD4]/85 mt-2.5 font-sans leading-relaxed opacity-90">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -584,10 +584,10 @@ function About() {
             {awardsData.map((item, idx) => (
               <div 
                 key={`dup-${idx}`} 
-                className="w-[450px] sm:w-[500px] bg-white border border-[#E7D3CE]/60 rounded-3xl p-6 flex items-start gap-6 shadow-sm shrink-0 whitespace-normal hover:border-[#fcb900]/60 transition-colors cursor-pointer group"
+                className="w-[450px] sm:w-[500px] bg-[#0b0f19]/35 border border-white/5 rounded-3xl p-6 flex items-start gap-6 shadow-sm shrink-0 whitespace-normal hover:border-[#fcb900]/60 transition-colors cursor-pointer group"
               >
                 {/* Large Square Image Frame (Completely Blank/Empty) */}
-                <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl bg-gradient-to-tr from-[#FCF3ED] to-[#F7F0EE] border border-[#fcb900]/30 shrink-0 overflow-hidden relative shadow-inner">
+                <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl bg-white/[0.02] border border-white/5 shrink-0 overflow-hidden relative shadow-inner">
                   <img 
                     src="" 
                     alt={item.title} 
@@ -596,8 +596,8 @@ function About() {
                   />
                 </div>
                 <div className="flex-grow pt-1">
-                  <h4 className="font-serif text-[#2A132E] font-bold text-sm sm:text-base leading-snug">{item.title}</h4>
-                  <p className="text-xs sm:text-sm text-[#55393F] mt-2.5 font-sans leading-relaxed opacity-90">{item.desc}</p>
+                  <h4 className="font-serif text-white font-bold text-sm sm:text-base leading-snug">{item.title}</h4>
+                  <p className="text-xs sm:text-sm text-[#EBDCD4]/85 mt-2.5 font-sans leading-relaxed opacity-90">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -611,12 +611,12 @@ function About() {
       {/* ========================================================= */}
       {/* 4. PROFESSIONAL CERTIFICATES (Snug card sizes, blank image div) */}
       {/* ========================================================= */}
-      <section className="w-full py-16 bg-[#FDF9F7] overflow-hidden relative">
+      <section className="w-full py-16 bg-transparent overflow-hidden relative">
         <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 mb-10 text-center">
-          <span className="text-[#A6755D] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
+          <span className="text-[#fcb900] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
             QUALIFICATIONS & ACCREDITATIONS
           </span>
-          <h2 className="text-2xl md:text-3xl font-serif text-[#2A132E] font-bold">
+          <h2 className="text-2xl md:text-3xl font-serif text-white font-bold">
             Certificates
           </h2>
           <div className="w-12 h-[1px] bg-[#fcb900] mx-auto mt-3"></div>
@@ -629,10 +629,10 @@ function About() {
             {certificatesData.map((item, idx) => (
               <div 
                 key={idx} 
-                className="w-[450px] sm:w-[500px] bg-white border border-[#E7D3CE]/60 rounded-3xl p-6 flex items-start gap-6 shadow-sm shrink-0 whitespace-normal hover:border-[#fcb900]/60 transition-colors cursor-pointer group"
+                className="w-[450px] sm:w-[500px] bg-[#0b0f19]/35 border border-white/5 rounded-3xl p-6 flex items-start gap-6 shadow-sm shrink-0 whitespace-normal hover:border-[#fcb900]/60 transition-colors cursor-pointer group"
               >
                 {/* Large Square Image Frame (Completely Blank/Empty, width and height same) */}
-                <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl bg-gradient-to-tr from-[#FCF3ED] to-[#F7F0EE] border border-[#fcb900]/30 shrink-0 overflow-hidden relative shadow-inner">
+                <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl bg-white/[0.02] border border-white/5 shrink-0 overflow-hidden relative shadow-inner">
                   <img 
                     src="" 
                     alt={item.name} 
@@ -641,8 +641,8 @@ function About() {
                   />
                 </div>
                 <div className="flex-grow pt-1">
-                  <h4 className="font-serif text-[#2A132E] font-bold text-sm sm:text-base leading-snug">{item.name}</h4>
-                  <span className="text-[9px] text-[#A6755D] font-sans font-bold tracking-widest block mt-2.5 bg-[#FCF3ED] border border-[#E7D3CE]/60 px-3 py-1 rounded-full w-fit">VERIFIED ACCREDITATION</span>
+                  <h4 className="font-serif text-white font-bold text-sm sm:text-base leading-snug">{item.name}</h4>
+                  <span className="text-[9px] text-[#fcb900]/80 font-sans font-bold tracking-widest block mt-2.5 bg-white/[0.04] border border-[#fcb900]/20 px-3 py-1 rounded-full w-fit">VERIFIED ACCREDITATION</span>
                 </div>
               </div>
             ))}
@@ -653,10 +653,10 @@ function About() {
             {certificatesData.map((item, idx) => (
               <div 
                 key={`dup-${idx}`} 
-                className="w-[450px] sm:w-[500px] bg-white border border-[#E7D3CE]/60 rounded-3xl p-6 flex items-start gap-6 shadow-sm shrink-0 whitespace-normal hover:border-[#fcb900]/60 transition-colors cursor-pointer group"
+                className="w-[450px] sm:w-[500px] bg-[#0b0f19]/35 border border-white/5 rounded-3xl p-6 flex items-start gap-6 shadow-sm shrink-0 whitespace-normal hover:border-[#fcb900]/60 transition-colors cursor-pointer group"
               >
                 {/* Large Square Image Frame (Completely Blank/Empty) */}
-                <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl bg-gradient-to-tr from-[#FCF3ED] to-[#F7F0EE] border border-[#fcb900]/30 shrink-0 overflow-hidden relative shadow-inner">
+                <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl bg-white/[0.02] border border-white/5 shrink-0 overflow-hidden relative shadow-inner">
                   <img 
                     src="" 
                     alt={item.name} 
@@ -665,8 +665,8 @@ function About() {
                   />
                 </div>
                 <div className="flex-grow pt-1">
-                  <h4 className="font-serif text-[#2A132E] font-bold text-sm sm:text-base leading-snug">{item.name}</h4>
-                  <span className="text-[9px] text-[#A6755D] font-sans font-bold tracking-widest block mt-2.5 bg-[#FCF3ED] border border-[#E7D3CE]/60 px-3 py-1 rounded-full w-fit">VERIFIED ACCREDITATION</span>
+                  <h4 className="font-serif text-white font-bold text-sm sm:text-base leading-snug">{item.name}</h4>
+                  <span className="text-[9px] text-[#fcb900]/80 font-sans font-bold tracking-widest block mt-2.5 bg-white/[0.04] border border-[#fcb900]/20 px-3 py-1 rounded-full w-fit">VERIFIED ACCREDITATION</span>
                 </div>
               </div>
             ))}

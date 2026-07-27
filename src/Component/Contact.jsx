@@ -104,7 +104,7 @@ function Contact() {
   ]
 
   return (
-    <div className="w-full min-h-screen bg-[#FDF9F7] relative overflow-hidden flex flex-col items-center px-6 py-12 font-sans">
+    <div className="w-full min-h-screen bg-transparent relative overflow-hidden flex flex-col items-center px-6 py-12 font-sans">
       
       {/* ========================================================= */}
       {/* DECORATIVE BACKGROUNDS & PARALLAX                         */}
@@ -139,11 +139,11 @@ function Contact() {
         <span className="text-[#fcb900] text-xs tracking-[0.25em] font-bold uppercase block mb-3 font-sans">
           ✦ GET IN TOUCH ✦
         </span>
-        <h1 className="text-3xl md:text-5xl font-serif font-bold text-[#2A132E] tracking-wide">
+        <h1 className="text-3xl md:text-5xl font-serif font-bold text-white tracking-wide">
           Connect Personally
         </h1>
         <div className="w-12 h-[1px] bg-[#fcb900] mx-auto mt-4 mb-4"></div>
-        <p className="text-sm md:text-base text-[#55393F]/90 leading-relaxed max-w-xl mx-auto">
+        <p className="text-sm md:text-base text-[#EBDCD4]/85 leading-relaxed max-w-xl mx-auto">
           Need a private session layout, customized gemstone guidance, or business expansion advice? Speak directly with us and align your future timeline.
         </p>
       </motion.div>
@@ -162,7 +162,7 @@ function Contact() {
         {/* Left Column - Contact Information */}
         <motion.div variants={itemVariants} className="lg:col-span-5 flex flex-col justify-between gap-6">
           <div className="space-y-6 text-left">
-            <h3 className="font-serif text-xl font-bold text-[#2A132E] border-b border-[#BDA9A8]/20 pb-3">
+            <h3 className="font-serif text-xl font-bold text-white border-b border-white/5 pb-3">
               Office Details & Support
             </h3>
             
@@ -175,28 +175,28 @@ function Contact() {
                     variants={itemVariants}
                     whileHover={{ x: 6, borderColor: "#fcb900" }}
                     transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                    className="bg-white border border-[#BDA9A8]/20 rounded-2xl p-5 flex items-start gap-4 shadow-sm group"
+                    className="bg-[#0b0f19]/35 border border-white/5 rounded-2xl p-5 flex items-start gap-4 shadow-sm group"
                   >
                     {item.link ? (
-                      <a href={item.link} target="_blank" rel="noreferrer" className="flex items-start gap-4 w-full">
-                        <div className="w-10 h-10 rounded-xl bg-[#2A132E] border border-[#4A2A50] flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                       <a href={item.link} target="_blank" rel="noreferrer" className="flex items-start gap-4 w-full">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#2A132E] to-[#55393F] border border-[#fcb900]/40 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
                           {item.icon}
                         </div>
                         <div>
-                          <h4 className="font-serif text-sm font-bold text-[#2A132E] group-hover:text-[#A6755D] transition-colors">{item.title}</h4>
+                          <h4 className="font-serif text-sm font-bold text-white group-hover:text-[#fcb900] transition-colors">{item.title}</h4>
                           <p className="text-sm font-bold text-[#fcb900] mt-0.5 hover:underline">{item.val}</p>
-                          <p className="text-[11px] text-[#55393F]/80 mt-1 font-sans">{item.sub}</p>
+                          <p className="text-[11px] text-[#EBDCD4]/80 mt-1 font-sans">{item.sub}</p>
                         </div>
                       </a>
                     ) : (
                       <>
-                        <div className="w-10 h-10 rounded-xl bg-[#2A132E] border border-[#4A2A50] flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#2A132E] to-[#55393F] border border-[#fcb900]/40 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
                           {item.icon}
                         </div>
                         <div>
-                          <h4 className="font-serif text-sm font-bold text-[#2A132E] group-hover:text-[#A6755D] transition-colors">{item.title}</h4>
-                          <p className="text-sm font-bold text-[#2A132E] mt-0.5 font-sans">{item.val}</p>
-                          <p className="text-[11px] text-[#55393F]/80 mt-1 font-sans">{item.sub}</p>
+                          <h4 className="font-serif text-sm font-bold text-white group-hover:text-[#fcb900] transition-colors">{item.title}</h4>
+                          <p className="text-sm font-bold text-white mt-0.5 font-sans">{item.val}</p>
+                          <p className="text-[11px] text-[#EBDCD4]/80 mt-1 font-sans">{item.sub}</p>
                         </div>
                       </>
                     )}
@@ -206,29 +206,29 @@ function Contact() {
             </motion.div>
           </div>
 
-          <div className="p-6 bg-gradient-to-tr from-[#2A132E] to-[#55393F] rounded-2xl text-left text-white shadow-lg space-y-3 relative overflow-hidden group">
+          <div className="p-6 bg-gradient-to-tr from-[#0b0c16] via-[#121324] to-[#0b0c16] border border-white/5 rounded-2xl text-left text-white shadow-lg space-y-3 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-16 h-16 bg-[#fcb900]/10 rounded-full blur-xl"></div>
             <Sparkles size={20} className="text-[#fcb900]/80 animate-pulse" />
             <h4 className="font-serif font-bold text-base text-[#fcb900]">Vedic Wisdom Guarantee</h4>
-            <p className="text-xs text-[#EBDCD4] leading-relaxed">
+            <p className="text-xs text-[#EBDCD4]/85 leading-relaxed">
               We guarantee 100% data confidentiality. None of your chart inputs, birth credentials, or planetary readings are ever shared with third parties.
             </p>
           </div>
         </motion.div>
 
         {/* Right Column - Message Form Card */}
-        <motion.div variants={itemVariants} className="lg:col-span-7 bg-white border border-[#BDA9A8]/20 rounded-3xl p-6 md:p-8 shadow-[0_20px_50px_rgba(85,57,63,0.08),_0_0_20px_rgba(252,185,0,0.05)] hover:shadow-[0_25px_60px_rgba(85,57,63,0.12),_0_0_30px_rgba(252,185,0,0.15)] transition-all duration-500 flex flex-col justify-center">
+        <motion.div variants={itemVariants} className="lg:col-span-7 bg-[#0b0f19]/35 border border-white/5 rounded-3xl p-6 md:p-8 shadow-lg transition-all duration-500 flex flex-col justify-center">
           {submitted ? (
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="flex flex-col items-center justify-center text-center py-12 space-y-4"
             >
-              <div className="w-16 h-16 rounded-full bg-emerald-50 border-2 border-emerald-500 flex items-center justify-center text-emerald-500 text-3xl shadow-sm">
+              <div className="w-16 h-16 rounded-full bg-emerald-950 border-2 border-emerald-500 flex items-center justify-center text-emerald-500 text-3xl shadow-sm">
                 ✓
               </div>
-              <h4 className="font-serif text-[#2A132E] font-bold text-2xl">Message Dispatched!</h4>
-              <p className="text-sm text-[#55393F]/90 max-w-sm mx-auto">
+              <h4 className="font-serif text-white font-bold text-2xl">Message Dispatched!</h4>
+              <p className="text-sm text-[#EBDCD4]/85 max-w-sm mx-auto">
                 Thank you for your message. We will review your query and connect with you via email or phone within 24 hours.
               </p>
               <CelestialDivider />
@@ -237,24 +237,24 @@ function Contact() {
                   setSubmitted(false)
                   setFormData({ name: "", email: "", subject: "General Inquiry", message: "" })
                 }}
-                className="bg-[#2A132E] text-white hover:bg-[#fcb900] hover:text-[#2A132E] border border-[#2A132E] hover:border-[#fcb900] px-5 py-2 rounded-xl transition duration-300 font-semibold text-xs cursor-pointer"
+                className="bg-[#fcb900] hover:bg-[#e0a600] text-[#2A132E] border border-[#fcb900] hover:border-[#e0a600] px-5 py-2 rounded-xl transition duration-300 font-semibold text-xs cursor-pointer"
               >
                 Send Another Message
               </button>
             </motion.div>
           ) : (
             <form onSubmit={handleContactSubmit} className="space-y-5 text-left">
-              <h3 className="font-serif text-xl font-bold text-[#2A132E] border-b border-[#BDA9A8]/20 pb-3">
+              <h3 className="font-serif text-xl font-bold text-white border-b border-white/5 pb-3">
                 Send Direct Message
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label htmlFor="name" className="block text-xs font-semibold uppercase tracking-wider text-[#55393F]">
+                  <label htmlFor="name" className="block text-xs font-semibold uppercase tracking-wider text-[#fcb900]/80">
                     Full Name <span className="text-[#fcb900]">*</span>
                   </label>
                   <div className="relative">
-                    <User size={14} className="absolute left-3 top-3.5 text-[#A6755D]/75" />
+                    <User size={14} className="absolute left-3 top-3.5 text-[#fcb900]/60" />
                     <input 
                       type="text" 
                       id="name"
@@ -263,17 +263,17 @@ function Contact() {
                       value={formData.name}
                       onChange={handleInputChange}
                       placeholder="Your name"
-                      className="w-full bg-[#FDF9F7] border border-[#BDA9A8]/30 rounded-xl pl-9 pr-4 py-2.5 text-sm text-[#2A132E] focus:outline-none focus:border-[#fcb900] focus:ring-4 focus:ring-[#fcb900]/15 focus:shadow-[0_0_15px_rgba(252,185,0,0.15)] transition-all duration-300"
+                      className="w-full bg-white/[0.04] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#fcb900] focus:ring-4 focus:ring-[#fcb900]/15 focus:shadow-[0_0_15px_rgba(252,185,0,0.15)] transition-all duration-300 placeholder-white/30"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-[#55393F]">
+                  <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-[#fcb900]/80">
                     Email Address <span className="text-[#fcb900]">*</span>
                   </label>
                   <div className="relative">
-                    <Mail size={14} className="absolute left-3 top-3.5 text-[#A6755D]/75" />
+                    <Mail size={14} className="absolute left-3 top-3.5 text-[#fcb900]/60" />
                     <input 
                       type="email" 
                       id="email"
@@ -282,14 +282,14 @@ function Contact() {
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="Your email"
-                      className="w-full bg-[#FDF9F7] border border-[#BDA9A8]/30 rounded-xl pl-9 pr-4 py-2.5 text-sm text-[#2A132E] focus:outline-none focus:border-[#fcb900] focus:ring-4 focus:ring-[#fcb900]/15 focus:shadow-[0_0_15px_rgba(252,185,0,0.15)] transition-all duration-300"
+                      className="w-full bg-white/[0.04] border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#fcb900] focus:ring-4 focus:ring-[#fcb900]/15 focus:shadow-[0_0_15px_rgba(252,185,0,0.15)] transition-all duration-300 placeholder-white/30"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="subject" className="block text-xs font-semibold uppercase tracking-wider text-[#55393F]">
+                <label htmlFor="subject" className="block text-xs font-semibold uppercase tracking-wider text-[#fcb900]/80">
                   Subject of Inquiry <span className="text-[#fcb900]">*</span>
                 </label>
                 <select 
@@ -297,19 +297,19 @@ function Contact() {
                   name="subject"
                   value={formData.subject}
                   onChange={handleInputChange}
-                  className="w-full bg-[#FDF9F7] border border-[#BDA9A8]/30 rounded-xl px-4 py-2.5 text-sm text-[#2A132E] focus:outline-none focus:border-[#fcb900] focus:ring-4 focus:ring-[#fcb900]/15 transition-all duration-300"
+                  className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#fcb900] focus:ring-4 focus:ring-[#fcb900]/15 transition-all duration-300"
                 >
-                  <option>General Inquiry</option>
-                  <option>Birth Chart / Janam Kundli Readings</option>
-                  <option>Love & Marriage Synastry Reading</option>
-                  <option>Vastu Shastra Site Consultation</option>
-                  <option>Gemstone Advice Query</option>
-                  <option>Numerology Spill Check</option>
+                  <option className="bg-[#090b1c] text-white">General Inquiry</option>
+                  <option className="bg-[#090b1c] text-white">Birth Chart / Janam Kundli Readings</option>
+                  <option className="bg-[#090b1c] text-white">Love & Marriage Synastry Reading</option>
+                  <option className="bg-[#090b1c] text-white">Vastu Shastra Site Consultation</option>
+                  <option className="bg-[#090b1c] text-white">Gemstone Advice Query</option>
+                  <option className="bg-[#090b1c] text-white">Numerology Spill Check</option>
                 </select>
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="message" className="block text-xs font-semibold uppercase tracking-wider text-[#55393F]">
+                <label htmlFor="message" className="block text-xs font-semibold uppercase tracking-wider text-[#fcb900]/80">
                   Your Message <span className="text-[#fcb900]">*</span>
                 </label>
                 <textarea 
@@ -320,16 +320,16 @@ function Contact() {
                   value={formData.message}
                   onChange={handleInputChange}
                   placeholder="Ask your question or detail your consultation request..."
-                  className="w-full bg-[#FDF9F7] border border-[#BDA9A8]/30 rounded-xl px-4 py-2.5 text-sm text-[#2A132E] focus:outline-none focus:border-[#fcb900] focus:ring-4 focus:ring-[#fcb900]/15 focus:shadow-[0_0_15px_rgba(252,185,0,0.15)] transition-all duration-300 resize-none"
+                  className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#fcb900] focus:ring-4 focus:ring-[#fcb900]/15 focus:shadow-[0_0_15px_rgba(252,185,0,0.15)] transition-all duration-300 resize-none placeholder-white/30"
                 ></textarea>
               </div>
 
               <motion.button 
                 type="submit"
-                whileHover={{ scale: 1.02, y: -1, boxShadow: "0 10px 20px rgba(42, 19, 46, 0.15), 0 0 15px rgba(252, 185, 0, 0.3)" }}
+                whileHover={{ scale: 1.02, y: -1, boxShadow: "0 10px 20px rgba(252, 185, 0, 0.15), 0 0 15px rgba(252, 185, 0, 0.3)" }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                className="w-full bg-[#2A132E] hover:bg-[#fcb900] text-white hover:text-[#2A132E] border border-[#2A132E] hover:border-[#fcb900] font-semibold py-3 rounded-xl transition duration-300 shadow-md cursor-pointer flex items-center justify-center gap-2 mt-4 text-sm"
+                className="w-full bg-[#fcb900] hover:bg-[#e0a600] text-[#2A132E] border border-[#fcb900] hover:border-[#e0a600] font-semibold py-3 rounded-xl transition duration-300 shadow-md cursor-pointer flex items-center justify-center gap-2 mt-4 text-sm"
               >
                 <Send size={14} />
                 <span>Send Message</span>

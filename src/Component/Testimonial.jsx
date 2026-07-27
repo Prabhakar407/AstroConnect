@@ -104,7 +104,7 @@ function Testimonial() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#FCF3ED] relative overflow-hidden flex flex-col items-center justify-start px-6 pt-6 md:pt-8 pb-12 font-sans">
+    <div className="w-full min-h-screen bg-transparent relative overflow-hidden flex flex-col items-center justify-start px-6 pt-6 md:pt-8 pb-12 font-sans">
       
       {/* ========================================================= */}
       {/* DECORATIVE BACKGROUND ELEMENTS                            */}
@@ -160,7 +160,7 @@ function Testimonial() {
       >
         <motion.div variants={itemVariants} className="text-center max-w-2xl mb-4 relative z-10 flex flex-col items-center">
           {/* Large Heading */}
-          <h1 className="text-2xl md:text-4xl font-serif text-[#55393F] font-bold tracking-wide">
+          <h1 className="text-2xl md:text-4xl font-serif text-white font-bold tracking-wide">
             Client Testimonials
           </h1>
 
@@ -168,9 +168,9 @@ function Testimonial() {
         <div className="w-12 h-[1px] bg-[#fcb900] shadow-[0_0_8px_#fcb900] mx-auto mt-2 mb-2 rounded-full"></div>
 
         {/* Rating Summary */}
-        <div className="flex items-center justify-center gap-1.5 mt-1 bg-[#2A132E]/3 px-3.5 py-1 rounded-full border border-[#fcb900]/20">
+        <div className="flex items-center justify-center gap-1.5 mt-1 bg-white/[0.04] px-3.5 py-1 rounded-full border border-[#fcb900]/20">
           <Star size={12} className="fill-[#fcb900] text-[#fcb900]" />
-          <span className="font-sans text-[11px] sm:text-xs font-semibold text-[#55393F] tracking-wide">
+          <span className="font-sans text-[11px] sm:text-xs font-semibold text-[#fcb900] tracking-wide">
             4.9 Rating from 150+ Reviews
           </span>
           </div>
@@ -197,7 +197,7 @@ function Testimonial() {
             className="w-full flex flex-col items-center text-center px-2 py-2 sm:px-12 relative"
           >
             {/* Client Image Placeholder (Blank as requested) */}
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border border-dashed border-[#fcb900]/50 bg-white/30 backdrop-blur-sm shadow-inner mb-3 overflow-hidden relative shrink-0">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border border-dashed border-[#fcb900]/30 bg-white/[0.02] backdrop-blur-sm shadow-inner mb-3 overflow-hidden relative shrink-0">
               <img 
                 src="" 
                 alt={reviews[currentIndex].name} 
@@ -215,17 +215,17 @@ function Testimonial() {
 
             {/* Review Text */}
             <blockquote className="max-w-3xl">
-              <p className="font-serif italic text-[#55393F] text-base md:text-lg lg:text-xl leading-relaxed tracking-wide mb-5 font-medium">
+              <p className="font-serif italic text-[#EBDCD4]/85 text-base md:text-lg lg:text-xl leading-relaxed tracking-wide mb-5 font-medium">
                 "{reviews[currentIndex].text}"
               </p>
             </blockquote>
 
             {/* Client Information */}
             <div className="mt-1 flex flex-col items-center">
-              <span className="font-serif font-bold uppercase tracking-widest text-[#55393F] text-sm md:text-base block">
+              <span className="font-serif font-bold uppercase tracking-widest text-white text-sm md:text-base block">
                 {reviews[currentIndex].name}
               </span>
-              <span className="text-[10px] sm:text-[11px] text-[#A6755D] font-sans font-semibold tracking-widest block mt-1 uppercase">
+              <span className="text-[10px] sm:text-[11px] text-[#fcb900]/80 font-sans font-semibold tracking-widest block mt-1 uppercase">
                 {reviews[currentIndex].date} • {reviews[currentIndex].service}
               </span>
             </div>
@@ -244,7 +244,7 @@ function Testimonial() {
           onClick={handlePrev}
           whileHover={{ scale: 1.1, borderColor: "#fcb900", boxShadow: "0 0 10px rgba(252, 185, 0, 0.45)" }}
           whileTap={{ scale: 0.95 }}
-          className="w-9 h-9 rounded-full border border-[#fcb900] bg-white flex items-center justify-center text-[#A6755D] hover:text-[#55393F] transition-colors duration-300 cursor-pointer shadow-sm shrink-0"
+          className="w-9 h-9 rounded-full border border-[#fcb900]/40 bg-white/[0.04] flex items-center justify-center text-[#fcb900] hover:bg-[#fcb900] hover:text-[#2A132E] transition-all duration-300 cursor-pointer shadow-sm shrink-0"
           aria-label="Previous Testimonial"
         >
           <ChevronLeft size={16} />
@@ -271,7 +271,7 @@ function Testimonial() {
           onClick={handleNext}
           whileHover={{ scale: 1.1, borderColor: "#fcb900", boxShadow: "0 0 10px rgba(252, 185, 0, 0.45)" }}
           whileTap={{ scale: 0.95 }}
-          className="w-9 h-9 rounded-full border border-[#fcb900] bg-white flex items-center justify-center text-[#A6755D] hover:text-[#55393F] transition-colors duration-300 cursor-pointer shadow-sm shrink-0"
+          className="w-9 h-9 rounded-full border border-[#fcb900]/40 bg-white/[0.04] flex items-center justify-center text-[#fcb900] hover:bg-[#fcb900] hover:text-[#2A132E] transition-all duration-300 cursor-pointer shadow-sm shrink-0"
           aria-label="Next Testimonial"
         >
           <ChevronRight size={16} />

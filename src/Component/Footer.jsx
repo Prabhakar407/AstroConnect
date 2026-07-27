@@ -10,14 +10,14 @@ import logoImg from "../assets/logos/Logo.png";
  */
 export default function Footer() {
   return (
-    <footer className="w-full bg-gradient-to-r from-[#2A132E] to-[#55393F] text-[#FDF9F7] border-t border-[#4A2A50] relative overflow-hidden pt-10 pb-6">
+    <footer className="w-full bg-gradient-to-r from-[#1c0e2d] via-[#090b1c] to-[#250d1d] text-[#EBDCD4] border-t border-white/5 relative overflow-hidden pt-10 pb-6">
       
       {/* Decorative Golden Stars Background */}
       <div className="absolute top-10 right-10 text-[#fcb900]/10 text-3xl select-none pointer-events-none">✦</div>
       <div className="absolute bottom-20 left-10 text-[#fcb900]/15 text-2xl select-none pointer-events-none">✨</div>
 
       {/* Main Footer Grid Layout */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 pb-12 border-b border-[#4A2A50]/60">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 pb-12 border-b border-white/5">
         
         {/* Column 1 — Brand Identity */}
         <div className="space-y-4">
