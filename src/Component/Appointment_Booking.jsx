@@ -59,7 +59,7 @@ function Appointment_Booking() {
     birthDate: "",
     birthTime: "",
     birthPlace: "",
-    readingType: "Natal Chart Reading (60 min)",
+    readingType: "Vedic Astrology (60 min)",
     bookingDate: "",
     bookingSlot: "Morning (10:00 AM - 12:00 PM)",
     notes: ""
@@ -317,12 +317,12 @@ function Appointment_Booking() {
                     onChange={handleInputChange}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 transition-all duration-300"
                   >
-                    <option className="bg-[#181122] text-white">Natal Chart Reading (60 min)</option>
-                    <option className="bg-[#181122] text-white">Relationship Synastry (90 min)</option>
-                    <option className="bg-[#181122] text-white">Transit & Forecast (45 min)</option>
-                    <option className="bg-[#181122] text-white">Vastu Consultation (Site Specific)</option>
-                    <option className="bg-[#181122] text-white">Numerology Alignment (45 min)</option>
-                    <option className="bg-[#181122] text-white">Gemstone Recommendation (30 min)</option>
+                    <option className="bg-[#181122] text-white">Vedic Astrology (60 min)</option>
+                    <option className="bg-[#181122] text-white">Numerologist (45 min)</option>
+                    <option className="bg-[#181122] text-white">Vastu Consultant (Site Specific)</option>
+                    <option className="bg-[#181122] text-white">Laal Kitaab Remedies (45 min)</option>
+                    <option className="bg-[#181122] text-white">Expertise in Prashna Kundali (45 min)</option>
+                    <option className="bg-[#181122] text-white">Reiki Healer (30 min)</option>
                   </select>
                 </div>
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { FileText, Heart, Briefcase, Home as HomeIcon, Hash, Gem, Sparkles, Calendar } from 'lucide-react'
+import { FileText, Heart, Briefcase, Home as HomeIcon, Hash, Gem, Sparkles, Calendar, BookOpen, HelpCircle } from 'lucide-react'
 
 const MotionLink = motion.create ? motion.create(Link) : motion(Link);
 
@@ -56,46 +56,46 @@ function Service() {
 
   const serviceOfferings = [
     {
-      title: 'Natal Chart Reading',
+      title: 'Vedic Astrology',
       price: '$120 / ₹9,999',
       duration: '60 mins',
-      desc: 'A comprehensive Janam Kundli analysis mapping planetary alignments at birth. Gain clarity on life path, talents, potential career blocks, and spiritual growth.',
+      desc: 'Comprehensive evaluation of planetary positions, houses, and transits (Janam Kundli) to clarify your destiny, strengths, weaknesses, and future timelines.',
       icon: <FileText size={22} className="text-[#D3AF54]" />
     },
     {
-      title: 'Relationship Synastry',
-      price: '$150 / ₹11,999',
-      duration: '90 mins',
-      desc: 'Detailed compatibility evaluation (Gun Milan) comparing two birth charts. Resolves partner friction, identifies timing blocks, and builds marital harmony.',
-      icon: <Heart size={22} className="text-[#D3AF54]" />
-    },
-    {
-      title: 'Transit Forecast',
-      price: '$90 / ₹7,499',
-      duration: '45 mins',
-      desc: 'Predictive cycles forecasting how ongoing celestial transits (Gochar) interact with your chart. Essential guidance for timing major life transitions.',
-      icon: <Briefcase size={22} className="text-[#D3AF54]" />
-    },
-    {
-      title: 'Vastu Consultation',
-      price: '$200 / ₹15,999',
-      duration: 'Site Specific',
-      desc: 'Aligning home or office layout to optimize flow energy. Eliminates structural elements that block personal growth, wealth luck, and good wellness vibes.',
-      icon: <HomeIcon size={22} className="text-[#D3AF54]" />
-    },
-    {
-      title: 'Numerology Frequency',
+      title: 'Numerologist',
       price: '$80 / ₹6,499',
       duration: '45 mins',
-      desc: 'Harmonize your name spelling and birth date vibrations to dissolve chronic career delays, attract matching fortune paths, and restore energy balance.',
+      desc: 'Uncover the hidden patterns of your life path, destiny, and name frequencies. Align your personal vibrations to unlock career opportunities and wealth luck.',
       icon: <Hash size={22} className="text-[#D3AF54]" />
     },
     {
-      title: 'Gemstone Recommendation',
+      title: 'Vastu Consultant',
+      price: '$200 / ₹15,999',
+      duration: 'Site Specific',
+      desc: 'Optimize the flow of energy at home or work. Align rooms, elements, and layouts to clear blocking influences and invite growth, harmony, and prosperity.',
+      icon: <HomeIcon size={22} className="text-[#D3AF54]" />
+    },
+    {
+      title: 'Laal Kitaab Remedies',
+      price: '$90 / ₹7,499',
+      duration: '45 mins',
+      desc: 'Simple, practical, and highly effective remedial measures for planetary afflictions, debts, obstacles in career/marriage, and negative influences without complex rituals.',
+      icon: <BookOpen size={22} className="text-[#D3AF54]" />
+    },
+    {
+      title: 'Expertise in Prashna Kundali',
+      price: '$110 / ₹8,999',
+      duration: '45 mins',
+      desc: 'Get instant, precise answers to specific questions (concerning career, finance, marriage, missing items, etc.) based on the exact moment the question is asked.',
+      icon: <HelpCircle size={22} className="text-[#D3AF54]" />
+    },
+    {
+      title: 'Reiki Healer',
       price: '$75 / ₹5,999',
       duration: '30 mins',
-      desc: 'Vedic-based recommendation of planetary gemstones (e.g. Ruby, Yellow Sapphire) to strengthen weak beneficial planets and boost mental focus and energy.',
-      icon: <Gem size={22} className="text-[#D3AF54]" />
+      desc: 'Harmonize and channel life force energy to clear spiritual blocks, reduce stress, accelerate physical healing, and restore deep emotional balance.',
+      icon: <Heart size={22} className="text-[#D3AF54]" />
     }
   ]
 

@@ -59,7 +59,7 @@ export default function Navbar() {
         backdropFilter: "blur(12px)",
         ...navStyles
       }}
-      className="text-white border-b sticky top-0 z-50 shadow-[0_4px_30px_rgba(211,175,84,0.06)] transition-all duration-300"
+      className="w-full text-white border-b sticky top-0 z-50 shadow-[0_4px_30px_rgba(211,175,84,0.06)] transition-all duration-300"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-21">
@@ -69,7 +69,7 @@ export default function Navbar() {
             <img
               src={logoImg}
               alt="Kundan Singh Logo"
-              className="w-24 h-24 object-contain"
+              className="w-28 h-28 object-contain"
             />
 
             {/* Vertical Alignment: Astroadvice by (above), Kundan Singh (below) */}

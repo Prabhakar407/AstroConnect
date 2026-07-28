@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send, Mail, MapPin } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send, Mail, MapPin, HelpCircle } from "lucide-react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import logoImg from "../assets/logos/Logo.png";
 import featureBg from "../assets/images/Feature.png";
 import astrologerPortrait from "../assets/images/astrologer_portrait.jpg";
@@ -19,39 +19,39 @@ function CelestialDivider() {
 const allServices = [
   { 
     id: 1, 
-    title: 'LOVE & MARRIAGE CONSULTATION', 
-    text: 'Detailed kundli matching (Gun Milan), relationship compatibility analysis, resolving delays in marriage, and practical remedies for peace in personal connections.', 
-    iconKey: 'heart' 
-  },
-  { 
-    id: 2, 
-    title: 'GEMSTONE RECOMMENDATION', 
-    text: 'Identify auspicious stones (like Yellow Sapphire or Ruby) that strengthen beneficial planets in your chart to enhance health, focus, and overall career success.', 
-    iconKey: 'gem' 
-  },
-  { 
-    id: 3, 
-    title: 'KUNDLI ANALYSIS', 
+    title: 'VEDIC ASTROLOGY', 
     text: 'Comprehensive evaluation of planetary positions, houses, and transits (Janam Kundli) to clarify your destiny, strengths, weaknesses, and future timelines.', 
     iconKey: 'file' 
   },
   { 
-    id: 4, 
-    title: 'VASTU CONSULTATION', 
+    id: 2, 
+    title: 'NUMEROLOGIST', 
+    text: 'Uncover the hidden patterns of your life path, destiny, and name frequencies. Align your personal vibrations to unlock career opportunities and wealth luck.', 
+    iconKey: 'hash' 
+  },
+  { 
+    id: 3, 
+    title: 'VASTU CONSULTANT', 
     text: 'Optimize the flow of energy at home or work. Align rooms, elements, and layouts to clear blocking influences and invite growth, harmony, and prosperity.', 
     iconKey: 'home' 
   },
   { 
+    id: 4, 
+    title: 'LAAL KITAAB REMEDIES', 
+    text: 'Simple, practical, and highly effective remedial measures for planetary afflictions, debts, obstacles in career/marriage, and negative influences without complex rituals.', 
+    iconKey: 'book' 
+  },
+  { 
     id: 5, 
-    title: 'CAREER GUIDANCE', 
-    text: 'Navigate job transitions, promotion cycles, new business ventures, or study paths by identifying favorable dashas and suitable industries based on your 10th house.', 
-    iconKey: 'briefcase' 
+    title: 'EXPERTISE IN PRASHNA KUNDALI', 
+    text: 'Get instant, precise answers to specific questions (concerning career, finance, marriage, missing items, etc.) based on the exact moment the question is asked.', 
+    iconKey: 'help' 
   },
   { 
     id: 6, 
-    title: 'NUMEROLOGY READING', 
-    text: 'Uncover the hidden patterns of your life path, destiny, and name frequencies. Align your personal vibrations to unlock career opportunities and wealth luck.', 
-    iconKey: 'hash' 
+    title: 'REIKI HEALER', 
+    text: 'Harmonize and channel life force energy to clear spiritual blocks, reduce stress, accelerate physical healing, and restore deep emotional balance.', 
+    iconKey: 'heart' 
   }
 ];
 
@@ -71,6 +71,10 @@ const renderServiceIcon = (iconKey, isOutline) => {
       return <Hash className={iconClass} size={24} />;
     case 'briefcase':
       return <Briefcase className={iconClass} size={24} />;
+    case 'book':
+      return <BookOpen className={iconClass} size={24} />;
+    case 'help':
+      return <HelpCircle className={iconClass} size={24} />;
     default:
       return <Sparkles className={iconClass} size={24} />;
   }
@@ -311,6 +315,53 @@ const ServiceSlider = () => {
  * and custom gold dividers.
  */
 export default function Home() {
+  const timelineRef = useRef(null);
+  const [dotStep, setDotStep] = useState(0);
+  const [visibleCardsCount, setVisibleCardsCount] = useState(0);
+  const [isTimelineStarted, setIsTimelineStarted] = useState(false);
+
+  const startTimelineSequence = () => {
+    if (isTimelineStarted) return;
+    setIsTimelineStarted(true);
+    setDotStep(0);
+    setVisibleCardsCount(1);
+    
+    setTimeout(() => {
+      setDotStep(1);
+    }, 1500);
+    setTimeout(() => {
+      setVisibleCardsCount(2);
+    }, 2700);
+
+    setTimeout(() => {
+      setDotStep(2);
+    }, 4200);
+    setTimeout(() => {
+      setVisibleCardsCount(3);
+    }, 5400);
+
+    setTimeout(() => {
+      setDotStep(3);
+    }, 6900);
+    setTimeout(() => {
+      setVisibleCardsCount(4);
+    }, 8100);
+  };
+
+  const getDotXPosition = () => {
+    if (dotStep === 0) return "0%";
+    if (dotStep === 1) return "33.33%";
+    if (dotStep === 2) return "66.66%";
+    return "100%";
+  };
+
+  const getDotYPosition = () => {
+    if (dotStep === 0) return "0%";
+    if (dotStep === 1) return "33.33%";
+    if (dotStep === 2) return "66.66%";
+    return "100%";
+  };
+ 
   // Features Data (Luxury Vedic dark-purple section specs - Option 2 layout)
   const featuresData = [
     {
@@ -341,42 +392,42 @@ export default function Home() {
       name: "Elena R.",
       rating: 5,
       text: "The guidance I received brought clarity and confidence to my life. The remedies were practical and the predictions were remarkably accurate.",
-      service: "Kundli Analysis",
+      service: "Vedic Astrology",
       image: ""
     },
     {
       name: "Marcus T.",
       rating: 5,
       text: "Understanding my transits and Saturn cycle through Kundan's counseling helped me navigate my career transition successfully.",
-      service: "Career Guidance",
+      service: "Expertise in Prashna Kundali",
       image: ""
     },
     {
       name: "Priya K.",
       rating: 5,
       text: "Amazing Vastu advice! Making small changes at our entrance brought positive vibes and progress within weeks.",
-      service: "Vastu Consultation",
+      service: "Vastu Consultant",
       image: ""
     },
     {
       name: "Dr. Aarav Mehta",
       rating: 5,
       text: "Wearing the recommended Yellow Sapphire has brought immense mental clarity and improved my focus in my clinical work.",
-      service: "Gemstone Advice",
+      service: "Laal Kitaab Remedies",
       image: ""
     },
     {
       name: "Sarah Jenkins",
       rating: 5,
       text: "The compatibility reading was spot on. Kundan suggested simple mantra remedies that helped ease the relationship friction.",
-      service: "Love & Marriage",
+      service: "Reiki Healer",
       image: ""
     },
     {
       name: "Vikram Aditya",
       rating: 5,
       text: "Changing my business name spelling as suggested by Kundan Singh did wonders for our customer outreach and conversion rate.",
-      service: "Numerology Reading",
+      service: "Numerologist",
       image: ""
     }
   ]
@@ -384,34 +435,34 @@ export default function Home() {
   // Services Grid Data
   const services = [
     {
-      title: 'Kundli Analysis',
+      title: 'Vedic Astrology',
       desc: 'Comprehensive evaluation of planetary positions, houses, and transits (Janam Kundli) to clarify your destiny, strengths, weaknesses, and future timelines.',
       icon: <FileText size={20} className="text-[#fcb900]" />
     },
     {
-      title: 'Career Guidance',
-      desc: 'Navigate job transitions, promotion cycles, new business ventures, or study paths by identifying favorable dashas and suitable industries based on your 10th house.',
-      icon: <Briefcase size={20} className="text-[#fcb900]" />
-    },
-    {
-      title: 'Love & Marriage Consultation',
-      desc: 'Detailed kundli matching (Gun Milan), relationship compatibility analysis, resolving delays in marriage, and practical remedies for peace in personal connections.',
-      icon: <Heart size={20} className="text-[#fcb900]" />
-    },
-    {
-      title: 'Vastu Consultation',
-      desc: 'Optimize the flow of energy at home or work. Align rooms, elements, and layouts to clear blocking influences and invite growth, harmony, and prosperity.',
-      icon: <HomeIcon size={20} className="text-[#fcb900]" />
-    },
-    {
-      title: 'Numerology Reading',
+      title: 'Numerologist',
       desc: 'Uncover the hidden patterns of your life path, destiny, and name frequencies. Align your personal vibrations to unlock career opportunities and wealth luck.',
       icon: <Hash size={20} className="text-[#fcb900]" />
     },
     {
-      title: 'Gemstone Recommendation',
-      desc: 'Identify auspicious stones (like Yellow Sapphire or Ruby) that strengthen beneficial planets in your chart to enhance health, focus, and overall career success.',
-      icon: <Gem size={20} className="text-[#fcb900]" />
+      title: 'Vastu Consultant',
+      desc: 'Optimize the flow of energy at home or work. Align rooms, elements, and layouts to clear blocking influences and invite growth, harmony, and prosperity.',
+      icon: <HomeIcon size={20} className="text-[#fcb900]" />
+    },
+    {
+      title: 'Laal Kitaab Remedies',
+      desc: 'Simple, practical, and highly effective remedial measures for planetary afflictions, debts, obstacles in career/marriage, and negative influences without complex rituals.',
+      icon: <BookOpen size={20} className="text-[#fcb900]" />
+    },
+    {
+      title: 'Expertise in Prashna Kundali',
+      desc: 'Get instant, precise answers to specific questions (concerning career, finance, marriage, missing items, etc.) based on the exact moment the question is asked.',
+      icon: <HelpCircle size={20} className="text-[#fcb900]" />
+    },
+    {
+      title: 'Reiki Healer',
+      desc: 'Harmonize and channel life force energy to clear spiritual blocks, reduce stress, accelerate physical healing, and restore deep emotional balance.',
+      icon: <Heart size={20} className="text-[#fcb900]" />
     }
   ]
 
@@ -476,7 +527,7 @@ export default function Home() {
         {/* Capped layout wrapper inside band */}
         <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] flex flex-col items-center">
           
-          <section className="w-full flex flex-col lg:flex-row items-center justify-between min-h-[700px] py-[clamp(2.5rem,5vw,6rem)] gap-[clamp(2.5rem,5vw,6rem)] bg-transparent">
+          <section className="w-full flex flex-col lg:flex-row items-center justify-between min-h-[600px] pt-4 pb-20 lg:pt-6 lg:pb-28 gap-[clamp(2rem,4vw,4rem)] bg-transparent">
             
             {/* Left Side Content Column (Slides in from the left) */}
             <motion.div 
@@ -524,51 +575,6 @@ export default function Home() {
                   <span>Quick Inquiry</span>
                 </a>
               </div>
-
-              {/* Statistics Grid */}
-              <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4 pt-6 border-t border-white/5">
-                
-                <div className="flex items-center gap-3 p-3 bg-[#181122]/90 border border-[#AB7A57]/20 rounded-xl w-full">
-                  <div className="w-8 h-8 rounded-full border border-[#BDBDBD] flex items-center justify-center text-[#D3AF54] bg-[#FFFDEE] shrink-0">
-                    <Award size={14} />
-                  </div>
-                  <div className="flex flex-col text-left min-w-0">
-                    <span className="text-[10px] sm:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate">Experience</span>
-                    <span className="text-xs sm:text-sm font-bold text-white font-serif whitespace-nowrap">10+ Years</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-3 bg-[#181122]/90 border border-[#AB7A57]/20 rounded-xl w-full">
-                  <div className="w-8 h-8 rounded-full border border-[#BDBDBD] flex items-center justify-center text-[#D3AF54] bg-[#FFFDEE] shrink-0">
-                    <Users size={14} />
-                  </div>
-                  <div className="flex flex-col text-left min-w-0">
-                    <span className="text-[10px] sm:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate">Happy Clients</span>
-                    <span className="text-xs sm:text-sm font-bold text-white font-serif whitespace-nowrap">25,000+</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-3 bg-[#181122]/90 border border-[#AB7A57]/20 rounded-xl w-full">
-                  <div className="w-8 h-8 rounded-full border border-[#BDBDBD] flex items-center justify-center text-[#D3AF54] bg-[#FFFDEE] shrink-0">
-                    <Globe size={14} />
-                  </div>
-                  <div className="flex flex-col text-left min-w-0">
-                    <span className="text-[10px] sm:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate">Served</span>
-                    <span className="text-xs sm:text-sm font-bold text-white font-serif whitespace-nowrap">20+ Countries</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-3 bg-[#181122]/90 border border-[#AB7A57]/20 rounded-xl w-full">
-                  <div className="w-8 h-8 rounded-full border border-[#BDBDBD] flex items-center justify-center text-[#D3AF54] bg-[#FFFDEE] shrink-0">
-                    <Star size={14} className="fill-[#D3AF54] text-[#D3AF54]" />
-                  </div>
-                  <div className="flex flex-col text-left min-w-0">
-                    <span className="text-[10px] sm:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate">Client Rating</span>
-                    <span className="text-xs sm:text-sm font-bold text-white font-serif whitespace-nowrap">4.8 / 5</span>
-                  </div>
-                </div>
-
-              </div>
             </motion.div>
 
             {/* Right Side Portrait Image Column */}
@@ -613,40 +619,101 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 3. LUXURY FEATURE STRIP SECTION                           */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#FDFCF5] flex justify-center border-b border-[#AB7A57]/10">
-        <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
+      <div ref={timelineRef} className="w-full bg-[#FDFCF5] flex flex-col items-center border-b border-[#AB7A57]/10 relative">
+        
+        {/* Floating Glassmorphic Stat bar sitting exactly at the boundary */}
+        <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+            className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-3xl p-2 sm:p-5 shadow-2xl relative overflow-hidden grid grid-cols-4 gap-1.5 sm:gap-4 text-center z-30"
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.04),transparent_70%)] pointer-events-none"></div>
+            
+            {/* Box 1: Experience */}
+            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 p-1.5 sm:p-2 lg:p-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#AB7A57]/45 flex items-center justify-center text-[#D3AF54] bg-white/[0.03] shrink-0">
+                <Award size={12} className="lg:w-3.5 lg:h-3.5" />
+              </div>
+              <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
+                <span className="text-[7px] sm:text-[9px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate w-full">Experience</span>
+                <span className="text-[8px] sm:text-[10px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 whitespace-nowrap w-full truncate text-center lg:text-left">10+ Years</span>
+              </div>
+            </div>
+
+            {/* Box 2: Consultations */}
+            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 p-1.5 sm:p-2 lg:p-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#AB7A57]/45 flex items-center justify-center text-[#D3AF54] bg-white/[0.03] shrink-0">
+                <Users size={12} className="lg:w-3.5 lg:h-3.5" />
+              </div>
+              <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
+                <span className="text-[7px] sm:text-[9px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate w-full">Consultations</span>
+                <span className="text-[8px] sm:text-[10px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 whitespace-nowrap w-full truncate text-center lg:text-left">10,000+</span>
+              </div>
+            </div>
+
+            {/* Box 3: Clients Served */}
+            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 p-1.5 sm:p-2 lg:p-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#AB7A57]/45 flex items-center justify-center text-[#D3AF54] bg-white/[0.03] shrink-0">
+                <Globe size={12} className="lg:w-3.5 lg:h-3.5" />
+              </div>
+              <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
+                <span className="text-[7px] sm:text-[9px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate w-full">Clients Served</span>
+                <span className="text-[8px] sm:text-[10px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 whitespace-nowrap w-full truncate text-center lg:text-left">Indian</span>
+              </div>
+            </div>
+
+            {/* Box 4: Rating */}
+            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 p-1.5 sm:p-2 lg:p-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#AB7A57]/45 flex items-center justify-center text-[#D3AF54] bg-white/[0.03] shrink-0">
+                <Star size={12} className="fill-[#D3AF54] text-[#D3AF54] lg:w-3.5 lg:h-3.5" />
+              </div>
+              <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
+                <span className="text-[7px] sm:text-[9px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate w-full">Rating</span>
+                <span className="text-[8px] sm:text-[10px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 whitespace-nowrap w-full truncate text-center lg:text-left">4.9 / 5.0</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pt-8 sm:pt-12">
           
           <motion.section 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="w-full py-[clamp(2rem,4vw,5rem)] relative overflow-hidden z-10 flex flex-col items-center"
+            onViewportEnter={startTimelineSequence}
+            viewport={{ once: true, margin: "-100px" }}
+            className="w-full pb-[clamp(3.5rem,6vw,7.5rem)] relative overflow-hidden z-10 flex flex-col items-center"
           >
-            {/* Radiating Light Flare Overlay - no blur */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.04)_0%,transparent_65%)] pointer-events-none z-0" />
-
-            {/* Sliding Marquee Track */}
-            <div className="w-full overflow-hidden flex relative py-2 z-10">
-              {/* Left & Right fading overlays */}
-              <div className="absolute inset-y-0 left-0 w-12 md:w-32 bg-gradient-to-r from-[#FDFCF5] to-transparent z-20 pointer-events-none"></div>
-              <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-[#FDFCF5] to-transparent z-20 pointer-events-none"></div>
+            
+            {/* Desktop View (Large Screens: lg breakpoint) */}
+            <div className="hidden lg:flex flex-col items-center w-full gap-12 relative">
               
-              <motion.div
-                className="flex gap-6 shrink-0"
-                animate={{ x: ["0%", "-50%"] }}
-                transition={{
-                  ease: "linear",
-                  duration: 20,
-                  repeat: Infinity
-                }}
-              >
-                {[...featuresData, ...featuresData].map((item, index) => (
-                  <div 
-                    key={index} 
-                    className="bg-[#181122] border border-[#AB7A57]/20 hover:border-[#D3AF54] rounded-2xl p-5 md:p-6 flex flex-col items-start text-left gap-3 transition-all duration-300 shadow-lg hover:shadow-[0_15px_30px_rgba(211,175,84,0.15)] group cursor-pointer w-[clamp(16rem,22vw,24rem)] shrink-0"
+              {/* Horizontal Timeline Line above the cards */}
+              <div className="w-[96%] h-8 relative flex items-center">
+                {/* Background Line */}
+                <div className="w-full h-[3px] bg-[#181122] rounded-full" />
+
+                {/* Animated Moving Circle along the horizontal line */}
+                <motion.div 
+                  animate={{ left: getDotXPosition() }}
+                  transition={{ duration: 1.2, ease: "easeInOut" }}
+                  className="absolute w-4.5 h-4.5 bg-[#D3AF54] rounded-full -translate-y-1/2 top-1/2 shadow-[0_0_15px_rgba(211,175,84,0.95)] z-20 pointer-events-none"
+                />
+              </div>
+
+              {/* Grid of 4 horizontal feature cards */}
+              <div className="grid grid-cols-4 gap-6 w-full relative z-10">
+                {featuresData.map((item, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ 
+                      opacity: visibleCardsCount > index ? 1 : 0, 
+                      y: visibleCardsCount > index ? 0 : 30 
+                    }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    className="bg-[#181122] border border-[#AB7A57]/20 hover:border-[#D3AF54] rounded-2xl p-6 flex flex-col items-start text-left gap-4 transition-all duration-300 shadow-lg hover:shadow-[0_15px_30px_rgba(211,175,84,0.15)] group cursor-pointer hover:scale-[1.02]"
                   >
-                    {/* Top Row: Icon and Title on same line */}
                     <div className="flex items-center gap-3 w-full">
                       {/* Gold Circular Outlined Icon Container */}
                       <div className="w-10 h-10 rounded-full border border-[#BDBDBD] group-hover:border-[#D3AF54] flex items-center justify-center text-[#D3AF54] bg-[#FFFDEE] shrink-0 group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(211,175,84,0.3)] transition-all duration-300">
@@ -657,17 +724,57 @@ export default function Home() {
                         {item.title}
                       </span>
                     </div>
-
-                    {/* Subtext below */}
+                    {/* Subtext */}
                     <p className="text-[13px] md:text-sm text-[#D8CFEB] leading-relaxed font-sans w-full">
                       {item.desc}
                     </p>
+                  </motion.div>
+                ))}
+              </div>
+
+            </div>
+
+            {/* Mobile/Tablet View (Small Screens: below lg breakpoint) */}
+            <div className="flex lg:hidden flex-col items-start w-full relative">
+              
+              {/* Central Vertical Timeline Line (on left side) */}
+              <div className="absolute left-4 sm:left-8 top-[70px] bottom-[70px] w-[3px] bg-[#181122] rounded-full">
+                {/* Animated Moving Circle along the vertical line */}
+                <motion.div 
+                  animate={{ top: getDotYPosition() }}
+                  transition={{ duration: 1.2, ease: "easeInOut" }}
+                  className="absolute w-4.5 h-4.5 bg-[#D3AF54] rounded-full -translate-x-1/2 left-1/2 shadow-[0_0_15px_rgba(211,175,84,0.95)] pointer-events-none"
+                />
+              </div>
+
+              {/* Grid Layout of cards on the right side */}
+              <div className="w-full grid grid-cols-1 gap-12 relative z-10 pl-10 sm:pl-16">
+                {featuresData.map((item, index) => (
+                  <div key={index} className="w-full min-h-[140px] flex items-center relative">
+                    <motion.div 
+                      initial={{ opacity: 0, x: 30 }}
+                      animate={{ 
+                        opacity: visibleCardsCount > index ? 1 : 0, 
+                        x: visibleCardsCount > index ? 0 : 30 
+                      }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                      className="bg-[#181122] border border-[#AB7A57]/20 hover:border-[#D3AF54] rounded-2xl p-5 shadow-lg max-w-[420px] w-full flex flex-col items-start gap-3 group cursor-pointer hover:scale-[1.02] transition-transform duration-300"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full border border-[#BDBDBD] flex items-center justify-center text-[#D3AF54] bg-[#FFFDEE] shrink-0 group-hover:scale-115 transition-transform duration-300">
+                          {item.icon}
+                        </div>
+                        <span className="font-serif text-[#D3AF54] font-bold text-xs uppercase tracking-wider">{item.title}</span>
+                      </div>
+                      <p className="text-xs text-[#D8CFEB] leading-relaxed font-sans">{item.desc}</p>
+                    </motion.div>
                   </div>
                 ))}
-              </motion.div>
-            </div>
-          </motion.section>
+              </div>
 
+            </div>
+
+          </motion.section>
         </div>
       </div>
 

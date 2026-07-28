@@ -299,11 +299,12 @@ function Contact() {
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 transition-all duration-300"
                 >
                   <option className="bg-[#181122] text-white">General Inquiry</option>
-                  <option className="bg-[#181122] text-white">Birth Chart / Janam Kundli Readings</option>
-                  <option className="bg-[#181122] text-white">Love & Marriage Synastry Reading</option>
-                  <option className="bg-[#181122] text-white">Vastu Shastra Site Consultation</option>
-                  <option className="bg-[#181122] text-white">Gemstone Advice Query</option>
-                  <option className="bg-[#181122] text-white">Numerology Spill Check</option>
+                  <option className="bg-[#181122] text-white">Vedic Astrology Reading</option>
+                  <option className="bg-[#181122] text-white">Numerologist Inquiry</option>
+                  <option className="bg-[#181122] text-white">Vastu Consultant Site Audit</option>
+                  <option className="bg-[#181122] text-white">Laal Kitaab Remedies Consultation</option>
+                  <option className="bg-[#181122] text-white">Expertise in Prashna Kundali</option>
+                  <option className="bg-[#181122] text-white">Reiki Healer Session</option>
                 </select>
               </div>
  
