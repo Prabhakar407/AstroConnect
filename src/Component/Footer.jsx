@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { MessageCircle, Phone, Mail, MapPin, Clock } from "lucide-react";
+import { motion } from 'framer-motion'
 import logoImg from "../assets/logos/Logo.png";
 import fbLogo from "../assets/logos/facebook.png";
 import instaLogo from "../assets/logos/Instagram.png";
@@ -19,7 +20,13 @@ import callLogo from "../assets/logos/Call.png";
  */
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#06091B] text-[#D8CFEB] border-t border-[#AB7A57]/20 relative overflow-hidden pt-10 pb-6">
+    <motion.footer 
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="w-full bg-[#06091B] text-[#D8CFEB] border-t border-[#AB7A57]/20 relative overflow-hidden pt-10 pb-6"
+    >
       
       {/* Decorative Golden Stars Background */}
       <div className="absolute top-10 right-10 text-[#D3AF54]/10 text-3xl select-none pointer-events-none">✦</div>
@@ -169,6 +176,6 @@ export default function Footer() {
         </div>
       </div>
 
-    </footer>
+    </motion.footer>
   )
 }

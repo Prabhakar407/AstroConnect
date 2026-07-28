@@ -6,6 +6,12 @@ import logoImg from "../assets/logos/Logo.png";
 import featureBg from "../assets/images/Feature.png";
 import astrologerPortrait from "../assets/images/astrologer_portrait.jpg";
 import zodiacWheel from "../assets/images/zodiac_wheel.jpg";
+import vedicAstrologyImg from '../assets/images/Vedic Astrology.png'
+import numerologyImg from '../assets/images/Numerology.png'
+import vastuConsultationImg from '../assets/images/Vastu Consultation.png'
+import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.png'
+import prashnaKundliImg from '../assets/images/Prashna Kundli.png'
+import reikiHealerImg from '../assets/images/Reiki Healer.png'
 
 /**
  * CelestialDivider Component
@@ -166,7 +172,7 @@ const ServiceSlider = () => {
           {visibleServices.map((service, index) => {
             const isCenter = index === centerIndex;
             const cardStyle = getCardStyles(index);
- 
+
             // Determine classes & styles based on computed card layout position
             let bgClass = "";
             let titleClass = "";
@@ -174,7 +180,7 @@ const ServiceSlider = () => {
             let borderStyle = {};
             let iconContainerClass = "";
             let isOutlineIcon = true;
- 
+
             if (cardStyle === 'navy') {
               bgClass = "bg-[#131F37] text-white";
               borderStyle = { border: '1px solid rgba(252, 185, 0, 0.35)' };
@@ -200,7 +206,7 @@ const ServiceSlider = () => {
               iconContainerClass = "bg-gradient-to-b from-[#e6c07b] to-[#bfa054] shadow-sm";
               isOutlineIcon = false;
             }
- 
+
             // Calculate 3D z-axis depth values dynamically based on distance from center card
             const distance = Math.abs(index - centerIndex);
             let scale = 1.0;
@@ -208,7 +214,7 @@ const ServiceSlider = () => {
             let x = 0;
             let zIndex = 1;
             let opacity = 1;
- 
+
             if (distance === 0) {
               scale = 1.12;
               y = -10;
@@ -225,7 +231,7 @@ const ServiceSlider = () => {
               zIndex = 1;
               opacity = 0.65;
             }
- 
+
             // Apply translation x to bring outer cards closer to adjacent cards
             if (visibleCount === 5) {
               if (index === 0) x = 32;       // Shift card 1 right, closer to card 2
@@ -234,9 +240,9 @@ const ServiceSlider = () => {
               if (index === 0) x = 16;        // Shift card 1 right, closer to card 2
               else if (index === 2) x = -16;  // Shift card 3 left, closer to card 2
             }
- 
+
             return (
-              <motion.div
+              <motion.div 
                 key={service.id}
                 layout
                 animate={{
@@ -262,7 +268,7 @@ const ServiceSlider = () => {
                 {isCenter && (
                   <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(252,185,0,0.25)_0%,transparent_60%)] blur-3xl scale-[1.7] animate-pulse pointer-events-none" />
                 )}
- 
+
                 <div className="flex flex-col gap-[clamp(0.75rem,1.5vw,1.25rem)] text-center items-center">
                   {/* Circle Icon Badge */}
                   <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shrink-0 ${iconContainerClass}`}>
@@ -275,7 +281,7 @@ const ServiceSlider = () => {
                     {service.text}
                   </p>
                 </div>
- 
+
                 <div className={`text-[9px] font-bold tracking-wider uppercase mt-2 ${isCenter ? 'text-[#2A132E]' : 'text-[#fcb900]/80'}`}>
                   {isCenter ? 'ACTIVE ✦' : 'EXPLORE'}
                 </div>
@@ -504,7 +510,7 @@ export default function Home() {
   }
 
    return (
-    <div className="w-full bg-[#FDFCF5] relative overflow-hidden flex flex-col items-center">
+    <div className="w-full bg-[#FDFCF5] relative flex flex-col items-center">
       
       {/* Global Custom SVG Clip Paths */}
       <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
@@ -622,7 +628,7 @@ export default function Home() {
       <div ref={timelineRef} className="w-full bg-[#FDFCF5] flex flex-col items-center border-b border-[#AB7A57]/10 relative">
         
         {/* Floating Glassmorphic Stat bar sitting exactly at the boundary */}
-        <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
+        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -637,8 +643,8 @@ export default function Home() {
                 <Award size={12} className="lg:w-3.5 lg:h-3.5" />
               </div>
               <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
-                <span className="text-[7px] sm:text-[9px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate w-full">Experience</span>
-                <span className="text-[8px] sm:text-[10px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 whitespace-nowrap w-full truncate text-center lg:text-left">10+ Years</span>
+                <span className="text-[8px] sm:text-[10px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold w-full text-center lg:text-left lg:whitespace-nowrap">Experience</span>
+                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">10+ Years</span>
               </div>
             </div>
 
@@ -648,8 +654,8 @@ export default function Home() {
                 <Users size={12} className="lg:w-3.5 lg:h-3.5" />
               </div>
               <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
-                <span className="text-[7px] sm:text-[9px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate w-full">Consultations</span>
-                <span className="text-[8px] sm:text-[10px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 whitespace-nowrap w-full truncate text-center lg:text-left">10,000+</span>
+                <span className="text-[8px] sm:text-[10px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold w-full text-center lg:text-left lg:whitespace-nowrap">Consultations</span>
+                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">10,000+</span>
               </div>
             </div>
 
@@ -659,8 +665,8 @@ export default function Home() {
                 <Globe size={12} className="lg:w-3.5 lg:h-3.5" />
               </div>
               <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
-                <span className="text-[7px] sm:text-[9px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate w-full">Clients Served</span>
-                <span className="text-[8px] sm:text-[10px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 whitespace-nowrap w-full truncate text-center lg:text-left">Indian</span>
+                <span className="text-[8px] sm:text-[10px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold w-full text-center lg:text-left lg:whitespace-nowrap">Clients Served</span>
+                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">Indian</span>
               </div>
             </div>
 
@@ -670,8 +676,8 @@ export default function Home() {
                 <Star size={12} className="fill-[#D3AF54] text-[#D3AF54] lg:w-3.5 lg:h-3.5" />
               </div>
               <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
-                <span className="text-[7px] sm:text-[9px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate w-full">Rating</span>
-                <span className="text-[8px] sm:text-[10px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 whitespace-nowrap w-full truncate text-center lg:text-left">4.9 / 5.0</span>
+                <span className="text-[8px] sm:text-[10px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold w-full text-center lg:text-left lg:whitespace-nowrap">Rating</span>
+                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">4.9 / 5.0</span>
               </div>
             </div>
           </motion.div>
@@ -960,10 +966,10 @@ export default function Home() {
 
             <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-[clamp(2rem,5vw,6rem)] items-center">
               
-              {/* Left Column Astrologer Portrait (Slides in from the left) */}
+              {/* Left Column Astrologer Portrait (Slides in from the bottom) */}
               <motion.div 
-                initial={{ opacity: 0, x: -40 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="flex justify-center items-center relative w-full min-h-[400px]"
@@ -979,10 +985,10 @@ export default function Home() {
                 </div>
               </motion.div>
 
-              {/* Right Column Profile Details (Slides in from the right) */}
+              {/* Right Column Profile Details (Slides in from the bottom) */}
               <motion.div 
-                initial={{ opacity: 0, x: 40 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="space-y-6 text-left"
@@ -1059,10 +1065,10 @@ export default function Home() {
         <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
           <motion.section 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="w-full bg-transparent py-[clamp(2.5rem,5vw,6rem)] relative overflow-hidden flex flex-col items-center"
           >
             {/* Nebula Overlays */}

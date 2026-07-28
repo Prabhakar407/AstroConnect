@@ -104,7 +104,7 @@ function Testimonial() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#FDFCF5] relative overflow-hidden flex flex-col items-center justify-start px-6 pt-6 md:pt-8 pb-12 font-sans text-[#181122]">
+    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center justify-start px-6 pt-6 md:pt-8 pb-12 font-sans text-[#181122]">
       
       {/* ========================================================= */}
       {/* DECORATIVE BACKGROUND ELEMENTS                            */}

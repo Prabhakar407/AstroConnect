@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import astrologerPortrait from '../assets/images/astrologer_portrait.jpg'
+import vedicAstrologyImg from '../assets/images/Vedic Astrology.png'
+import numerologyImg from '../assets/images/Numerology.png'
+import vastuConsultationImg from '../assets/images/Vastu Consultation.png'
+import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.png'
+import prashnaKundliImg from '../assets/images/Prashna Kundli.png'
+import reikiHealerImg from '../assets/images/Reiki Healer.png'
 import { 
   Award, 
   Users, 
@@ -53,34 +59,28 @@ function About() {
   // Expertise Section Grid Data (6 premium cards)
   const expertiseData = [
     {
-      title: "Kundli Analysis",
-      description: "In-depth evaluation of planetary combinations, aspects, and houses to uncover your soul's life path, potentials, and destiny timelines.",
-      icon: FileText
+      title: "Vedic Astrology",
+      image: vedicAstrologyImg
     },
     {
-      title: "Marriage & Relationship Guidance",
-      description: "Detailed compatibility testing (Kundli matching/Gun Milan), resolving delays or friction in partnerships, and promoting lasting marital harmony.",
-      icon: Heart
-    },
-    {
-      title: "Career Consultation",
-      description: "Strategic timing for job changes, promotions, business expansions, and matching your natal strengths with the perfect industries.",
-      icon: Briefcase
-    },
-    {
-      title: "Business Astrology",
-      description: "Identifying planetary triggers for financial growth, choosing auspicious venture names, and selecting successful business incorporation timelines.",
-      icon: Gem
-    },
-    {
-      title: "Numerology Reading",
-      description: "Harmonizing the numerical vibrations of your name and birth date with cosmic energies to remove structural obstacles and unlock opportunities.",
-      icon: Hash
+      title: "Numerology",
+      image: numerologyImg
     },
     {
       title: "Vastu Consultation",
-      description: "Aligning home and workplace layouts with directional energies to eliminate negative flows and invite health, peace, and wealth.",
-      icon: HomeIcon
+      image: vastuConsultationImg
+    },
+    {
+      title: "Laal Kitaab Remedies",
+      image: laalKitaabImg
+    },
+    {
+      title: "Prashna Kundli",
+      image: prashnaKundliImg
+    },
+    {
+      title: "Reiki Healer",
+      image: reikiHealerImg
     }
   ]
 
@@ -106,12 +106,12 @@ function About() {
   }, [certificatesData.length]);
 
   return (
-    <div className="w-full bg-[#FDFCF5] relative overflow-hidden flex flex-col items-center font-sans">
+    <div className="w-full bg-[#FDFCF5] relative flex flex-col items-center font-sans">
       
       {/* ========================================================= */}
       {/* 1. INTRO / BIOGRAPHY DEEP SPACE BAND SECTION (Navy: #06091B) */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#06091B] relative overflow-hidden flex flex-col items-center border-b border-[#AB7A57]/20 text-white z-10">
+      <div className="w-full bg-[#06091B] relative overflow-hidden flex flex-col items-center border-b border-[#AB7A57]/20 text-white z-10 min-h-[calc(100vh-84px)] lg:min-h-[780px] justify-start pt-4 sm:pt-6">
         
         {/* Glow & Luxury SVG Decor Background */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.1),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
@@ -126,7 +126,7 @@ function About() {
         </motion.div>
 
         {/* Capped layout wrapper inside band */}
-        <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pt-8 lg:pt-12 pb-[clamp(3.5rem,6vw,7.5rem)] flex flex-col items-center">
+        <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pt-4 lg:pt-6 pb-[clamp(3.5rem,6vw,7.5rem)] flex flex-col items-center">
           
 
 
@@ -135,8 +135,8 @@ function About() {
             
             {/* Left Column: Bio Content cards (reversing typical positions) */}
             <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
               className="lg:col-span-7 lg:order-1 order-2 flex flex-col text-left justify-start gap-6"
             >
@@ -200,8 +200,8 @@ function About() {
 
             {/* Right Column: Portal-framed Portrait (reversing typical positions) */}
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95, x: 30 }}
-              animate={{ opacity: 1, scale: 1, x: 0 }}
+              initial={{ opacity: 0, scale: 0.95, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="lg:col-span-5 lg:order-2 order-1 flex justify-center relative w-full pt-2 lg:pt-4"
             >
@@ -237,7 +237,7 @@ function About() {
       <div className="w-full bg-[#FDFCF5] flex flex-col items-center relative">
         
         {/* Floating Glassmorphic Stat bar sitting exactly at the boundary */}
-        <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
+        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -252,8 +252,8 @@ function About() {
                 <Award size={12} className="lg:w-3.5 lg:h-3.5" />
               </div>
               <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
-                <span className="text-[7px] sm:text-[9px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate w-full">Experience</span>
-                <span className="text-[8px] sm:text-[10px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 whitespace-nowrap w-full truncate text-center lg:text-left">10+ Years</span>
+                <span className="text-[8px] sm:text-[10px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold w-full text-center lg:text-left lg:whitespace-nowrap">Experience</span>
+                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">10+ Years</span>
               </div>
             </div>
 
@@ -263,8 +263,8 @@ function About() {
                 <Users size={12} className="lg:w-3.5 lg:h-3.5" />
               </div>
               <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
-                <span className="text-[7px] sm:text-[9px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate w-full">Consultations</span>
-                <span className="text-[8px] sm:text-[10px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 whitespace-nowrap w-full truncate text-center lg:text-left">10,000+</span>
+                <span className="text-[8px] sm:text-[10px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold w-full text-center lg:text-left lg:whitespace-nowrap">Consultations</span>
+                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">10,000+</span>
               </div>
             </div>
 
@@ -274,8 +274,8 @@ function About() {
                 <Globe size={12} className="lg:w-3.5 lg:h-3.5" />
               </div>
               <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
-                <span className="text-[7px] sm:text-[9px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate w-full">Clients Served</span>
-                <span className="text-[8px] sm:text-[10px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 whitespace-nowrap w-full truncate text-center lg:text-left">Indian</span>
+                <span className="text-[8px] sm:text-[10px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold w-full text-center lg:text-left lg:whitespace-nowrap">Clients Served</span>
+                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">Indian</span>
               </div>
             </div>
 
@@ -285,8 +285,8 @@ function About() {
                 <Star size={12} className="fill-[#D3AF54] text-[#D3AF54] lg:w-3.5 lg:h-3.5" />
               </div>
               <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
-                <span className="text-[7px] sm:text-[9px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold truncate w-full">Rating</span>
-                <span className="text-[8px] sm:text-[10px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 whitespace-nowrap w-full truncate text-center lg:text-left">4.9 / 5.0</span>
+                <span className="text-[8px] sm:text-[10px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold w-full text-center lg:text-left lg:whitespace-nowrap">Rating</span>
+                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">4.9 / 5.0</span>
               </div>
             </div>
           </motion.div>
@@ -294,7 +294,13 @@ function About() {
 
         <div className="absolute top-1/3 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.04),transparent_70%)] rounded-full pointer-events-none animate-pulse"></div>
         
-        <div className="w-full max-w-[1920px] px-6 lg:px-8 flex flex-col items-center pt-8 sm:pt-10 pb-8 sm:pb-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="w-full max-w-[1920px] px-6 lg:px-8 flex flex-col items-center pt-8 sm:pt-10 pb-8 sm:pb-12"
+        >
           
           {/* Section Header */}
           <div className="text-center max-w-2xl mb-6 md:mb-8 relative z-10">
@@ -317,7 +323,7 @@ function About() {
             ))}
           </div>
 
-        </div>
+        </motion.div>
       </div>
 
 
@@ -326,7 +332,13 @@ function About() {
       {/* 4. PROFESSIONAL CERTIFICATES (Cream background: #FDFCF5)   */}
       {/* ========================================================= */}
       <div className="w-full bg-[#FDFCF5] flex justify-center py-16 overflow-hidden relative border-t border-[#AB7A57]/10">
-        <div className="w-full max-w-[1920px]">
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="w-full max-w-[1920px]"
+        >
           
           <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 mb-10 text-center">
             <span className="text-[#AB7A57] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
@@ -396,7 +408,7 @@ function About() {
 
           </div>
 
-        </div>
+        </motion.div>
       </div>
 
       <div className="py-6"></div>
@@ -449,38 +461,46 @@ function genRandomPattern(length) {
 
 function FeatureCard({ feature, className, ...props }) {
   const p = genRandomPattern();
-  const Icon = feature.icon;
 
   return (
-    <div className={cn('relative overflow-hidden rounded-2xl border border-[#AB7A57]/30 shadow-lg group cursor-pointer w-full h-[160px] sm:h-[180px] lg:h-[200px]', className)} {...props}>
-      {/* Background color/gradient placeholder (to be replaced by images later) */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#181122] via-[#2A183A] to-[#06091B] z-0"></div>
-      
-      {/* Dynamic GridPattern SVG overlay */}
-      <div className="pointer-events-none absolute inset-0 z-10 opacity-30 group-hover:opacity-55 transition-opacity duration-300">
+    <div className={cn('relative overflow-hidden p-5 bg-[#181122] border border-[#AB7A57]/30 rounded-3xl shadow-xl flex flex-col justify-between group hover:border-[#D3AF54]/50 transition-all duration-300 w-full text-white', className)} {...props}>
+      {/* Decorative GridPattern overlay */}
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
         <GridPattern
           width={20}
           height={20}
           x="-12"
           y="4"
           squares={p}
-          className="fill-white/5 stroke-[#AB7A57]/20 absolute inset-0 h-full w-full mix-blend-overlay"
+          className="fill-white/5 stroke-[#AB7A57]/15 absolute inset-0 h-full w-full mix-blend-overlay"
         />
       </div>
 
-      {/* Dark overlay gradient for readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent z-10 transition-opacity duration-300 group-hover:from-black/95"></div>
+      {/* 1. Heading (top) */}
+      <h3 
+        style={{ color: '#D3AF54' }}
+        className="text-base sm:text-lg font-serif font-bold text-center mb-4 tracking-wider uppercase block relative z-20 group-hover:text-white transition-colors duration-300 shrink-0"
+      >
+        {feature.title}
+      </h3>
 
-      {/* Content overlay */}
-      <div className="absolute inset-0 p-4 sm:p-5 flex flex-col justify-end text-left z-20">
-        {/* Icon Badge */}
-        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#D3AF54]/10 border border-[#D3AF54]/20 flex items-center justify-center mb-2.5 text-[#D3AF54] backdrop-blur-sm shrink-0 group-hover:bg-[#D3AF54]/20 group-hover:scale-105 transition-all duration-300">
-          <Icon className="w-4 h-4 sm:w-4.5 sm:h-4.5" strokeWidth={1.5} aria-hidden />
-        </div>
-
-        {/* Title */}
-        <h3 className="text-sm sm:text-base font-serif font-bold text-white tracking-wide group-hover:text-[#D3AF54] transition-colors duration-300">{feature.title}</h3>
+      {/* 2. Image (middle) */}
+      <div className="w-full aspect-[16/10] bg-white/5 border border-[#AB7A57]/20 rounded-2xl overflow-hidden mb-5 relative group z-10">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/10 z-10 pointer-events-none"></div>
+        <img 
+          src={feature.image} 
+          alt={feature.title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 relative z-0"
+        />
       </div>
+
+      {/* 3. Clickable Button (bottom) */}
+      <Link 
+        to="/booking"
+        className="w-full bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold text-xs py-2.5 px-4 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] relative z-10 shadow-md shadow-[#D3AF54]/10"
+      >
+        <span>Book Consultation</span>
+      </Link>
     </div>
   );
 }
