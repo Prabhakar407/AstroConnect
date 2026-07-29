@@ -123,25 +123,37 @@ export default function Navbar() {
                           to="/services"
                           className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
                         >
-                          Kundli Analysis
+                          Vedic Astrology
                         </Link>
                         <Link
                           to="/services"
                           className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
                         >
-                          Career Guidance
-                        </Link>
-                        <Link
-                          to="/services"
-                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
-                        >
-                          Love & Marriage
+                          Numerology
                         </Link>
                         <Link
                           to="/services"
                           className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
                         >
                           Vastu Consultation
+                        </Link>
+                        <Link
+                          to="/services"
+                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
+                        >
+                          Laal Kitaab Remedies
+                        </Link>
+                        <Link
+                          to="/services"
+                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
+                        >
+                          Expertise in Prashna Kundli
+                        </Link>
+                        <Link
+                          to="/services"
+                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
+                        >
+                          Reiki Healer
                         </Link>
                       </div>
                     </div>
@@ -260,28 +272,42 @@ export default function Navbar() {
                           onClick={() => setIsOpen(false)}
                           className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
                         >
-                          Kundli Analysis
+                          Vedic Astrology
                         </Link>
                         <Link
                           to="/services"
                           onClick={() => setIsOpen(false)}
                           className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
                         >
-                          Career Guidance
+                          Numerology
                         </Link>
                         <Link
                           to="/services"
                           onClick={() => setIsOpen(false)}
                           className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
                         >
-                          Love & Marriage
+                          Vastu Consultation
+                        </Link>
+                        <Link
+                          to="/services"
+                          onClick={() => setIsOpen(false)}
+                          className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
+                        >
+                          Laal Kitaab Remedies
+                        </Link>
+                        <Link
+                          to="/services"
+                          onClick={() => setIsOpen(false)}
+                          className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
+                        >
+                          Expertise in Prashna Kundli
                         </Link>
                         <Link
                           to="/services"
                           onClick={() => setIsOpen(false)}
                           className="block text-xs text-[#D8CFEB] hover:text-white py-1.5 transition-colors"
                         >
-                          Vastu Consultation
+                          Reiki Healer
                         </Link>
                       </div>
                     )}

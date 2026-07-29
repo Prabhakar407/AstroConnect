@@ -531,7 +531,7 @@ export default function Home() {
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.06),transparent_70%)] rounded-full -z-10"></div>
         
         {/* Capped layout wrapper inside band */}
-        <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] flex flex-col items-center">
+        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] flex flex-col items-center">
           
           <section className="w-full flex flex-col lg:flex-row items-center justify-between min-h-[600px] pt-4 pb-20 lg:pt-6 lg:pb-28 gap-[clamp(2rem,4vw,4rem)] bg-transparent">
             
@@ -683,7 +683,7 @@ export default function Home() {
           </motion.div>
         </div>
 
-        <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pt-8 sm:pt-12">
+        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pt-8 sm:pt-12">
           
           <motion.section 
             onViewportEnter={startTimelineSequence}
@@ -764,7 +764,7 @@ export default function Home() {
                         x: visibleCardsCount > index ? 0 : 30 
                       }}
                       transition={{ duration: 0.8, ease: "easeOut" }}
-                      className="bg-[#181122] border border-[#AB7A57]/20 hover:border-[#D3AF54] rounded-2xl p-5 shadow-lg max-w-[420px] w-full flex flex-col items-start gap-3 group cursor-pointer hover:scale-[1.02] transition-transform duration-300"
+                      className="bg-[#181122] border border-[#AB7A57]/20 hover:border-[#D3AF54] rounded-2xl p-5 shadow-lg max-w-2xl w-full flex flex-col items-start gap-3 group cursor-pointer hover:scale-[1.02] transition-transform duration-300"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full border border-[#BDBDBD] flex items-center justify-center text-[#D3AF54] bg-[#FFFDEE] shrink-0 group-hover:scale-115 transition-transform duration-300">
@@ -788,7 +788,7 @@ export default function Home() {
       {/* 4. PREMIUM ASTROLOGY SERVICES GRID                        */}
       {/* ========================================================= */}
       <div className="w-full bg-[#FDFCF5] flex justify-center">
-        <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
+        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
           <motion.section 
             initial={{ opacity: 0, y: 50 }}
@@ -824,7 +824,7 @@ export default function Home() {
       {/* 5. LUXURIOUS CALL-TO-ACTION (CTA) BANNER STRIP            */}
       {/* ========================================================= */}
       <div className="w-full bg-[#FDFCF5] flex justify-center">
-        <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pb-[clamp(2.5rem,5vw,6rem)]">
+        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pb-[clamp(2.5rem,5vw,6rem)]">
 
           <motion.section 
             initial={{ opacity: 0, y: 40 }}
@@ -873,7 +873,7 @@ export default function Home() {
       {/* 6. INFINITE SLIDING MARQUEE TESTIMONIALS SECTION          */}
       {/* ========================================================= */}
       <div className="w-full bg-[#FDFCF5] flex justify-center border-t border-b border-[#AB7A57]/10">
-        <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
+        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
           <motion.section 
             initial={{ opacity: 0, y: 50 }}
@@ -915,7 +915,7 @@ export default function Home() {
                   {[...testimonials, ...testimonials].map((item, index) => (
                     <div 
                       key={index} 
-                      className="bg-[#181122] border border-[#AB7A57]/20 hover:border-[#D3AF54] rounded-2xl p-6 md:p-8 flex flex-col justify-between shadow-lg hover:shadow-[0_12px_24px_rgba(211,175,84,0.1)] transition-all duration-300 relative select-none w-[clamp(17rem,24vw,25rem)] shrink-0 gap-4"
+                      className="bg-[#181122] border border-[#AB7A57]/20 hover:border-[#D3AF54] rounded-2xl p-6 md:p-8 flex flex-col justify-between shadow-lg hover:shadow-[0_12px_24px_rgba(211,175,84,0.1)] transition-all duration-300 relative select-none w-[clamp(17rem,24vw,32rem)] shrink-0 gap-4"
                     >
                       <div>
                         {/* Stars row */}
@@ -958,7 +958,7 @@ export default function Home() {
       {/* 7. SECTION 2 — ABOUT THE ASTROLOGER                       */}
       {/* ========================================================= */}
       <div className="w-full bg-[#FDFCF5] flex justify-center">
-        <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
+        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
           <section className="w-full bg-transparent py-[clamp(3rem,6vw,7rem)] relative overflow-hidden flex flex-col items-center">
             
@@ -1062,7 +1062,7 @@ export default function Home() {
       {/* 8. DYNAMIC COSMIC CONTACT / DEEP SPACE BAND SECTION        */}
       {/* ========================================================= */}
       <div id="quick-connect" className="w-full bg-[#06091B] flex justify-center border-t border-[#AB7A57]/20 text-white">
-        <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
+        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
           <motion.section 
             initial={{ opacity: 0, y: 50 }}

@@ -126,7 +126,7 @@ function About() {
         </motion.div>
 
         {/* Capped layout wrapper inside band */}
-        <div className="w-full max-w-[1920px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pt-4 lg:pt-6 pb-[clamp(3.5rem,6vw,7.5rem)] flex flex-col items-center">
+        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pt-4 lg:pt-6 pb-[clamp(3.5rem,6vw,7.5rem)] flex flex-col items-center">
           
 
 
@@ -206,7 +206,7 @@ function About() {
               className="lg:col-span-5 lg:order-2 order-1 flex justify-center relative w-full pt-2 lg:pt-4"
             >
               {/* Elegant Archway/Temple Portal Frame */}
-              <div className="relative w-full max-w-[280px] sm:max-w-[320px] aspect-[3/4] rounded-t-full border-2 border-[#D3AF54] bg-[#181122] shadow-[0_20px_50px_rgba(211,175,84,0.25)] overflow-hidden flex items-center justify-center group z-10">
+              <div className="relative w-[clamp(15rem,24vw,22rem)] aspect-[3/4] rounded-t-full border-2 border-[#D3AF54] bg-[#181122] shadow-[0_20px_50px_rgba(211,175,84,0.25)] overflow-hidden flex items-center justify-center group z-10">
                 <img 
                   src={astrologerPortrait} 
                   alt="Astrologer Kundan Singh" 
@@ -299,7 +299,7 @@ function About() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full max-w-[1920px] px-6 lg:px-8 flex flex-col items-center pt-8 sm:pt-10 pb-8 sm:pb-12"
+          className="w-full max-w-[2400px] px-6 lg:px-8 flex flex-col items-center pt-8 sm:pt-10 pb-8 sm:pb-12"
         >
           
           {/* Section Header */}
@@ -337,7 +337,7 @@ function About() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full max-w-[1920px]"
+          className="w-full max-w-[2400px]"
         >
           
           <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 mb-10 text-center">
@@ -375,14 +375,14 @@ function About() {
                   </div>
 
                   {/* Right Column: Details (Narrower) */}
-                  <div className="flex-grow text-left flex flex-col justify-center py-2 max-w-[280px] w-full">
+                  <div className="flex-grow text-left flex flex-col justify-center py-2 max-w-md w-full">
                     <span className="text-[9px] tracking-widest text-[#D3AF54] font-sans font-bold uppercase block mb-3 border border-[#D3AF54]/30 bg-white/5 px-3 py-1 rounded-full w-fit">
                       VERIFIED ACCREDITATION
                     </span>
                     <h3 className="font-serif text-white font-bold text-lg leading-tight mb-3 tracking-wide group-hover:text-[#D3AF54] transition-colors duration-300">
                       {certificatesData[certIndex].name}
                     </h3>
-                    <p className="text-[11px] sm:text-xs text-[#D8CFEB] leading-relaxed font-sans max-w-[280px]">
+                    <p className="text-[11px] sm:text-xs text-[#D8CFEB] leading-relaxed font-sans max-w-md">
                       This verified credential stands as a testament to the rigorous studies and complete mastery in Vedic sciences, birth charts mathematical calculations, and ancient energetic remedies.
                     </p>
                   </div>
