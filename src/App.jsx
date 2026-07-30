@@ -3,6 +3,7 @@ import Navbar from './Component/Navbar'
 import Home from './Component/Home'
 import About from './Component/About'
 import Service from './Component/Service'
+import ServiceDetail from './Component/ServiceDetail'
 import Testimonial from './Component/Testimonial'
 import Contact from './Component/Contact'
 import Appointment_Booking from './Component/Appointment_Booking'
@@ -28,6 +29,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/services" element={<Service />} />
+            <Route path="/services/:serviceId" element={<ServiceDetail />} />
             <Route path="/testimonials" element={<Testimonial />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/booking" element={<Appointment_Booking />} />

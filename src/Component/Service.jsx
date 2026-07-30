@@ -3,6 +3,13 @@ import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { FileText, Heart, Briefcase, Home as HomeIcon, Hash, Gem, Sparkles, Calendar, BookOpen, HelpCircle } from 'lucide-react'
 
+import vedicAstrologyImg from '../assets/images/Vedic Astrology.png'
+import numerologyImg from '../assets/images/Numerology.png'
+import vastuConsultationImg from '../assets/images/Vastu Consultation.png'
+import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.png'
+import prashnaKundliImg from '../assets/images/Prashna Kundli.png'
+import reikiHealerImg from '../assets/images/Reiki Healer.png'
+
 const MotionLink = motion.create ? motion.create(Link) : motion(Link);
 
 /**
@@ -56,46 +63,94 @@ function Service() {
 
   const serviceOfferings = [
     {
+      id: 'vedic-astrology',
       title: 'Vedic Astrology',
       price: '$120 / ₹9,999',
       duration: '60 mins',
       desc: 'Comprehensive evaluation of planetary positions, houses, and transits (Janam Kundli) to clarify your destiny, strengths, weaknesses, and future timelines.',
-      icon: <FileText size={22} className="text-[#D3AF54]" />
+      icon: <FileText size={20} className="text-[#D3AF54]" />,
+      image: vedicAstrologyImg,
+      points: [
+        'Detailed Janam Kundli analysis mapping life path cycles.',
+        'Planetary transit and major Dasha period breakdowns.',
+        'Precise career, relationships, and health timelines.'
+      ],
+      impact: 'Rohan Sharma aligned his career during a Saturn transition, securing promotion within 3 months.'
     },
     {
-      title: 'Numerologist',
+      id: 'numerology',
+      title: 'Numerology Reading',
       price: '$80 / ₹6,499',
       duration: '45 mins',
       desc: 'Uncover the hidden patterns of your life path, destiny, and name frequencies. Align your personal vibrations to unlock career opportunities and wealth luck.',
-      icon: <Hash size={22} className="text-[#D3AF54]" />
+      icon: <Hash size={20} className="text-[#D3AF54]" />,
+      image: numerologyImg,
+      points: [
+        'Destiny and Life Path number vibration matching.',
+        'Personalized business and name spelling correction.',
+        'Identifying luck periods for career launch & investment.'
+      ],
+      impact: 'Vikram Aditya adjusted his startup name spelling and witnessed a 40% surge in user conversions.'
     },
     {
-      title: 'Vastu Consultant',
+      id: 'vastu',
+      title: 'Vastu Consultation',
       price: '$200 / ₹15,999',
       duration: 'Site Specific',
       desc: 'Optimize the flow of energy at home or work. Align rooms, elements, and layouts to clear blocking influences and invite growth, harmony, and prosperity.',
-      icon: <HomeIcon size={22} className="text-[#D3AF54]" />
+      icon: <HomeIcon size={20} className="text-[#D3AF54]" />,
+      image: vastuConsultationImg,
+      points: [
+        'On-site or digital energy balance mapping.',
+        'Directional layout and element alignment advice.',
+        'Non-destructive, quick placement remedies.'
+      ],
+      impact: 'Priya Kapoor resolved main entrance energy blockages and brought immediate harmony into her household.'
     },
     {
+      id: 'laal-kitaab',
       title: 'Laal Kitaab Remedies',
       price: '$90 / ₹7,499',
       duration: '45 mins',
       desc: 'Simple, practical, and highly effective remedial measures for planetary afflictions, debts, obstacles in career/marriage, and negative influences without complex rituals.',
-      icon: <BookOpen size={22} className="text-[#D3AF54]" />
+      icon: <BookOpen size={20} className="text-[#D3AF54]" />,
+      image: laalKitaabImg,
+      points: [
+        'Instant-action planetary affliction antidotes.',
+        'Practical household and daily routine modifications.',
+        'Zero complex or expensive ritual requirements.'
+      ],
+      impact: 'Dr. Aarav Mehta applied simple copper coin remedies to resolve stagnant pending litigation.'
     },
     {
+      id: 'prashna-kundali',
       title: 'Expertise in Prashna Kundali',
       price: '$110 / ₹8,999',
       duration: '45 mins',
       desc: 'Get instant, precise answers to specific questions (concerning career, finance, marriage, missing items, etc.) based on the exact moment the question is asked.',
-      icon: <HelpCircle size={22} className="text-[#D3AF54]" />
+      icon: <HelpCircle size={20} className="text-[#D3AF54]" />,
+      image: prashnaKundliImg,
+      points: [
+        'Specific query horoscope mapping (real-time).',
+        'Direct "Yes/No" answers with timeline guides.',
+        'Locating missing assets and timing career shifts.'
+      ],
+      impact: 'Amit Patel obtained clear directions on his business transition timeline during a critical trade block.'
     },
     {
+      id: 'reiki-healing',
       title: 'Reiki Healer',
       price: '$75 / ₹5,999',
       duration: '30 mins',
       desc: 'Harmonize and channel life force energy to clear spiritual blocks, reduce stress, accelerate physical healing, and restore deep emotional balance.',
-      icon: <Heart size={22} className="text-[#D3AF54]" />
+      icon: <Heart size={20} className="text-[#D3AF54]" />,
+      image: reikiHealerImg,
+      points: [
+        'Distant and personal chakra energy healing.',
+        'Stagnant aura clearance and stress reduction.',
+        'Accelerating emotional and physical wellness.'
+      ],
+      impact: 'Neha Gupta resolved chronic fatigue and restored peace through remote chakra healing sessions.'
     }
   ]
 
@@ -163,43 +218,77 @@ function Service() {
               borderColor: "#D3AF54", 
               boxShadow: "0 25px 40px -15px rgba(211,175,84,0.1), 0 0 25px rgba(211, 175, 84, 0.25)" 
             }}
-            className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-6 md:p-8 flex flex-col justify-between text-left gap-6 transition-all duration-300 shadow-lg cursor-pointer relative group text-white"
+            className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl overflow-hidden flex flex-col justify-between text-left transition-all duration-300 shadow-lg cursor-pointer relative group text-white"
           >
-            {/* Top row elements */}
-            <div className="space-y-4">
-              {/* Header block with icon and price tag */}
-              <div className="flex items-center justify-between w-full">
-                <div className="w-12 h-12 rounded-2xl bg-[#FFFDEE] border border-[#BDBDBD] flex items-center justify-center shadow-inner group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(211,175,84,0.3)] transition-all duration-300 shrink-0 text-[#D3AF54]">
-                  {item.icon}
-                </div>
-                <div className="text-right">
-                  <span className="text-[10px] text-[#D8CFEB]/85 uppercase tracking-wider block font-semibold leading-none">{item.duration}</span>
-                  <span className="text-sm font-bold text-[#D3AF54] bg-white/5 border border-[#D3AF54]/25 px-2.5 py-1 rounded-full mt-1.5 inline-block font-sans">{item.price}</span>
-                </div>
+            {/* Header Image banner */}
+            <div className="w-full h-44 overflow-hidden relative border-b border-white/5">
+              <img 
+                src={item.image} 
+                alt={item.title} 
+                className="w-full h-full object-cover opacity-75 group-hover:opacity-90 group-hover:scale-105 transition-all duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#181122] via-[#181122]/30 to-transparent pointer-events-none" />
+              
+              {/* Header block icon overlay */}
+              <div className="absolute bottom-3 left-4 w-10 h-10 rounded-xl bg-[#FFFDEE] border border-[#BDBDBD]/40 flex items-center justify-center text-[#D3AF54]">
+                {item.icon}
               </div>
+            </div>
 
-              {/* Title & Divider */}
-              <div className="space-y-1">
-                <h3 className="font-serif text-white font-bold text-lg group-hover:text-[#D3AF54] transition-colors duration-300">
-                  {item.title}
-                </h3>
-                <div className="w-8 h-[1.5px] bg-[#D3AF54]/30 group-hover:w-16 transition-all duration-500 rounded-full"></div>
+            {/* Content Body */}
+            <div className="p-5 sm:p-6 flex flex-col flex-grow gap-4">
+              {/* Title & Price info */}
+              <div className="flex items-start justify-between gap-2">
+                <div className="space-y-0.5">
+                  <h3 className="font-serif text-white font-bold text-base sm:text-lg group-hover:text-[#D3AF54] transition-colors duration-300">
+                    {item.title}
+                  </h3>
+                  <div className="w-8 h-[1.5px] bg-[#D3AF54]/30 group-hover:w-16 transition-all duration-500 rounded-full"></div>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="text-[9px] text-[#D8CFEB]/85 uppercase tracking-wider block font-semibold leading-none">{item.duration}</span>
+                  <span className="text-xs font-bold text-[#D3AF54] bg-white/5 border border-[#D3AF54]/25 px-2 py-0.5 rounded-full mt-1 inline-block font-sans">{item.price}</span>
+                </div>
               </div>
 
               {/* Description */}
-              <p className="text-xs sm:text-[13px] text-[#D8CFEB] leading-relaxed font-sans mt-0.5">
+              <p className="text-xs text-[#D8CFEB] leading-relaxed font-sans mt-0.5">
                 {item.desc}
               </p>
+
+              {/* Key Deliverables points */}
+              <div className="space-y-1.5 pt-1">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-[#D3AF54]">✦ What It Covers ✦</span>
+                <ul className="space-y-1 text-xs text-[#D8CFEB]/85">
+                  {item.points.map((pt, pIdx) => (
+                    <li key={pIdx} className="flex items-start gap-1.5">
+                      <span className="text-[#D3AF54] text-[9px] mt-0.5">✦</span>
+                      <span>{pt}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Life Transformation Story */}
+              <div className="mt-2 p-3 rounded-xl bg-white/[0.03] border border-white/5 italic text-xs text-[#D3AF54]/95">
+                <span className="font-sans font-semibold not-italic block text-[10px] text-[#D8CFEB]/60 uppercase tracking-widest mb-1">Impact Story</span>
+                "{item.impact}"
+              </div>
             </div>
 
             {/* Bottom Row action link */}
-            <div className="border-t border-white/5 pt-4 mt-auto flex justify-between items-center w-full">
-              <span className="text-[11px] font-semibold tracking-wider text-[#D3AF54]/80 uppercase font-sans">Vedic Alignment</span>
+            <div className="border-t border-white/5 p-4 sm:p-5 flex justify-between items-center w-full bg-white/[0.01] gap-3">
+              <MotionLink 
+                to={`/services/${item.id}`}
+                className="bg-[#D3AF54]/10 hover:bg-[#D3AF54] text-[#D3AF54] hover:text-[#181122] border border-[#D3AF54]/40 text-[9px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-lg transition-colors duration-300 flex-1 text-center"
+              >
+                Learn More
+              </MotionLink>
               <MotionLink 
                 to="/booking"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-[#D3AF54]/10 hover:bg-[#D3AF54] text-[#D3AF54] hover:text-[#181122] border border-[#D3AF54]/40 text-[10px] uppercase font-bold tracking-widest px-4 py-2 rounded-lg transition-colors duration-300"
+                className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] text-[9px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-lg transition-all duration-300 flex-1 text-center"
               >
                 Book Now
               </MotionLink>

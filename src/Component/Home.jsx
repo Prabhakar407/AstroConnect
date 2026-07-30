@@ -12,6 +12,28 @@ import vastuConsultationImg from '../assets/images/Vastu Consultation.png'
 import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.png'
 import prashnaKundliImg from '../assets/images/Prashna Kundli.png'
 import reikiHealerImg from '../assets/images/Reiki Healer.png'
+import people1 from '../assets/images/people1.jpg'
+import people2 from '../assets/images/people2.jpg'
+import people3 from '../assets/images/people3.jpg'
+import people4 from '../assets/images/people4.jpg'
+import people5 from '../assets/images/people5.jpg'
+import people6 from '../assets/images/people6.jpg'
+import confidentialityLogo from '../assets/logos/confidentiality.png'
+import accuracyLogo from '../assets/logos/accuracy.png'
+import solutionsLogo from '../assets/logos/solutions.png'
+import transformationLogo from '../assets/logos/transformation.png'
+import callLogo from "../assets/logos/Call.png"
+import gmailLogo from "../assets/logos/gmail.png"
+import mapsLogo from "../assets/logos/google-maps.png"
+import waLogo from "../assets/logos/whatsapp.png"
+import experienceLogo from '../assets/logos/experience.png'
+import clientsLogo from '../assets/logos/clients.png'
+import expertiseLogo from '../assets/logos/expertise.png'
+import guidanceLogo from '../assets/logos/guidance.png'
+
+import { VscWorkspaceTrusted } from "react-icons/vsc"
+import { BsFillPersonFill, BsBullseye } from "react-icons/bs"
+import { PiFlowerLotusLight } from "react-icons/pi"
 
 /**
  * CelestialDivider Component
@@ -325,6 +347,7 @@ export default function Home() {
   const [dotStep, setDotStep] = useState(0);
   const [visibleCardsCount, setVisibleCardsCount] = useState(0);
   const [isTimelineStarted, setIsTimelineStarted] = useState(false);
+  const [activeServiceTab, setActiveServiceTab] = useState(0);
 
   const startTimelineSequence = () => {
     if (isTimelineStarted) return;
@@ -334,24 +357,18 @@ export default function Home() {
     
     setTimeout(() => {
       setDotStep(1);
-    }, 1500);
-    setTimeout(() => {
       setVisibleCardsCount(2);
-    }, 2700);
+    }, 400);
 
     setTimeout(() => {
       setDotStep(2);
-    }, 4200);
-    setTimeout(() => {
       setVisibleCardsCount(3);
-    }, 5400);
+    }, 800);
 
     setTimeout(() => {
       setDotStep(3);
-    }, 6900);
-    setTimeout(() => {
       setVisibleCardsCount(4);
-    }, 8100);
+    }, 1200);
   };
 
   const getDotXPosition = () => {
@@ -373,68 +390,68 @@ export default function Home() {
     {
       title: "TRUSTED & CONFIDENTIAL",
       desc: "Your birth charts and consultation details are kept completely private.",
-      icon: <ShieldCheck size={18} className="text-[#fcb900]" />
+      icon: <VscWorkspaceTrusted size={22} className="text-[#D3AF54]" />
     },
     {
       title: "ACCURATE PREDICTIONS",
       desc: "High precision mathematics calculating planetary alignment and transits.",
-      icon: <LineChart size={18} className="text-[#fcb900]" />
+      icon: <BsBullseye size={22} className="text-[#D3AF54]" />
     },
     {
       title: "PERSONALIZED SOLUTIONS",
       desc: "Tailored remedial measures including gemstone advice, mantras, and pujas.",
-      icon: <UserCheck size={18} className="text-[#fcb900]" />
+      icon: <BsFillPersonFill size={22} className="text-[#D3AF54]" />
     },
     {
       title: "POSITIVE TRANSFORMATION",
       desc: "Bring focus, wealth, wellness, and alignment back into your personal life.",
-      icon: <Flower2 size={18} className="text-[#fcb900]" />
+      icon: <PiFlowerLotusLight size={22} className="text-[#D3AF54]" />
     }
   ]
 
   // Testimonials Data
   const testimonials = [
     {
-      name: "Elena R.",
+      name: "Rohan Sharma",
       rating: 5,
       text: "The guidance I received brought clarity and confidence to my life. The remedies were practical and the predictions were remarkably accurate.",
       service: "Vedic Astrology",
-      image: ""
+      image: people1
     },
     {
-      name: "Marcus T.",
+      name: "Amit Patel",
       rating: 5,
       text: "Understanding my transits and Saturn cycle through Kundan's counseling helped me navigate my career transition successfully.",
       service: "Expertise in Prashna Kundali",
-      image: ""
+      image: people2
     },
     {
-      name: "Priya K.",
+      name: "Priya Kapoor",
       rating: 5,
       text: "Amazing Vastu advice! Making small changes at our entrance brought positive vibes and progress within weeks.",
       service: "Vastu Consultant",
-      image: ""
+      image: people3
     },
     {
       name: "Dr. Aarav Mehta",
       rating: 5,
       text: "Wearing the recommended Yellow Sapphire has brought immense mental clarity and improved my focus in my clinical work.",
       service: "Laal Kitaab Remedies",
-      image: ""
+      image: people4
     },
     {
-      name: "Sarah Jenkins",
+      name: "Neha Gupta",
       rating: 5,
       text: "The compatibility reading was spot on. Kundan suggested simple mantra remedies that helped ease the relationship friction.",
       service: "Reiki Healer",
-      image: ""
+      image: people5
     },
     {
       name: "Vikram Aditya",
       rating: 5,
       text: "Changing my business name spelling as suggested by Kundan Singh did wonders for our customer outreach and conversion rate.",
       service: "Numerologist",
-      image: ""
+      image: people6
     }
   ]
 
@@ -609,7 +626,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="absolute w-[clamp(15rem,21vw,22rem)] h-[clamp(15rem,21vw,22rem)] rounded-full overflow-hidden border-4 border-[#D3AF54] bg-[#181122] shadow-2xl flex items-center justify-center group hover:scale-[1.02] transition-all duration-500 hover:shadow-[0_20px_45px_rgba(211,175,84,0.3)]">
+              <div className="absolute w-[clamp(15rem,21vw,22rem)] h-[clamp(15rem,21vw,22rem)] rounded-full overflow-hidden border-4 border-[#D3AF54] bg-[#06091B] shadow-2xl flex items-center justify-center group hover:scale-[1.02] transition-all duration-500 hover:shadow-[0_20px_45px_rgba(211,175,84,0.3)]">
                 <img 
                   src={astrologerPortrait} 
                   alt="Astrologer Kundan Singh at work" 
@@ -628,17 +645,18 @@ export default function Home() {
       <div ref={timelineRef} className="w-full bg-[#FDFCF5] flex flex-col items-center border-b border-[#AB7A57]/10 relative">
         
         {/* Floating Glassmorphic Stat bar sitting exactly at the boundary */}
-        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
+        {/* Floating Glassmorphic Stat bar sitting exactly at the boundary */}
+        <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-3xl p-2 sm:p-5 shadow-2xl relative overflow-hidden grid grid-cols-4 gap-1.5 sm:gap-4 text-center z-30"
+            className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-3xl p-1.5 py-2 sm:p-3 sm:py-3 shadow-2xl relative overflow-hidden grid grid-cols-3 gap-1.5 sm:gap-4 text-center z-30"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.04),transparent_70%)] pointer-events-none"></div>
             
             {/* Box 1: Experience */}
-            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 p-1.5 sm:p-2 lg:p-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md">
+            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 pt-1 pb-0.5 px-1 sm:pt-1.5 sm:pb-1 sm:px-2 lg:pt-2 lg:pb-1.5 lg:px-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md animate-none">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#AB7A57]/45 flex items-center justify-center text-[#D3AF54] bg-white/[0.03] shrink-0">
                 <Award size={12} className="lg:w-3.5 lg:h-3.5" />
               </div>
@@ -649,7 +667,7 @@ export default function Home() {
             </div>
 
             {/* Box 2: Consultations */}
-            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 p-1.5 sm:p-2 lg:p-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md">
+            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 pt-1 pb-0.5 px-1 sm:pt-1.5 sm:pb-1 sm:px-2 lg:pt-2 lg:pb-1.5 lg:px-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md animate-none">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#AB7A57]/45 flex items-center justify-center text-[#D3AF54] bg-white/[0.03] shrink-0">
                 <Users size={12} className="lg:w-3.5 lg:h-3.5" />
               </div>
@@ -659,19 +677,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Box 3: Clients Served */}
-            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 p-1.5 sm:p-2 lg:p-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#AB7A57]/45 flex items-center justify-center text-[#D3AF54] bg-white/[0.03] shrink-0">
-                <Globe size={12} className="lg:w-3.5 lg:h-3.5" />
-              </div>
-              <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
-                <span className="text-[8px] sm:text-[10px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold w-full text-center lg:text-left lg:whitespace-nowrap">Clients Served</span>
-                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">Indian</span>
-              </div>
-            </div>
-
             {/* Box 4: Rating */}
-            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 p-1.5 sm:p-2 lg:p-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md">
+            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 pt-1 pb-0.5 px-1 sm:pt-1.5 sm:pb-1 sm:px-2 lg:pt-2 lg:pb-1.5 lg:px-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md animate-none">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#AB7A57]/45 flex items-center justify-center text-[#D3AF54] bg-white/[0.03] shrink-0">
                 <Star size={12} className="fill-[#D3AF54] text-[#D3AF54] lg:w-3.5 lg:h-3.5" />
               </div>
@@ -690,23 +697,16 @@ export default function Home() {
             viewport={{ once: true, margin: "-100px" }}
             className="w-full pb-[clamp(3.5rem,6vw,7.5rem)] relative overflow-hidden z-10 flex flex-col items-center"
           >
+            {/* Section Header */}
+            <div className="text-center mb-10 space-y-2">
+              <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#AB7A57] uppercase font-sans flex items-center justify-center gap-1.5">
+                ✦ Our Features ✦
+              </span>
+            </div>
             
             {/* Desktop View (Large Screens: lg breakpoint) */}
-            <div className="hidden lg:flex flex-col items-center w-full gap-12 relative">
+            <div className="hidden lg:flex flex-col items-center w-full relative">
               
-              {/* Horizontal Timeline Line above the cards */}
-              <div className="w-[96%] h-8 relative flex items-center">
-                {/* Background Line */}
-                <div className="w-full h-[3px] bg-[#181122] rounded-full" />
-
-                {/* Animated Moving Circle along the horizontal line */}
-                <motion.div 
-                  animate={{ left: getDotXPosition() }}
-                  transition={{ duration: 1.2, ease: "easeInOut" }}
-                  className="absolute w-4.5 h-4.5 bg-[#D3AF54] rounded-full -translate-y-1/2 top-1/2 shadow-[0_0_15px_rgba(211,175,84,0.95)] z-20 pointer-events-none"
-                />
-              </div>
-
               {/* Grid of 4 horizontal feature cards */}
               <div className="grid grid-cols-4 gap-6 w-full relative z-10">
                 {featuresData.map((item, index) => (
@@ -743,18 +743,8 @@ export default function Home() {
             {/* Mobile/Tablet View (Small Screens: below lg breakpoint) */}
             <div className="flex lg:hidden flex-col items-start w-full relative">
               
-              {/* Central Vertical Timeline Line (on left side) */}
-              <div className="absolute left-4 sm:left-8 top-[70px] bottom-[70px] w-[3px] bg-[#181122] rounded-full">
-                {/* Animated Moving Circle along the vertical line */}
-                <motion.div 
-                  animate={{ top: getDotYPosition() }}
-                  transition={{ duration: 1.2, ease: "easeInOut" }}
-                  className="absolute w-4.5 h-4.5 bg-[#D3AF54] rounded-full -translate-x-1/2 left-1/2 shadow-[0_0_15px_rgba(211,175,84,0.95)] pointer-events-none"
-                />
-              </div>
-
               {/* Grid Layout of cards on the right side */}
-              <div className="w-full grid grid-cols-1 gap-12 relative z-10 pl-10 sm:pl-16">
+              <div className="w-full grid grid-cols-1 gap-6 sm:gap-8 relative z-10">
                 {featuresData.map((item, index) => (
                   <div key={index} className="w-full min-h-[140px] flex items-center relative">
                     <motion.div 
@@ -802,17 +792,144 @@ export default function Home() {
             <div className="w-full">
               
               {/* Section Header */}
-              <div className="text-center mb-16 space-y-3">
-                <span className="text-xs tracking-[0.25em] font-bold text-[#AB7A57] uppercase font-sans flex items-center justify-center gap-1.5">
+              <div className="text-center mb-10 space-y-2">
+                <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#AB7A57] uppercase font-sans flex items-center justify-center gap-1.5">
                   ✦ Our Services ✦
                 </span>
-                <h3 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif font-bold text-[#181122] tracking-wide">
+                <h3 className="text-[clamp(1.4rem,2.2vw,2.4rem)] font-serif font-bold text-[#181122] tracking-wide mt-1">
                   Guidance for Every Aspect of Life
                 </h3>
               </div>
 
-              {/* Responsive Carousel Slider */}
-              <ServiceSlider />
+              {/* Professional and Unique Showcase Dashboard */}
+              <div className="grid grid-cols-1 lg:grid-cols-10 gap-12 lg:gap-14 items-stretch mt-6 text-[#181122] max-w-4xl mx-auto">
+                {/* Left Column - Service tabs list */}
+                <div className="lg:col-span-4 flex flex-col gap-3">
+                  {/* Mobile Horizontal Scroll Tab Row */}
+                  <div className="flex md:hidden overflow-x-auto gap-3 pb-2 scrollbar-none w-full">
+                    {allServices.map((item, idx) => {
+                      const isActive = activeServiceTab === idx;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => setActiveServiceTab(idx)}
+                          className={`flex-shrink-0 w-[180px] flex items-center gap-3 p-3 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
+                            isActive 
+                              ? "bg-[#FFFDEE] border-[#D3AF54] text-[#181122] shadow-md" 
+                              : "bg-white border-[#AB7A57]/15 text-[#181122]/70 hover:bg-[#181122]/5"
+                          }`}
+                        >
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                            isActive ? "bg-[#181122] border border-[#D3AF54] text-white" : "bg-[#FFFDEE] border border-[#AB7A57]/20 text-[#181122]"
+                          }`}>
+                            {renderServiceIcon(item.iconKey, isActive)}
+                          </div>
+                          <span className={`font-semibold tracking-wide text-xs truncate ${
+                            isActive ? "text-[#181122] font-bold" : "text-[#181122]/70"
+                          }`}>
+                            {item.title}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Desktop Vertical Tab List */}
+                  <div className="hidden md:flex flex-col gap-3">
+                    {allServices.map((item, idx) => {
+                      const isActive = activeServiceTab === idx;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => setActiveServiceTab(idx)}
+                          className={`flex items-center gap-4 p-3.5 rounded-2xl border text-left transition-all duration-300 w-full cursor-pointer relative overflow-hidden group ${
+                            isActive 
+                              ? "bg-[#FFFDEE] border-[#D3AF54] text-[#181122] shadow-xl hover:border-[#D3AF54]" 
+                              : "bg-white border-[#AB7A57]/15 text-[#181122]/70 hover:bg-[#181122]/5 hover:border-[#AB7A57]/30"
+                          }`}
+                        >
+                          {isActive && (
+                            <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#D3AF54]" />
+                          )}
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-inner transition-transform group-hover:scale-105 ${
+                            isActive 
+                              ? "bg-[#181122] border border-[#D3AF54] text-white" 
+                              : "bg-[#FFFDEE] border border-[#AB7A57]/20 text-[#181122]"
+                          }`}>
+                            {renderServiceIcon(item.iconKey, isActive)}
+                          </div>
+                          <div>
+                            <h4 className={`font-serif text-sm font-bold tracking-wide transition-colors ${
+                              isActive ? "text-[#181122]" : "text-[#181122]/80 group-hover:text-[#AB7A57]"
+                            }`}>
+                              {item.title}
+                            </h4>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Right Column - Service Details Panel */}
+                <div className="lg:col-span-6">
+                  <AnimatePresence mode="wait">
+                     <motion.div
+                       key={activeServiceTab}
+                       initial={{ opacity: 0, x: 20 }}
+                       animate={{ opacity: 1, x: 0 }}
+                       exit={{ opacity: 0, x: -20 }}
+                       transition={{ duration: 0.3 }}
+                       className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-6 lg:p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden text-white min-h-[440px] h-full text-left"
+                     >
+                       <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.3),transparent_70%)] pointer-events-none" />
+                       <div className="absolute top-0 right-0 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
+
+                       <div className="space-y-6">
+                         {/* Service Image banner */}
+                         <div className="w-full h-44 sm:h-52 rounded-2xl overflow-hidden border border-white/10 relative group">
+                           <img 
+                             src={
+                               activeServiceTab === 0 ? vedicAstrologyImg :
+                               activeServiceTab === 1 ? numerologyImg :
+                               activeServiceTab === 2 ? vastuConsultationImg :
+                               activeServiceTab === 3 ? laalKitaabImg :
+                               activeServiceTab === 4 ? prashnaKundliImg :
+                               reikiHealerImg
+                             }
+                             alt={allServices[activeServiceTab].title}
+                             className="w-full h-full object-cover opacity-80 group-hover:opacity-95 group-hover:scale-102 transition-all duration-500"
+                           />
+                         </div>
+
+                         <div className="space-y-3 text-left">
+                           <span className="text-[10px] tracking-[0.25em] font-bold text-[#D3AF54] uppercase font-sans block">
+                             ✦ CELESTIAL ALIGNMENT ✦
+                           </span>
+                           <h3 className="text-lg sm:text-xl font-serif font-bold text-white tracking-wide">
+                             {allServices[activeServiceTab].title}
+                           </h3>
+                           <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans">
+                             {allServices[activeServiceTab].text}
+                           </p>
+                         </div>
+                       </div>
+
+                       <div className="mt-6 flex justify-start w-full">
+                         <Link 
+                           to="/booking"
+                           className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-semibold px-5 py-2.5 rounded-xl transition duration-300 shadow-md shadow-[#D3AF54]/10 hover:scale-[1.02] active:scale-[0.98] cursor-pointer text-xs uppercase tracking-wider flex items-center gap-2"
+                         >
+                           <Calendar size={14} />
+                           <span>Book Consultation</span>
+                         </Link>
+                       </div>
+                     </motion.div>
+                   </AnimatePresence>
+                </div>
+              </div>
 
             </div>
           </motion.section>
@@ -824,7 +941,7 @@ export default function Home() {
       {/* 5. LUXURIOUS CALL-TO-ACTION (CTA) BANNER STRIP            */}
       {/* ========================================================= */}
       <div className="w-full bg-[#FDFCF5] flex justify-center">
-        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pb-[clamp(2.5rem,5vw,6rem)]">
+        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pb-4 sm:pb-6">
 
           <motion.section 
             initial={{ opacity: 0, y: 40 }}
@@ -833,7 +950,7 @@ export default function Home() {
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="w-full"
           >
-            <div className="bg-[#181122] border border-[#D3AF54]/30 rounded-3xl p-[clamp(1.5rem,4vw,3.5rem)] relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-center justify-between gap-[clamp(1.5rem,3vw,3.5rem)] w-full">
+            <div className="bg-[#181122] border border-[#D3AF54]/30 rounded-3xl p-4 sm:p-5 md:p-6 relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 w-full">
               
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#D3AF54]/5 rounded-full blur-2xl"></div>
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
@@ -888,11 +1005,11 @@ export default function Home() {
             <div className="w-full flex flex-col items-center">
               
               {/* Header */}
-              <div className="text-center mb-16 space-y-3">
-                <span className="text-xs tracking-[0.25em] font-bold text-[#AB7A57] uppercase font-sans block">
-                  ✦ WHAT OUR CLIENTS SAY ✦
+              <div className="text-center mb-10 space-y-2">
+                <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#AB7A57] font-sans block">
+                  ✦ What Our Clients Say ✦
                 </span>
-                <h3 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif font-bold text-[#181122] tracking-wide">
+                <h3 className="text-[clamp(1.4rem,2.2vw,2.4rem)] font-serif font-bold text-[#181122] tracking-wide mt-1">
                   Trusted By Thousands
                 </h3>
               </div>
@@ -926,7 +1043,7 @@ export default function Home() {
                         </div>
 
                         {/* Review text */}
-                        <p className="text-xs md:text-sm text-white font-serif italic leading-relaxed text-left">
+                        <p className="text-xs md:text-sm text-white font-sans italic leading-relaxed text-left">
                           "{item.text}"
                         </p>
                       </div>
@@ -934,13 +1051,20 @@ export default function Home() {
                       {/* Client identity row */}
                       <div className="flex items-center gap-3 mt-auto pt-4 border-t border-white/5 w-full">
                         {/* Avatar frame */}
-                        <div className="w-10 h-10 rounded-full border border-[#BDBDBD] bg-[#FFFDEE] flex items-center justify-center overflow-hidden shrink-0 relative shadow-sm">
-                          <span className="text-xs text-[#D3AF54] font-semibold">{item.name.split(" ")[0][0]}{item.name.split(" ").length > 1 ? item.name.split(" ")[1][0] : ""}</span>
+                        <div className="w-10 h-10 rounded-full border border-[#AB7A57]/30 bg-[#FFFDEE] flex items-center justify-center overflow-hidden shrink-0 relative shadow-sm">
+                          {item.image ? (
+                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-xs text-[#D3AF54] font-semibold">
+                              {item.name.split(" ")[0][0]}
+                              {item.name.split(" ").length > 1 ? item.name.split(" ")[1][0] : ""}
+                            </span>
+                          )}
                         </div>
                         {/* Name & service */}
                         <div className="flex flex-col text-left">
-                          <span className="font-serif text-white font-bold text-sm leading-tight">{item.name}</span>
-                          <span className="text-[10px] text-[#D3AF54] uppercase tracking-wider font-semibold mt-0.5">{item.service}</span>
+                          <span className="font-sans text-white font-bold text-sm leading-tight">{item.name}</span>
+                          <span className="text-[10px] text-[#D3AF54] tracking-wider font-semibold mt-0.5">{item.service}</span>
                         </div>
                       </div>
                     </div>
@@ -964,7 +1088,7 @@ export default function Home() {
             
             <div className="absolute bottom-4 left-4 w-80 h-80 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.03),transparent_70%)] rounded-full -z-10 animate-pulse"></div>
 
-            <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-[clamp(2rem,5vw,6rem)] items-center">
+            <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               
               {/* Left Column Astrologer Portrait (Slides in from the bottom) */}
               <motion.div 
@@ -972,7 +1096,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="flex justify-center items-center relative w-full min-h-[400px]"
+                className="lg:col-span-5 flex justify-center items-center relative w-full min-h-[400px]"
               >
                 <div className="absolute -inset-2 border-2 border-dashed border-[#AB7A57]/40 rounded-3xl -z-10"></div>
                 
@@ -991,65 +1115,55 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="space-y-6 text-left"
+                className="lg:col-span-7 space-y-6 text-left"
               >
-                <span className="text-xs tracking-[0.25em] font-bold text-[#AB7A57] uppercase font-sans">
+                <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#AB7A57] uppercase font-sans text-left block">
                   ✦ ABOUT ME ✦
                 </span>
                 
-                <h3 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif font-bold text-[#181122] tracking-wide">
+                <h3 className="text-[clamp(1.4rem,2.2vw,2.4rem)] font-serif font-bold text-[#181122] tracking-wide mt-1 text-left">
                   Your Guide to a Brighter Future
                 </h3>
 
-                <p className="text-[clamp(1rem,1.2vw,1.25rem)] text-[#181122]/90 leading-relaxed font-sans">
-                  With years of experience in Vedic Astrology, Numerology, and Spiritual Guidance, I help individuals gain clarity, confidence, and direction in life. My approach combines traditional wisdom with practical solutions for modern challenges.
-                </p>
+                <div className="relative p-5 rounded-2xl bg-white/40 border border-[#AB7A57]/15 shadow-sm text-left backdrop-blur-xs">
+                  <div className="absolute top-0 left-0 w-2 h-full bg-[#D3AF54] rounded-l-2xl" />
+                  <p className="text-xs sm:text-sm text-[#181122]/90 leading-relaxed font-sans pl-2">
+                    I am a qualified Vedic astrologer with over 15 years of experience, specializing in Janam Kundli analysis, Vastu Shastra, and Numerology. My approach combines traditional planetary wisdom—honed through rigorous education in Astrology and Alankar at Bharatiya Vidya Bhavan—with practical remedial insights to help you navigate modern life's career, relationship, and financial pathways.
+                  </p>
+                </div>
 
                 {/* Achievement Cards Grid */}
-                <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[clamp(1rem,2vw,2.5rem)] pt-4">
+                <div className="grid grid-cols-2 gap-4 pt-4 text-left max-w-md md:max-w-lg">
                   
-                  <div className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full border border-[#BDBDBD] flex items-center justify-center text-[#D3AF54] bg-[#FFFDEE] shrink-0 shadow-sm">
-                      <Award size={18} />
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] transition-all duration-300 shadow-xs cursor-default group">
+                    <div className="w-9 h-9 rounded-full border border-[#AB7A57]/30 flex items-center justify-center bg-[#FFFDEE] shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+                      <img src={experienceLogo} alt="Experience" className="w-5 h-5 object-contain" />
                     </div>
-                    <div>
-                      <h4 className="font-serif text-[#181122] font-bold text-sm sm:text-base">Years of Experience</h4>
-                      <p className="text-xs sm:text-sm text-[#181122]/85 mt-1 leading-relaxed font-sans">Over a decade mapping transit cycles & natal stars.</p>
-                    </div>
+                    <h4 className="font-serif text-[#181122] font-bold text-xs sm:text-sm tracking-wide">10+ Years of Experience</h4>
                   </div>
- 
-                  <div className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full border border-[#BDBDBD] flex items-center justify-center text-[#D3AF54] bg-[#FFFDEE] shrink-0 shadow-sm">
-                      <Users size={18} />
+
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] transition-all duration-300 shadow-xs cursor-default group">
+                    <div className="w-9 h-9 rounded-full border border-[#AB7A57]/30 flex items-center justify-center bg-[#FFFDEE] shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+                      <img src={clientsLogo} alt="Clients" className="w-5 h-5 object-contain" />
                     </div>
-                    <div>
-                      <h4 className="font-serif text-[#181122] font-bold text-sm sm:text-base">Satisfied Clients</h4>
-                      <p className="text-xs sm:text-sm text-[#181122]/85 mt-1 leading-relaxed font-sans">Thousands helped globally with practical remedial measures.</p>
-                    </div>
+                    <h4 className="font-serif text-[#181122] font-bold text-xs sm:text-sm tracking-wide">Satisfied Clients</h4>
                   </div>
- 
-                  <div className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full border border-[#BDBDBD] flex items-center justify-center text-[#D3AF54] bg-[#FFFDEE] shrink-0 shadow-sm">
-                      <BookOpen size={18} />
+
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] transition-all duration-300 shadow-xs cursor-default group">
+                    <div className="w-9 h-9 rounded-full border border-[#AB7A57]/30 flex items-center justify-center bg-[#FFFDEE] shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+                      <img src={expertiseLogo} alt="Expertise" className="w-5 h-5 object-contain" />
                     </div>
-                    <div>
-                      <h4 className="font-serif text-[#181122] font-bold text-sm sm:text-base">Vedic Expertise</h4>
-                      <p className="text-xs sm:text-sm text-[#181122]/85 mt-1 leading-relaxed font-sans">Deep classical understanding of birth charts & Vastu Shastra.</p>
-                    </div>
+                    <h4 className="font-serif text-[#181122] font-bold text-xs sm:text-sm tracking-wide">Vedic Expertise</h4>
                   </div>
- 
-                  <div className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full border border-[#BDBDBD] flex items-center justify-center text-[#D3AF54] bg-[#FFFDEE] shrink-0 shadow-sm">
-                      <Shield size={18} />
+
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] transition-all duration-300 shadow-xs cursor-default group">
+                    <div className="w-9 h-9 rounded-full border border-[#AB7A57]/30 flex items-center justify-center bg-[#FFFDEE] shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
+                      <img src={guidanceLogo} alt="Guidance" className="w-5 h-5 object-contain" />
                     </div>
-                    <div>
-                      <h4 className="font-serif text-[#181122] font-bold text-sm sm:text-base">Honest Guidance</h4>
-                      <p className="text-xs sm:text-sm text-[#181122]/85 mt-1 leading-relaxed font-sans">Compassionate counseling focused entirely on your spiritual growth.</p>
-                    </div>
+                    <h4 className="font-serif text-[#181122] font-bold text-xs sm:text-sm tracking-wide">Honest Guidance</h4>
                   </div>
 
                 </div>
-
               </motion.div>
 
             </div>
@@ -1112,7 +1226,7 @@ export default function Home() {
                   </div>
 
                   {/* Services Selector Grid */}
-                  <div className="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-2 py-1">
+                  <div className="grid grid-cols-2 gap-2 py-1">
                     {services.map((item, idx) => {
                       const isSelected = formData.selectedService === item.title;
                       return (
@@ -1126,14 +1240,14 @@ export default function Home() {
                               comment: prev.comment || `I am requesting a consultation for ${item.title}.`
                             }));
                           }}
-                          className={`flex items-center gap-2 p-2.5 rounded-xl border text-xs transition-all duration-300 cursor-pointer ${
+                          className={`flex items-center gap-2 p-2 rounded-xl border transition-all duration-300 cursor-pointer ${
                             isSelected 
                               ? "bg-[#D3AF54]/15 border-[#D3AF54] text-white shadow-[0_0_10px_rgba(211,175,84,0.2)]" 
                               : "bg-white/[0.02] border-white/5 text-[#D8CFEB]/95 hover:bg-white/10 hover:border-white/20"
                           }`}
                         >
                           <div className="text-sm shrink-0">{item.icon}</div>
-                          <span className="font-semibold tracking-wide truncate">{item.title}</span>
+                          <span className="font-semibold tracking-wide text-left text-[10px] sm:text-xs leading-tight">{item.title}</span>
                         </button>
                       );
                     })}
@@ -1151,19 +1265,36 @@ export default function Home() {
                     </span>
                   </div>
 
-                  <div className="space-y-2 text-xs sm:text-sm text-white font-sans">
-                    <div className="flex items-center gap-2">
-                      <Mail size={14} className="text-[#D3AF54] shrink-0" />
-                      <span className="truncate">astrologerkundan@gmail.com</span>
+                  <div className="space-y-3.5 text-xs sm:text-sm text-white font-sans">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                        <img src={gmailLogo} alt="Gmail" className="w-5 h-5 object-contain" />
+                      </div>
+                      <span className="truncate">singh.21kundan@gmail.com</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Phone size={14} className="text-[#D3AF54] shrink-0" />
-                      <span>+91 94520 62153</span>
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                        <img src={callLogo} alt="Call" className="w-5 h-5 object-contain" />
+                      </div>
+                      <span>+91 8130808758</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin size={14} className="text-[#D3AF54] shrink-0" />
-                      <span>Varanasi, Uttar Pradesh, India</span>
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                        <img src={mapsLogo} alt="Maps" className="w-5 h-5 object-contain" />
+                      </div>
+                      <span>Vasant Kunj, Delhi, India</span>
                     </div>
+                    <a 
+                      href="https://wa.me/918527790801" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="flex items-center gap-3.5 hover:text-[#D3AF54] transition-colors group/wa"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover/wa:border-[#D3AF54] transition-colors">
+                        <img src={waLogo} alt="WhatsApp" className="w-5 h-5 object-contain" />
+                      </div>
+                      <span>WhatsApp Live Support</span>
+                    </a>
                   </div>
                 </div>
               </div>

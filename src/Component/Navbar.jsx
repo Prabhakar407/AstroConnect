@@ -120,37 +120,37 @@ export default function Navbar() {
                     <div className="absolute top-full left-0 mt-2 w-56 bg-[#181122]/95 border border-[#AB7A57]/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 backdrop-blur-md">
                       <div className="py-2">
                         <Link
-                          to="/services"
+                          to="/services/vedic-astrology"
                           className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
                         >
                           Vedic Astrology
                         </Link>
                         <Link
-                          to="/services"
+                          to="/services/numerology"
                           className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
                         >
                           Numerology
                         </Link>
                         <Link
-                          to="/services"
+                          to="/services/vastu"
                           className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
                         >
                           Vastu Consultation
                         </Link>
                         <Link
-                          to="/services"
+                          to="/services/laal-kitaab"
                           className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
                         >
                           Laal Kitaab Remedies
                         </Link>
                         <Link
-                          to="/services"
+                          to="/services/prashna-kundali"
                           className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
                         >
                           Expertise in Prashna Kundli
                         </Link>
                         <Link
-                          to="/services"
+                          to="/services/reiki-healing"
                           className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
                         >
                           Reiki Healer
@@ -268,42 +268,42 @@ export default function Navbar() {
                     {servicesOpen && (
                       <div className="pl-6 mt-1 border-l border-white/10 space-y-2 py-1 relative z-10">
                         <Link
-                          to="/services"
+                          to="/services/vedic-astrology"
                           onClick={() => setIsOpen(false)}
                           className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
                         >
                           Vedic Astrology
                         </Link>
                         <Link
-                          to="/services"
+                          to="/services/numerology"
                           onClick={() => setIsOpen(false)}
                           className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
                         >
                           Numerology
                         </Link>
                         <Link
-                          to="/services"
+                          to="/services/vastu"
                           onClick={() => setIsOpen(false)}
                           className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
                         >
                           Vastu Consultation
                         </Link>
                         <Link
-                          to="/services"
+                          to="/services/laal-kitaab"
                           onClick={() => setIsOpen(false)}
                           className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
                         >
                           Laal Kitaab Remedies
                         </Link>
                         <Link
-                          to="/services"
+                          to="/services/prashna-kundali"
                           onClick={() => setIsOpen(false)}
                           className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
                         >
                           Expertise in Prashna Kundli
                         </Link>
                         <Link
-                          to="/services"
+                          to="/services/reiki-healing"
                           onClick={() => setIsOpen(false)}
                           className="block text-xs text-[#D8CFEB] hover:text-white py-1.5 transition-colors"
                         >

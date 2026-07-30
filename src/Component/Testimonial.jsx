@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Star, ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
+import people1 from '../assets/images/people1.jpg'
+import people2 from '../assets/images/people2.jpg'
+import people3 from '../assets/images/people3.jpg'
+import people4 from '../assets/images/people4.jpg'
+import people5 from '../assets/images/people5.jpg'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -41,46 +47,52 @@ function Testimonial() {
 
   const reviews = [
     {
-      name: "ANU",
+      name: "Anu",
       rating: 5,
       date: "December 2021",
       service: "Kundli Consultation",
-      text: "Very knowledgeable and professional astrologer. The consultation was detailed and the guidance provided was extremely helpful. I would highly recommend their services to anyone seeking clarity and direction in life."
+      text: "Very knowledgeable and professional astrologer. The consultation was detailed and the guidance provided was extremely helpful. I would highly recommend their services to anyone seeking clarity and direction in life.",
+      image: people3
     },
     {
-      name: "ELENA R.",
+      name: "Rohan Sharma",
       rating: 5,
       date: "July 2024",
       service: "Kundli Analysis",
-      text: "The guidance I received brought clarity and confidence to my life. The remedies were practical and the predictions were remarkably accurate."
+      text: "The guidance I received brought clarity and confidence to my life. The remedies were practical and the predictions were remarkably accurate.",
+      image: people1
     },
     {
-      name: "MARCUS T.",
+      name: "Amit Patel",
       rating: 5,
       date: "September 2024",
       service: "Career Guidance",
-      text: "Understanding my transits and Saturn cycle through Kundan's counseling helped me navigate my career transition successfully."
+      text: "Understanding my transits and Saturn cycle through Kundan's counseling helped me navigate my career transition successfully.",
+      image: people2
     },
     {
-      name: "PRIYA K.",
+      name: "Priya Kapoor",
       rating: 5,
       date: "October 2024",
       service: "Vastu Consultation",
-      text: "Amazing Vastu advice! Making small changes at our entrance brought positive vibes and progress within weeks."
+      text: "Amazing Vastu advice! Making small changes at our entrance brought positive vibes and progress within weeks.",
+      image: people3
     },
     {
-      name: "DR. AARAV MEHTA",
+      name: "Dr. Aarav Mehta",
       rating: 5,
       date: "November 2024",
       service: "Gemstone Advice",
-      text: "Wearing the recommended Yellow Sapphire has brought immense mental clarity and improved my focus in my clinical work."
+      text: "Wearing the recommended Yellow Sapphire has brought immense mental clarity and improved my focus in my clinical work.",
+      image: people4
     },
     {
-      name: "SARAH JENKINS",
+      name: "Neha Gupta",
       rating: 5,
       date: "January 2025",
       service: "Love & Marriage",
-      text: "The compatibility reading was spot on. Kundan suggested simple mantra remedies that helped ease the relationship friction."
+      text: "The compatibility reading was spot on. Kundan suggested simple mantra remedies that helped ease the relationship friction.",
+      image: people5
     }
   ]
 
@@ -104,7 +116,7 @@ function Testimonial() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center justify-start px-6 pt-6 md:pt-8 pb-12 font-sans text-[#181122]">
+    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center justify-center px-6 py-12 font-sans text-[#181122]">
       
       {/* ========================================================= */}
       {/* DECORATIVE BACKGROUND ELEMENTS                            */}
@@ -197,8 +209,12 @@ function Testimonial() {
             className="w-full flex flex-col items-center text-center px-2 py-2 sm:px-12 relative"
           >
             {/* Client Image Placeholder */}
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border border-dashed border-[#AB7A57]/45 bg-white flex items-center justify-center shadow-inner mb-3 overflow-hidden relative shrink-0 text-2xl">
-              <span>👤</span>
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border border-dashed border-[#AB7A57]/45 bg-white flex items-center justify-center shadow-inner mb-3 overflow-hidden relative shrink-0">
+              {reviews[currentIndex].image ? (
+                <img src={reviews[currentIndex].image} alt={reviews[currentIndex].name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-xl sm:text-2xl">👤</span>
+              )}
             </div>
 
             {/* Rating Stars */}
@@ -210,17 +226,17 @@ function Testimonial() {
 
             {/* Review Text */}
             <blockquote className="max-w-3xl">
-              <p className="font-serif italic text-[#181122]/90 text-base md:text-lg lg:text-xl leading-relaxed tracking-wide mb-5 font-medium">
+              <p className="font-sans italic text-[#181122]/90 text-base md:text-lg lg:text-xl leading-relaxed tracking-wide mb-5 font-medium">
                 "{reviews[currentIndex].text}"
               </p>
             </blockquote>
 
             {/* Client Information */}
             <div className="mt-1 flex flex-col items-center">
-              <span className="font-serif font-bold uppercase tracking-widest text-[#181122] text-sm md:text-base block">
+              <span className="font-sans font-bold tracking-widest text-[#181122] text-sm md:text-base block">
                 {reviews[currentIndex].name}
               </span>
-              <span className="text-[10px] sm:text-[11px] text-[#AB7A57] font-sans font-semibold tracking-widest block mt-1 uppercase">
+              <span className="text-[10px] sm:text-[11px] text-[#AB7A57] font-sans font-semibold tracking-widest block mt-1">
                 {reviews[currentIndex].date} • {reviews[currentIndex].service}
               </span>
             </div>
@@ -271,6 +287,22 @@ function Testimonial() {
         >
           <ChevronRight size={16} />
         </motion.button>
+      </motion.div>
+
+      {/* ========================================================= */}
+      {/* CALL TO ACTION BUTTON                                     */}
+      {/* ========================================================= */}
+      <motion.div 
+        variants={itemVariants} 
+        className="mt-10 relative z-10 flex flex-col items-center"
+      >
+        <Link 
+          to="/booking"
+          className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-semibold px-6 py-3 rounded-xl transition duration-300 shadow-md shadow-[#D3AF54]/10 hover:scale-[1.02] active:scale-[0.98] cursor-pointer text-xs uppercase tracking-wider flex items-center gap-2"
+        >
+          <Calendar size={14} />
+          <span>Book Appointment</span>
+        </Link>
       </motion.div>
  
     </div>

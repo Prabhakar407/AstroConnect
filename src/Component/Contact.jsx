@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { Phone, Mail, MapPin, Clock, MessageCircle, Send, User, Sparkles } from 'lucide-react'
+import { Phone, Mail, MapPin, Clock, MessageCircle, Send, User, Sparkles, Calendar } from 'lucide-react'
 import callLogo from "../assets/logos/Call.png"
 import gmailLogo from "../assets/logos/gmail.png"
 import mapsLogo from "../assets/logos/google-maps.png"
@@ -90,7 +91,7 @@ function Contact() {
     {
       icon: <img src={gmailLogo} alt="Gmail" className="w-6 h-6 object-contain" />,
       title: "Email Queries",
-      val: "Singh.21kundan@gmail.com",
+      val: "singh.21kundan@gmail.com",
       sub: "Response within 24 hours"
     },
     {
@@ -139,11 +140,18 @@ function Contact() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         style={{ y: yHeader }}
-        className="text-center max-w-2xl mb-6 relative z-10"
+        className="text-center max-w-2xl mb-6 relative z-10 flex flex-col items-center gap-3.5"
       >
         <h1 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif font-bold text-[#181122] tracking-wide leading-tight">
           Connect Personally
         </h1>
+        <Link 
+          to="/booking"
+          className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-semibold px-5 py-2.5 rounded-xl transition duration-300 shadow-md shadow-[#D3AF54]/10 hover:scale-[1.02] active:scale-[0.98] cursor-pointer text-xs uppercase tracking-wider flex items-center gap-2"
+        >
+          <Calendar size={14} />
+          <span>Book Appointment</span>
+        </Link>
       </motion.div>
 
       {/* ========================================================= */}

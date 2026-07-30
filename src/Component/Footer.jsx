@@ -74,7 +74,7 @@ export default function Footer() {
             </a>
             
             {/* WhatsApp */}
-            <a href="https://wa.me/919452062153" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/5 hover:bg-[#D3AF54]/15 border border-[#D3AF54]/30 hover:border-[#D3AF54] flex items-center justify-center transition-all duration-300 overflow-hidden shadow-sm">
+            <a href="https://wa.me/918527790801" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/5 hover:bg-[#D3AF54]/15 border border-[#D3AF54]/30 hover:border-[#D3AF54] flex items-center justify-center transition-all duration-300 overflow-hidden shadow-sm">
               <img src={waLogo} alt="WhatsApp" className="w-8 h-8 object-contain hover:scale-125 transition-transform duration-300" />
             </a>
           </div>
@@ -111,15 +111,15 @@ export default function Footer() {
           <ul className="space-y-2.5 text-xs text-[#D8CFEB]">
             <li className="flex items-center gap-2.5">
               <img src={callLogo} alt="Call" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0" />
-              <span>☎ +91 94520 62153</span>
+              <span>☎ +91 8130808758</span>
             </li>
             <li className="flex items-center gap-2.5">
               <img src={gmailLogo} alt="Email" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0" />
-              <span>astrologerkundan@gmail.com</span>
+              <span>singh.21kundan@gmail.com</span>
             </li>
             <li className="flex items-center gap-2.5">
               <img src={mapsLogo} alt="Map" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0" />
-              <span>Varanasi, Uttar Pradesh, India</span>
+              <span>Vasant Kunj, Delhi, India</span>
             </li>
             <li className="flex items-center gap-2.5">
               <img src={clockLogo} alt="Clock" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0 bg-white rounded-full p-0.5" />
@@ -127,7 +127,7 @@ export default function Footer() {
             </li>
             <li className="flex items-center gap-2.5">
               <img src={waLogo} alt="WhatsApp" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0" />
-              <a href="https://wa.me/919452062153" target="_blank" rel="noreferrer" className="text-[#D8CFEB] hover:underline hover:text-[#D3AF54]">WhatsApp Live Chat</a>
+              <a href="https://wa.me/918527790801" target="_blank" rel="noreferrer" className="text-[#D8CFEB] hover:underline hover:text-[#D3AF54]">WhatsApp Live Chat</a>
             </li>
           </ul>
         </div>
