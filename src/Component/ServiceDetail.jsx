@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, ArrowRight } from 'lucide-react'
+import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, ArrowRight, Home, Sofa, Bed, Utensils, Bath, Briefcase } from 'lucide-react'
 
 import sunIcon from '../assets/planets/sun.jpg'
 import moonIcon from '../assets/planets/moon.jpg'
@@ -12,6 +12,12 @@ import venusIcon from '../assets/planets/venus.jpg'
 import ketuIcon from '../assets/planets/ketu.jpg'
 import saturnIcon from '../assets/planets/saturn.jpg'
 import marsIcon from '../assets/planets/mars.jpg'
+
+import earthImg from '../assets/elements/earth.png'
+import waterImg from '../assets/elements/water.png'
+import fireImg from '../assets/elements/fire.png'
+import airImg from '../assets/elements/air.png'
+import spaceImg from '../assets/elements/space.png'
 
 import vedicAstrologyImg from '../assets/images/Vedic Astrology.png'
 import numerologyImg from '../assets/images/Numerology.png'
@@ -303,7 +309,7 @@ export default function ServiceDetail() {
           {/* Vedic Numerology Card */}
           <motion.div 
             variants={itemVariants} 
-            className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-4 relative overflow-hidden text-white"
+            className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-3 relative overflow-hidden text-white"
           >
             <div className="absolute top-0 right-0 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
             
@@ -311,15 +317,12 @@ export default function ServiceDetail() {
               <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#D3AF54] uppercase font-sans block">
                 ✦ VEDIC NUMEROLOGY ✦
               </span>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#FFFDEE] tracking-wide mt-1">
-                Vedic Numerology
-              </h1>
               <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans font-medium">
                 Unlock the hidden meanings in numbers. Discover how the vibrations of numbers influence your personality, destiny, and life path.
               </p>
             </div>
 
-            <div className="pt-2">
+            <div className="pt-1">
               <Link 
                 to="/booking"
                 className="inline-flex items-center gap-2 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-6 py-2.5 rounded-xl shadow-md transition-all duration-300 text-xs uppercase tracking-wider"
@@ -598,7 +601,7 @@ export default function ServiceDetail() {
                     <span className="w-1.5 h-1.5 rounded-full bg-[#D3AF54]" />
                     <span>{item.title}</span>
                   </h4>
-                  <p className="text-xs text-[#181122]/90 leading-relaxed font-sans font-medium">
+                  <p className="text-xs sm:text-sm text-[#181122]/90 leading-relaxed font-sans font-medium">
                     {item.desc}
                   </p>
                 </div>
@@ -607,6 +610,245 @@ export default function ServiceDetail() {
           </motion.div>
 
           {/* Book Appointment CTA Button strip */}
+          <motion.div variants={itemVariants} className="flex justify-center pt-4">
+            <Link 
+              to="/services" 
+              className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors"
+            >
+              <ArrowLeft size={12} />
+              <span>Back to All Services</span>
+            </Link>
+          </motion.div>
+
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (serviceId === 'vastu') {
+    return (
+      <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-16">
+        {/* Decorative patterns */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
+        
+        {/* Banner / Header Image Container */}
+        <div className="w-full h-[clamp(200px,35vh,400px)] relative overflow-hidden flex items-center justify-center">
+          <img 
+            src={details.image} 
+            alt={details.title} 
+            className="w-full h-full object-cover opacity-70"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#FDFCF5] via-[#FDFCF5]/10 to-[#181122]/40" />
+          
+          {/* Back Link Overlay */}
+          <button 
+            onClick={() => navigate('/services')}
+            className="absolute top-6 left-6 md:left-12 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
+          >
+            <ArrowLeft size={14} />
+            <span>All Services</span>
+          </button>
+        </div>
+
+        {/* Main Content Area */}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full max-w-5xl px-6 md:px-12 -mt-16 sm:-mt-24 relative z-10 space-y-10 text-left"
+        >
+          {/* Intro Service Card (Significantly Shrunk height & content removed) */}
+          <motion.div 
+            variants={itemVariants} 
+            className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-3 relative overflow-hidden text-white"
+          >
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="space-y-1 text-left">
+              <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#D3AF54] uppercase font-sans block">
+                ✦ VASTU CONSULTATION ✦
+              </span>
+            </div>
+
+            <div className="pt-1">
+              <Link 
+                to="/booking"
+                className="inline-flex items-center gap-2 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-6 py-2.5 rounded-xl shadow-md transition-all duration-300 text-xs uppercase tracking-wider"
+              >
+                <Calendar size={14} />
+                <span>Book Appointment</span>
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* What is Vastu & Benefits Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* What is Vastu Shastra? */}
+            <motion.div 
+              variants={itemVariants}
+              className="bg-white border border-[#AB7A57]/15 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4"
+            >
+              <h3 className="text-xl sm:text-2xl font-serif font-bold" style={{ color: '#D3AF54' }}>
+                What is Vastu Shastra?
+              </h3>
+              <p className="text-xs sm:text-sm text-[#181122]/90 leading-relaxed font-sans font-medium">
+                Vastu Shastra is an ancient Indian science that harmonizes architecture with nature's five elements—Earth, Water, Fire, Air, and Space. As the best Vastu consultant in Delhi, we provide guidelines for designing spaces that promote positive energy flow.
+              </p>
+              <p className="text-xs sm:text-sm text-[#181122]/80 leading-relaxed font-sans font-medium">
+                The fundamental principle of Vastu is that the directions and placement of rooms, furniture, and objects affect the energy of a space, which in turn influences the health, prosperity, and happiness of its occupants.
+              </p>
+            </motion.div>
+
+            {/* Benefits of Vastu */}
+            <motion.div 
+              variants={itemVariants}
+              className="bg-[#FFFDEE] border border-gold-aura/30 rounded-3xl p-6 sm:p-8 shadow-sm space-y-4 flex flex-col justify-between"
+            >
+              <div className="space-y-1.5 text-left">
+                <h3 className="text-xl sm:text-2xl font-serif font-bold" style={{ color: '#D3AF54' }}>
+                  Benefits of Vastu
+                </h3>
+                <p className="text-xs sm:text-sm text-[#181122]/70 font-sans font-medium">
+                  Harmonizing structural energy yields multiple benefits for daily life.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                {[
+                  'Improved health and well-being',
+                  'Enhanced prosperity and wealth',
+                  'Better relationships and harmony',
+                  'Career growth and success',
+                  'Mental peace and positivity',
+                  'Protection from negative energies'
+                ].map((benefit, idx) => (
+                  <div key={idx} className="p-3 rounded-xl bg-white border border-gold-aura/20 flex items-start gap-2.5 shadow-2xs hover:scale-[1.02] transition-transform duration-300">
+                    <CheckCircle size={16} className="text-gold-aura shrink-0 mt-0.5" />
+                    <span className="text-xs sm:text-sm text-[#181122] font-semibold font-sans leading-tight">
+                      {benefit}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* The Five Elements Section */}
+          <motion.div 
+            variants={itemVariants}
+            className="space-y-6"
+          >
+            <div className="text-center md:text-left space-y-1.5">
+              <h3 className="text-xl sm:text-2xl font-serif font-bold" style={{ color: '#D3AF54' }}>
+                The Five Elements
+              </h3>
+              <p className="text-xs sm:text-sm text-[#181122]/70 font-sans font-medium">
+                Vastu is based on the balance of Pancha Mahabhuta (Five Great Elements)
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+              {[
+                { name: 'Earth', sanskrit: 'Prithvi', dir: 'SW', icon: earthImg },
+                { name: 'Water', sanskrit: 'Jal', dir: 'NE', icon: waterImg },
+                { name: 'Fire', sanskrit: 'Agni', dir: 'SE', icon: fireImg },
+                { name: 'Air', sanskrit: 'Vayu', dir: 'NW', icon: airImg },
+                { name: 'Space', sanskrit: 'Akash', dir: 'Center', icon: spaceImg }
+              ].map((item, idx) => (
+                <div key={idx} className="bg-white border border-[#AB7A57]/15 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:scale-[1.02] hover:border-gold-aura transition-all duration-300">
+                  <div className="w-14 h-14 rounded-full bg-[#FFF9E6] border border-gold-aura/30 flex items-center justify-center mb-2 overflow-hidden p-1.5 shadow-xs">
+                    <img src={item.icon} alt={item.name} className="w-full h-full object-contain" />
+                  </div>
+                  <span className="font-serif font-bold text-[#181122] text-sm sm:text-base">{item.name}</span>
+                  <span className="text-[10px] font-sans font-bold text-[#AB7A57] uppercase tracking-wide mt-0.5">{item.sanskrit}</span>
+                  <div className="mt-3 px-3 py-0.5 bg-[#181122] text-gold-aura rounded-full border border-gold-aura/25 text-[10px] font-bold uppercase tracking-wider">
+                    Direction: {item.dir}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Essential Vastu Tips Section */}
+          <motion.div 
+            variants={itemVariants}
+            className="space-y-6"
+          >
+            <div className="text-center md:text-left space-y-1.5">
+              <h3 className="text-xl sm:text-2xl font-serif font-bold" style={{ color: '#D3AF54' }}>
+                Essential Vastu Tips
+              </h3>
+              <p className="text-xs sm:text-sm text-[#181122]/70 font-sans font-medium">
+                Simple guidelines to bring positive energy into your home
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                {
+                  title: 'Main Entrance',
+                  tip: 'The main entrance should ideally face North, East, or Northeast for maximum positive energy flow. Avoid South-West entrances.',
+                  icon: Home,
+                  direction: 'N/NE'
+                },
+                {
+                  title: 'Living Room',
+                  tip: 'Place the living room in the North or East direction. Ensure good natural light and ventilation for positive vibrations.',
+                  icon: Sofa,
+                  direction: 'N/E'
+                },
+                {
+                  title: 'Master Bedroom',
+                  tip: 'The master bedroom should be in the South-West corner. Place the bed so you sleep with your head towards South.',
+                  icon: Bed,
+                  direction: 'SW'
+                },
+                {
+                  title: 'Kitchen',
+                  tip: 'The kitchen should be in the South-East corner (Agni corner). The cook should face East while cooking.',
+                  icon: Utensils,
+                  direction: 'SE'
+                },
+                {
+                  title: 'Bathroom',
+                  tip: 'Bathrooms should be in the West or North-West direction. Avoid placing them in the North-East corner.',
+                  icon: Bath,
+                  direction: 'W/NW'
+                },
+                {
+                  title: 'Office/Study',
+                  tip: 'Home office or study room should be in the West or South-West. Face North or East while working for better concentration.',
+                  icon: Briefcase,
+                  direction: 'W/SW'
+                }
+              ].map((item, idx) => (
+                <div 
+                  key={idx} 
+                  className="p-5 rounded-2xl bg-white border border-[#AB7A57]/15 border-l-4 border-l-[#AB7A57]/30 hover:border-l-gold-aura hover:bg-[#FFFDEE] hover:shadow-xs transition-all duration-300 flex items-start gap-4 cursor-pointer group text-left"
+                >
+                  {/* Direction Badge */}
+                  <div className="w-12 h-12 rounded-xl border border-gold-aura/40 bg-[#FFFDEE] flex flex-col items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-all duration-300 text-center">
+                    <span className="text-[8px] uppercase tracking-wider text-[#AB7A57] font-bold leading-none">Dir</span>
+                    <span className="text-[11px] font-serif font-black text-gold-aura leading-none mt-0.5">{item.direction}</span>
+                  </div>
+
+                  {/* Text Details */}
+                  <div className="space-y-1.5 text-left flex-grow">
+                    <div className="flex items-center gap-2">
+                      <item.icon size={15} className="text-[#AB7A57] group-hover:text-gold-aura transition-colors shrink-0" />
+                      <h4 className="font-serif font-bold text-[#181122] text-sm sm:text-base leading-tight">
+                        {item.title}
+                      </h4>
+                    </div>
+                    <p className="text-xs sm:text-sm text-[#181122]/80 leading-relaxed font-sans font-medium">
+                      {item.tip}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Back Link bottom */}
           <motion.div variants={itemVariants} className="flex justify-center pt-4">
             <Link 
               to="/services" 
