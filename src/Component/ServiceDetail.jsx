@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, ArrowRight, Home, Sofa, Bed, Utensils, Bath, Briefcase } from 'lucide-react'
+import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, ArrowRight, Home, Sofa, Bed, Utensils, Bath, Briefcase, Heart, RefreshCw } from 'lucide-react'
 
 import sunIcon from '../assets/planets/sun.jpg'
 import moonIcon from '../assets/planets/moon.jpg'
@@ -248,6 +248,8 @@ export default function ServiceDetail() {
   const { serviceId } = useParams();
   const navigate = useNavigate();
   const [flippedCards, setFlippedCards] = useState({});
+  const [activeAstrologyBenefit, setActiveAstrologyBenefit] = useState(0);
+  const [activeLalKitaabTab, setActiveLalKitaabTab] = useState(0);
 
   const handleCardClick = (idx) => {
     setFlippedCards(prev => ({
@@ -304,7 +306,7 @@ export default function ServiceDetail() {
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="w-full max-w-5xl px-6 md:px-12 -mt-16 sm:-mt-24 relative z-10 space-y-10 text-left"
+          className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl 3xl:max-w-[1600px] px-6 md:px-12 -mt-16 sm:-mt-24 relative z-10 space-y-10 text-left"
         >
           {/* Vedic Numerology Card */}
           <motion.div 
@@ -336,6 +338,9 @@ export default function ServiceDetail() {
           {/* The Power of Numbers Section */}
           <motion.div 
             variants={itemVariants} 
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
             className="bg-white border border-[#AB7A57]/15 rounded-3xl p-6 sm:p-8 shadow-xs grid grid-cols-1 md:grid-cols-2 gap-6 items-center"
           >
             <div className="space-y-4">
@@ -372,6 +377,9 @@ export default function ServiceDetail() {
           {/* Planetary Associations Strip */}
           <motion.div 
             variants={itemVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
             className="space-y-4"
           >
             <h3 className="text-center text-sm font-bold tracking-[0.25em] text-[#D3AF54] uppercase">
@@ -400,6 +408,9 @@ export default function ServiceDetail() {
           {/* Understanding Each Number (1-9 Grid Cards) */}
           <motion.div 
             variants={itemVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
             className="space-y-6"
           >
             <div className="text-center md:text-left space-y-1.5">
@@ -558,6 +569,9 @@ export default function ServiceDetail() {
           {/* Numerology Services Section */}
           <motion.div 
             variants={itemVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
             className="space-y-6"
           >
             <div className="text-center md:text-left space-y-1.5">
@@ -625,6 +639,624 @@ export default function ServiceDetail() {
     );
   }
 
+  if (serviceId === 'vedic-astrology') {
+    return (
+      <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-16">
+        {/* Decorative patterns */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
+        
+        {/* Banner / Header Image Container (Reduced Height) */}
+        <div className="w-full h-[clamp(120px,20vh,250px)] relative overflow-hidden flex items-center justify-center">
+          <img 
+            src={details.image} 
+            alt={details.title} 
+            className="w-full h-full object-cover opacity-60"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#FDFCF5] via-[#FDFCF5]/10 to-[#181122]/40" />
+          
+          {/* Back Link Overlay */}
+          <button 
+            onClick={() => navigate('/services')}
+            className="absolute top-6 left-6 md:left-12 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
+          >
+            <ArrowLeft size={14} />
+            <span>All Services</span>
+          </button>
+        </div>
+
+        {/* Main Content Area */}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl 3xl:max-w-[1600px] px-6 md:px-12 -mt-10 sm:-mt-16 relative z-10 space-y-10 text-left"
+        >
+          {/* Intro Card - Light Theme for Perfect Readability */}
+          <motion.div 
+            variants={itemVariants} 
+            className="bg-[#FFFDEE] border border-[#AB7A57]/20 rounded-3xl p-5 sm:p-6 shadow-sm space-y-4 relative overflow-hidden text-[#181122]"
+          >
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="space-y-1.5 text-left">
+              <span className="text-xs sm:text-sm tracking-[0.25em] font-bold text-[#AB7A57] uppercase font-sans block">
+                ✦ CELESTIAL ALIGNMENT ✦
+              </span>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-[#181122] tracking-wide">
+                Vedic Astrology (Janam Kundli)
+              </h1>
+            </div>
+
+            <div className="pt-1">
+              <Link 
+                to="/booking"
+                className="inline-flex items-center gap-2 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-6 py-2.5 rounded-xl shadow-md transition-all duration-300 text-xs uppercase tracking-wider"
+              >
+                <Calendar size={14} />
+                <span>Book Appointment</span>
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* What is Janam Kundli & Benefits Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            {/* What is Janam Kundli? (Slightly Lighter Gold bg-[#ECCF86]) */}
+            <motion.div 
+              variants={itemVariants}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-80px" }}
+              className="lg:col-span-4 bg-[#ECCF86] border border-[#AB7A57]/20 rounded-3xl p-6 sm:p-8 shadow-md flex flex-col justify-between"
+            >
+              <div className="space-y-3 text-left">
+                <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#181122]">
+                  What is Janam Kundli?
+                </h3>
+                <p className="text-xs sm:text-sm text-[#181122] leading-relaxed font-sans font-semibold">
+                  A Janam Kundli (Birth Chart) is an astronomical snapshot of the cosmos at the exact second you took your first breath. It maps the celestial positions of the Sun, Moon, and planets relative to your birth location.
+                </p>
+                <p className="text-xs sm:text-sm text-[#181122]/90 leading-relaxed font-sans font-medium">
+                  Through classical Vedic formulas, this chart acts as a cosmic blueprint of your life—revealing your innate patterns, planetary blockages, and the structural paths of your destiny.
+                </p>
+              </div>
+
+              <div className="pt-4 mt-auto text-left">
+                <Link 
+                  to="/booking"
+                  className="inline-flex items-center gap-2 bg-[#181122] hover:bg-[#181122]/90 text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition-all duration-300 text-xs uppercase tracking-wider"
+                >
+                  <Calendar size={13} style={{ color: '#ECCF86' }} />
+                  <span>Book Appointment</span>
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Why Get a Vedic Reading? (Interactive Selector - Light Gold bg-[#ECCF86]) */}
+            <motion.div 
+              variants={itemVariants}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-80px" }}
+              className="lg:col-span-8 bg-[#ECCF86] border border-[#AB7A57]/20 rounded-3xl p-6 sm:p-8 shadow-md space-y-6 text-[#181122] flex flex-col justify-between"
+            >
+              <div className="space-y-1.5 text-left">
+                <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#181122]">
+                  Why Get a Vedic Reading?
+                </h3>
+                <p className="text-xs sm:text-sm text-[#181122]/90 font-sans font-medium">
+                  Select a category to explore how cosmic alignment directly shifts your pathways:
+                </p>
+              </div>
+
+              {/* Interactive Selector Layout */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch flex-grow">
+                {/* Left Side: Buttons */}
+                <div className="md:col-span-5 flex flex-col gap-2">
+                  {[
+                    { label: 'Natural Talents & Strengths', sub: 'Discover hidden gifts' },
+                    { label: 'Karmic Roadblocks & Obstacles', sub: 'Map your Saturn tests' },
+                    { label: 'Career Alignment', sub: 'Maximize business growth' },
+                    { label: 'Timeline & Dasha Cycles', sub: 'Decide optimal timings' },
+                    { label: 'Relationship Compatibility', sub: 'Build marital harmony' },
+                    { label: 'Remedial Shielding', sub: 'Neutralize heavy transits' }
+                  ].map((benefit, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveAstrologyBenefit(idx)}
+                      className={`p-2.5 px-3.5 rounded-xl text-left border transition-all duration-300 flex items-center justify-between cursor-pointer group ${
+                        activeAstrologyBenefit === idx
+                          ? 'bg-[#181122] text-white border-transparent shadow-md translate-x-1.5'
+                          : 'bg-white/80 hover:bg-white text-[#181122] border-[#AB7A57]/20'
+                      }`}
+                    >
+                      <div className="space-y-0.5 text-left flex-grow">
+                        <p className={`text-xs sm:text-sm font-bold font-sans ${activeAstrologyBenefit === idx ? 'text-[#D3AF54]' : 'text-[#181122]'}`}>
+                          {benefit.label}
+                        </p>
+                        <p className={`text-[11px] ${activeAstrologyBenefit === idx ? 'text-[#D8CFEB]' : 'text-[#181122]/60'}`}>
+                          {benefit.sub}
+                        </p>
+                      </div>
+                      <ArrowRight size={14} className={`shrink-0 transition-transform ${
+                        activeAstrologyBenefit === idx ? 'text-[#D3AF54] translate-x-0.5' : 'text-[#AB7A57] opacity-60'
+                      }`} />
+                    </button>
+                  ))}
+                </div>
+
+                {/* Right Side: Detailed Highlight Box */}
+                <div className="md:col-span-7 bg-[#181122] text-white rounded-2xl p-5 sm:p-6 flex flex-col justify-start border border-[#AB7A57]/20 relative overflow-hidden shadow-inner min-h-[235px]">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
+                  
+                  {[
+                    {
+                      title: 'Natural Talents & Strengths',
+                      text: 'Reveal your baseline personality, temperament, and soul orientation. By analyzing the positions of Jupiter and Mercury in your chart, we decode your intellectual capacity, creative streaks, and inner callings.',
+                      action: '✦ Helps align studies, hobbies, and core life choices.'
+                    },
+                    {
+                      title: 'Karmic Roadblocks & Obstacles',
+                      text: 'Locate heavy planetary blockages, Sade Sati triggers, and Rahu/Ketu configurations. Understanding these karmic blocks helps you handle challenges with calm patience rather than confusion.',
+                      action: '✦ Identifies when to pause, pivot, or seek energetic protection.'
+                    },
+                    {
+                      title: 'Career Alignment',
+                      text: 'Decodes your tenth house (Karma Bhava) and D10 Dashamsha chart. We outline which industries suit you best, whether to choose employment or business, and who your ideal partners are.',
+                      action: '✦ Avoid stagnation by choosing cosmically supported roles.'
+                    },
+                    {
+                      title: 'Timeline & Dasha Cycles',
+                      text: 'Vimshottari Dasha acts as your personal life timeline. Map the planetary lords running your current years so you know when to expand, when to invest, and when to lie low.',
+                      action: '✦ Accurate timing is the secret to successful ventures.'
+                    },
+                    {
+                      title: 'Relationship Compatibility',
+                      text: 'Detailed Gun Milan compatibility verification. We analyze Seventh House elements, Venus alignments, and Mars (Mangal) configurations to evaluate longevity, support, and peace in your union.',
+                      action: '✦ Resolve relationship blocks before they manifest as disputes.'
+                    },
+                    {
+                      title: 'Remedial Shielding',
+                      text: 'Receive simple, practical, and highly direct Vedic remedies. These include wearing compatible gemstones, specific fasting programs, daily mantra chanting, and charity targets to absorb heavy transits.',
+                      action: '✦ Shield your energy fields against malefic aspects.'
+                    }
+                  ].map((detail, idx) => (
+                    activeAstrologyBenefit === idx && (
+                      <div key={idx} className="flex flex-col h-full text-left">
+                        <div className="space-y-1.5 text-left mb-3">
+                          <div className="flex items-center gap-1.5 font-bold text-xs uppercase tracking-wider" style={{ color: '#ECCF86' }}>
+                            <Sparkles size={14} />
+                            <span>Insight Module</span>
+                          </div>
+                          <h4 className="text-lg sm:text-xl font-serif font-bold leading-tight" style={{ color: '#ECCF86' }}>
+                            {detail.title}
+                          </h4>
+                          <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans font-medium">
+                            {detail.text}
+                          </p>
+                        </div>
+                        <div className="p-3 bg-white/5 border border-white/10 rounded-xl mt-auto text-left">
+                          <p className="text-xs font-serif font-bold leading-relaxed" style={{ color: '#ECCF86' }}>
+                            {detail.action}
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Key Areas of Chart Analysis (Wrapper Panel with Gold Tint bg-[#ECCF86]/20) */}
+          <motion.div 
+            variants={itemVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
+            className="p-6 sm:p-8 rounded-3xl bg-[#ECCF86]/20 border border-[#ECCF86]/45 space-y-6"
+          >
+            <div className="text-center md:text-left space-y-1.5">
+              <h3 className="text-xl sm:text-2xl font-serif font-bold text-gold-aura">
+                Key Areas of Chart Analysis
+              </h3>
+              <p className="text-xs sm:text-sm text-[#181122]/70 font-sans font-medium">
+                We perform an exhaustive analysis of your astrological configurations:
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+              {[
+                { title: 'Lagna & Rashi', desc: 'Ascendant and Moon sign analysis to decode your core physical attributes, temperament, and emotional mind.' },
+                { title: 'Kendra Houses', desc: 'Detailed look at the pillars of your life: 1st (self), 4th (home), 7th (spouse), and 10th (career).' },
+                { title: 'Vimshottari Dasha', desc: 'Timeline mapping of your planetary cycles to identify major shifts, opportunities, and karmic checkpoints.' },
+                { title: 'Divisional Charts', desc: 'Analysis of fine divisional charts (Vargas) like D9 Navamsha for marriage and D10 Dashamsha for career.' }
+              ].map((item, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-white border border-[#AB7A57]/15 hover:border-gold-aura rounded-2xl p-6 flex flex-col items-start text-left gap-4 transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-1.5 group cursor-pointer text-[#181122]"
+                >
+                  <div className="flex items-center gap-3 w-full">
+                    {/* Gold Circular Outlined Container */}
+                    <div className="w-10 h-10 rounded-full border border-[#BDBDBD] group-hover:border-gold-aura flex items-center justify-center text-gold-aura bg-[#FFFDEE] shrink-0 group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(211,175,84,0.3)] transition-all duration-300 font-serif font-bold text-xs sm:text-sm font-sans">
+                      {idx + 1}
+                    </div>
+                    {/* Title */}
+                    <span className="font-serif text-gold-aura group-hover:text-[#181122] font-bold text-xs md:text-sm uppercase tracking-wider transition-colors duration-300">
+                      {item.title}
+                    </span>
+                  </div>
+                  {/* Subtext */}
+                  <p className="text-[13px] md:text-sm text-[#181122]/80 leading-relaxed font-sans w-full">
+                    {item.desc}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Core Life Pathways Explored (Dark Gold bg-[#B8963C]) */}
+          <motion.div 
+            variants={itemVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
+            className="space-y-6"
+          >
+            <div className="text-center md:text-left space-y-1.5">
+              <h3 className="text-xl sm:text-2xl font-serif font-bold text-gold-aura">
+                Core Life Pathways Explored
+              </h3>
+              <p className="text-xs sm:text-sm text-[#181122]/70 font-sans font-medium">
+                Guidance for navigating key decisions and milestones
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                {
+                  title: 'Career & Financial Growth',
+                  tip: 'Discover the most suitable industries, wealth generation windows, business partnerships, and timing for career shifts.',
+                  icon: Briefcase,
+                  direction: 'Karma'
+                },
+                {
+                  title: 'Marriage & Relationship',
+                  tip: 'Understand compatibility profiles, marital timelines, partnership dynamics, and energetic matches for relationship harmony.',
+                  icon: Home,
+                  direction: 'Vivaha'
+                },
+                {
+                  title: 'Remedial Shielding',
+                  tip: 'Identify planetary blocks in your chart and apply structured, traditional remedies like gemstone, mantra, or fasting suggestions.',
+                  icon: Shield,
+                  direction: 'Upaya'
+                }
+              ].map((item, idx) => (
+                <div 
+                  key={idx} 
+                  className="p-5 rounded-2xl bg-[#ECCF86] border border-[#AB7A57]/55 hover:border-gold-aura hover:bg-[#ECCF86]/95 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex items-start gap-4 cursor-pointer group text-left text-[#181122] shadow-md"
+                >
+                  {/* Badge */}
+                  <div className="w-12 h-12 rounded-xl border border-gold-aura/40 bg-[#FFFDEE] flex flex-col items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-all duration-300 text-center">
+                    <span className="text-[8px] uppercase tracking-wider text-[#AB7A57] font-bold leading-none">Focus</span>
+                    <span className="text-[11px] font-serif font-black text-gold-aura leading-none mt-0.5">{item.direction}</span>
+                  </div>
+
+                  {/* Text Details */}
+                  <div className="space-y-1.5 text-left flex-grow">
+                    <div className="flex items-center gap-2">
+                      <item.icon size={15} className="text-[#181122] shrink-0" />
+                      <h4 className="font-serif font-bold text-[#181122] text-sm sm:text-base leading-tight">
+                        {item.title}
+                      </h4>
+                    </div>
+                    <p className="text-xs sm:text-sm text-[#181122]/90 leading-relaxed font-sans font-medium">
+                      {item.tip}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Back Link bottom */}
+          <motion.div variants={itemVariants} className="flex justify-center pt-4">
+            <Link 
+              to="/services" 
+              className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors"
+            >
+              <ArrowLeft size={12} />
+              <span>Back to All Services</span>
+            </Link>
+          </motion.div>
+
+        </motion.div>
+      </div>
+    );
+  }
+  if (serviceId === 'laal-kitaab') {
+    return (
+      <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-20 overflow-x-hidden">
+        {/* Elegant Gold & Indigo background aura */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none" />
+        <div className="absolute bottom-20 left-0 w-[400px] h-[400px] bg-[radial-gradient(circle_at_center,rgba(24,17,34,0.04),transparent_70%)] rounded-full -z-10 pointer-events-none" />
+        
+        {/* Banner / Header Image Container (Reduced Height with Centered Heading) */}
+        <div className="w-full h-[clamp(110px,18vh,200px)] relative overflow-hidden flex items-center justify-center border-b border-[#AB7A57]/20 shadow-xs">
+          <img 
+            src={details.image} 
+            alt={details.title} 
+            className="w-full h-full object-cover opacity-40"
+          />
+          {/* Dark gradient backdrop to make the title pop */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#181122]/75 via-[#181122]/45 to-[#FDFCF5]" />
+          
+          {/* Centered Heading inside Hero Image */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-10">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-black tracking-wide text-center drop-shadow-md" style={{ color: '#D3AF54' }}>
+              Lal Kitaab Remedies
+            </h1>
+            <div className="w-16 h-0.5 mt-2 bg-[#D3AF54] rounded-full" />
+          </div>
+
+          {/* Back Link Overlay */}
+          <button 
+            onClick={() => navigate('/services')}
+            className="absolute top-4 left-4 md:left-12 flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-all duration-300 shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer border border-[#D3AF54]/20 z-20"
+          >
+            <ArrowLeft size={13} />
+            <span>All Services</span>
+          </button>
+        </div>
+
+        {/* Main Content Area */}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl 3xl:max-w-[1600px] px-6 md:px-12 -mt-6 sm:-mt-10 relative z-10 space-y-6 text-left"
+        >
+          {/* Interactive Navigation Tab Bar */}
+          <motion.div variants={itemVariants} className="flex justify-center border-b border-[#AB7A57]/20 pb-1 overflow-x-auto w-full scrollbar-none">
+            <div className="flex gap-2 sm:gap-6 min-w-max px-4">
+              {[
+                { title: 'Overview & Philosophy', icon: Sparkles },
+                { title: 'Diagnostic Areas (Rinas)', icon: Star },
+                { title: 'Practical Remedies (Upayas)', icon: Shield }
+              ].map((tab, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveLalKitaabTab(idx)}
+                  className={`flex items-center gap-2 pb-2 px-3 text-xs sm:text-sm font-serif font-bold uppercase tracking-wider relative transition-colors duration-300 cursor-pointer ${
+                    activeLalKitaabTab === idx ? 'text-[#181122]' : 'text-[#181122]/70 hover:text-[#181122]'
+                  }`}
+                >
+                  <tab.icon size={14} />
+                  <span>{tab.title}</span>
+                  {activeLalKitaabTab === idx && (
+                    <motion.div 
+                      layoutId="lalKitaabTabUnderline"
+                      className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#D3AF54]"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Dynamic Swapped Content Area with slide-and-fade Framer Motion transitions */}
+          <motion.div
+            key={activeLalKitaabTab}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="w-full"
+          >
+            {activeLalKitaabTab === 0 && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+                {/* What is Lal Kitaab? (Left Page) */}
+                <div className="bg-[#ECCF86] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow duration-300 relative flex flex-col justify-between border-l-8 border-l-[#181122]">
+                  <div className="space-y-3">
+                    <h3 className="text-lg sm:text-xl font-serif font-bold text-[#181122] flex items-center gap-2">
+                      <span>What is Lal Kitaab?</span>
+                      <span className="text-[#D3AF54] text-xs">✦</span>
+                    </h3>
+                    <p className="text-xs sm:text-sm text-[#181122] leading-relaxed font-sans font-semibold">
+                      Lal Kitaab (literally "Red Book") is a highly revered, legendary branch of Vedic astrology. It is globally famous for its incredibly simple, practical, and highly direct remedial measures (Upayas) that require no expensive sacrifices, pujas, or gemstone investments.
+                    </p>
+                    <p className="text-xs sm:text-sm text-[#181122]/95 leading-relaxed font-sans font-medium">
+                      It operates on a symptom-based diagnostic method, converting complex cosmic calculations into intuitive daily exercises—such as offering grains to birds, feeding cows, or keeping specific natural metals inside your home.
+                    </p>
+                  </div>
+                  <div className="pt-3 border-t border-[#AB7A57]/20 mt-3 flex items-center gap-2 text-xs font-serif font-bold text-[#181122]/90 italic">
+                    <span>✦ Directly balances ancestral planetary debts (Rinas)</span>
+                  </div>
+                </div>
+
+                {/* Why Choose Lal Kitaab Remedies? (Right Page) */}
+                <div className="bg-[#ECCF86] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow duration-300 relative flex flex-col justify-between border-l-8 border-l-[#181122]">
+                  <div className="space-y-3">
+                    <div className="space-y-1 text-left">
+                      <h3 className="text-lg sm:text-xl font-serif font-bold text-[#181122] flex items-center gap-2">
+                        <span>Why Choose Lal Kitaab?</span>
+                        <span className="text-[#D3AF54] text-xs">✦</span>
+                      </h3>
+                      <p className="text-xs text-[#181122]/85 font-sans font-semibold">
+                        Neutralize negative transits and ease karmic weights with ease:
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
+                      {[
+                        'Household task-based actions',
+                        'Remedies ancestral debts',
+                        'Symptom-based diagnostic method',
+                        'No complex charts calculations',
+                        'Extremely direct & immediate results',
+                        'Balances home energetic flow'
+                      ].map((benefit, idx) => (
+                        <div key={idx} className="p-2 rounded-lg bg-white border border-[#AB7A57]/15 flex items-start gap-2 shadow-2xs hover:scale-[1.01] transition-transform duration-300">
+                          {/* Custom Gold Seal Dot */}
+                          <div className="w-4 h-4 rounded-full bg-[#FFFDEE] border border-[#D3AF54]/50 flex items-center justify-center shrink-0 mt-0.5 text-gold-aura font-bold text-[9px]">
+                            ✓
+                          </div>
+                          <span className="text-[11px] sm:text-xs text-[#181122] font-semibold font-sans leading-tight text-left">
+                            {benefit}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Embedded Action Button to balance with Left Page footer */}
+                  <div className="pt-3 border-t border-[#AB7A57]/20 mt-3 flex items-center justify-between">
+                    <span className="text-[10px] font-sans font-bold text-[#181122]/70 uppercase tracking-wider">Ready for a reading?</span>
+                    <Link 
+                      to="/booking"
+                      className="inline-flex items-center gap-1.5 bg-[#181122] hover:bg-[#181122]/90 text-white font-bold px-3.5 py-1.5 rounded-lg shadow-md transition-all duration-300 text-[9px] uppercase tracking-wider cursor-pointer"
+                    >
+                      <Calendar size={10} style={{ color: '#ECCF86' }} />
+                      <span>Book Appointment</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeLalKitaabTab === 1 && (
+              <div className="space-y-6">
+                <div className="text-center md:text-left space-y-1.5">
+                  <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#181122]">
+                    Key Diagnostic Areas
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#181122]/70 font-sans font-medium">
+                    Lal Kitaab isolates and addresses specific planetary blockages (Rinas):
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+                  {[
+                    { title: 'Pitru Rina', desc: 'Ancestral debt indicators that manifest as sudden obstacles in career growth, progeny issues, or mental restlessness.' },
+                    { title: 'Dharma Rina', desc: 'Religious debts resulting from breaking spiritual commitments, resolved through temples and public charity.' },
+                    { title: 'Deva Rina', desc: 'Planetary debts causing sudden health troubles or structural blockages in properties and houses.' },
+                    { title: 'Matru Rina', desc: 'Maternal debt indicating emotional instability, obstacles in savings, and domestic disputes.' }
+                  ].map((item, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 25 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: idx * 0.1 }}
+                      whileHover={{ scale: 1.03, y: -6 }}
+                      className="bg-[#ECCF86] border-t-4 border-t-[#D3AF54] border-x border-b border-[#AB7A57]/20 rounded-2xl p-6 flex flex-col items-start text-left gap-4 transition-all duration-300 shadow-md hover:shadow-xl group cursor-pointer text-[#181122]"
+                    >
+                      <div className="flex items-center gap-3 w-full">
+                        {/* Indigo/Gold Circular Container */}
+                        <div className="w-10 h-10 rounded-full border border-[#D3AF54]/40 bg-[#181122] text-[#ECCF86] flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(24,17,34,0.3)] transition-all duration-300 font-serif font-bold text-xs sm:text-sm">
+                          {idx + 1}
+                        </div>
+                        {/* Title */}
+                        <span className="font-serif text-[#181122] group-hover:text-gold-aura font-bold text-xs md:text-sm uppercase tracking-wider transition-colors duration-300">
+                          {item.title}
+                        </span>
+                      </div>
+                      {/* Subtext */}
+                      <p className="text-[13px] md:text-sm text-[#181122]/90 leading-relaxed font-sans w-full font-semibold">
+                        {item.desc}
+                      </p>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeLalKitaabTab === 2 && (
+              <div className="space-y-6">
+                <div className="text-center md:text-left space-y-1.5">
+                  <h3 className="text-xl sm:text-2xl font-serif font-bold text-[#181122]">
+                    Core Remedy Areas Explored
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#181122]/70 font-sans font-medium">
+                    Standard, practical remedies suggested in consultations
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {[
+                    {
+                      title: 'Animal & Bird Service',
+                      tip: 'Feeding black dogs for Rahu/Ketu balance, green fodder to cows for Venus, or bird grains for Mercury to open financial gates.',
+                      icon: Heart,
+                      direction: 'Seva'
+                    },
+                    {
+                      title: 'Water Flowing Upaya',
+                      tip: 'Floating organic materials, coconut, or copper coins in active running streams to neutralize severe transit blockages.',
+                      icon: RefreshCw,
+                      direction: 'Flow'
+                    },
+                    {
+                      title: 'Metal & Sand Placements',
+                      tip: 'Placing square copper pieces, solid silver balls, or river sand in specific cupboards to clear negative energies.',
+                      icon: Shield,
+                      direction: 'Placement'
+                    }
+                  ].map((item, idx) => (
+                    <motion.div 
+                      key={idx} 
+                      initial={{ opacity: 0, y: 25 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: idx * 0.1 }}
+                      whileHover={{ scale: 1.02, y: -4 }}
+                      className="p-5 rounded-2xl bg-[#ECCF86] border border-[#AB7A57]/20 border-l-8 border-l-[#D3AF54] hover:border-l-[#181122] hover:shadow-xl transition-all duration-300 flex items-start gap-4 cursor-pointer group text-left shadow-md"
+                    >
+                      {/* Badge */}
+                      <div className="w-12 h-12 rounded-xl border border-[#D3AF54]/40 bg-[#181122] flex flex-col items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-all duration-300 text-center">
+                        <span className="text-[8px] uppercase tracking-wider text-[#ECCF86] font-bold leading-none">Focus</span>
+                        <span className="text-[10px] font-serif font-black text-white leading-none mt-0.5">{item.direction}</span>
+                      </div>
+
+                      {/* Text Details */}
+                      <div className="space-y-1.5 text-left flex-grow">
+                        <div className="flex items-center gap-2">
+                          <item.icon size={15} className="text-[#181122] shrink-0" />
+                          <h4 className="font-serif font-bold text-[#181122] text-sm sm:text-base leading-tight">
+                            {item.title}
+                          </h4>
+                        </div>
+                        <p className="text-xs sm:text-sm text-[#181122]/95 leading-relaxed font-sans font-medium">
+                          {item.tip}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Back Link bottom */}
+          <motion.div variants={itemVariants} className="flex justify-center pt-4">
+            <Link 
+              to="/services" 
+              className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors text-[#181122]"
+            >
+              <ArrowLeft size={12} />
+              <span>Back to All Services</span>
+            </Link>
+          </motion.div>
+
+        </motion.div>
+      </div>
+    );
+  }
+
   if (serviceId === 'vastu') {
     return (
       <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-16">
@@ -655,7 +1287,7 @@ export default function ServiceDetail() {
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className="w-full max-w-5xl px-6 md:px-12 -mt-16 sm:-mt-24 relative z-10 space-y-10 text-left"
+          className="w-full max-w-5xl xl:max-w-6xl 2xl:max-w-7xl 3xl:max-w-[1600px] px-6 md:px-12 -mt-16 sm:-mt-24 relative z-10 space-y-10 text-left"
         >
           {/* Intro Service Card (Significantly Shrunk height & content removed) */}
           <motion.div 
@@ -686,6 +1318,9 @@ export default function ServiceDetail() {
             {/* What is Vastu Shastra? */}
             <motion.div 
               variants={itemVariants}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-80px" }}
               className="bg-white border border-[#AB7A57]/15 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4"
             >
               <h3 className="text-xl sm:text-2xl font-serif font-bold" style={{ color: '#D3AF54' }}>
@@ -702,6 +1337,9 @@ export default function ServiceDetail() {
             {/* Benefits of Vastu */}
             <motion.div 
               variants={itemVariants}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, margin: "-80px" }}
               className="bg-[#FFFDEE] border border-gold-aura/30 rounded-3xl p-6 sm:p-8 shadow-sm space-y-4 flex flex-col justify-between"
             >
               <div className="space-y-1.5 text-left">
@@ -735,6 +1373,9 @@ export default function ServiceDetail() {
           {/* The Five Elements Section */}
           <motion.div 
             variants={itemVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
             className="space-y-6"
           >
             <div className="text-center md:text-left space-y-1.5">
@@ -771,6 +1412,9 @@ export default function ServiceDetail() {
           {/* Essential Vastu Tips Section */}
           <motion.div 
             variants={itemVariants}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
             className="space-y-6"
           >
             <div className="text-center md:text-left space-y-1.5">
