@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, ArrowRight, Home, Sofa, Bed, Utensils, Bath, Briefcase, Heart, RefreshCw } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, ArrowRight, Home, Sofa, Bed, Utensils, Bath, Briefcase, Heart, RefreshCw, Globe, User } from 'lucide-react'
 
 import sunIcon from '../assets/planets/sun.jpg'
 import moonIcon from '../assets/planets/moon.jpg'
@@ -25,6 +25,13 @@ import vastuConsultationImg from '../assets/images/Vastu Consultation.png'
 import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.png'
 import prashnaKundliImg from '../assets/images/Prashna Kundli.png'
 import reikiHealerImg from '../assets/images/Reiki Healer.png'
+import reikiChakrasImg from '../assets/images/reiki_chakras.jpg'
+
+import solutionsLogo from '../assets/logos/solutions.png'
+import guidanceLogo from '../assets/logos/guidance.png'
+import accuracyLogo from '../assets/logos/accuracy.png'
+import transformationLogo from '../assets/logos/transformation.png'
+import clockLogo from '../assets/logos/clock.png'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -269,7 +276,7 @@ export default function ServiceDetail() {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#FDFCF5] px-6 text-[#181122]">
         <h2 className="text-2xl font-serif font-bold mb-4">Service Not Found</h2>
-        <Link to="/services" className="bg-[#D3AF54] text-[#181122] font-semibold px-6 py-2.5 rounded-xl text-sm uppercase">
+        <Link to="/" className="bg-[#D3AF54] text-[#181122] font-semibold px-6 py-2.5 rounded-xl text-sm uppercase">
           Back to Services
         </Link>
       </div>
@@ -278,7 +285,7 @@ export default function ServiceDetail() {
 
   if (serviceId === 'numerology') {
     return (
-      <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-16">
+      <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-16 overflow-x-hidden">
         {/* Decorative pattern */}
         <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
 
@@ -293,11 +300,11 @@ export default function ServiceDetail() {
           
           {/* Back Link Overlay */}
           <button 
-            onClick={() => navigate('/services')}
+            onClick={() => navigate('/')}
             className="absolute top-6 left-6 md:left-12 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
           >
             <ArrowLeft size={14} />
-            <span>All Services</span>
+            <span>Home</span>
           </button>
         </div>
 
@@ -626,11 +633,11 @@ export default function ServiceDetail() {
           {/* Book Appointment CTA Button strip */}
           <motion.div variants={itemVariants} className="flex justify-center pt-4">
             <Link 
-              to="/services" 
+              to="/" 
               className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors"
             >
               <ArrowLeft size={12} />
-              <span>Back to All Services</span>
+              <span>Back to Home</span>
             </Link>
           </motion.div>
 
@@ -641,7 +648,7 @@ export default function ServiceDetail() {
 
   if (serviceId === 'vedic-astrology') {
     return (
-      <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-16">
+      <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-16 overflow-x-hidden">
         {/* Decorative patterns */}
         <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
         
@@ -656,11 +663,11 @@ export default function ServiceDetail() {
           
           {/* Back Link Overlay */}
           <button 
-            onClick={() => navigate('/services')}
+            onClick={() => navigate('/')}
             className="absolute top-6 left-6 md:left-12 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
           >
             <ArrowLeft size={14} />
-            <span>All Services</span>
+            <span>Home</span>
           </button>
         </div>
 
@@ -967,11 +974,11 @@ export default function ServiceDetail() {
           {/* Back Link bottom */}
           <motion.div variants={itemVariants} className="flex justify-center pt-4">
             <Link 
-              to="/services" 
+              to="/" 
               className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors"
             >
               <ArrowLeft size={12} />
-              <span>Back to All Services</span>
+              <span>Back to Home</span>
             </Link>
           </motion.div>
 
@@ -1006,11 +1013,11 @@ export default function ServiceDetail() {
 
           {/* Back Link Overlay */}
           <button 
-            onClick={() => navigate('/services')}
+            onClick={() => navigate('/')}
             className="absolute top-4 left-4 md:left-12 flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-all duration-300 shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer border border-[#D3AF54]/20 z-20"
           >
             <ArrowLeft size={13} />
-            <span>All Services</span>
+            <span>Home</span>
           </button>
         </div>
 
@@ -1244,11 +1251,11 @@ export default function ServiceDetail() {
           {/* Back Link bottom */}
           <motion.div variants={itemVariants} className="flex justify-center pt-4">
             <Link 
-              to="/services" 
+              to="/" 
               className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors text-[#181122]"
             >
               <ArrowLeft size={12} />
-              <span>Back to All Services</span>
+              <span>Back to Home</span>
             </Link>
           </motion.div>
 
@@ -1259,7 +1266,7 @@ export default function ServiceDetail() {
 
   if (serviceId === 'vastu') {
     return (
-      <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-16">
+      <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-16 overflow-x-hidden">
         {/* Decorative patterns */}
         <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
         
@@ -1274,11 +1281,11 @@ export default function ServiceDetail() {
           
           {/* Back Link Overlay */}
           <button 
-            onClick={() => navigate('/services')}
+            onClick={() => navigate('/')}
             className="absolute top-6 left-6 md:left-12 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
           >
             <ArrowLeft size={14} />
-            <span>All Services</span>
+            <span>Home</span>
           </button>
         </div>
 
@@ -1495,11 +1502,11 @@ export default function ServiceDetail() {
           {/* Back Link bottom */}
           <motion.div variants={itemVariants} className="flex justify-center pt-4">
             <Link 
-              to="/services" 
+              to="/" 
               className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors"
             >
               <ArrowLeft size={12} />
-              <span>Back to All Services</span>
+              <span>Back to Home</span>
             </Link>
           </motion.div>
 
@@ -1508,8 +1515,20 @@ export default function ServiceDetail() {
     );
   }
 
+  if (serviceId === 'reiki-healing') {
+    return (
+      <ReikiHealingDetail details={details} navigate={navigate} />
+    );
+  }
+
+  if (serviceId === 'prashna-kundali') {
+    return (
+      <PrashnaKundaliDetail details={details} navigate={navigate} />
+    );
+  }
+
   return (
-    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-16">
+    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-16 overflow-x-hidden">
       
       {/* Decorative patterns */}
       <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
@@ -1525,11 +1544,11 @@ export default function ServiceDetail() {
         
         {/* Back Link Overlay */}
         <button 
-          onClick={() => navigate('/services')}
+          onClick={() => navigate('/')}
           className="absolute top-6 left-6 md:left-12 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
         >
           <ArrowLeft size={14} />
-          <span>All Services</span>
+          <span>Home</span>
         </button>
       </div>
 
@@ -1687,11 +1706,11 @@ export default function ServiceDetail() {
         {/* Back Link bottom */}
         <motion.div variants={itemVariants} className="flex justify-center pt-4">
           <Link 
-            to="/services" 
+            to="/" 
             className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors"
           >
             <ArrowLeft size={12} />
-            <span>Back to All Services</span>
+            <span>Back to Home</span>
           </Link>
         </motion.div>
 
@@ -1699,4 +1718,578 @@ export default function ServiceDetail() {
 
     </div>
   )
+}
+
+function ReikiHealingDetail({ details, navigate }) {
+  const [hoveredIdx, setHoveredIdx] = useState(null);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const modalities = [
+    {
+      title: "Chakra Balancing",
+      desc: "Clearing and aligning the 7 primary energy centers.",
+      icon: <RefreshCw size={18} />
+    },
+    {
+      title: "Aura Cleansing",
+      desc: "Purifying your energetic field from external stress and negativity.",
+      icon: <Sparkles size={18} />
+    },
+    {
+      title: "Distance Healing",
+      desc: "Remote energy transmissions that cross boundaries seamlessly.",
+      icon: <Globe size={18} />
+    },
+    {
+      title: "Emotional Release",
+      desc: "Dissolving chronic mental blocks and suppressed tension.",
+      icon: <Heart size={18} />
+    }
+  ];
+
+  return (
+    <div className="w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center overflow-hidden font-sans">
+      
+      {/* ========================================================= */}
+      {/* 1. HERO SECTION (Warm Ivory bg-[#F4F1E3])                  */}
+      {/* ========================================================= */}
+      <div className="w-full py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
+        {/* Ambient glowing energy fields */}
+        <div className="absolute top-10 left-1/4 w-[350px] h-[350px] bg-[#D3AF54]/5 rounded-full blur-[100px] pointer-events-none -z-10 animate-pulse" />
+
+        {/* Back button link */}
+        <div className="w-full max-w-5xl mb-10 text-left">
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
+          >
+            <ArrowLeft size={14} />
+            <span>Home</span>
+          </button>
+        </div>
+
+        {/* Hero Content */}
+        <motion.div 
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="w-full max-w-4xl text-center flex flex-col items-center space-y-6"
+        >
+          {/* Rounded Pill Badge with Gold Glow */}
+          <div className="px-4 py-1.5 rounded-full text-[#AB7A57] bg-[#FFFDEE] border border-[#D3AF54]/30 text-xs font-bold uppercase tracking-widest inline-flex items-center gap-1.5 shadow-[0_0_10px_rgba(211,175,84,0.15)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D3AF54] animate-pulse"></span>
+            <span>Energy Alignment • Deep Restoration</span>
+          </div>
+
+          {/* Main Headline with Gold Gradient text style matching True Destiny */}
+          <h1 className="text-3xl md:text-5xl font-serif font-bold text-[#181122] tracking-wide leading-tight max-w-3xl">
+            <span className="text-xl md:text-2xl font-sans font-medium text-slate-500 block mb-2 tracking-normal">
+              Restore Inner Peace & Align Your Energy:
+            </span>
+            <span className="bg-gradient-to-r from-[#D3AF54] via-[#AB7A57] to-[#D3AF54] bg-clip-text text-transparent drop-shadow-sm">
+              Professional Reiki Healing
+            </span>
+          </h1>
+
+          {/* Description */}
+          <p className="text-sm md:text-base text-slate-600 leading-relaxed max-w-2xl font-sans font-medium">
+            Reiki is a natural, non-invasive Japanese energy healing technique that promotes deep relaxation, dissolves energetic blocks, and accelerates your body's natural ability to heal physically, emotionally, and spiritually.
+          </p>
+
+          {/* Book Appointment CTA Button with lighter gold styling */}
+          <div className="pt-2">
+            <Link 
+              to="/booking"
+              className="inline-flex items-center gap-2.5 bg-[#F1E4C3] hover:bg-[#EAD18D] text-[#181122] font-bold px-8 py-3.5 rounded-xl border border-[#D3AF54]/30 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-xs sm:text-sm uppercase tracking-wider cursor-pointer font-sans"
+            >
+              <Calendar size={16} />
+              <span>Book Appointment</span>
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* ========================================================= */}
+      {/* 2. CORE OFFERINGS SECTION (Pure White bg-white)           */}
+      {/* ========================================================= */}
+      <div className="w-full bg-white border-y border-[#AB7A57]/10 py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
+        
+        <div className="w-full max-w-5xl mb-10 text-left">
+          <span className="text-[#AB7A57] text-xs font-bold uppercase tracking-widest block mb-2">✦ CORE OFFERINGS ✦</span>
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#181122]">Channeled Healing Modalities</h2>
+        </div>
+
+        {/* Minimalist interactive card grid */}
+        <div className="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {modalities.map((item, idx) => {
+            const isHovered = hoveredIdx === idx;
+            const isAnyHovered = hoveredIdx !== null;
+            return (
+              <motion.div 
+                key={idx}
+                onMouseEnter={() => setHoveredIdx(idx)}
+                onMouseLeave={() => setHoveredIdx(null)}
+                whileHover={{ y: -8 }}
+                className={`border rounded-2xl p-6 text-left transition-all duration-300 flex flex-col justify-between group min-h-[190px] shadow-xs relative overflow-hidden cursor-pointer ${
+                  isHovered 
+                    ? 'bg-white border-[#D3AF54] shadow-[0_4px_20px_rgba(211,175,84,0.15)] scale-[1.02]' 
+                    : isAnyHovered 
+                      ? 'bg-[#F6F3E6]/30 border-[#AB7A57]/10 opacity-50' 
+                      : 'bg-[#F6F3E6]/60 border-[#AB7A57]/15'
+                }`}
+              >
+                <div>
+                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 shrink-0 shadow-inner transition-all duration-300 ${
+                    isHovered 
+                      ? 'bg-[#181122] text-white border-[#181122] scale-105' 
+                      : 'bg-[#FFFDEE] border-[#D3AF54]/30 text-[#D3AF54]'
+                  }`}>
+                    {item.icon}
+                  </div>
+                  <h3 className="font-serif font-bold text-lg text-[#181122] mb-2">{item.title}</h3>
+                </div>
+                
+                <p className="text-xs text-slate-600 leading-relaxed font-sans font-medium">
+                  {item.desc}
+                </p>
+              </motion.div>
+            );
+          })}
+        </div>
+
+      </div>
+
+      {/* ========================================================= */}
+      {/* 3. TRANSFORMATIONS SECTION (Distinct Warm Sand bg-[#EDE9D7])*/}
+      {/* ========================================================= */}
+      <div className="w-full bg-[#EDE9D7] py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
+        <div className="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-[#D3AF54]/5 rounded-full blur-[120px] pointer-events-none -z-10" />
+
+        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          
+          {/* Left Side: Illustrative Chakra Axis Image */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-center p-2 bg-white border border-[#AB7A57]/15 rounded-3xl overflow-hidden shadow-xs h-[380px]">
+            <img 
+              src={reikiChakrasImg} 
+              alt="Chakra Energy Axis" 
+              className="w-full h-full object-cover rounded-2xl hover:scale-[1.02] transition-transform duration-500" 
+            />
+          </div>
+
+          {/* Right Side: Benefits Grid */}
+          <div className="lg:col-span-7 space-y-6 text-left">
+            <div className="space-y-2">
+              <span className="text-[#AB7A57] text-xs font-bold uppercase tracking-widest block">✦ TRANSFORMATIONS ✦</span>
+              <h3 className="font-serif font-bold text-2xl md:text-3xl text-[#181122]">The Path to Energy Balance</h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans font-medium max-w-md">
+                Reiki healing changes how energy flows in your body, leading to deep, measurable improvements in your physical and emotional wellbeing.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Anxiety & Stress Relief */}
+              <div className="p-4 rounded-xl bg-white border border-[#AB7A57]/20 flex items-center gap-3 shadow-2xs">
+                <CheckCircle size={18} className="text-[#D3AF54] shrink-0" />
+                <span className="font-serif font-bold text-sm text-[#181122]">Anxiety & Stress Relief</span>
+              </div>
+
+              {/* Better Sleep & Fatigue Recovery */}
+              <div className="p-4 rounded-xl bg-white border border-[#AB7A57]/20 flex items-center gap-3 shadow-2xs">
+                <CheckCircle size={18} className="text-[#D3AF54] shrink-0" />
+                <span className="font-serif font-bold text-sm text-[#181122]">Better Sleep & Fatigue Recovery</span>
+              </div>
+
+              {/* Sharp Mental Clarity */}
+              <div className="p-4 rounded-xl bg-white border border-[#AB7A57]/20 flex items-center gap-3 shadow-2xs">
+                <CheckCircle size={18} className="text-[#D3AF54] shrink-0" />
+                <span className="font-serif font-bold text-sm text-[#181122]">Sharp Mental Clarity</span>
+              </div>
+
+              {/* Accelerated Biological Healing */}
+              <div className="p-4 rounded-xl bg-white border border-[#AB7A57]/20 flex items-center gap-3 shadow-2xs">
+                <CheckCircle size={18} className="text-[#D3AF54] shrink-0" />
+                <span className="font-serif font-bold text-sm text-[#181122]">Accelerated Biological Healing</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ========================================================= */}
+      {/* 4. FOOTER RETURN LINK SECTION (Warm Ivory bg-[#F4F1E3])    */}
+      {/* ========================================================= */}
+      <div className="w-full bg-[#F4F1E3] py-10 flex justify-center z-10 px-6">
+        <Link 
+          to="/" 
+          className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors"
+        >
+          <ArrowLeft size={12} />
+          <span>Back to Home</span>
+        </Link>
+      </div>
+
+    </div>
+  );
+}
+
+function PrashnaKundaliDetail({ details, navigate }) {
+  const [hoveredIdx, setHoveredIdx] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    location: '',
+    question: ''
+  });
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (formData.name && formData.phone && formData.location && formData.question) {
+      setSubmitted(true);
+    }
+  };
+
+  const pillars = [
+    {
+      title: "No Birth Time Required",
+      desc: "Perfect if you don't know your exact date, time, or city of birth.",
+      icon: <User size={18} />
+    },
+    {
+      title: "Hyper-Focused Precision",
+      desc: "Analyzes the exact energy of one specific question rather than a broad lifetime overview.",
+      icon: <Sparkles size={18} />
+    },
+    {
+      title: "Rapid Turnaround",
+      desc: "Designed for urgent situations where you cannot wait weeks for a full birth chart reading.",
+      icon: <Clock size={18} />
+    },
+    {
+      title: "Event-Based Timing",
+      desc: "Pinpoints when a specific event will manifest (e.g., job offer arrival, missing item recovery, or deal closure).",
+      icon: <Gem size={18} />
+    }
+  ];
+
+  const categories = [
+    {
+      title: "Career & Business",
+      logo: solutionsLogo,
+      queries: [
+        "\"Will I get the job offer this week?\"",
+        "\"Is this business partnership safe to sign?\""
+      ]
+    },
+    {
+      title: "Relationships & Intentions",
+      logo: guidanceLogo,
+      queries: [
+        "\"Is my partner being genuine?\"",
+        "\"Will my ex reconnect with me?\""
+      ]
+    },
+    {
+      title: "Property & Finance",
+      logo: accuracyLogo,
+      queries: [
+        "\"Should I purchase this house right now?\"",
+        "\"Will I recover my lost money?\""
+      ]
+    },
+    {
+      title: "Travel & Relocation",
+      logo: transformationLogo,
+      queries: [
+        "\"Will my visa approval go through smoothly?\"",
+        "\"Is moving abroad favorable right now?\""
+      ]
+    },
+    {
+      title: "Missing Items & Diagnostics",
+      logo: clockLogo,
+      queries: [
+        "\"Where is my lost document/item?\"",
+        "\"When will my health recover from this phase?\""
+      ]
+    }
+  ];
+
+  return (
+    <div className="w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center overflow-hidden font-sans">
+      
+      {/* ========================================================= */}
+      {/* 1. HERO SECTION (Warm Ivory bg-[#F4F1E3])                  */}
+      {/* ========================================================= */}
+      <div className="w-full py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
+        {/* Ambient glowing energy fields */}
+        <div className="absolute top-10 left-1/4 w-[350px] h-[350px] bg-[#D3AF54]/5 rounded-full blur-[100px] pointer-events-none -z-10 animate-pulse" />
+
+        {/* Back button link */}
+        <div className="w-full max-w-5xl mb-10 text-left">
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
+          >
+            <ArrowLeft size={14} />
+            <span>Home</span>
+          </button>
+        </div>
+
+        {/* Hero Content */}
+        <motion.div 
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="w-full max-w-4xl text-center flex flex-col items-center space-y-6"
+        >
+          {/* Rounded Pill Badge with Purple Glow */}
+          <div className="px-4 py-1.5 rounded-full text-purple-700 bg-purple-50 border border-purple-500/20 text-xs font-bold uppercase tracking-widest inline-flex items-center gap-1.5 shadow-[0_0_10px_rgba(124,93,248,0.15)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></span>
+            <span>Instant Clarity • Horary Precision</span>
+          </div>
+
+          {/* Main Headline with Gold Gradient text style matching True Destiny */}
+          <h1 className="text-3xl md:text-5xl font-serif font-bold text-[#181122] tracking-wide leading-tight max-w-3xl">
+            <span className="text-xl md:text-2xl font-sans font-medium text-slate-500 block mb-2 tracking-normal">
+              Instant Answers to Urgent Life Questions:
+            </span>
+            <span className="bg-gradient-to-r from-[#D3AF54] via-[#AB7A57] to-[#D3AF54] bg-clip-text text-transparent drop-shadow-sm">
+              Expert Prashna Kundali Analysis
+            </span>
+          </h1>
+
+          {/* Description */}
+          <p className="text-sm md:text-base text-slate-600 leading-relaxed max-w-2xl font-sans font-medium">
+            When time is critical or birth details are unknown, Prashna Kundali (Horary Astrology) constructs a precise cosmic map for the exact second your question is asked—providing immediate, hyper-focused clarity to help you make confident decisions.
+          </p>
+
+          {/* Scroll Button */}
+          <div className="pt-2">
+            <button 
+              onClick={() => document.getElementById('questionForm')?.scrollIntoView({ behavior: 'smooth' })}
+              className="inline-flex items-center gap-2.5 bg-[#F1E4C3] hover:bg-[#EAD18D] text-[#181122] font-bold px-8 py-3.5 rounded-xl border border-[#D3AF54]/30 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-xs sm:text-sm uppercase tracking-wider cursor-pointer font-sans"
+            >
+              <Calendar size={16} />
+              <span>Ask a Question</span>
+            </button>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* ========================================================= */}
+      {/* 2. CORE PILLARS SECTION (Pure White bg-white)             */}
+      {/* ========================================================= */}
+      <div className="w-full bg-white border-y border-[#AB7A57]/10 py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
+        
+        <div className="w-full max-w-5xl mb-10 text-left">
+          <span className="text-[#AB7A57] text-xs font-bold uppercase tracking-widest block mb-2">✦ UNIQUE ADVANTAGES ✦</span>
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#181122]">Horary Astrology Pillars</h2>
+        </div>
+
+        {/* Minimalist interactive card grid */}
+        <div className="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {pillars.map((item, idx) => {
+            const isHovered = hoveredIdx === idx;
+            const isAnyHovered = hoveredIdx !== null;
+            return (
+              <motion.div 
+                key={idx}
+                onMouseEnter={() => setHoveredIdx(idx)}
+                onMouseLeave={() => setHoveredIdx(null)}
+                whileHover={{ y: -6 }}
+                className={`border rounded-2xl p-6 text-left transition-all duration-300 flex flex-col justify-between group min-h-[190px] shadow-xs relative overflow-hidden cursor-pointer ${
+                  isHovered 
+                    ? 'bg-white border-[#D3AF54] shadow-[0_4px_20px_rgba(211,175,84,0.15)] scale-[1.02]' 
+                    : isAnyHovered 
+                      ? 'bg-[#F6F3E6]/30 border-[#AB7A57]/10 opacity-50' 
+                      : 'bg-[#F6F3E6]/60 border-[#AB7A57]/15'
+                }`}
+              >
+                <div>
+                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 shrink-0 shadow-inner transition-all duration-300 ${
+                    isHovered 
+                      ? 'bg-[#181122] text-white border-[#181122] scale-105' 
+                      : 'bg-[#FFFDEE] border-[#D3AF54]/30 text-[#D3AF54]'
+                  }`}>
+                    {item.icon}
+                  </div>
+                  <h3 className="font-serif font-bold text-lg text-[#181122] mb-2">{item.title}</h3>
+                </div>
+                
+                <p className="text-xs text-slate-600 leading-relaxed font-sans font-medium">
+                  {item.desc}
+                </p>
+              </motion.div>
+            );
+          })}
+        </div>
+
+      </div>
+
+      {/* ========================================================= */}
+      {/* 3. TYPES OF QUESTIONS SECTION (Warm Sand bg-[#EDE9D7])     */}
+      {/* ========================================================= */}
+      <div className="w-full bg-[#EDE9D7] py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
+        
+        <div className="w-full max-w-5xl mb-10 text-left">
+          <span className="text-[#AB7A57] text-xs font-bold uppercase tracking-widest block mb-2">✦ CHANNELS OF INQUIRY ✦</span>
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#181122]">Types of Questions You Can Ask</h2>
+        </div>
+
+        {/* 5-tile responsive grid */}
+        <div className="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {categories.map((item, idx) => (
+            <div 
+              key={idx}
+              className="bg-white border border-[#AB7A57]/20 rounded-2xl p-5 flex flex-col justify-between shadow-2xs hover:shadow-md transition-all duration-300 hover:scale-[1.01]"
+            >
+              <div>
+                <div className="w-10 h-10 rounded-lg bg-[#FFFDEE] border border-[#D3AF54]/20 flex items-center justify-center mb-4 shrink-0 overflow-hidden shadow-inner">
+                  <img src={item.logo} alt={item.title} className="w-6 h-6 object-contain" />
+                </div>
+                <h4 className="font-serif font-bold text-sm text-[#181122] mb-3">{item.title}</h4>
+                <div className="space-y-2 mt-2">
+                  {item.queries.map((q, qidx) => (
+                    <p key={qidx} className="text-xs sm:text-sm text-slate-700 font-sans italic leading-relaxed font-semibold">
+                      {q}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+      </div>
+
+      {/* ========================================================= */}
+      {/* 4. INTERACTIVE CTA FORM SECTION (Pure White bg-white)     */}
+      {/* ========================================================= */}
+      <div id="questionForm" className="w-full bg-white border-t border-[#AB7A57]/10 py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
+        
+        <div className="w-full max-w-md mb-8 text-center">
+          <span className="text-[#AB7A57] text-xs font-bold uppercase tracking-widest block mb-2">✦ GET INSTANT CLARITY ✦</span>
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#181122]">Submit Your Prashna</h2>
+          <p className="text-xs text-slate-500 font-sans mt-2">
+            Fill in your details below. Astrologer Kundan Singh will construct your horary chart for the exact second of submission.
+          </p>
+        </div>
+
+        {/* Themed with Navbar dark color #181122 */}
+        <div className="w-full max-w-2xl bg-[#181122] border border-[#AB7A57]/30 rounded-3xl p-6 md:p-8 shadow-xl relative">
+          
+          {submitted ? (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-8 space-y-4"
+            >
+              <div className="w-16 h-16 bg-[#241B33] border border-[#D3AF54]/30 rounded-full flex items-center justify-center mx-auto text-[#D3AF54] shadow-inner">
+                <CheckCircle size={32} />
+              </div>
+              <h3 className="font-serif font-bold text-xl text-[#FDFCF5]">Question Submitted Successfully!</h3>
+              <p className="text-xs text-[#D8CFEB] max-w-md mx-auto leading-relaxed">
+                Thank you, {formData.name}. Your Prashna chart has been cast for this exact location and time. We will reach out to you within 24 hours with your horary reading.
+              </p>
+              <button 
+                onClick={() => {
+                  setSubmitted(false);
+                  setFormData({ name: '', phone: '', location: '', question: '' });
+                }}
+                className="mt-4 text-xs font-bold text-[#D3AF54] hover:text-[#EAD18D] underline cursor-pointer"
+              >
+                Submit another question
+              </button>
+            </motion.div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-5 text-left">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider mb-2">Full Name</label>
+                  <input 
+                    type="text" 
+                    required
+                    placeholder="e.g. John Doe"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full bg-[#241B33] text-[#FDFCF5] border border-slate-700/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#D3AF54] transition placeholder-slate-500 font-sans"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider mb-2">Mobile Number</label>
+                  <input 
+                    type="tel" 
+                    required
+                    placeholder="e.g. +1 555-0199"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full bg-[#241B33] text-[#FDFCF5] border border-slate-700/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#D3AF54] transition placeholder-slate-500 font-sans"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider mb-2">Current Location (City, Country)</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="e.g. London, UK"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  className="w-full bg-[#241B33] text-[#FDFCF5] border border-slate-700/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#D3AF54] transition placeholder-slate-500 font-sans"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider mb-2">Your Specific Question</label>
+                <textarea 
+                  required
+                  placeholder="e.g. Will my visa application be approved this month?"
+                  rows={4}
+                  value={formData.question}
+                  onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+                  className="w-full bg-[#241B33] text-[#FDFCF5] border border-slate-700/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#D3AF54] transition placeholder-slate-500 min-h-[120px] resize-none font-sans"
+                />
+              </div>
+
+              <div className="pt-2">
+                <button 
+                  type="submit"
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-8 py-4 rounded-xl shadow-lg shadow-[#D3AF54]/10 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 text-xs sm:text-sm uppercase tracking-wider cursor-pointer font-sans"
+                >
+                  <span>Analyze My Question Now</span>
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+            </form>
+          )}
+
+        </div>
+
+      </div>
+
+      {/* ========================================================= */}
+      {/* 5. FOOTER RETURN LINK SECTION (Warm Ivory bg-[#F4F1E3])    */}
+      {/* ========================================================= */}
+      <div className="w-full bg-[#F4F1E3] py-10 flex justify-center z-10 px-6">
+        <Link 
+          to="/" 
+          className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors"
+        >
+          <ArrowLeft size={12} />
+          <span>Back to Home</span>
+        </Link>
+      </div>
+
+    </div>
+  );
 }

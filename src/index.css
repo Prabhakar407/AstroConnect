@@ -76,69 +76,57 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Ensure html and body take full width and prevent scroll leakage */
-html, body {
+html {
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
   width: 100%;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  position: relative;
 }
 
-/* Redefine max-w-7xl and max-w-6xl to scale fluidly on larger/ultra-wide screens */
-@media (min-width: 1280px) {
-  .max-w-7xl {
-    max-width: 1280px !important;
-  }
-  .max-w-6xl {
-    max-width: 1152px !important;
-  }
-}
-
+/* Root font size scaling for fluid responsive layout and auto-scaling elements on larger / ultra-wide screens */
 @media (min-width: 1440px) {
-  .max-w-7xl {
-    max-width: 1400px !important;
-  }
-  .max-w-6xl {
-    max-width: 1260px !important;
+  html {
+    font-size: 17px;
   }
 }
 
 @media (min-width: 1600px) {
-  .max-w-7xl {
-    max-width: 1540px !important;
-  }
-  .max-w-6xl {
-    max-width: 1380px !important;
-  }
-}
-
-@media (min-width: 1920px) {
-  .max-w-7xl {
-    max-width: 1820px !important;
-  }
-  .max-w-6xl {
-    max-width: 1620px !important;
-  }
-}
-
-@media (min-width: 2560px) {
-  .max-w-7xl {
-    max-width: 2420px !important;
-  }
-  .max-w-6xl {
-    max-width: 2120px !important;
-  }
-}
-
-/* Root font size scaling for ultra-wide screens */
-@media (min-width: 1920px) {
   html {
     font-size: 18px;
   }
 }
 
+@media (min-width: 1920px) {
+  html {
+    font-size: 21px;
+  }
+}
+
 @media (min-width: 2560px) {
   html {
-    font-size: 20px;
+    font-size: 26px;
+  }
+}
+
+@media (min-width: 3840px) {
+  html {
+    font-size: 36px;
   }
 }
 

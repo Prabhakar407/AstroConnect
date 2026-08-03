@@ -1,62 +1,38 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { Phone, Mail, MapPin, Clock, MessageCircle, Send, User, Sparkles, Calendar } from 'lucide-react'
+import { 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Clock, 
+  Send, 
+  User, 
+  Check, 
+  Copy,
+  ChevronDown,
+  MessageSquare,
+  HelpCircle
+} from 'lucide-react'
 import callLogo from "../assets/logos/Call.png"
 import gmailLogo from "../assets/logos/gmail.png"
 import mapsLogo from "../assets/logos/google-maps.png"
 import waLogo from "../assets/logos/whatsapp.png"
 
-/**
- * CelestialDivider Component
- * Elegant visual separator designed with gold gradient lines and a central star symbol.
- */
-function CelestialDivider() {
-  return (
-    <div className="w-full flex items-center justify-center py-6 gap-4">
-      <div className="h-[1px] flex-grow max-w-[150px] bg-gradient-to-r from-transparent to-[#D3AF54]/40"></div>
-      <div className="text-[#D3AF54]/50 text-xs tracking-widest select-none">✦ ❖ ✦</div>
-      <div className="h-[1px] flex-grow max-w-[150px] bg-gradient-to-l from-transparent to-[#D3AF54]/40"></div>
-    </div>
-  )
-}
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.12
-    }
+const faqs = [
+  {
+    q: "What birth details are required?",
+    a: "We need your exact Date of Birth, exact Time of Birth (within a few minutes), and Place of Birth (city and state/country) for precise chart calculations."
+  },
+  {
+    q: "Are consultations online or offline?",
+    a: "Both! Online sessions are held via Zoom or Google Meet. In-person consultations are available at Vasant Kunj, Delhi by prior appointment only."
+  },
+  {
+    q: "How long does a session last?",
+    a: "Standard readings last between 45 to 60 minutes, which includes chart details analysis and a dedicated Q&A session."
   }
-};
+];
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 25, scale: 0.96 },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      type: "spring",
-      stiffness: 120,
-      damping: 18
-    }
-  }
-};
-
-/**
- * Contact Component
- * General inquiries and contact details section.
- * Rebuilt with a luxury light palette, dual-column structure,
- * scroll parallax, glowing interactive fields, and spring hovers.
- */
 function Contact() {
-  const { scrollY } = useScroll()
-  const yZodiac = useTransform(scrollY, [0, 1000], [0, -70])
-  const rZodiac = useTransform(scrollY, [0, 1000], [0, 30])
-  const yHeader = useTransform(scrollY, [0, 1000], [0, -30])
-
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -66,13 +42,17 @@ function Contact() {
   })
   
   const [submitted, setSubmitted] = useState(false)
+  const [copiedType, setCopiedType] = useState(null)
+  const [showFaq, setShowFaq] = useState(false)
+  const [openFaqIndex, setOpenFaqIndex] = useState(null)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }))
+    setFormData((prev) => {
+      const updated = { ...prev };
+      updated[name] = value;
+      return updated;
+    })
   }
 
   const handleContactSubmit = (e) => {
@@ -81,224 +61,188 @@ function Contact() {
     setSubmitted(true)
   }
 
-  const contactDetails = [
-    {
-      icon: <img src={callLogo} alt="Call" className="w-6 h-6 object-contain" />,
-      title: "Telephone / Call",
-      val: "+91 8130808758",
-      sub: "Mon - Sat: 9:00 AM - 7:00 PM"
-    },
-    {
-      icon: <img src={gmailLogo} alt="Gmail" className="w-6 h-6 object-contain" />,
-      title: "Email Queries",
-      val: "singh.21kundan@gmail.com",
-      sub: "Response within 24 hours"
-    },
-    {
-      icon: <img src={mapsLogo} alt="Maps" className="w-6 h-6 object-contain" />,
-      title: "Main Office",
-      val: "Vasant Kunj, Delhi , India",
-      sub: "Consultation by Appointment Only"
-    },
-    {
-      icon: <img src={waLogo} alt="WhatsApp" className="w-6 h-6 object-contain" />,
-      title: "WhatsApp Chat",
-      val: "WhatsApp Live Support",
-      sub: "Instantly chat with us",
-      link: "https://wa.me/918527790801"
-    }
-  ];
+  const handleCopyText = (text, type) => {
+    navigator.clipboard.writeText(text)
+    setCopiedType(type)
+    setTimeout(() => setCopiedType(null), 2000)
+  }
 
   return (
-    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center px-6 py-8 font-sans text-[#181122]">
+    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center justify-start font-sans text-[#181122]">
       
       {/* ========================================================= */}
-      {/* DECORATIVE BACKGROUNDS & PARALLAX                         */}
+      {/* 2. CONTACT DETAILS & FORM                                 */}
       {/* ========================================================= */}
-      <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.04),transparent_70%)] rounded-full -z-10 pointer-events-none"></div>
+      <div className="w-full bg-[#FDFCF5] pt-4 sm:pt-6 pb-16 px-4 flex flex-col items-center relative z-10 overflow-hidden">
+        <div className="absolute bottom-10 right-10 w-72 h-72 bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.03),transparent_70%)] rounded-full -z-10 pointer-events-none"></div>
 
-      {/* Rotating Background Zodiac Motif */}
-      <motion.div 
-        style={{ y: yZodiac, rotate: rZodiac }}
-        className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.02] flex justify-center items-center -z-10"
-      >
-        <svg className="w-[580px] h-[580px] text-[#AB7A57]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.4">
-          <circle cx="100" cy="100" r="95" strokeDasharray="3 3" />
-          <circle cx="100" cy="100" r="75" />
-          <circle cx="100" cy="100" r="55" strokeDasharray="2 2" />
-          <line x1="100" y1="5" x2="100" y2="195" />
-          <line x1="5" y1="100" x2="195" y2="100" />
-        </svg>
-      </motion.div>
+        {/* Header Area directly above the box */}
+        <div className="text-center max-w-xl relative flex flex-col items-center mb-4">
+          <span className="text-[#AB7A57] text-xs sm:text-sm tracking-[0.25em] font-bold uppercase mb-2">
+            ✦ CONNECT WITH THE STARS ✦
+          </span>
+          <div className="w-12 h-[2px] bg-[#D3AF54] mt-2"></div>
+        </div>
 
-      {/* ========================================================= */}
-      {/* PAGE HEADER                                               */}
-      {/* ========================================================= */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        style={{ y: yHeader }}
-        className="text-center max-w-2xl mb-6 relative z-10 flex flex-col items-center gap-3.5"
-      >
-        <h1 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif font-bold text-[#181122] tracking-wide leading-tight">
-          Connect Personally
-        </h1>
-        <Link 
-          to="/booking"
-          className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-semibold px-5 py-2.5 rounded-xl transition duration-300 shadow-md shadow-[#D3AF54]/10 hover:scale-[1.02] active:scale-[0.98] cursor-pointer text-xs uppercase tracking-wider flex items-center gap-2"
-        >
-          <Calendar size={14} />
-          <span>Book Appointment</span>
-        </Link>
-      </motion.div>
+        {/* Main Split Panel Card */}
+        <div className="w-full max-w-4xl bg-white border border-[#AB7A57]/15 rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-12">
+          
+          {/* Left Side: Clean Brand Info Panel */}
+          <div className="md:col-span-5 bg-[#181122] text-white p-6 md:p-8 flex flex-col justify-between relative overflow-hidden">
+            {/* Subtle Zodiac pattern background overlay */}
+            <div className="absolute inset-0 opacity-[0.02] pointer-events-none flex items-center justify-center">
+              <svg className="w-80 h-80 text-white" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.5">
+                <circle cx="50" cy="50" r="45" strokeDasharray="2 2" />
+                <line x1="50" y1="5" x2="50" y2="95" />
+                <line x1="5" y1="50" x2="95" y2="50" />
+              </svg>
+            </div>
 
-      {/* ========================================================= */}
-      {/* DUAL-COLUMN CONTENT LAYOUT                                */}
-      {/* ========================================================= */}
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, margin: "-100px" }}
-        className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative z-10"
-      >
-        
-        {/* Left Column - Contact Information */}
-        <motion.div variants={itemVariants} className="lg:col-span-4 flex flex-col justify-between gap-5">
-          <div className="space-y-4 text-left">
-            <h3 className="font-serif text-lg font-bold text-[#D3AF54] border-b border-[#D3AF54]/30 pb-2">
-              Office Details & Support
-            </h3>
-            
-            <motion.div variants={containerVariants} className="grid grid-cols-1 gap-3">
-              {contactDetails.map((item, idx) => {
-                return (
-                  <motion.div
-                    key={idx}
-                    variants={itemVariants}
-                    whileHover={{ x: 4, borderColor: "#D3AF54" }}
-                    transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                    className="bg-[#181122] border border-[#AB7A57]/20 rounded-2xl p-4 flex flex-col shadow-lg group text-white gap-3 animate-none"
-                  >
-                    {item.link ? (
-                      <a href={item.link} target="_blank" rel="noreferrer" className="w-full flex flex-col gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-[#FFFDEE] border border-[#BDBDBD] flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
-                            {item.icon}
-                          </div>
-                          <h4 
-                            style={{ color: '#D3AF54' }}
-                            className="font-serif text-sm font-bold group-hover:text-white transition-colors"
-                          >
-                            {item.title}
-                          </h4>
-                        </div>
-                        <div className="pl-1">
-                          <p 
-                            style={{ color: '#D3AF54' }}
-                            className="text-sm font-bold hover:underline font-sans"
-                          >
-                            {item.val}
-                          </p>
-                          <p 
-                            style={{ color: '#EBDCD4', opacity: 0.7 }}
-                            className="text-[11px] mt-0.5 font-sans"
-                          >
-                            {item.sub}
-                          </p>
-                        </div>
-                      </a>
-                    ) : (
-                      <div className="w-full flex flex-col gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-[#FFFDEE] border border-[#BDBDBD] flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform shrink-0">
-                            {item.icon}
-                          </div>
-                          <h4 
-                            style={{ color: '#D3AF54' }}
-                            className="font-serif text-sm font-bold group-hover:text-white transition-colors"
-                          >
-                            {item.title}
-                          </h4>
-                        </div>
-                        <div className="pl-1">
-                          <p 
-                            style={{ color: '#EBDCD4' }}
-                            className="text-sm font-bold font-sans"
-                          >
-                            {item.val}
-                          </p>
-                          <p 
-                            style={{ color: '#EBDCD4', opacity: 0.7 }}
-                            className="text-[11px] mt-0.5 font-sans"
-                          >
-                            {item.sub}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </motion.div>
-                )
-              })}
-            </motion.div>
-          </div>
-
-          <div className="w-full bg-[#181122] border border-[#AB7A57]/20 rounded-2xl overflow-hidden shadow-xl relative h-[200px] z-10 group">
-            <iframe
-              title="Office Location Map"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115408.41164929853!2d82.90870635413444!3d25.32161814674744!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x398e2db76c5728e9%3A0x15f77095e1fc71a4!2sVaranasi%2C%20Uttar%20Pradesh!5e0!3m2!1sen!2sin!4v1710000000000!5m2!1sen!2sin"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="w-full h-full grayscale-[15%] group-hover:grayscale-0 transition-all duration-500"
-            ></iframe>
-          </div>
-        </motion.div>
-
-        {/* Right Column - Message Form Card */}
-        <motion.div variants={itemVariants} className="lg:col-span-8 bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-5 md:p-6 shadow-2xl transition-all duration-500 text-white">
-          {submitted ? (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex flex-col items-center justify-center text-center py-12 space-y-4"
-            >
-              <div className="w-16 h-16 rounded-full bg-emerald-900/20 border-2 border-emerald-500 flex items-center justify-center text-emerald-500 text-3xl shadow-sm animate-pulse">
-                ✓
+            <div className="space-y-6 relative z-10 text-left">
+              <div>
+                {/* Styled div overrides default h2 color of var(--color-plum-plate) in index.css */}
+                <div className="font-serif font-bold text-2xl" style={{ color: '#D3AF54' }}>
+                  Astroadvice Studio
+                </div>
+                <p className="text-sm text-[#D8CFEB] mt-2 leading-relaxed">
+                  Guiding seekers with authentic Vedic forecasts and planetary transits support.
+                </p>
               </div>
-              <h4 className="font-serif text-white font-bold text-2xl">Message Dispatched!</h4>
-              <p className="text-sm text-[#D8CFEB] max-w-sm mx-auto font-sans leading-relaxed">
-                Thank you for your message. We will review your query and connect with you via email or phone within 24 hours.
-              </p>
-              <CelestialDivider />
-              <button 
-                onClick={() => {
-                  setSubmitted(false)
-                  setFormData({ name: "", email: "", phone: "", subject: "General Inquiry", message: "" })
-                }}
-                className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] border border-[#D3AF54] px-5 py-2 rounded-xl transition duration-300 font-semibold text-xs cursor-pointer shadow-md shadow-[#D3AF54]/10"
-              >
-                Send Another Message
-              </button>
-            </motion.div>
-          ) : (
-            <form onSubmit={handleContactSubmit} className="space-y-4 text-left">
-              <h3 className="font-serif text-xl font-bold text-white border-b border-white/10 pb-3">
-                Send Direct Message
-              </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Compact Details Rows */}
+              <div className="space-y-4 pt-2">
+                {/* WhatsApp Row */}
+                <a 
+                  href="https://wa.me/918527790801" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="flex items-center gap-3 group hover:text-[#D3AF54] transition-colors"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                    <img src={waLogo} alt="WhatsApp" className="w-5.5 h-5.5 object-contain" />
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase font-serif font-bold tracking-wider leading-none" style={{ color: '#AB7A57' }}>
+                      WhatsApp Support
+                    </div>
+                    <p className="text-sm font-semibold text-[#D8CFEB] mt-1 group-hover:text-white transition-colors">Start Live Chat</p>
+                  </div>
+                </a>
+
+                {/* Call Row */}
+                <div className="flex items-center justify-between group">
+                  <a href="tel:+918130808758" className="flex items-center gap-3 hover:text-[#D3AF54] transition-colors">
+                    <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                      <img src={callLogo} alt="Call" className="w-4.5 h-4.5 object-contain" />
+                    </div>
+                    <div>
+                      <div className="text-xs uppercase font-serif font-bold tracking-wider leading-none" style={{ color: '#AB7A57' }}>
+                        Call Helpline
+                      </div>
+                      <p className="text-sm font-semibold text-[#D8CFEB] mt-1">+91 8130808758</p>
+                    </div>
+                  </a>
+                  <button 
+                    type="button"
+                    onClick={() => handleCopyText("+918130808758", "phone")}
+                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer relative shrink-0"
+                  >
+                    {copiedType === "phone" ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                    {copiedType === "phone" && (
+                      <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded shadow">Copied</span>
+                    )}
+                  </button>
+                </div>
+
+                {/* Email Row */}
+                <div className="flex items-center justify-between group">
+                  <a href="mailto:singh.21kundan@gmail.com" className="flex items-center gap-3 hover:text-[#D3AF54] transition-colors">
+                    <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                      <img src={gmailLogo} alt="Email" className="w-4.5 h-4.5 object-contain" />
+                    </div>
+                    <div>
+                      <div className="text-xs uppercase font-serif font-bold tracking-wider leading-none" style={{ color: '#AB7A57' }}>
+                        Email Helpline
+                      </div>
+                      <p className="text-sm font-semibold text-[#D8CFEB] mt-1 truncate max-w-[140px] sm:max-w-none">singh.21kundan@gmail.com</p>
+                    </div>
+                  </a>
+                  <button 
+                    type="button"
+                    onClick={() => handleCopyText("singh.21kundan@gmail.com", "email")}
+                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer relative shrink-0"
+                  >
+                    {copiedType === "email" ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                    {copiedType === "email" && (
+                      <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded shadow">Copied</span>
+                    )}
+                  </button>
+                </div>
+
+                {/* Office Location */}
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#D3AF54] shrink-0">
+                    <MapPin size={16} />
+                  </div>
+                  <div>
+                    <div className="text-xs uppercase font-serif font-bold tracking-wider leading-none" style={{ color: '#AB7A57' }}>
+                      Main Office
+                    </div>
+                    <p className="text-sm text-[#D8CFEB] mt-1">Vasant Kunj, Delhi, India</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Operational Hours / Map Button */}
+            <div className="pt-6 border-t border-white/10 mt-6 relative z-10 text-left">
+              <p className="text-xs text-slate-300 flex items-center gap-1.5">
+                <Clock size={13} />
+                <span>Mon - Sat: 9:00 AM - 7:00 PM</span>
+              </p>
+              <a 
+                href="https://www.google.com/maps/place/Varanasi,+Uttar+Pradesh/@25.3216181,82.9087063" 
+                target="_blank" 
+                rel="noreferrer"
+                className="mt-4 w-full bg-white/5 border border-white/10 hover:bg-[#D3AF54] text-[#D8CFEB] hover:text-[#181122] text-xs uppercase font-bold py-2.5 rounded-xl transition duration-300 flex items-center justify-center gap-1.5 shadow"
+              >
+                <img src={mapsLogo} alt="Maps" className="w-4.5 h-4.5 object-contain" />
+                <span>Open Google Directions</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Right Side: Clean Compact Form Panel */}
+          <div className="md:col-span-7 p-6 md:p-8 flex flex-col justify-center">
+            {submitted ? (
+              <div className="text-center py-8 space-y-4">
+                <div className="w-12 h-12 rounded-full bg-emerald-100 border border-emerald-500 flex items-center justify-center text-emerald-600 text-xl mx-auto shadow-sm">
+                  ✓
+                </div>
+                <h4 className="font-serif font-bold text-[#181122] text-lg">Message Submitted!</h4>
+                <p className="text-xs text-slate-500 font-sans max-w-xs mx-auto leading-relaxed">
+                  Thank you. Astrologer Kundan Singh will review your query and respond via email or call within 24 hours.
+                </p>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setSubmitted(false)
+                    setFormData({ name: "", email: "", phone: "", subject: "General Inquiry", message: "" })
+                  }}
+                  className="bg-[#D3AF54] hover:bg-[#D3AF54]/90 text-[#181122] font-semibold px-5 py-2 rounded-xl transition text-xs shadow-md shadow-[#D3AF54]/10 cursor-pointer"
+                >
+                  Send Another Message
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleContactSubmit} className="space-y-4 text-left">
+                {/* Full Name */}
                 <div className="space-y-1.5">
-                  <label htmlFor="name" className="block text-xs font-semibold uppercase tracking-wider text-[#D3AF54]">
+                  <label htmlFor="name" className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider">
                     Full Name <span className="text-[#D3AF54]">*</span>
                   </label>
                   <div className="relative">
-                    <User size={14} className="absolute left-3 top-3.5 text-[#D3AF54]/60" />
+                    <User size={13} className="absolute left-3.5 top-3.5 text-[#AB7A57]" />
                     <input 
                       type="text" 
                       id="name"
@@ -306,102 +250,156 @@ function Contact() {
                       required
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Your name"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300 placeholder-white/40"
+                      placeholder="e.g. John Doe"
+                      className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition font-sans"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
-                  <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-[#D3AF54]">
-                    Email Address <span className="text-[#D3AF54]">*</span>
+                {/* Email and Phone row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label htmlFor="email" className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider">
+                      Email Address <span className="text-[#D3AF54]">*</span>
+                    </label>
+                    <div className="relative">
+                      <Mail size={13} className="absolute left-3.5 top-3.5 text-[#AB7A57]" />
+                      <input 
+                        type="email" 
+                        id="email"
+                        name="email"
+                        required
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="e.g. john@example.com"
+                        className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition font-sans"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label htmlFor="phone" className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider">
+                      Mobile Number <span className="text-[#D3AF54]">*</span>
+                    </label>
+                    <div className="relative">
+                      <Phone size={13} className="absolute left-3.5 top-3.5 text-[#AB7A57]" />
+                      <input 
+                        type="tel" 
+                        id="phone"
+                        name="phone"
+                        required
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        placeholder="e.g. +91 98765 43210"
+                        className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition font-sans"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Subject Selector dropdown */}
+                <div className="space-y-1.5 relative">
+                  <label htmlFor="subject" className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider">
+                    Inquiry Topic
                   </label>
                   <div className="relative">
-                    <Mail size={14} className="absolute left-3 top-3.5 text-[#D3AF54]/60" />
-                    <input 
-                      type="email" 
-                      id="email"
-                      name="email"
-                      required
-                      value={formData.email}
+                    <MessageSquare size={13} className="absolute left-3.5 top-3.5 text-[#AB7A57]" />
+                    <select 
+                      id="subject"
+                      name="subject"
+                      value={formData.subject}
                       onChange={handleInputChange}
-                      placeholder="Your email"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300 placeholder-white/40"
-                    />
+                      className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl pl-9 pr-10 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition appearance-none cursor-pointer font-serif font-bold"
+                    >
+                      <option value="General Inquiry">General Inquiry</option>
+                      <option value="Birth Chart Reading">Birth Chart Reading</option>
+                      <option value="Match Making (Kundli Milan)">Match Making (Kundli Milan)</option>
+                      <option value="Vastu Consultation">Vastu Consultation</option>
+                      <option value="Reiki Energy Healing">Reiki Energy Healing</option>
+                    </select>
+                    <ChevronDown size={14} className="absolute right-3.5 top-3.5 text-[#AB7A57] pointer-events-none" />
                   </div>
                 </div>
 
+                {/* Message Box */}
                 <div className="space-y-1.5">
-                  <label htmlFor="phone" className="block text-xs font-semibold uppercase tracking-wider text-[#D3AF54]">
-                    Mobile Number <span className="text-[#D3AF54]">*</span>
+                  <label htmlFor="message" className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider">
+                    Your Message / Question <span className="text-[#D3AF54]">*</span>
                   </label>
-                  <div className="relative">
-                    <Phone size={14} className="absolute left-3 top-3.5 text-[#D3AF54]/60" />
-                    <input 
-                      type="tel" 
-                      id="phone"
-                      name="phone"
-                      required
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="Your mobile number"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300 placeholder-white/40"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label htmlFor="subject" className="block text-xs font-semibold uppercase tracking-wider text-[#D3AF54]">
-                    Subject of Inquiry <span className="text-[#D3AF54]">*</span>
-                  </label>
-                  <select 
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
+                  <textarea 
+                    id="message"
+                    name="message"
+                    required
+                    rows={4}
+                    value={formData.message}
                     onChange={handleInputChange}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 transition-all duration-300"
-                  >
-                    <option className="bg-[#181122] text-white">General Inquiry</option>
-                    <option className="bg-[#181122] text-white">Vedic Astrology Reading</option>
-                    <option className="bg-[#181122] text-white">Numerologist Inquiry</option>
-                    <option className="bg-[#181122] text-white">Vastu Consultant Site Audit</option>
-                    <option className="bg-[#181122] text-white">Laal Kitaab Remedies Consultation</option>
-                    <option className="bg-[#181122] text-white">Expertise in Prashna Kundali</option>
-                    <option className="bg-[#181122] text-white">Reiki Healer Session</option>
-                  </select>
+                    placeholder="Describe your situation or list any key questions you want answered..."
+                    className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl px-4 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition min-h-[100px] resize-none font-sans"
+                  />
                 </div>
-              </div>
 
-              <div className="space-y-1.5">
-                <label htmlFor="message" className="block text-xs font-semibold uppercase tracking-wider text-[#D3AF54]">
-                  Your Message <span className="text-[#D3AF54]">*</span>
-                </label>
-                <textarea 
-                  id="message"
-                  name="message"
-                  required
-                  rows="4"
-                  value={formData.message}
-                  onChange={handleInputChange}
-                  placeholder="Ask your question or detail your consultation request..."
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300 resize-none placeholder-white/40"
-                ></textarea>
-              </div>
+                <button 
+                  type="submit"
+                  className="w-full bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] font-semibold py-3 rounded-xl transition duration-300 flex items-center justify-center gap-1.5 text-sm uppercase tracking-wider cursor-pointer shadow"
+                >
+                  <Send size={12} />
+                  <span>Submit Message</span>
+                </button>
 
-              <motion.button 
-                type="submit"
-                whileHover={{ scale: 1.02, y: -1, boxShadow: "0 10px 20px rgba(211, 175, 84, 0.15), 0 0 15px rgba(211, 175, 84, 0.3)" }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                className="w-full bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] border border-[#D3AF54] font-semibold py-3 rounded-xl transition duration-300 shadow-md cursor-pointer flex items-center justify-center gap-2 mt-4 text-sm"
-              >
-                <Send size={14} />
-                <span>Send Message</span>
-              </motion.button>
-            </form>
+              </form>
+            )}
+          </div>
+
+        </div>
+      </div>
+
+      {/* ========================================================= */}
+      {/* 3. FAQ ACCORDION SECTION (Warm Sand bg-[#EDE9D7])          */}
+      {/* ========================================================= */}
+      <div className="w-full bg-[#EDE9D7] py-16 px-4 flex flex-col items-center relative z-10">
+        <div className="w-full max-w-4xl px-4">
+          
+          {/* Toggle Bar */}
+          <button
+            type="button"
+            onClick={() => setShowFaq(!showFaq)}
+            className="mx-auto flex items-center justify-center gap-1.5 text-sm font-serif font-bold text-[#AB7A57] hover:text-[#181122] transition-colors focus:outline-none cursor-pointer"
+          >
+            <HelpCircle size={15} />
+            <span>{showFaq ? "Hide Frequently Asked Questions" : "Show Frequently Asked Questions"}</span>
+            <ChevronDown size={15} className={`transform transition-transform duration-300 ${showFaq ? "rotate-180" : ""}`} />
+          </button>
+
+          {showFaq && (
+            <div className="mt-4 space-y-2.5 max-w-2xl mx-auto transition-all duration-300">
+              {faqs.map((faq, idx) => {
+                const isOpen = openFaqIndex === idx;
+                return (
+                  <div key={idx} className="border border-slate-200 rounded-xl bg-white text-left overflow-hidden shadow-sm">
+                    <button
+                      type="button"
+                      onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                      className="w-full px-5 py-3 flex items-center justify-between text-left text-sm font-serif font-bold text-[#181122] hover:text-[#AB7A57] focus:outline-none cursor-pointer"
+                    >
+                      <span>{faq.q}</span>
+                      <ChevronDown size={13} className={`text-[#D3AF54] transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                    </button>
+                    {isOpen && (
+                      <div className="px-5 pb-4 pt-1.5 text-sm text-slate-600 border-t border-slate-100 leading-relaxed font-sans">
+                        {faq.a}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           )}
-        </motion.div>
-      </motion.div>
+
+        </div>
+      </div>
+
+
+
     </div>
   )
 }

@@ -155,168 +155,131 @@ function Service() {
   ]
 
   return (
-    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center px-6 py-12 font-sans">
+    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans">
       
       {/* ========================================================= */}
-      {/* DECORATIVE BACKGROUNDS & PARALLAX                         */}
+      {/* 1. HEADER SECTION (Warm Ivory bg-[#F4F1E3])               */}
       {/* ========================================================= */}
-      <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
-      <div className="absolute bottom-40 right-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.04),transparent_70%)] rounded-full -z-10 pointer-events-none"></div>
+      <div className="w-full bg-[#F4F1E3] py-16 px-6 flex flex-col items-center border-b border-[#AB7A57]/10 relative z-10">
+        
+        {/* Decorative backgrounds & rotating zodiac inside header wrapper */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
 
-      {/* Rotating Background Zodiac Motif */}
-      <motion.div 
-        style={{ y: yZodiac, rotate: rZodiac }}
-        className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.03] flex justify-center items-center -z-10"
-      >
-        <svg className="w-[550px] h-[550px] text-[#AB7A57]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.4">
-          <circle cx="100" cy="100" r="95" strokeDasharray="3 3" />
-          <circle cx="100" cy="100" r="75" />
-          <circle cx="100" cy="100" r="55" strokeDasharray="2 2" />
-          <line x1="100" y1="5" x2="100" y2="195" />
-          <line x1="5" y1="100" x2="195" y2="100" />
-        </svg>
-      </motion.div>
-
-      {/* ========================================================= */}
-      {/* PAGE HEADER                                               */}
-      {/* ========================================================= */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        style={{ y: yDrift }}
-        className="text-center max-w-2xl mb-12 relative z-10"
-      >
-        <span className="text-[#AB7A57] text-xs tracking-[0.25em] font-bold uppercase block mb-3 font-sans">
-          ✦ CELESTIAL SERVICES ✦
-        </span>
-        <h1 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif font-bold text-[#181122] tracking-wide leading-tight">
-          Guidance & Remedial Consultation
-        </h1>
-        <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-4 mb-4"></div>
-        <p className="text-sm md:text-base text-[#181122]/90 leading-relaxed font-sans max-w-xl mx-auto">
-          Embark on your personal path to alignment. Explore our premium consultations structured to address every key sector of life with accuracy and confidentiality.
-        </p>
-      </motion.div>
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          style={{ y: yDrift }}
+          className="text-center max-w-2xl relative z-10"
+        >
+          <span className="text-[#AB7A57] text-xs tracking-[0.25em] font-bold uppercase block mb-3 font-sans">
+            ✦ CELESTIAL SERVICES ✦
+          </span>
+          <h1 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif font-bold text-[#181122] tracking-wide leading-tight">
+            Guidance & Remedial Consultation
+          </h1>
+          <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-4 mb-4"></div>
+          <p className="text-sm md:text-base text-[#181122]/90 leading-relaxed font-sans max-w-xl mx-auto">
+            Embark on your personal path to alignment. Explore our premium consultations structured to address every key sector of life with accuracy and confidentiality.
+          </p>
+        </motion.div>
+      </div>
 
       {/* ========================================================= */}
-      {/* SERVICES GRID SECTION                                     */}
+      {/* 2. SERVICES GRID SECTION (Pure White bg-white)            */}
       {/* ========================================================= */}
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, margin: "-100px" }}
-        className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10"
-      >
-        {serviceOfferings.map((item, index) => (
-          <motion.div 
-            key={index} 
-            variants={itemVariants}
-            whileHover={{ 
-              y: -8, 
-              borderColor: "#D3AF54", 
-              boxShadow: "0 25px 40px -15px rgba(211,175,84,0.1), 0 0 25px rgba(211, 175, 84, 0.25)" 
-            }}
-            className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl overflow-hidden flex flex-col justify-between text-left transition-all duration-300 shadow-lg cursor-pointer relative group text-white"
-          >
-            {/* Header Image banner */}
-            <div className="w-full h-44 overflow-hidden relative border-b border-white/5">
-              <img 
-                src={item.image} 
-                alt={item.title} 
-                className="w-full h-full object-cover opacity-75 group-hover:opacity-90 group-hover:scale-105 transition-all duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#181122] via-[#181122]/30 to-transparent pointer-events-none" />
-              
-              {/* Header block icon overlay */}
-              <div className="absolute bottom-3 left-4 w-10 h-10 rounded-xl bg-[#FFFDEE] border border-[#BDBDBD]/40 flex items-center justify-center text-[#D3AF54]">
-                {item.icon}
-              </div>
-            </div>
+      <div className="w-full bg-white py-16 px-6 flex flex-col items-center relative z-10 overflow-hidden">
+        
+        <div className="absolute bottom-40 right-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.04),transparent_70%)] rounded-full -z-10 pointer-events-none"></div>
 
-            {/* Content Body */}
-            <div className="p-5 sm:p-6 flex flex-col flex-grow gap-4">
-              {/* Title & Price info */}
-              <div className="flex items-start justify-between gap-2">
-                <div className="space-y-0.5">
-                  <h3 className="font-serif text-white font-bold text-base sm:text-lg group-hover:text-[#D3AF54] transition-colors duration-300">
-                    {item.title}
-                  </h3>
-                  <div className="w-8 h-[1.5px] bg-[#D3AF54]/30 group-hover:w-16 transition-all duration-500 rounded-full"></div>
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+          className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10"
+        >
+          {serviceOfferings.map((item, index) => (
+            <motion.div 
+              key={index} 
+              variants={itemVariants}
+              whileHover={{ 
+                y: -8, 
+                borderColor: "#D3AF54", 
+                boxShadow: "0 25px 40px -15px rgba(211,175,84,0.1), 0 0 25px rgba(211, 175, 84, 0.25)" 
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-6 flex flex-col justify-between hover:border-[#D3AF54] transition-all duration-300 relative overflow-hidden group min-h-[460px] text-white text-left shadow-lg"
+            >
+              <div>
+                {/* Image Banner */}
+                <div className="w-full h-44 rounded-2xl overflow-hidden mb-5 border border-white/5 relative">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10"></div>
+                  <img 
+                    src={item.image} 
+                    alt={item.title} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
+                  <div className="absolute bottom-3 left-3 bg-[#181122]/80 border border-white/10 backdrop-blur-md px-3 py-1 rounded-lg z-20 text-[10px] uppercase font-bold tracking-widest text-[#D3AF54]">
+                    {item.duration}
+                  </div>
                 </div>
-                <div className="text-right shrink-0">
-                  <span className="text-[9px] text-[#D8CFEB]/85 uppercase tracking-wider block font-semibold leading-none">{item.duration}</span>
-                  <span className="text-xs font-bold text-[#D3AF54] bg-white/5 border border-[#D3AF54]/25 px-2 py-0.5 rounded-full mt-1 inline-block font-sans">{item.price}</span>
+
+                {/* Header Card */}
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <h3 className="font-serif font-bold text-xl text-white group-hover:text-[#D3AF54] transition-colors">{item.title}</h3>
+                  <div className="p-2 rounded-xl bg-white/5 border border-white/10 text-[#D3AF54]">
+                    {item.icon}
+                  </div>
                 </div>
-              </div>
 
-              {/* Description */}
-              <p className="text-xs text-[#D8CFEB] leading-relaxed font-sans mt-0.5">
-                {item.desc}
-              </p>
+                <p className="text-xs text-[#D8CFEB] leading-relaxed font-sans font-medium mb-4">
+                  {item.desc}
+                </p>
 
-              {/* Key Deliverables points */}
-              <div className="space-y-1.5 pt-1">
-                <span className="text-[10px] uppercase font-bold tracking-widest text-[#D3AF54]">✦ What It Covers ✦</span>
-                <ul className="space-y-1 text-xs text-[#D8CFEB]/85">
-                  {item.points.map((pt, pIdx) => (
-                    <li key={pIdx} className="flex items-start gap-1.5">
-                      <span className="text-[#D3AF54] text-[9px] mt-0.5">✦</span>
+                {/* Features list */}
+                <ul className="space-y-2 mb-6 text-left">
+                  {item.points.map((pt, ptidx) => (
+                    <li key={ptidx} className="flex items-start gap-2 text-[11px] text-[#D8CFEB] font-sans font-medium">
+                      <span className="text-[#D3AF54] mt-0.5">✦</span>
                       <span>{pt}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              {/* Life Transformation Story */}
-              <div className="mt-2 p-3 rounded-xl bg-white/[0.03] border border-white/5 italic text-xs text-[#D3AF54]/95">
-                <span className="font-sans font-semibold not-italic block text-[10px] text-[#D8CFEB]/60 uppercase tracking-widest mb-1">Impact Story</span>
-                "{item.impact}"
+              {/* Action Buttons */}
+              <div className="space-y-2.5 pt-4 border-t border-white/10">
+                <Link 
+                  to={`/services/${item.id}`}
+                  className="w-full bg-[#181122] hover:bg-[#D3AF54]/10 text-white border border-[#D3AF54]/30 hover:border-[#D3AF54] font-bold text-xs py-3 rounded-xl transition duration-300 flex items-center justify-center gap-1.5 uppercase tracking-wider cursor-pointer"
+                >
+                  <span>Explore Details</span>
+                </Link>
+                <Link 
+                  to="/booking"
+                  className="w-full bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold text-xs py-3 rounded-xl transition duration-300 flex items-center justify-center gap-1.5 uppercase tracking-wider cursor-pointer shadow-sm hover:scale-[1.01] active:scale-[0.99]"
+                >
+                  <Calendar size={13} />
+                  <span>Book Consultation</span>
+                </Link>
               </div>
-            </div>
+            </motion.div>
+          ))}
+        </motion.div>
 
-            {/* Bottom Row action link */}
-            <div className="border-t border-white/5 p-4 sm:p-5 flex justify-between items-center w-full bg-white/[0.01] gap-3">
-              <MotionLink 
-                to={`/services/${item.id}`}
-                className="bg-[#D3AF54]/10 hover:bg-[#D3AF54] text-[#D3AF54] hover:text-[#181122] border border-[#D3AF54]/40 text-[9px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-lg transition-colors duration-300 flex-1 text-center"
-              >
-                Learn More
-              </MotionLink>
-              <MotionLink 
-                to="/booking"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] text-[9px] uppercase font-bold tracking-widest px-3 py-1.5 rounded-lg transition-all duration-300 flex-1 text-center"
-              >
-                Book Now
-              </MotionLink>
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* Visual Celestial Separator */}
-      <CelestialDivider />
-
-      {/* ========================================================= */}
-      {/* BOTTOM CTA SECTION                                        */}
-      {/* ========================================================= */}
-      <motion.div 
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="w-full max-w-4xl mx-auto mt-6 z-10"
-      >
-        <div className="bg-[#181122] border border-[#D3AF54]/30 rounded-3xl p-8 relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 group text-white">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#D3AF54]/5 rounded-full blur-2xl"></div>
-          
-          <div className="space-y-2 text-left">
-            <span className="text-xl md:text-2xl font-serif font-bold text-white tracking-wide block">
-              Not Sure Which Consultation Suits You?
-            </span>
-            <p className="text-xs text-[#D8CFEB] leading-relaxed max-w-lg font-sans">
+        {/* Custom Unsure CTA container block */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="w-full max-w-5xl mt-12 bg-[#181122] border border-[#AB7A57]/30 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6 sm:gap-8 shadow-2xl relative justify-between text-white text-left"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.02),transparent_70%)] pointer-events-none"></div>
+          <div className="space-y-2 z-10 max-w-2xl">
+            <h3 className="font-serif font-bold text-xl text-[#D3AF54]">Unsure which reading fits?</h3>
+            <p className="text-xs text-[#D8CFEB] font-sans font-medium leading-relaxed">
               Reach out to us directly. We will review your birth credentials and suggest the ideal reading structure.
             </p>
           </div>
@@ -326,13 +289,13 @@ function Service() {
             whileHover={{ scale: 1.05, y: -2, boxShadow: "0 10px 20px rgba(211, 175, 84, 0.2)" }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 400, damping: 15 }}
-            className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-6 py-3 rounded-xl flex items-center justify-center gap-2 tracking-wide text-xs w-full md:w-auto shrink-0"
+            className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-6 py-3 rounded-xl flex items-center justify-center gap-2 tracking-wide text-xs w-full md:w-auto shrink-0 z-10"
           >
             <Calendar size={14} />
             <span>Connect Personally</span>
           </MotionLink>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
 
     </div>
   )

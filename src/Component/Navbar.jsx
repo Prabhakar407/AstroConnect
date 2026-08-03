@@ -54,7 +54,7 @@ export default function Navbar() {
   return (
     <header 
       style={{
-        backgroundColor: "var(--nav-bg)",
+        background: "var(--nav-bg)",
         borderColor: "var(--nav-border)",
         backdropFilter: "blur(12px)",
         ...navStyles
@@ -96,64 +96,76 @@ export default function Navbar() {
                     onMouseEnter={() => setHoveredIdx(idx)}
                     onMouseLeave={() => setHoveredIdx(null)}
                   >
-                    {isIndicatorActive && (
-                      <motion.div
-                        layoutId="active-pill"
-                        style={{
-                          background: "linear-gradient(135deg, var(--pill-bg-start), var(--pill-bg-end))",
-                          borderColor: "var(--pill-border)",
-                          boxShadow: "0 0 20px var(--pill-glow)",
-                        }}
-                        className="absolute inset-0 border rounded-full pointer-events-none"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
+                    {/* Parent Dropdown Button node */}
                     <button
-                      onClick={toggleServices}
-                      className="relative z-10 px-4 py-2 flex items-center gap-1 text-sm font-medium transition-colors text-slate-300 hover:text-white cursor-pointer focus:outline-none"
+                      type="button"
+                      className="relative z-10 px-4 py-2 block text-sm font-medium transition-colors text-slate-300 hover:text-white cursor-pointer focus:outline-none"
                     >
-                      Services
-                      <ChevronDown size={14} />
+                      {item.name}
                     </button>
                     
-                    {/* Dropdown Options */}
+                    {/* Submenu Dropdown Panel */}
                     <div className="absolute top-full left-0 mt-2 w-56 bg-[#181122]/95 border border-[#AB7A57]/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 backdrop-blur-md">
-                      <div className="py-2">
+                      <div className="py-2.5">
                         <Link
                           to="/services/vedic-astrology"
-                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
+                          className={`block px-5 py-2 text-sm transition-colors ${
+                            location.pathname === "/services/vedic-astrology"
+                              ? "text-[#D3AF54] font-semibold bg-white/5"
+                              : "text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5"
+                          }`}
                         >
                           Vedic Astrology
                         </Link>
                         <Link
                           to="/services/numerology"
-                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
+                          className={`block px-5 py-2 text-sm transition-colors ${
+                            location.pathname === "/services/numerology"
+                              ? "text-[#D3AF54] font-semibold bg-white/5"
+                              : "text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5"
+                          }`}
                         >
                           Numerology
                         </Link>
                         <Link
                           to="/services/vastu"
-                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
+                          className={`block px-5 py-2 text-sm transition-colors ${
+                            location.pathname === "/services/vastu"
+                              ? "text-[#D3AF54] font-semibold bg-white/5"
+                              : "text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5"
+                          }`}
                         >
                           Vastu Consultation
                         </Link>
                         <Link
                           to="/services/laal-kitaab"
-                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
+                          className={`block px-5 py-2 text-sm transition-colors ${
+                            location.pathname === "/services/laal-kitaab"
+                              ? "text-[#D3AF54] font-semibold bg-white/5"
+                              : "text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5"
+                          }`}
                         >
                           Laal Kitaab Remedies
                         </Link>
                         <Link
                           to="/services/prashna-kundali"
-                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
+                          className={`block px-5 py-2 text-sm transition-colors ${
+                            location.pathname === "/services/prashna-kundali"
+                              ? "text-[#D3AF54] font-semibold bg-white/5"
+                              : "text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5"
+                          }`}
                         >
-                          Expertise in Prashna Kundli
+                          Prashna Kundali
                         </Link>
                         <Link
                           to="/services/reiki-healing"
-                          className="block px-5 py-2 text-sm text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition-colors"
+                          className={`block px-5 py-2 text-sm transition-colors ${
+                            location.pathname === "/services/reiki-healing"
+                              ? "text-[#D3AF54] font-semibold bg-white/5"
+                              : "text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5"
+                          }`}
                         >
-                          Reiki Healer
+                          Reiki Healing
                         </Link>
                       </div>
                     </div>
@@ -168,16 +180,17 @@ export default function Navbar() {
                   onMouseEnter={() => setHoveredIdx(idx)}
                   onMouseLeave={() => setHoveredIdx(null)}
                 >
+                  {/* Sliding Pill Indicator for active/hover states */}
                   {isIndicatorActive && (
                     <motion.div
-                      layoutId="active-pill"
+                      layoutId="neonPill"
+                      className="absolute inset-0 rounded-lg"
                       style={{
                         background: "linear-gradient(135deg, var(--pill-bg-start), var(--pill-bg-end))",
-                        borderColor: "var(--pill-border)",
-                        boxShadow: "0 0 20px var(--pill-glow)",
+                        border: "1px solid var(--pill-border)",
+                        boxShadow: "0 0 10px var(--pill-glow)"
                       }}
-                      className="absolute inset-0 border rounded-full pointer-events-none"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      transition={{ type: "spring", stiffness: 350, damping: 25 }}
                     />
                   )}
                   <Link
@@ -196,7 +209,7 @@ export default function Navbar() {
             {/* Contact Phone */}
             <div className="flex items-center gap-1.5 text-[#D3AF54] text-xs font-semibold">
               <span>☎</span>
-              <span>9999999999</span>
+              <span>+91 8130808758</span>
             </div>
 
             {/* Booking Options CTA */}
@@ -222,16 +235,9 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile/Tablet Dropdown Drawer Panel */}
+      {/* Mobile Drawer Panel (Slide down overlay) */}
       {isOpen && (
-        <div 
-          style={{
-            backgroundColor: "rgba(24, 17, 34, 0.97)",
-            borderColor: "var(--nav-border)",
-            backdropFilter: "blur(12px)",
-          }}
-          className="lg:hidden border-t py-4 px-6 space-y-4 shadow-inner"
-        >
+        <div className="lg:hidden bg-[#181122]/95 border-t border-white/10 py-4 px-6 space-y-4 shadow-inner backdrop-blur-md">
           <div className="flex flex-col gap-2 relative">
             {navItems.map((item, idx) => {
               const isIndicatorActive = currentIndicatorIdx === idx;
@@ -270,42 +276,66 @@ export default function Navbar() {
                         <Link
                           to="/services/vedic-astrology"
                           onClick={() => setIsOpen(false)}
-                          className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
+                          className={`block text-xs py-1.5 transition-colors ${
+                            location.pathname === "/services/vedic-astrology"
+                              ? "text-[#D3AF54] font-semibold"
+                              : "text-slate-400 hover:text-white"
+                          }`}
                         >
                           Vedic Astrology
                         </Link>
                         <Link
                           to="/services/numerology"
                           onClick={() => setIsOpen(false)}
-                          className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
+                          className={`block text-xs py-1.5 transition-colors ${
+                            location.pathname === "/services/numerology"
+                              ? "text-[#D3AF54] font-semibold"
+                              : "text-slate-400 hover:text-white"
+                          }`}
                         >
                           Numerology
                         </Link>
                         <Link
                           to="/services/vastu"
                           onClick={() => setIsOpen(false)}
-                          className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
+                          className={`block text-xs py-1.5 transition-colors ${
+                            location.pathname === "/services/vastu"
+                              ? "text-[#D3AF54] font-semibold"
+                              : "text-slate-400 hover:text-white"
+                          }`}
                         >
                           Vastu Consultation
                         </Link>
                         <Link
                           to="/services/laal-kitaab"
                           onClick={() => setIsOpen(false)}
-                          className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
+                          className={`block text-xs py-1.5 transition-colors ${
+                            location.pathname === "/services/laal-kitaab"
+                              ? "text-[#D3AF54] font-semibold"
+                              : "text-slate-400 hover:text-white"
+                          }`}
                         >
                           Laal Kitaab Remedies
                         </Link>
                         <Link
                           to="/services/prashna-kundali"
                           onClick={() => setIsOpen(false)}
-                          className="block text-xs text-slate-400 hover:text-white py-1.5 transition-colors"
+                          className={`block text-xs py-1.5 transition-colors ${
+                            location.pathname === "/services/prashna-kundali"
+                              ? "text-[#D3AF54] font-semibold"
+                              : "text-slate-400 hover:text-white"
+                          }`}
                         >
                           Expertise in Prashna Kundli
                         </Link>
                         <Link
                           to="/services/reiki-healing"
                           onClick={() => setIsOpen(false)}
-                          className="block text-xs text-[#D8CFEB] hover:text-white py-1.5 transition-colors"
+                          className={`block text-xs py-1.5 transition-colors ${
+                            location.pathname === "/services/reiki-healing"
+                              ? "text-[#D3AF54] font-semibold"
+                              : "text-slate-400 hover:text-white"
+                          }`}
                         >
                           Reiki Healer
                         </Link>
@@ -351,7 +381,7 @@ export default function Navbar() {
             {/* Phone */}
             <div className="flex items-center gap-1.5 text-[#D3AF54] text-sm font-medium">
               <span>☎</span>
-              <span>9999999999</span>
+              <span>+91 8130808758</span>
             </div>
 
             {/* CTA Button */}

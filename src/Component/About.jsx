@@ -111,7 +111,7 @@ function About() {
       {/* ========================================================= */}
       {/* 1. INTRO / BIOGRAPHY DEEP SPACE BAND SECTION (Navy: #06091B) */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#06091B] relative overflow-hidden flex flex-col items-center border-b border-[#AB7A57]/20 text-white z-10 min-h-[calc(100vh-84px)] lg:min-h-[780px] justify-start pt-4 sm:pt-6">
+      <div className="w-full bg-[#06091B] relative overflow-hidden flex flex-col items-center border-b border-[#AB7A57]/20 text-white z-10">
         
         {/* Glow & Luxury SVG Decor Background */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.1),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
@@ -126,12 +126,11 @@ function About() {
         </motion.div>
 
         {/* Capped layout wrapper inside band */}
-        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pt-4 lg:pt-6 pb-[clamp(3.5rem,6vw,7.5rem)] flex flex-col items-center">
+        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] flex flex-col items-center">
           
-
-
-          {/* Main Asymmetric Board */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center w-full relative z-10">
+          <section className="w-full min-h-[600px] pt-4 pb-20 lg:pt-6 lg:pb-28 flex items-center relative z-10">
+            {/* Main Asymmetric Board */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center w-full">
             
             {/* Left Column: Bio Content cards (reversing typical positions) */}
             <motion.div 
@@ -226,28 +225,28 @@ function About() {
               <div className="absolute bottom-20 left-4 text-[#AB7A57]/40"><Sparkles size={16} /></div>
             </motion.div>
 
-          </div>
-
+            </div>
+          </section>
         </div>
       </div>
 
       {/* ========================================================= */}
-      {/* 2. EXPERTISE SECTION (Cream background: #FDFCF5)           */}
+      {/* 2. EXPERTISE SECTION (White background: bg-white)         */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#FDFCF5] flex flex-col items-center relative">
+      <div className="w-full bg-white border-b border-[#AB7A57]/10 flex flex-col items-center relative">
         
         {/* Floating Glassmorphic Stat bar sitting exactly at the boundary */}
-        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
+        <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-3xl p-2 sm:p-5 shadow-2xl relative overflow-hidden grid grid-cols-4 gap-1.5 sm:gap-4 text-center z-30"
+            className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-3xl p-1.5 py-2 sm:p-3 sm:py-3 shadow-2xl relative overflow-hidden grid grid-cols-3 gap-1.5 sm:gap-4 text-center z-30"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.04),transparent_70%)] pointer-events-none"></div>
             
             {/* Box 1: Experience */}
-            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 p-1.5 sm:p-2 lg:p-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md">
+            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 pt-1 pb-0.5 px-1 sm:pt-1.5 sm:pb-1 sm:px-2 lg:pt-2 lg:pb-1.5 lg:px-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md animate-none">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#AB7A57]/45 flex items-center justify-center text-[#D3AF54] bg-white/[0.03] shrink-0">
                 <Award size={12} className="lg:w-3.5 lg:h-3.5" />
               </div>
@@ -258,7 +257,7 @@ function About() {
             </div>
 
             {/* Box 2: Consultations */}
-            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 p-1.5 sm:p-2 lg:p-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md">
+            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 pt-1 pb-0.5 px-1 sm:pt-1.5 sm:pb-1 sm:px-2 lg:pt-2 lg:pb-1.5 lg:px-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md animate-none">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#AB7A57]/45 flex items-center justify-center text-[#D3AF54] bg-white/[0.03] shrink-0">
                 <Users size={12} className="lg:w-3.5 lg:h-3.5" />
               </div>
@@ -268,19 +267,8 @@ function About() {
               </div>
             </div>
 
-            {/* Box 3: Clients Served */}
-            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 p-1.5 sm:p-2 lg:p-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#AB7A57]/45 flex items-center justify-center text-[#D3AF54] bg-white/[0.03] shrink-0">
-                <Globe size={12} className="lg:w-3.5 lg:h-3.5" />
-              </div>
-              <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
-                <span className="text-[8px] sm:text-[10px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold w-full text-center lg:text-left lg:whitespace-nowrap">Clients Served</span>
-                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">Indian</span>
-              </div>
-            </div>
-
             {/* Box 4: Rating */}
-            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 p-1.5 sm:p-2 lg:p-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md">
+            <div className="flex flex-col lg:flex-row items-center lg:items-center gap-1.5 lg:gap-3 pt-1 pb-0.5 px-1 sm:pt-1.5 sm:pb-1 sm:px-2 lg:pt-2 lg:pb-1.5 lg:px-3 bg-[#06091B] border border-[#AB7A57]/30 rounded-xl w-full text-center lg:text-left shadow-md animate-none">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-[#AB7A57]/45 flex items-center justify-center text-[#D3AF54] bg-white/[0.03] shrink-0">
                 <Star size={12} className="fill-[#D3AF54] text-[#D3AF54] lg:w-3.5 lg:h-3.5" />
               </div>
@@ -292,46 +280,49 @@ function About() {
           </motion.div>
         </div>
 
-        <div className="absolute top-1/3 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.04),transparent_70%)] rounded-full pointer-events-none animate-pulse"></div>
-        
-        <motion.div 
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full max-w-[2400px] px-6 lg:px-8 flex flex-col items-center pt-8 sm:pt-10 pb-8 sm:pb-12"
-        >
+        {/* Inner container to capture absolute radial leakages safely */}
+        <div className="w-full relative overflow-hidden flex flex-col items-center">
+          <div className="absolute top-1/3 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.04),transparent_70%)] rounded-full pointer-events-none animate-pulse"></div>
           
-          {/* Section Header */}
-          <div className="text-center max-w-2xl mb-6 md:mb-8 relative z-10">
-            <span className="text-[#AB7A57] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
-              AREAS OF EXPERTISE
-            </span>
-            <h2 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif text-[#181122] font-bold mb-3 tracking-wide leading-tight">
-              Areas of Expertise
-            </h2>
-            <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-3 mb-3"></div>
-            <p className="text-xs md:text-sm text-[#181122]/80 font-sans leading-relaxed italic">
-              "Comprehensive guidance for every important aspect of life."
-            </p>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="w-full max-w-[2400px] px-6 lg:px-8 flex flex-col items-center pt-8 sm:pt-10 pb-8 sm:pb-12"
+          >
+            
+            {/* Section Header */}
+            <div className="text-center max-w-2xl mb-6 md:mb-8 relative z-10">
+              <span className="text-[#AB7A57] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
+                AREAS OF EXPERTISE
+              </span>
+              <h2 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif text-[#181122] font-bold mb-3 tracking-wide leading-tight">
+                Areas of Expertise
+              </h2>
+              <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-3 mb-3"></div>
+              <p className="text-xs md:text-sm text-[#181122]/80 font-sans leading-relaxed italic">
+                "Comprehensive guidance for every important aspect of life."
+              </p>
+            </div>
 
-          {/* 3x2 Grid layout on desktop */}
-          <div className="w-full max-w-5xl z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
-            {expertiseData.map((item, idx) => (
-              <FeatureCard key={idx} feature={item} />
-            ))}
-          </div>
+            {/* 3x2 Grid layout on desktop */}
+            <div className="w-full max-w-5xl z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+              {expertiseData.map((item, idx) => (
+                <FeatureCard key={idx} feature={item} />
+              ))}
+            </div>
 
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
 
 
 
       {/* ========================================================= */}
-      {/* 4. PROFESSIONAL CERTIFICATES (Cream background: #FDFCF5)   */}
+      {/* 4. PROFESSIONAL CERTIFICATES (Warm Sand background: #EDE9D7)*/}
       {/* ========================================================= */}
-      <div className="w-full bg-[#FDFCF5] flex justify-center py-16 overflow-hidden relative border-t border-[#AB7A57]/10">
+      <div className="w-full bg-[#EDE9D7] flex justify-center py-16 overflow-hidden relative border-t border-[#AB7A57]/10">
         <motion.div 
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}

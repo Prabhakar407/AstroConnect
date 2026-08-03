@@ -86,7 +86,7 @@ export default function Footer() {
           <ul className="space-y-2 text-xs">
             <li><Link to="/" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Home</Link></li>
             <li><Link to="/about" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">About</Link></li>
-            <li><Link to="/services" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Services</Link></li>
+            <li><Link to="/booking" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Book Consultation</Link></li>
             <li><Link to="/testimonials" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Testimonials</Link></li>
             <li><Link to="/contact" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Contact</Link></li>
           </ul>
@@ -96,12 +96,12 @@ export default function Footer() {
         <div className="space-y-4 text-left">
           <h4 className="font-serif font-bold !text-[#D3AF54] text-sm uppercase tracking-wider">Services</h4>
           <ul className="space-y-2 text-xs">
-            <li><Link to="/services" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Kundli Analysis</Link></li>
-            <li><Link to="/services" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Career Guidance</Link></li>
-            <li><Link to="/services" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Love & Marriage Consultation</Link></li>
-            <li><Link to="/services" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Vastu Consultation</Link></li>
-            <li><Link to="/services" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Numerology Reading</Link></li>
-            <li><Link to="/services" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Gemstone Recommendation</Link></li>
+            <li><Link to="/services/vedic-astrology" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Vedic Astrology</Link></li>
+            <li><Link to="/services/numerology" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Numerology</Link></li>
+            <li><Link to="/services/vastu" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Vastu Consultation</Link></li>
+            <li><Link to="/services/laal-kitaab" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Laal Kitaab Remedies</Link></li>
+            <li><Link to="/services/prashna-kundali" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Expertise in Prashna Kundli</Link></li>
+            <li><Link to="/services/reiki-healing" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Reiki Healer</Link></li>
           </ul>
         </div>
  

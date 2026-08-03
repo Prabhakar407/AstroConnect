@@ -1007,7 +1007,7 @@ export default function Home() {
               {/* Header */}
               <div className="text-center mb-10 space-y-2">
                 <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#AB7A57] font-sans block">
-                  ✦ What Our Clients Say ✦
+                  ✦ WHAT OUR CLIENTS SAY ✦
                 </span>
                 <h3 className="text-[clamp(1.4rem,2.2vw,2.4rem)] font-serif font-bold text-[#181122] tracking-wide mt-1">
                   Trusted By Thousands
