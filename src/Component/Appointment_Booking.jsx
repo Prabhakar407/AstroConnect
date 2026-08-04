@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { Calendar, Clock, Sparkles, Send, MapPin, User, Mail, Phone } from 'lucide-react'
+import { Calendar, Clock, Sparkles, Send, MapPin, User, Mail, Phone, ChevronLeft, ChevronRight } from 'lucide-react'
 
 /**
  * CelestialDivider Component
@@ -67,6 +67,66 @@ function Appointment_Booking() {
   
   const [submitted, setSubmitted] = useState(false)
 
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ]
+
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+
+  const getDaysInMonth = (y, m) => new Date(y, m + 1, 0).getDate()
+  const getFirstDayOfMonth = (y, m) => new Date(y, m, 1).getDay()
+
+  const handlePrevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11)
+      setCurrentYear(prev => prev - 1)
+    } else {
+      setCurrentMonth(prev => prev - 1)
+    }
+  }
+
+  const handleNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0)
+      setCurrentYear(prev => prev + 1)
+    } else {
+      setCurrentMonth(prev => prev + 1)
+    }
+  }
+
+  const selectDate = (day) => {
+    const formattedMonth = String(currentMonth + 1).padStart(2, '0')
+    const formattedDay = String(day).padStart(2, '0')
+    const dateStr = `${currentYear}-${formattedMonth}-${formattedDay}`
+    setFormData(prev => ({
+      ...prev,
+      bookingDate: dateStr
+    }))
+  }
+
+  const isToday = (day) => {
+    const today = new Date()
+    return today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear
+  }
+
+  const isDateSelected = (day) => {
+    const formattedMonth = String(currentMonth + 1).padStart(2, '0')
+    const formattedDay = String(day).padStart(2, '0')
+    const dateStr = `${currentYear}-${formattedMonth}-${formattedDay}`
+    return formData.bookingDate === dateStr
+  }
+
+  const isPastDay = (day) => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const cellDate = new Date(currentYear, currentMonth, day)
+    return cellDate < today
+  }
+
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({
@@ -87,7 +147,7 @@ function Appointment_Booking() {
       {/* ========================================================= */}
       {/* 1. HEADER SECTION (Warm Ivory bg-[#F4F1E3])               */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#F4F1E3] py-16 px-6 flex flex-col items-center relative z-10 border-b border-[#AB7A57]/10">
+      <div className="w-full bg-[#F4F1E3] pt-12 pb-6 px-6 flex flex-col items-center relative z-10 border-b border-[#AB7A57]/10">
         
         {/* Decorative backgrounds & rotating zodiac inside header wrapper */}
         <div className="absolute top-20 right-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
@@ -105,17 +165,14 @@ function Appointment_Booking() {
           <h1 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif font-bold text-[#181122] tracking-wide leading-tight">
             Schedule A Consultation
           </h1>
-          <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-4 mb-4"></div>
-          <p className="text-sm md:text-base text-[#181122]/90 leading-relaxed max-w-xl mx-auto">
-            Secure your session with Astrologer Kundan Singh. Please provide your birth credentials to facilitate exact transit and chart calculations.
-          </p>
+          <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-4 mb-2"></div>
         </motion.div>
       </div>
 
       {/* ========================================================= */}
       {/* 2. BOOKING FORM CONTAINER (Pure White bg-white)           */}
       {/* ========================================================= */}
-      <div className="w-full bg-white py-16 px-6 flex flex-col items-center relative z-10 overflow-hidden">
+      <div className="w-full bg-white py-8 px-4 flex flex-col items-center relative z-10 overflow-hidden">
         
         <div className="absolute bottom-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.04),transparent_70%)] rounded-full -z-10 pointer-events-none"></div>
 
@@ -133,7 +190,7 @@ function Appointment_Booking() {
           </svg>
         </motion.div>
 
-        <div className="w-full max-w-3xl bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-6 md:p-10 shadow-2xl relative text-white">
+        <div className="w-full max-w-3xl bg-[#181122] border border-[#AB7A57]/20 rounded-2xl p-5 sm:p-6 md:p-8 shadow-xl relative text-white">
           
           {submitted ? (
             <motion.div 
@@ -177,11 +234,11 @@ function Appointment_Booking() {
               initial="hidden"
               whileInView="show"
               viewport={{ once: true, margin: "-100px" }}
-              className="space-y-6"
+              className="space-y-4"
             >
               
               {/* 1. Contact Details */}
-              <motion.div variants={itemVariants} className="space-y-4 text-left">
+              <motion.div variants={itemVariants} className="space-y-3 text-left">
                 <h3 className="font-serif text-lg font-bold text-white border-b border-white/10 pb-2">
                   1. Personal Contact Details
                 </h3>
@@ -201,7 +258,7 @@ function Appointment_Booking() {
                         value={formData.name}
                         onChange={handleInputChange}
                         placeholder="Your name"
-                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300 placeholder-white/40"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300 placeholder-white/40"
                       />
                     </div>
                   </div>
@@ -220,7 +277,7 @@ function Appointment_Booking() {
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="Your email"
-                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300 placeholder-white/40"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300 placeholder-white/40"
                       />
                     </div>
                   </div>
@@ -239,7 +296,7 @@ function Appointment_Booking() {
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="Your phone"
-                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300 placeholder-white/40"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300 placeholder-white/40"
                       />
                     </div>
                   </div>
@@ -247,7 +304,7 @@ function Appointment_Booking() {
               </motion.div>
 
               {/* 2. Birth Credentials */}
-              <motion.div variants={itemVariants} className="space-y-4 text-left">
+              <motion.div variants={itemVariants} className="space-y-3 text-left">
                 <h3 className="font-serif text-lg font-bold text-white border-b border-white/10 pb-2">
                   2. Cosmic Birth Credentials
                 </h3>
@@ -264,7 +321,7 @@ function Appointment_Booking() {
                       required
                       value={formData.birthDate}
                       onChange={handleInputChange}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300"
                     />
                   </div>
 
@@ -279,7 +336,7 @@ function Appointment_Booking() {
                       required
                       value={formData.birthTime}
                       onChange={handleInputChange}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300"
                     />
                   </div>
 
@@ -297,7 +354,7 @@ function Appointment_Booking() {
                         value={formData.birthPlace}
                         onChange={handleInputChange}
                         placeholder="City, State, Country"
-                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300 placeholder-white/40"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 focus:shadow-[0_0_15px_rgba(211,175,84,0.15)] transition-all duration-300 placeholder-white/40"
                       />
                     </div>
                   </div>
@@ -305,62 +362,150 @@ function Appointment_Booking() {
               </motion.div>
 
               {/* 3. Session Selection */}
-              <motion.div variants={itemVariants} className="space-y-4 text-left">
+              <motion.div variants={itemVariants} className="space-y-3 text-left">
                 <h3 className="font-serif text-lg font-bold text-white border-b border-white/10 pb-2">
                   3. Session Specifics
                 </h3>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-1.5">
-                    <label htmlFor="readingType" className="block text-xs font-semibold uppercase tracking-wider text-[#D3AF54]">
-                      Consultation Type
-                    </label>
-                    <select 
-                      id="readingType"
-                      name="readingType"
-                      value={formData.readingType}
-                      onChange={handleInputChange}
-                      className="w-full bg-[#181122] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 transition-all duration-300"
-                    >
-                      <option value="Vedic Astrology (60 min)">Vedic Astrology (60 min)</option>
-                      <option value="Numerology Reading (45 min)">Numerology Reading (45 min)</option>
-                      <option value="Vastu Consultation (Site/Home)">Vastu Consultation (Site/Home)</option>
-                      <option value="Laal Kitaab Remedies (45 min)">Laal Kitaab Remedies (45 min)</option>
-                      <option value="Prashna Kundali (Horary - 30 min)">Prashna Kundali (Horary - 30 min)</option>
-                      <option value="Reiki Energy Healing (60 min)">Reiki Energy Healing (60 min)</option>
-                    </select>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  
+                  {/* Visual Calendar Column */}
+                  <div className="lg:col-span-7 bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col gap-3 relative z-20">
+                    
+                    {/* Calendar Nav Header */}
+                    <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                      <h4 className="font-serif text-sm sm:text-base font-bold text-white tracking-wide">
+                        {monthNames[currentMonth]} {currentYear}
+                      </h4>
+                      <div className="flex gap-2">
+                        <button 
+                          type="button"
+                          onClick={handlePrevMonth}
+                          className="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center text-[#D3AF54] hover:bg-white/5 cursor-pointer active:scale-95 transition-all"
+                        >
+                          <ChevronLeft size={16} />
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={handleNextMonth}
+                          className="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center text-[#D3AF54] hover:bg-white/5 cursor-pointer active:scale-95 transition-all"
+                        >
+                          <ChevronRight size={16} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Days of Week Header */}
+                    <div className="grid grid-cols-7 gap-1 text-center text-[10px] sm:text-xs font-bold text-[#D3AF54] uppercase tracking-wider py-1">
+                      {daysOfWeek.map((day, idx) => (
+                        <div key={idx} className="py-0.5">{day}</div>
+                      ))}
+                    </div>
+
+                    {/* Calendar Grid Cells */}
+                    <div className="grid grid-cols-7 gap-1 sm:gap-1.5 text-center mt-1">
+                      {/* Empty padding offsets before first day of month */}
+                      {Array.from({ length: getFirstDayOfMonth(currentYear, currentMonth) }).map((_, idx) => (
+                        <div key={`offset-${idx}`} className="aspect-square" />
+                      ))}
+
+                      {/* Day cells */}
+                      {Array.from({ length: getDaysInMonth(currentYear, currentMonth) }).map((_, idx) => {
+                        const day = idx + 1
+                        const isPast = isPastDay(day)
+                        const isSelected = isDateSelected(day)
+                        const isTodayDay = isToday(day)
+
+                        return (
+                          <button
+                            key={`day-${day}`}
+                            type="button"
+                            disabled={isPast}
+                            onClick={() => selectDate(day)}
+                            className={`aspect-square rounded-lg flex items-center justify-center text-xs font-medium transition-all cursor-pointer relative ${
+                              isPast
+                                ? "text-white/20 bg-transparent cursor-not-allowed"
+                                : isSelected
+                                ? "bg-[#D3AF54] text-[#181122] font-bold shadow-[0_0_10px_rgba(211,175,84,0.3)] scale-[1.05]"
+                                : isTodayDay
+                                ? "border border-[#D3AF54] text-[#D3AF54] hover:bg-[#D3AF54]/10"
+                                : "text-slate-300 hover:bg-white/5 hover:border-white/20 border border-transparent"
+                            }`}
+                          >
+                            <span>{day}</span>
+                            {isTodayDay && !isSelected && (
+                              <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-[#D3AF54] left-1/2 -translate-x-1/2" />
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label htmlFor="bookingDate" className="block text-xs font-semibold uppercase tracking-wider text-[#D3AF54]">
-                      Preferred Date <span className="text-[#D3AF54]">*</span>
-                    </label>
-                    <input 
-                      type="date" 
-                      id="bookingDate"
-                      name="bookingDate"
-                      required
-                      value={formData.bookingDate}
-                      onChange={handleInputChange}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 transition-all duration-300"
-                    />
-                  </div>
+                  {/* Booking Fields & Selected Date Summary */}
+                  <div className="lg:col-span-5 flex flex-col gap-4">
+                    
+                    {/* Selected Date Summary Display */}
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-1 text-left relative overflow-hidden">
+                      <span className="text-[10px] font-semibold text-[#D3AF54] uppercase tracking-wider block">
+                        ✦ YOUR SELECTED DATE
+                      </span>
+                      {formData.bookingDate ? (
+                        <div className="text-sm sm:text-base font-serif font-bold text-white mt-1 tracking-wide">
+                          {new Date(formData.bookingDate + "T00:00:00").toLocaleDateString(undefined, {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </div>
+                      ) : (
+                        <div className="text-sm font-sans italic text-[#D8CFEB]/60 mt-1">
+                          Please select a date from the calendar grid*
+                        </div>
+                      )}
+                      <input type="hidden" name="bookingDate" required value={formData.bookingDate} />
+                    </div>
 
-                  <div className="space-y-1.5">
-                    <label htmlFor="bookingSlot" className="block text-xs font-semibold uppercase tracking-wider text-[#D3AF54]">
-                      Preferred Time Slot
-                    </label>
-                    <select 
-                      id="bookingSlot"
-                      name="bookingSlot"
-                      value={formData.bookingSlot}
-                      onChange={handleInputChange}
-                      className="w-full bg-[#181122] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 transition-all duration-300"
-                    >
-                      <option value="Morning (10:00 AM - 12:00 PM)">Morning (10:00 AM - 12:00 PM)</option>
-                      <option value="Afternoon (12:00 PM - 3:00 PM)">Afternoon (12:00 PM - 3:00 PM)</option>
-                      <option value="Evening (3:00 PM - 6:00 PM)">Evening (3:00 PM - 6:00 PM)</option>
-                    </select>
+                    {/* Consultation Type Selector */}
+                    <div className="space-y-1.5 text-left">
+                      <label htmlFor="readingType" className="block text-xs font-semibold uppercase tracking-wider text-[#D3AF54]">
+                        Consultation Type
+                      </label>
+                      <select 
+                        id="readingType"
+                        name="readingType"
+                        value={formData.readingType}
+                        onChange={handleInputChange}
+                        className="w-full bg-[#181122] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 transition-all duration-300 cursor-pointer"
+                      >
+                        <option value="Vedic Astrology (60 min)">Vedic Astrology (60 min)</option>
+                        <option value="Numerology Reading (45 min)">Numerology Reading (45 min)</option>
+                        <option value="Vastu Consultation (Site/Home)">Vastu Consultation (Site/Home)</option>
+                        <option value="Laal Kitaab Remedies (45 min)">Laal Kitaab Remedies (45 min)</option>
+                        <option value="Prashna Kundali (Horary - 30 min)">Prashna Kundali (Horary - 30 min)</option>
+                        <option value="Reiki Energy Healing (60 min)">Reiki Energy Healing (60 min)</option>
+                      </select>
+                    </div>
+
+                    {/* Preferred Time Slot Selector */}
+                    <div className="space-y-1.5 text-left">
+                      <label htmlFor="bookingSlot" className="block text-xs font-semibold uppercase tracking-wider text-[#D3AF54]">
+                        Preferred Time Slot
+                      </label>
+                      <select 
+                        id="bookingSlot"
+                        name="bookingSlot"
+                        value={formData.bookingSlot}
+                        onChange={handleInputChange}
+                        className="w-full bg-[#181122] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 transition-all duration-300 cursor-pointer"
+                      >
+                        <option value="Morning (10:00 AM - 12:00 PM)">Morning (10:00 AM - 12:00 PM)</option>
+                        <option value="Afternoon (12:00 PM - 3:00 PM)">Afternoon (12:00 PM - 3:00 PM)</option>
+                        <option value="Evening (3:00 PM - 6:00 PM)">Evening (3:00 PM - 6:00 PM)</option>
+                      </select>
+                    </div>
+
                   </div>
                 </div>
               </motion.div>
@@ -377,7 +522,7 @@ function Appointment_Booking() {
                   value={formData.notes}
                   onChange={handleInputChange}
                   placeholder="Is there anything specific you would like Kundan Singh to focus on during your session?"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 transition-all duration-300 placeholder-white/40 resize-none min-h-[100px]"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 transition-all duration-300 placeholder-white/40 resize-none min-h-[100px]"
                 />
               </motion.div>
 

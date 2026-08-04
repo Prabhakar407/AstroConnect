@@ -35,7 +35,7 @@ export default function Navbar() {
     if (location.pathname === "/services" || location.pathname.startsWith("/services")) return 2;
     if (location.pathname === "/testimonials") return 3;
     if (location.pathname === "/contact") return 4;
-    return 0;
+    return null;
   };
 
   const activeIdx = getActiveIdx();
@@ -65,23 +65,23 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-21">
 
           {/* Logo Section */}
-          <div className="flex items-center gap-1 pt-3">
+          <Link to="/" className="flex items-center gap-1 pt-3 cursor-pointer group">
             <img
               src={logoImg}
               alt="Kundan Singh Logo"
-              className="w-28 h-28 object-contain"
+              className="w-28 h-28 object-contain transition-transform duration-300 group-hover:scale-105"
             />
 
             {/* Vertical Alignment: Astroadvice by (above), Kundan Singh (below) */}
-            <div className="flex flex-col justify-center">
-              <span className="text-[10px] text-[#D8CFEB] tracking-widest uppercase font-medium leading-none">
+            <div className="flex flex-col justify-center text-left">
+              <span className="text-[10px] text-[#D8CFEB] tracking-widest uppercase font-medium leading-none transition-colors group-hover:text-white">
                 Astroadvice by
               </span>
-              <span className="text-lg md:text-xl font-bold text-[#D3AF54] font-serif tracking-wide mt-1 leading-none block">
+              <span className="text-lg md:text-xl font-bold text-[#D3AF54] font-serif tracking-wide mt-1 leading-none block transition-colors group-hover:text-gold-aura">
                 Kundan Singh
               </span>
             </div>
-          </div>
+          </Link>
 
           {/* Desktop Navigation Menu (Horizontal Neon sliding pill indicator) */}
           <nav className="hidden lg:flex items-center gap-1.5 translate-y-1 relative">
@@ -96,13 +96,13 @@ export default function Navbar() {
                     onMouseEnter={() => setHoveredIdx(idx)}
                     onMouseLeave={() => setHoveredIdx(null)}
                   >
-                    {/* Parent Dropdown Button node */}
-                    <button
-                      type="button"
+                    {/* Parent Dropdown Link node */}
+                    <Link
+                      to="/services"
                       className="relative z-10 px-4 py-2 block text-sm font-medium transition-colors text-slate-300 hover:text-white cursor-pointer focus:outline-none"
                     >
                       {item.name}
-                    </button>
+                    </Link>
                     
                     {/* Submenu Dropdown Panel */}
                     <div className="absolute top-full left-0 mt-2 w-56 bg-[#181122]/95 border border-[#AB7A57]/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 backdrop-blur-md">
@@ -205,23 +205,37 @@ export default function Navbar() {
           </nav>
 
           {/* Desktop Right Action Panel */}
-          <div className="hidden lg:flex flex-col items-end gap-1">
+          <div className="hidden lg:flex flex-col items-end gap-1 relative group">
             {/* Contact Phone */}
             <div className="flex items-center gap-1.5 text-[#D3AF54] text-xs font-semibold">
               <span>☎</span>
               <span>+91 8130808758</span>
             </div>
 
-            {/* Booking Options CTA */}
-            <MotionLink 
-              to="/booking"
-              whileHover={{ scale: 1.05, y: -1, boxShadow: "0 0 15px rgba(211, 175, 84, 0.45)" }}
-              whileTap={{ scale: 0.98 }}
-              className="bg-[#D3AF54] text-[#181122] font-semibold px-4 py-1.5 rounded-lg flex items-center gap-2 transition text-xs cursor-pointer shadow-[0_0_15px_rgba(211, 175, 84, 0.25)]"
-            >
-              <Calendar size={14} />
-              Book Appointment
-            </MotionLink>
+            <div className="relative">
+              {/* Booking Options CTA */}
+              <MotionLink 
+                to="/booking"
+                whileHover={{ scale: 1.05, y: -1, boxShadow: "0 0 15px rgba(211, 175, 84, 0.45)" }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-[#D3AF54] text-[#181122] font-semibold px-4 py-1.5 rounded-lg flex items-center gap-2 transition text-xs cursor-pointer shadow-[0_0_15px_rgba(211, 175, 84, 0.25)]"
+              >
+                <Calendar size={14} />
+                Book Appointment
+              </MotionLink>
+              
+              {/* Straight glowing effect below Book Appointment button when active */}
+              {location.pathname === "/booking" && (
+                <motion.div 
+                  layoutId="bookingGlow"
+                  className="absolute -bottom-3 left-0 right-0 h-[2px] bg-[#D3AF54]"
+                  style={{
+                    boxShadow: "0 0 8px #D3AF54, 0 0 15px #D3AF54",
+                    borderRadius: "9999px"
+                  }}
+                />
+              )}
+            </div>
           </div>
 
           {/* Responsive Hamburger Toggle for Mobile/Tablet */}
@@ -263,13 +277,21 @@ export default function Navbar() {
                       />
                     )}
                     
-                    <button
-                      onClick={toggleServices}
-                      className="relative z-10 w-full px-4 py-2.5 flex justify-between items-center text-sm font-medium transition-colors text-slate-300 hover:text-white cursor-pointer focus:outline-none"
-                    >
-                      <span>Services</span>
-                      <ChevronDown size={16} className={`transform transition-transform duration-200 ${servicesOpen ? "rotate-180" : ""}`} />
-                    </button>
+                    <div className="relative z-10 w-full px-4 py-2.5 flex justify-between items-center text-sm font-medium transition-colors text-slate-300 hover:text-white">
+                      <Link 
+                        to="/services" 
+                        onClick={() => setIsOpen(false)}
+                        className="flex-grow cursor-pointer text-left"
+                      >
+                        Services
+                      </Link>
+                      <button 
+                        onClick={toggleServices}
+                        className="p-1 cursor-pointer focus:outline-none"
+                      >
+                        <ChevronDown size={16} className={`transform transition-transform duration-200 ${servicesOpen ? "rotate-180" : ""}`} />
+                      </button>
+                    </div>
                     
                     {servicesOpen && (
                       <div className="pl-6 mt-1 border-l border-white/10 space-y-2 py-1 relative z-10">
@@ -388,7 +410,7 @@ export default function Navbar() {
             <Link 
               to="/booking"
               onClick={() => setIsOpen(false)}
-              className="bg-[#D3AF54] hover:bg-[#D3AF54]/90 text-[#181122] font-semibold px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition text-sm w-full shadow-[0_0_15px_rgba(211,175,84,0.25)]"
+              className="bg-[#D3AF54] hover:bg-[#D3AF54]/90 text-[#181122] font-semibold px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition text-sm w-full shadow-[0_0_15px_rgba(211, 175, 84, 0.25)]"
             >
               <Calendar size={16} />
               Booking Options

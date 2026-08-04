@@ -21,8 +21,8 @@ import callLogo from "../assets/logos/Call.png";
 export default function Footer() {
   return (
     <motion.footer 
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.8, ease: "easeOut" }}
       className="w-full bg-[#06091B] text-[#D8CFEB] border-t border-[#AB7A57]/20 relative overflow-hidden pt-10 pb-6"

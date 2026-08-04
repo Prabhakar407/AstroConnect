@@ -130,3 +130,13 @@ body {
   }
 }
 
+/* Prevent text blur on hover scale transforms and maintain crisp rendering */
+.transform-gpu,
+[class*="hover:scale-"],
+[class*="group-hover:scale-"] {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+

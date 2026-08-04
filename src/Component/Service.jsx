@@ -160,7 +160,7 @@ function Service() {
       {/* ========================================================= */}
       {/* 1. HEADER SECTION (Warm Ivory bg-[#F4F1E3])               */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#F4F1E3] py-16 px-6 flex flex-col items-center border-b border-[#AB7A57]/10 relative z-10">
+      <div className="w-full bg-[#F4F1E3] pt-12 pb-6 px-6 flex flex-col items-center border-b border-[#AB7A57]/10 relative z-10">
         
         {/* Decorative backgrounds & rotating zodiac inside header wrapper */}
         <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
@@ -178,17 +178,14 @@ function Service() {
           <h1 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif font-bold text-[#181122] tracking-wide leading-tight">
             Guidance & Remedial Consultation
           </h1>
-          <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-4 mb-4"></div>
-          <p className="text-sm md:text-base text-[#181122]/90 leading-relaxed font-sans max-w-xl mx-auto">
-            Embark on your personal path to alignment. Explore our premium consultations structured to address every key sector of life with accuracy and confidentiality.
-          </p>
+          <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-4 mb-2"></div>
         </motion.div>
       </div>
 
       {/* ========================================================= */}
       {/* 2. SERVICES GRID SECTION (Pure White bg-white)            */}
       {/* ========================================================= */}
-      <div className="w-full bg-white py-16 px-6 flex flex-col items-center relative z-10 overflow-hidden">
+      <div className="w-full bg-white pt-6 pb-16 px-6 flex flex-col items-center relative z-10 overflow-hidden">
         
         <div className="absolute bottom-40 right-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.04),transparent_70%)] rounded-full -z-10 pointer-events-none"></div>
 
@@ -204,65 +201,60 @@ function Service() {
               key={index} 
               variants={itemVariants}
               whileHover={{ 
-                y: -8, 
-                borderColor: "#D3AF54", 
-                boxShadow: "0 25px 40px -15px rgba(211,175,84,0.1), 0 0 25px rgba(211, 175, 84, 0.25)" 
+                y: -6,
+                borderColor: "#D3AF54",
+                boxShadow: "0 25px 50px -12px rgba(24,17,34,0.5), 0 0 30px rgba(211,175,84,0.3)"
               }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-6 flex flex-col justify-between hover:border-[#D3AF54] transition-all duration-300 relative overflow-hidden group min-h-[460px] text-white text-left shadow-lg"
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="relative h-[310px] sm:h-[330px] rounded-3xl overflow-hidden border border-[#AB7A57]/30 bg-[#181122] group shadow-xl transition-all duration-500 cursor-pointer flex flex-col justify-end text-white text-left"
             >
-              <div>
-                {/* Image Banner */}
-                <div className="w-full h-44 rounded-2xl overflow-hidden mb-5 border border-white/5 relative">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10"></div>
-                  <img 
-                    src={item.image} 
-                    alt={item.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                  />
-                  <div className="absolute bottom-3 left-3 bg-[#181122]/80 border border-white/10 backdrop-blur-md px-3 py-1 rounded-lg z-20 text-[10px] uppercase font-bold tracking-widest text-[#D3AF54]">
-                    {item.duration}
-                  </div>
-                </div>
+              {/* Full Bleed Background Image with Scale Transition */}
+              <img 
+                src={item.image} 
+                alt={item.title} 
+                className="absolute inset-0 w-full h-full object-cover z-0 group-hover:scale-105 transition-transform duration-700 ease-out" 
+              />
+              
+              {/* Radial gradient overlay vignettes for high-contrast and depth */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#181122] via-[#181122]/75 to-black/30 z-10 transition-colors duration-500 group-hover:from-[#181122]/98 group-hover:via-[#181122]/90"></div>
+              
+              {/* Category Icon Badge (Top Left) */}
+              <div className="absolute top-4 left-4 p-2 rounded-xl bg-[#181122]/90 border border-white/10 text-[#D3AF54] z-20 shadow-md">
+                {item.icon}
+              </div>
 
-                {/* Header Card */}
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <h3 className="font-serif font-bold text-xl text-white group-hover:text-[#D3AF54] transition-colors">{item.title}</h3>
-                  <div className="p-2 rounded-xl bg-white/5 border border-white/10 text-[#D3AF54]">
-                    {item.icon}
-                  </div>
-                </div>
+              {/* Price/Duration Badge (Top Right) */}
+              <div className="absolute top-4 right-4 bg-[#D3AF54]/15 border border-[#D3AF54]/40 backdrop-blur-md px-3 py-1 rounded-lg z-20 text-[10px] uppercase font-bold tracking-widest text-[#D3AF54]">
+                {item.duration}
+              </div>
 
-                <p className="text-xs text-[#D8CFEB] leading-relaxed font-sans font-medium mb-4">
+              {/* Card Contents Area (Slides up slightly on hover) */}
+              <div className="p-6 relative z-20 flex flex-col gap-2 translate-y-12 group-hover:translate-y-0 transition-transform duration-500 ease-out">
+                
+                <h3 className="font-serif font-bold text-xl text-white group-hover:text-[#D3AF54] transition-colors leading-tight">
+                  {item.title}
+                </h3>
+                
+                <p className="text-xs text-[#D8CFEB] leading-relaxed font-sans font-light line-clamp-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300 mb-2">
                   {item.desc}
                 </p>
 
-                {/* Features list */}
-                <ul className="space-y-2 mb-6 text-left">
-                  {item.points.map((pt, ptidx) => (
-                    <li key={ptidx} className="flex items-start gap-2 text-[11px] text-[#D8CFEB] font-sans font-medium">
-                      <span className="text-[#D3AF54] mt-0.5">✦</span>
-                      <span>{pt}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                {/* Action Buttons (Fades and translates up on hover) */}
+                <div className="flex gap-2.5 pt-2 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out delay-75">
+                  <Link 
+                    to={`/services/${item.id}`}
+                    className="flex-1 border border-[#D3AF54]/30 hover:border-[#D3AF54] hover:bg-[#D3AF54]/10 text-white font-bold text-[10px] uppercase tracking-wider py-2.5 rounded-xl text-center transition-all duration-300"
+                  >
+                    Details
+                  </Link>
+                  <Link 
+                    to="/booking"
+                    className="flex-1 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold text-[10px] uppercase tracking-wider py-2.5 rounded-xl text-center transition-all duration-300 shadow-md shadow-[#D3AF54]/10"
+                  >
+                    Book Now
+                  </Link>
+                </div>
 
-              {/* Action Buttons */}
-              <div className="space-y-2.5 pt-4 border-t border-white/10">
-                <Link 
-                  to={`/services/${item.id}`}
-                  className="w-full bg-[#181122] hover:bg-[#D3AF54]/10 text-white border border-[#D3AF54]/30 hover:border-[#D3AF54] font-bold text-xs py-3 rounded-xl transition duration-300 flex items-center justify-center gap-1.5 uppercase tracking-wider cursor-pointer"
-                >
-                  <span>Explore Details</span>
-                </Link>
-                <Link 
-                  to="/booking"
-                  className="w-full bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold text-xs py-3 rounded-xl transition duration-300 flex items-center justify-center gap-1.5 uppercase tracking-wider cursor-pointer shadow-sm hover:scale-[1.01] active:scale-[0.99]"
-                >
-                  <Calendar size={13} />
-                  <span>Book Consultation</span>
-                </Link>
               </div>
             </motion.div>
           ))}
@@ -274,22 +266,22 @@ function Service() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full max-w-5xl mt-12 bg-[#181122] border border-[#AB7A57]/30 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6 sm:gap-8 shadow-2xl relative justify-between text-white text-left"
+          className="w-full max-w-5xl mt-12 bg-[#EDE9D7] border border-[#AB7A57]/40 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6 sm:gap-8 shadow-xl relative justify-between text-[#181122] text-left animate-none"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.02),transparent_70%)] pointer-events-none"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.04),transparent_70%)] pointer-events-none"></div>
           <div className="space-y-2 z-10 max-w-2xl">
-            <h3 className="font-serif font-bold text-xl text-[#D3AF54]">Unsure which reading fits?</h3>
-            <p className="text-xs text-[#D8CFEB] font-sans font-medium leading-relaxed">
+            <h3 className="font-serif font-bold text-xl text-[#181122]">Unsure which reading fits?</h3>
+            <p className="text-xs text-[#181122]/90 font-sans font-medium leading-relaxed">
               Reach out to us directly. We will review your birth credentials and suggest the ideal reading structure.
             </p>
           </div>
 
           <MotionLink 
             to="/contact"
-            whileHover={{ scale: 1.05, y: -2, boxShadow: "0 10px 20px rgba(211, 175, 84, 0.2)" }}
+            whileHover={{ scale: 1.05, y: -2, boxShadow: "0 10px 20px rgba(24, 17, 34, 0.15)" }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 400, damping: 15 }}
-            className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-6 py-3 rounded-xl flex items-center justify-center gap-2 tracking-wide text-xs w-full md:w-auto shrink-0 z-10"
+            className="bg-[#181122] hover:bg-[#181122]/90 text-white font-bold px-6 py-3 rounded-xl flex items-center justify-center gap-2 tracking-wide text-xs w-full md:w-auto shrink-0 z-10"
           >
             <Calendar size={14} />
             <span>Connect Personally</span>

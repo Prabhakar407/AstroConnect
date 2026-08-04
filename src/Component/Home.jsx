@@ -185,8 +185,8 @@ const ServiceSlider = () => {
       </button>
 
       {/* Left & Right fading overlays for smooth cinematic masking */}
-      <div className="absolute inset-y-0 left-0 w-[clamp(2rem,6vw,6rem)] bg-gradient-to-r from-[#FDFCF5] to-transparent z-20 pointer-events-none"></div>
-      <div className="absolute inset-y-0 right-0 w-[clamp(2rem,6vw,6rem)] bg-gradient-to-l from-[#FDFCF5] to-transparent z-20 pointer-events-none"></div>
+      <div className="absolute inset-y-0 left-0 w-[clamp(2rem,6vw,6rem)] bg-gradient-to-r from-white to-transparent z-20 pointer-events-none"></div>
+      <div className="absolute inset-y-0 right-0 w-[clamp(2rem,6vw,6rem)] bg-gradient-to-l from-white to-transparent z-20 pointer-events-none"></div>
 
       {/* Slider Container */}
       <div className="relative w-full overflow-hidden">
@@ -777,7 +777,7 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 4. PREMIUM ASTROLOGY SERVICES GRID                        */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#FDFCF5] flex justify-center">
+      <div className="w-full bg-[#EDE9D7] flex justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
         <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
           <motion.section 
@@ -940,7 +940,7 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 5. LUXURIOUS CALL-TO-ACTION (CTA) BANNER STRIP            */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#FDFCF5] flex justify-center">
+      <div className="w-full bg-[#F4F1E3] flex justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
         <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pb-4 sm:pb-6">
 
           <motion.section 
@@ -989,7 +989,7 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 6. INFINITE SLIDING MARQUEE TESTIMONIALS SECTION          */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#FDFCF5] flex justify-center border-t border-b border-[#AB7A57]/10">
+      <div className="w-full bg-white flex justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
         <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
           <motion.section 
@@ -1017,8 +1017,8 @@ export default function Home() {
               {/* Sliding Marquee Track */}
               <div className="w-full overflow-hidden flex relative py-4">
                 {/* Left & Right fading overlays */}
-                <div className="absolute inset-y-0 left-0 w-12 md:w-32 bg-gradient-to-r from-[#FDFCF5] to-transparent z-20 pointer-events-none"></div>
-                <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-[#FDFCF5] to-transparent z-20 pointer-events-none"></div>
+                <div className="absolute inset-y-0 left-0 w-12 md:w-32 bg-gradient-to-r from-white to-transparent z-20 pointer-events-none"></div>
+                <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-white to-transparent z-20 pointer-events-none"></div>
                 
                 <motion.div
                   className="flex gap-6 shrink-0"
@@ -1081,7 +1081,7 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 7. SECTION 2 — ABOUT THE ASTROLOGER                       */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#FDFCF5] flex justify-center">
+      <div className="w-full bg-[#EDE9D7] flex justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
         <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
           <section className="w-full bg-transparent py-[clamp(3rem,6vw,7rem)] relative overflow-hidden flex flex-col items-center">
@@ -1135,28 +1135,28 @@ export default function Home() {
                 {/* Achievement Cards Grid */}
                 <div className="grid grid-cols-2 gap-4 pt-4 text-left max-w-md md:max-w-lg">
                   
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] transition-all duration-300 shadow-xs cursor-default group">
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 shadow-md cursor-default group">
                     <div className="w-9 h-9 rounded-full border border-[#AB7A57]/30 flex items-center justify-center bg-[#FFFDEE] shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                       <img src={experienceLogo} alt="Experience" className="w-5 h-5 object-contain" />
                     </div>
                     <h4 className="font-serif text-[#181122] font-bold text-xs sm:text-sm tracking-wide">10+ Years of Experience</h4>
                   </div>
 
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] transition-all duration-300 shadow-xs cursor-default group">
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 shadow-md cursor-default group">
                     <div className="w-9 h-9 rounded-full border border-[#AB7A57]/30 flex items-center justify-center bg-[#FFFDEE] shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                       <img src={clientsLogo} alt="Clients" className="w-5 h-5 object-contain" />
                     </div>
                     <h4 className="font-serif text-[#181122] font-bold text-xs sm:text-sm tracking-wide">Satisfied Clients</h4>
                   </div>
 
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] transition-all duration-300 shadow-xs cursor-default group">
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 shadow-md cursor-default group">
                     <div className="w-9 h-9 rounded-full border border-[#AB7A57]/30 flex items-center justify-center bg-[#FFFDEE] shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                       <img src={expertiseLogo} alt="Expertise" className="w-5 h-5 object-contain" />
                     </div>
                     <h4 className="font-serif text-[#181122] font-bold text-xs sm:text-sm tracking-wide">Vedic Expertise</h4>
                   </div>
 
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] transition-all duration-300 shadow-xs cursor-default group">
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 shadow-md cursor-default group">
                     <div className="w-9 h-9 rounded-full border border-[#AB7A57]/30 flex items-center justify-center bg-[#FFFDEE] shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                       <img src={guidanceLogo} alt="Guidance" className="w-5 h-5 object-contain" />
                     </div>

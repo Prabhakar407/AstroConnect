@@ -55,6 +55,8 @@ function About() {
   const yRight = useTransform(scrollY, [0, 1000], [0, -70])
   const yZodiac = useTransform(scrollY, [0, 1000], [0, -90])
   const rZodiac = useTransform(scrollY, [0, 1000], [0, 45])
+  const yCertZodiac = useTransform(scrollY, [300, 1500], [40, -60])
+  const rCertZodiac = useTransform(scrollY, [300, 1500], [0, 30])
 
   // Expertise Section Grid Data (6 premium cards)
   const expertiseData = [
@@ -128,7 +130,7 @@ function About() {
         {/* Capped layout wrapper inside band */}
         <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] flex flex-col items-center">
           
-          <section className="w-full min-h-[600px] pt-4 pb-20 lg:pt-6 lg:pb-28 flex items-center relative z-10">
+          <section className="w-full min-h-0 py-10 md:py-16 flex items-center relative z-10">
             {/* Main Asymmetric Board */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center w-full">
             
@@ -137,32 +139,72 @@ function About() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
-              className="lg:col-span-7 lg:order-1 order-2 flex flex-col text-left justify-start gap-6"
+              className="lg:col-span-7 lg:order-1 order-2 flex flex-col text-left justify-start gap-5"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
-                
-                {/* Legacy Card */}
-                <div className="bg-[#181122]/90 border border-[#AB7A57]/20 rounded-3xl p-6 shadow-xl flex flex-col gap-4 relative group hover:border-[#D3AF54]/40 transition-colors duration-300">
-                  <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-[#D3AF54] text-[#181122] flex items-center justify-center font-serif text-xs font-bold shadow-md shadow-[#D3AF54]/20">
-                    01
-                  </div>
-                  <h3 className="font-serif text-[#D3AF54] font-bold text-base mt-2 tracking-wide">VEDIC BACKGROUND</h3>
-                  <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans">
-                    I am a qualified Vedic astrologer with over 15 years of experience. I help individuals gain clarity and guidance in areas such as career, relationships, marriage, health, finance, and personal growth.
-                  </p>
+              {/* Hero Header Title and Subtitle */}
+              <div className="space-y-3.5 flex flex-col items-start text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#D3AF54]/40 bg-[#D3AF54]/10 text-[#D3AF54] text-[10px] sm:text-xs font-semibold uppercase tracking-widest font-sans w-fit shadow-[0_0_15px_rgba(211,175,84,0.15)]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D3AF54] animate-pulse"></span>
+                  <span>Meet The Astrologer</span>
                 </div>
-
-                {/* Approach Card */}
-                <div className="bg-[#181122]/90 border border-[#AB7A57]/20 rounded-3xl p-6 shadow-xl flex flex-col gap-4 relative group hover:border-[#D3AF54]/40 transition-colors duration-300">
-                  <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-[#D3AF54] text-[#181122] flex items-center justify-center font-serif text-xs font-bold shadow-md shadow-[#D3AF54]/20">
-                    02
+                <h1 className="font-serif font-bold leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] flex flex-wrap items-baseline gap-x-3 text-left">
+                  <span 
+                    style={{
+                      background: 'linear-gradient(135deg, #FFFDEE 0%, #D3AF54 50%, #AB7A57 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      display: 'inline-block'
+                    }}
+                    className="text-[clamp(1.3rem,2.5vw,2.6rem)] font-light tracking-wide shrink-0"
+                  >
+                    Astrologer
+                  </span>
+                  <span 
+                    style={{
+                      background: 'linear-gradient(135deg, #FFFDEE 0%, #D3AF54 50%, #AB7A57 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      display: 'inline-block'
+                    }}
+                    className="text-[clamp(2.2rem,4.5vw,4.8rem)] tracking-wide"
+                  >
+                    Kundan Singh
+                  </span>
+                </h1>
+                <p className="text-[#EBDCD4] text-xs sm:text-sm leading-relaxed max-w-xl font-sans font-light border-l-2 border-[#D3AF54]/40 pl-4 py-0.5">
+                  Bridging ancient Vedic wisdom with modern practical insights to light your path to clarity, purpose, and alignment.
+                </p>
+              </div>
+              {/* Redesigned compact bullet points wrapper block */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 w-full bg-white/[0.02] border border-white/10 rounded-2xl p-5 shadow-inner">
+                <div className="flex gap-3 items-start">
+                  <span className="text-[#D3AF54] text-xs mt-1 shrink-0">✦</span>
+                  <div className="flex flex-col text-left">
+                    <span className="text-white font-serif font-bold text-xs sm:text-sm">10+ Years of Guidance</span>
+                    <span className="text-[11px] sm:text-xs text-[#D8CFEB] font-sans">Trusted alignments since 2003.</span>
                   </div>
-                  <h3 className="font-serif text-[#D3AF54] font-bold text-base mt-2 tracking-wide">MY APPROACH & EDUCATION</h3>
-                  <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans">
-                    My approach combines traditional knowledge with practical insights to provide accurate and personalized guidance tailored to each individual's unique birth chart. I studied Astrology and Alankar at Bharatiya Vidya Bhavan College, starting my astrology journey in 2003.
-                  </p>
                 </div>
-
+                <div className="flex gap-3 items-start">
+                  <span className="text-[#D3AF54] text-xs mt-1 shrink-0">✦</span>
+                  <div className="flex flex-col text-left">
+                    <span className="text-white font-serif font-bold text-xs sm:text-sm">Academic Foundation</span>
+                    <span className="text-[11px] sm:text-xs text-[#D8CFEB] font-sans">Formal studies at Bharatiya Vidya Bhavan.</span>
+                  </div>
+                </div>
+                <div className="flex gap-3 items-start">
+                  <span className="text-[#D3AF54] text-xs mt-1 shrink-0">✦</span>
+                  <div className="flex flex-col text-left">
+                    <span className="text-white font-serif font-bold text-xs sm:text-sm">Comprehensive Focus</span>
+                    <span className="text-[11px] sm:text-xs text-[#D8CFEB] font-sans">Vedic Kundli, Numerology, Vastu & Lal Kitaab.</span>
+                  </div>
+                </div>
+                <div className="flex gap-3 items-start">
+                  <span className="text-[#D3AF54] text-xs mt-1 shrink-0">✦</span>
+                  <div className="flex flex-col text-left">
+                    <span className="text-white font-serif font-bold text-xs sm:text-sm">Practical Remedies</span>
+                    <span className="text-[11px] sm:text-xs text-[#D8CFEB] font-sans">Actionable remedies for alignments.</span>
+                  </div>
+                </div>
               </div>
 
               {/* Quote Block or callout */}
@@ -202,7 +244,7 @@ function About() {
               initial={{ opacity: 0, scale: 0.95, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="lg:col-span-5 lg:order-2 order-1 flex justify-center relative w-full pt-2 lg:pt-4"
+              className="lg:col-span-5 lg:order-2 order-1 flex justify-center relative w-full pt-2 lg:pt-4 lg:-translate-y-8 lg:scale-105"
             >
               {/* Elegant Archway/Temple Portal Frame */}
               <div className="relative w-[clamp(15rem,24vw,22rem)] aspect-[3/4] rounded-t-full border-2 border-[#D3AF54] bg-[#181122] shadow-[0_20px_50px_rgba(211,175,84,0.25)] overflow-hidden flex items-center justify-center group z-10">
@@ -228,12 +270,13 @@ function About() {
             </div>
           </section>
         </div>
+
       </div>
 
       {/* ========================================================= */}
       {/* 2. EXPERTISE SECTION (White background: bg-white)         */}
       {/* ========================================================= */}
-      <div className="w-full bg-white border-b border-[#AB7A57]/10 flex flex-col items-center relative">
+      <div className="w-full bg-white flex flex-col items-center relative z-30">
         
         {/* Floating Glassmorphic Stat bar sitting exactly at the boundary */}
         <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
@@ -279,7 +322,15 @@ function About() {
             </div>
           </motion.div>
         </div>
+      </div>
 
+
+
+      {/* ========================================================= */}
+      {/* 2.1 AREAS OF EXPERTISE CONTENT                           */}
+      {/* ========================================================= */}
+      <div className="w-full bg-white border-b border-[#AB7A57]/10 flex flex-col items-center relative py-12 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
+        
         {/* Inner container to capture absolute radial leakages safely */}
         <div className="w-full relative overflow-hidden flex flex-col items-center">
           <div className="absolute top-1/3 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.04),transparent_70%)] rounded-full pointer-events-none animate-pulse"></div>
@@ -293,12 +344,12 @@ function About() {
           >
             
             {/* Section Header */}
-            <div className="text-center max-w-2xl mb-6 md:mb-8 relative z-10">
+            <div className="text-center max-w-3xl mb-6 md:mb-8 relative z-10">
               <span className="text-[#AB7A57] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
-                AREAS OF EXPERTISE
+                ✦ AREAS OF EXPERTISE ✦
               </span>
-              <h2 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif text-[#181122] font-bold mb-3 tracking-wide leading-tight">
-                Areas of Expertise
+              <h2 className="text-[clamp(1.3rem,2.2vw,2.2rem)] lg:text-3xl font-serif text-[#181122] font-bold mb-3 tracking-wide leading-tight lg:whitespace-nowrap">
+                Divine Methods of Guidance
               </h2>
               <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-3 mb-3"></div>
               <p className="text-xs md:text-sm text-[#181122]/80 font-sans leading-relaxed italic">
@@ -322,7 +373,16 @@ function About() {
       {/* ========================================================= */}
       {/* 4. PROFESSIONAL CERTIFICATES (Warm Sand background: #EDE9D7)*/}
       {/* ========================================================= */}
-      <div className="w-full bg-[#EDE9D7] flex justify-center py-16 overflow-hidden relative border-t border-[#AB7A57]/10">
+      <div className="w-full bg-[#EDE9D7] flex justify-center py-16 overflow-hidden relative border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
+        
+        {/* Parallax Background Zodiac Wheel outline */}
+        <motion.div style={{ y: yCertZodiac, rotate: rCertZodiac }} className="absolute right-4 top-10 w-96 h-96 text-[#AB7A57]/5 pointer-events-none -z-10 select-none opacity-40">
+          <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.2">
+            <circle cx="50" cy="50" r="45" strokeDasharray="1,1" />
+            <circle cx="50" cy="50" r="30" />
+            <path d="M 50 5 L 50 95 M 5 50 L 95 50 M 18 18 L 82 82 M 18 82 L 82 18" />
+          </svg>
+        </motion.div>
         <motion.div 
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -402,8 +462,6 @@ function About() {
         </motion.div>
       </div>
 
-      <div className="py-6"></div>
-
     </div>
   )
 }
@@ -453,6 +511,25 @@ function genRandomPattern(length) {
 function FeatureCard({ feature, className, ...props }) {
   const p = genRandomPattern();
 
+  const getServicePath = (title) => {
+    switch (title.toLowerCase()) {
+      case "vedic astrology":
+        return "/services/vedic-astrology";
+      case "numerology":
+        return "/services/numerology";
+      case "vastu consultation":
+        return "/services/vastu";
+      case "laal kitaab remedies":
+        return "/services/laal-kitaab";
+      case "prashna kundli":
+        return "/services/prashna-kundali";
+      case "reiki healer":
+        return "/services/reiki-healing";
+      default:
+        return "/services";
+    }
+  }
+
   return (
     <div className={cn('relative overflow-hidden p-5 bg-[#181122] border border-[#AB7A57]/30 rounded-3xl shadow-xl flex flex-col justify-between group hover:border-[#D3AF54]/50 transition-all duration-300 w-full text-white', className)} {...props}>
       {/* Decorative GridPattern overlay */}
@@ -485,13 +562,21 @@ function FeatureCard({ feature, className, ...props }) {
         />
       </div>
 
-      {/* 3. Clickable Button (bottom) */}
-      <Link 
-        to="/booking"
-        className="w-full bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold text-xs py-2.5 px-4 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] relative z-10 shadow-md shadow-[#D3AF54]/10"
-      >
-        <span>Book Consultation</span>
-      </Link>
+      {/* 3. Action Buttons (bottom) */}
+      <div className="flex gap-2.5 w-full mt-1 relative z-10">
+        <Link 
+          to={getServicePath(feature.title)}
+          className="flex-grow border border-[#AB7A57]/60 hover:border-[#D3AF54] text-white hover:text-[#D3AF54] font-bold text-xs py-2 px-3 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] shadow-sm bg-white/[0.02]"
+        >
+          Read More
+        </Link>
+        <Link 
+          to="/booking"
+          className="flex-grow bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold text-xs py-2 px-3 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] shadow-md shadow-[#D3AF54]/10"
+        >
+          Book Now
+        </Link>
+      </div>
     </div>
   );
 }
