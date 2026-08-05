@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { 
   Phone, 
   Mail, 
@@ -42,6 +42,14 @@ function Contact() {
   })
   
   const [submitted, setSubmitted] = useState(false)
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false)
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: ""
+  })
   const [copiedType, setCopiedType] = useState(null)
   const [showFaq, setShowFaq] = useState(false)
   const [openFaqIndex, setOpenFaqIndex] = useState(null)
@@ -55,9 +63,102 @@ function Contact() {
     })
   }
 
+  const validateContactForm = () => {
+    const newErrors = {
+      name: "",
+      email: "",
+      phone: "",
+      subject: "",
+      message: ""
+    }
+    let isValid = true
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Full Name is required."
+      isValid = false
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = "Full Name must be at least 2 characters."
+      isValid = false
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email Address is required."
+      isValid = false
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email.trim())) {
+        newErrors.email = "Please enter a valid email address (e.g. name@example.com)."
+        isValid = false
+      }
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Mobile Number is required."
+      isValid = false
+    } else {
+      const cleanPhone = formData.phone.trim().replace(/[\s\-]/g, '')
+      let phoneBody = cleanPhone
+      if (cleanPhone.startsWith('+91')) {
+        phoneBody = cleanPhone.slice(3)
+      } else if (cleanPhone.startsWith('91') && cleanPhone.length === 12) {
+        phoneBody = cleanPhone.slice(2)
+      }
+      
+      const isTenDigits = /^[0-9]{10}$/.test(phoneBody)
+      if (!isTenDigits) {
+        newErrors.phone = "Mobile number must be exactly 10 digits (excluding +91 country code)."
+        isValid = false
+      }
+    }
+
+    if (!formData.subject) {
+      newErrors.subject = "Inquiry Topic is required."
+      isValid = false
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = "Message is required."
+      isValid = false
+    } else if (formData.message.trim().length < 10) {
+      newErrors.message = "Message must be at least 10 characters."
+      isValid = false
+    }
+
+    setErrors(newErrors)
+    return isValid
+  }
+
+  useEffect(() => {
+    if (attemptedSubmit) {
+      validateContactForm()
+    }
+  }, [formData, attemptedSubmit])
+
   const handleContactSubmit = (e) => {
     e.preventDefault()
+    setAttemptedSubmit(true)
+    
+    if (!validateContactForm()) {
+      return
+    }
+
     console.log("Contact Message Submitted:", formData)
+
+    // Build the pre-filled WhatsApp message body
+    const messageText = `✦ New Inquiry from Astrology Website ✦\n\n` +
+      `👤 Name: ${formData.name.trim()}\n` +
+      `📧 Email: ${formData.email.trim()}\n` +
+      `📱 Phone: ${formData.phone.trim()}\n` +
+      `📌 Subject: ${formData.subject}\n` +
+      `💬 Message: ${formData.message.trim()}`
+
+    // Encode details for URL parameter
+    const encodedText = encodeURIComponent(messageText)
+    
+    // Redirect target WhatsApp chat URL
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=918114292972&text=${encodedText}`
+    window.open(whatsappUrl, '_blank')
+
     setSubmitted(true)
   }
 
@@ -247,13 +348,15 @@ function Contact() {
                       type="text" 
                       id="name"
                       name="name"
-                      required
                       value={formData.name}
                       onChange={handleInputChange}
                       placeholder="e.g. John Doe"
                       className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition font-sans"
                     />
                   </div>
+                  {errors.name && (
+                    <p className="text-red-500 text-[10px] font-sans font-medium mt-1">⚠️ {errors.name}</p>
+                  )}
                 </div>
 
                 {/* Email and Phone row */}
@@ -265,16 +368,18 @@ function Contact() {
                     <div className="relative">
                       <Mail size={13} className="absolute left-3.5 top-3.5 text-[#AB7A57]" />
                       <input 
-                        type="email" 
+                        type="text" 
                         id="email"
                         name="email"
-                        required
                         value={formData.email}
                         onChange={handleInputChange}
                         placeholder="e.g. john@example.com"
                         className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition font-sans"
                       />
                     </div>
+                    {errors.email && (
+                      <p className="text-red-500 text-[10px] font-sans font-medium mt-1">⚠️ {errors.email}</p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
@@ -287,13 +392,15 @@ function Contact() {
                         type="tel" 
                         id="phone"
                         name="phone"
-                        required
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="e.g. +91 98765 43210"
                         className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition font-sans"
                       />
                     </div>
+                    {errors.phone && (
+                      <p className="text-red-500 text-[10px] font-sans font-medium mt-1">⚠️ {errors.phone}</p>
+                    )}
                   </div>
                 </div>
 
@@ -329,13 +436,15 @@ function Contact() {
                   <textarea 
                     id="message"
                     name="message"
-                    required
                     rows={4}
                     value={formData.message}
                     onChange={handleInputChange}
                     placeholder="Describe your situation or list any key questions you want answered..."
                     className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl px-4 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition min-h-[100px] resize-none font-sans"
                   />
+                  {errors.message && (
+                    <p className="text-red-500 text-[10px] font-sans font-medium mt-1">⚠️ {errors.message}</p>
+                  )}
                 </div>
 
                 <button 

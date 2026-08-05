@@ -224,16 +224,22 @@ export default function Navbar() {
                 Book Appointment
               </MotionLink>
               
-              {/* Straight glowing effect below Book Appointment button when active */}
+              {/* Glowing ambient indicator and underline */}
               {location.pathname === "/booking" && (
-                <motion.div 
-                  layoutId="bookingGlow"
-                  className="absolute -bottom-3 left-0 right-0 h-[2px] bg-[#D3AF54]"
-                  style={{
-                    boxShadow: "0 0 8px #D3AF54, 0 0 15px #D3AF54",
-                    borderRadius: "9999px"
-                  }}
-                />
+                <>
+                  {/* Underlight glow */}
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-[85%] h-[8px] bg-[#D3AF54] blur-[6px] rounded-full animate-pulse pointer-events-none" />
+                  
+                  {/* Underline bar */}
+                  <motion.div 
+                    layoutId="bookingGlow"
+                    className="absolute -bottom-1.5 left-2 right-2 h-[2px] bg-[#D3AF54]"
+                    style={{
+                      boxShadow: "0 0 10px #D3AF54, 0 0 20px #D3AF54",
+                      borderRadius: "9999px"
+                    }}
+                  />
+                </>
               )}
             </div>
           </div>
