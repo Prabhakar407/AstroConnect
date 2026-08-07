@@ -1,4 +1,5 @@
 import os
+import uuid
 from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import FastAPI, HTTPException
@@ -24,7 +25,7 @@ app.add_middleware(
 
 # File and Credentials Setup
 SERVICE_ACCOUNT_FILE = "service_account.json"
-CALENDAR_ID = os.getenv("CALENDAR_ID", "YOUR_CALENDAR_ID_HERE@group.calendar.google.com")
+CALENDAR_ID = "primary" # Store bookings on the Service Account calendar master database
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
 # ==========================================
@@ -45,19 +46,82 @@ TIMEZONE = "Asia/Kolkata"  # Change to your local timezone if different
 
 
 def get_calendar_service():
-    """Authenticates using the Service Account and returns the Google Calendar API client."""
+    """Initializes and returns the Google Calendar API service, ensuring a shared read-only secondary calendar exists."""
     if not os.path.exists(SERVICE_ACCOUNT_FILE):
         raise FileNotFoundError(
             f"Error: Could not find '{SERVICE_ACCOUNT_FILE}'. Make sure it is placed in the backend root directory."
         )
     creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-    return build("calendar", "v3", credentials=creds)
+    service = build("calendar", "v3", credentials=creds)
+    
+    global CALENDAR_ID
+    config_file = "calendar_config.json"
+    astrologer_email = os.getenv("SMTP_EMAIL", "astroadvicebyks@gmail.com")
+    
+    import json
+    calendar_id = None
+    if os.path.exists(config_file):
+        try:
+            with open(config_file, "r") as f:
+                config_data = json.load(f)
+                calendar_id = config_data.get("calendar_id")
+        except Exception:
+            pass
+            
+    if not calendar_id:
+        try:
+            print("Creating a new master secondary calendar for read-only booking sharing...")
+            calendar_body = {
+                'summary': 'AstroAdvice Bookings',
+                'timeZone': TIMEZONE
+            }
+            new_cal = service.calendars().insert(body=calendar_body).execute()
+            calendar_id = new_cal['id']
+            
+            # Share secondary calendar with astrologer as Read-Only
+            rule = {
+                'scope': {
+                    'type': 'user',
+                    'value': astrologer_email,
+                },
+                'role': 'reader'
+            }
+            service.acl().insert(calendarId=calendar_id, body=rule).execute()
+            print(f"✓ Shared calendar {calendar_id} with {astrologer_email} as Read-Only")
+            
+            # Save calendar configuration
+            with open(config_file, "w") as f:
+                json.dump({"calendar_id": calendar_id, "shared_with": astrologer_email}, f, indent=4)
+                
+        except Exception as e:
+            print(f"Error initializing secondary calendar: {str(e)}")
+            calendar_id = "primary" # Fallback if fails
+            
+    CALENDAR_ID = calendar_id
+    return service
+
 
 
 # Input Data Model for Booking Requests
+class PrashnaRequest(BaseModel):
+    name: str
+    phone: str
+    location: str
+    question: str
+
+
+class ContactRequest(BaseModel):
+    name: str
+    email: str
+    phone: str
+    subject: str
+    message: str
+
+
 class BookingRequest(BaseModel):
     full_name: str
     email: EmailStr
+    phone: str
     service_name: str  # e.g. "Vedic Astrology", "Prashna Kundali", "Reiki Healing"
     date: str          # Format: "YYYY-MM-DD"
     time_slot: str     # Format: "HH:MM" (24-hour time, e.g. "10:00", "15:30")
@@ -101,8 +165,8 @@ def get_availability(date: str):
                 
                 existing_events_result = service.events().list(
                     calendarId=CALENDAR_ID,
-                    timeMin=start_dt.isoformat() + "Z",
-                    timeMax=end_dt.isoformat() + "Z",
+                    timeMin=start_dt.isoformat() + "+05:30",
+                    timeMax=end_dt.isoformat() + "+05:30",
                     singleEvents=True
                 ).execute()
                 
@@ -134,6 +198,214 @@ def get_availability(date: str):
             availability_results[s] = count < MAX_BOOKINGS_PER_HOUR
 
     return availability_results
+
+
+@app.post("/api/contact")
+def save_contact(contact: ContactRequest):
+    """Saves contact queries locally and attempts to send SMS via Twilio if configured."""
+    import json
+    local_queries_file = "local_queries.json"
+    queries_list = []
+    
+    if os.path.exists(local_queries_file):
+        try:
+            with open(local_queries_file, "r") as f:
+                queries_list = json.load(f)
+        except Exception:
+            pass
+            
+    new_entry = {
+        "query_type": "general_contact",
+        "name": contact.name,
+        "email": contact.email,
+        "phone": contact.phone,
+        "subject": contact.subject,
+        "message": contact.message,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    queries_list.append(new_entry)
+    
+    try:
+        with open(local_queries_file, "w") as f:
+            json.dump(queries_list, f, indent=4)
+        print("✓ Contact query saved to local_queries.json")
+    except Exception as e:
+        print(f"Error saving contact query locally: {str(e)}")
+        
+    twilio_sid = os.getenv("TWILIO_ACCOUNT_SID")
+    twilio_auth = os.getenv("TWILIO_AUTH_TOKEN")
+    twilio_from = os.getenv("TWILIO_PHONE_NUMBER")
+    
+    sms_status = "logged_locally"
+    
+    if twilio_sid and twilio_auth and twilio_from:
+        try:
+            from twilio.rest import Client
+            client = Client(twilio_sid, twilio_auth)
+            
+            sms_body = (
+                f"New Inquiry:\n"
+                f"Name: {contact.name}\n"
+                f"Phone: {contact.phone}\n"
+                f"Email: {contact.email}\n"
+                f"Subject: {contact.subject}\n"
+                f"Msg: {contact.message}"
+            )
+            
+            client.messages.create(
+                body=sms_body,
+                from_=twilio_from,
+                to="+918114292972"
+            )
+            sms_status = "sent_via_twilio"
+            print("✓ SMS dispatch successfully processed")
+        except Exception as e:
+            print(f"Twilio SMS delivery failed: {str(e)}")
+            sms_status = "twilio_failed"
+            
+    smtp_sender = os.getenv("SMTP_EMAIL")
+    smtp_password = os.getenv("SMTP_PASSWORD")
+    smtp_receiver = os.getenv("SMTP_EMAIL", "astroadvicebyks@gmail.com")
+    
+    email_status = "not_configured"
+    
+    if smtp_sender and smtp_password:
+        try:
+            import smtplib
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+            
+            # Construct Email Message
+            msg = MIMEMultipart()
+            msg['From'] = smtp_sender
+            msg['To'] = smtp_receiver
+            msg['Subject'] = f"★ New Inquiry: {contact.subject} ★"
+            
+            email_body = f"""
+Hello Kundan Singh,
+
+You have received a new contact inquiry from the Astrology Website:
+
+----------------------------------------
+CLIENT NAME:    {contact.name}
+CLIENT EMAIL:   {contact.email}
+CLIENT PHONE:   {contact.phone}
+SUBJECT/TOPIC:  {contact.subject}
+
+MESSAGE DETAIL:
+{contact.message}
+----------------------------------------
+
+*This message was logged locally and dispatched automatically via website backend*
+"""
+            msg.attach(MIMEText(email_body, 'plain'))
+            
+            # Connect to SMTP Server
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.starttls()
+            server.login(smtp_sender, smtp_password)
+            server.sendmail(smtp_sender, smtp_receiver, msg.as_string())
+            server.quit()
+            
+            email_status = "sent_via_smtp"
+            print("✓ Contact inquiry successfully dispatched via SMTP email")
+        except Exception as e:
+            print(f"SMTP Email delivery failed: {str(e)}")
+            email_status = "smtp_failed"
+            
+    return {
+        "status": "success",
+        "sms_status": sms_status,
+        "email_status": email_status,
+        "message": "Message received by server successfully!"
+    }
+
+
+@app.post("/api/prashna")
+def save_prashna(prashna: PrashnaRequest):
+    """Saves Prashna questions locally and attempts to send SMTP email."""
+    import json
+    local_queries_file = "local_queries.json"
+    queries_list = []
+    
+    if os.path.exists(local_queries_file):
+        try:
+            with open(local_queries_file, "r") as f:
+                queries_list = json.load(f)
+        except Exception:
+            pass
+            
+    new_entry = {
+        "query_type": "prashna_kundali",
+        "name": prashna.name,
+        "phone": prashna.phone,
+        "location": prashna.location,
+        "question": prashna.question,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    queries_list.append(new_entry)
+    
+    try:
+        with open(local_queries_file, "w") as f:
+            json.dump(queries_list, f, indent=4)
+        print("✓ Prashna query saved to local_queries.json")
+    except Exception as e:
+        print(f"Error saving Prashna query locally: {str(e)}")
+        
+    smtp_sender = os.getenv("SMTP_EMAIL")
+    smtp_password = os.getenv("SMTP_PASSWORD")
+    smtp_receiver = os.getenv("SMTP_EMAIL", "astroadvicebyks@gmail.com")
+    
+    email_status = "not_configured"
+    
+    if smtp_sender and smtp_password:
+        try:
+            import smtplib
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+            
+            # Construct Email Message
+            msg = MIMEMultipart()
+            msg['From'] = smtp_sender
+            msg['To'] = smtp_receiver
+            msg['Subject'] = f"★ New Horary Prashna Question ★"
+            
+            email_body = f"""
+Hello Kundan Singh,
+
+You have received a new horary Prashna question from the website:
+
+----------------------------------------
+CLIENT NAME:      {prashna.name}
+CLIENT PHONE:     {prashna.phone}
+CURRENT LOCATION: {prashna.location}
+
+SPECIFIC QUESTION:
+{prashna.question}
+----------------------------------------
+
+*This question was logged locally and dispatched automatically via website backend*
+"""
+            msg.attach(MIMEText(email_body, 'plain'))
+            
+            # Connect to SMTP Server
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.starttls()
+            server.login(smtp_sender, smtp_password)
+            server.sendmail(smtp_sender, smtp_receiver, msg.as_string())
+            server.quit()
+            
+            email_status = "sent_via_smtp"
+            print("✓ Prashna inquiry successfully dispatched via SMTP email")
+        except Exception as e:
+            print(f"SMTP Email delivery failed: {str(e)}")
+            email_status = "smtp_failed"
+            
+    return {
+        "status": "success",
+        "email_status": email_status,
+        "message": "Prashna received successfully!"
+    }
 
 
 @app.post("/api/book-appointment")
@@ -190,8 +462,8 @@ async def book_appointment(booking: BookingRequest):
             # Query Google Calendar for existing bookings in this specific hour
             existing_events_result = service.events().list(
                 calendarId=CALENDAR_ID,
-                timeMin=hour_window_start.isoformat() + "Z",
-                timeMax=hour_window_end.isoformat() + "Z",
+                timeMin=hour_window_start.isoformat() + "+05:30",
+                timeMax=hour_window_end.isoformat() + "+05:30",
                 singleEvents=True
             ).execute()
 
@@ -209,6 +481,7 @@ async def book_appointment(booking: BookingRequest):
 ----------------------------------------
 Client Name: {booking.full_name}
 Client Email: {booking.email}
+Client Phone: {booking.phone}
 Service Requested: {booking.service_name}
 
 INTAKE & SERVICE DETAILS:
@@ -228,27 +501,84 @@ INTAKE & SERVICE DETAILS:
                     "dateTime": end_datetime.isoformat(),
                     "timeZone": TIMEZONE,
                 },
-                "guestsCanModify": False,
                 "guestsCanInviteOthers": False,
                 "reminders": {
                     "useDefault": False,
                     "overrides": [
                         {"method": "email", "minutes": 24 * 60},  # Email reminder 24h before
-                        {"method": "popup", "minutes": 30},       # Pop-up reminder 30m before
+                        {"method": "popup", "minutes": 15},       # Pop-up reminder 15m before
                     ],
                 },
             }
 
-            # Insert into Google Calendar (attendees removed to bypass Domain-Wide Delegation restriction)
+            # Determine dynamic meeting link
+            static_meet = os.getenv("STATIC_MEET_LINK")
+            if static_meet:
+                meet_link = static_meet
+            else:
+                meet_link = f"https://meet.jit.si/AstroAdvice-Consultation-{uuid.uuid4().hex[:8]}"
+
+            # Add Meet Link directly inside Google Calendar description
+            event_body["description"] += f"\nOnline Session Link: {meet_link}\n"
+
+            # Insert into Google Calendar (reverted conferenceData to bypass Service Account restriction)
             created_event = service.events().insert(
                 calendarId=CALENDAR_ID, 
                 body=event_body
             ).execute()
 
+            # Send SMTP email confirmation for new booking
+            smtp_sender = os.getenv("SMTP_EMAIL")
+            smtp_password = os.getenv("SMTP_PASSWORD")
+            smtp_receiver = os.getenv("SMTP_EMAIL", "astroadvicebyks@gmail.com")
+            
+            if smtp_sender and smtp_password:
+                try:
+                    import smtplib
+                    from email.mime.text import MIMEText
+                    from email.mime.multipart import MIMEMultipart
+                    
+                    msg = MIMEMultipart()
+                    msg['From'] = smtp_sender
+                    msg['To'] = smtp_receiver
+                    msg['Subject'] = f"★ New Appointment Booked: {booking.service_name} ★"
+                    
+                    email_body = f"""
+Hello Kundan Singh,
+
+A new appointment has been successfully booked on the website:
+
+----------------------------------------
+CLIENT NAME:       {booking.full_name}
+CLIENT EMAIL:      {booking.email}
+CLIENT PHONE:      {booking.phone}
+SERVICE NAME:      {booking.service_name}
+MEET CALL LINK:    {meet_link or 'No Meet Link generated'}
+DATE:              {booking.date}
+TIME SLOT:         {booking.time_slot} (Duration: {booking.duration_minutes} min)
+
+INTAKE/BIRTH DETAILS:
+{booking.birth_details or 'None provided.'}
+----------------------------------------
+
+*This appointment is synced with Google Calendar and notified via website backend*
+"""
+                    msg.attach(MIMEText(email_body, 'plain'))
+                    
+                    server = smtplib.SMTP("smtp.gmail.com", 587)
+                    server.starttls()
+                    server.login(smtp_sender, smtp_password)
+                    server.sendmail(smtp_sender, smtp_receiver, msg.as_string())
+                    server.quit()
+                    print("✓ Booking notification email sent successfully")
+                except Exception as e:
+                    print(f"Failed to send booking notification email: {str(e)}")
+
             return {
                 "status": "success",
                 "message": "Appointment booked successfully!",
-                "event_link": created_event.get("htmlLink")
+                "event_link": created_event.get("htmlLink"),
+                "meet_link": meet_link
             }
         else:
             # Fallback Development Mode: Save bookings locally

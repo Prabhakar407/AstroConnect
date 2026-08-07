@@ -1905,15 +1905,39 @@ function PrashnaKundaliDetail({ details, navigate }) {
     question: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [serverError, setServerError] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setServerError("");
     if (formData.name && formData.phone && formData.location && formData.question) {
-      setSubmitted(true);
+      try {
+        const response = await fetch("http://localhost:8000/api/prashna", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            phone: formData.phone,
+            location: formData.location,
+            question: formData.question,
+          }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.detail || "Failed to submit Prashna question.");
+        }
+
+        setSubmitted(true);
+      } catch (err) {
+        setServerError(err.message || "Failed to connect to backend server. Please verify that the backend is running.");
+      }
     }
   };
 
@@ -2172,6 +2196,11 @@ function PrashnaKundaliDetail({ details, navigate }) {
             </motion.div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5 text-left">
+              {serverError && (
+                <div className="p-3 bg-red-950/60 border border-red-500/40 rounded-xl text-red-200 text-xs text-center font-sans tracking-wide">
+                  ⚠️ {serverError}
+                </div>
+              )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider mb-2">Full Name</label>

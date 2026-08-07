@@ -115,7 +115,7 @@ export default function Footer() {
             </li>
             <li className="flex items-center gap-2.5">
               <img src={gmailLogo} alt="Email" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0" />
-              <span>singh.21kundan@gmail.com</span>
+              <span>astroadvicebyks@gmail.com</span>
             </li>
             <li className="flex items-center gap-2.5">
               <img src={mapsLogo} alt="Map" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0" />
@@ -123,7 +123,7 @@ export default function Footer() {
             </li>
             <li className="flex items-center gap-2.5">
               <img src={clockLogo} alt="Clock" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0 bg-white rounded-full p-0.5" />
-              <span>Mon - Sat: 9:00 AM - 7:00 PM</span>
+              <span>Mon - Sat: 10:00 AM - 12:00 PM & 3:00 PM - 6:00 PM</span>
             </li>
             <li className="flex items-center gap-2.5">
               <img src={waLogo} alt="WhatsApp" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0" />

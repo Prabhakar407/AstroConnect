@@ -23,6 +23,8 @@ service_account.json
 
 # Local Databases
 local_bookings.json
+local_queries.json
+calendar_config.json
 
 # Editor & System Files
 .vscode/

@@ -43,6 +43,8 @@ function Contact() {
   
   const [submitted, setSubmitted] = useState(false)
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
+  const [serverError, setServerError] = useState("")
+  const [currentWhatsappUrl, setCurrentWhatsappUrl] = useState("")
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -134,32 +136,53 @@ function Contact() {
     }
   }, [formData, attemptedSubmit])
 
-  const handleContactSubmit = (e) => {
+  const handleContactSubmit = async (e) => {
     e.preventDefault()
     setAttemptedSubmit(true)
+    setServerError("")
     
     if (!validateContactForm()) {
       return
     }
 
-    console.log("Contact Message Submitted:", formData)
+    console.log("Submitting Contact Message to Server:", formData)
 
-    // Build the pre-filled WhatsApp message body
-    const messageText = `✦ New Inquiry from Astrology Website ✦\n\n` +
-      `👤 Name: ${formData.name.trim()}\n` +
-      `📧 Email: ${formData.email.trim()}\n` +
-      `📱 Phone: ${formData.phone.trim()}\n` +
-      `📌 Subject: ${formData.subject}\n` +
-      `💬 Message: ${formData.message.trim()}`
+    try {
+      const response = await fetch("http://localhost:8000/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          subject: formData.subject,
+          message: formData.message,
+        }),
+      })
 
-    // Encode details for URL parameter
-    const encodedText = encodeURIComponent(messageText)
-    
-    // Redirect target WhatsApp chat URL
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=918114292972&text=${encodedText}`
-    window.open(whatsappUrl, '_blank')
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.detail || "Failed to deliver contact message to the server.")
+      }
 
-    setSubmitted(true)
+      // Build fallback WhatsApp url
+      const messageText = `✦ New Inquiry from Astrology Website ✦\n\n` +
+        `👤 Name: ${formData.name.trim()}\n` +
+        `📧 Email: ${formData.email.trim()}\n` +
+        `📱 Phone: ${formData.phone.trim()}\n` +
+        `📌 Subject: ${formData.subject}\n` +
+        `💬 Message: ${formData.message.trim()}`
+
+      const encodedText = encodeURIComponent(messageText)
+      const whatsappUrl = `https://wa.me/918114292972?text=${encodedText}`
+      setCurrentWhatsappUrl(whatsappUrl)
+
+      setSubmitted(true)
+    } catch (err) {
+      setServerError(err.message || "Failed to connect to the backend server. Please verify that the FastAPI backend is running.")
+    }
   }
 
   const handleCopyText = (text, type) => {
@@ -257,7 +280,7 @@ function Contact() {
 
                 {/* Email Row */}
                 <div className="flex items-center justify-between group">
-                  <a href="mailto:singh.21kundan@gmail.com" className="flex items-center gap-3 hover:text-[#D3AF54] transition-colors">
+                  <a href="mailto:astroadvicebyks@gmail.com" className="flex items-center gap-3 hover:text-[#D3AF54] transition-colors">
                     <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
                       <img src={gmailLogo} alt="Email" className="w-4.5 h-4.5 object-contain" />
                     </div>
@@ -265,12 +288,12 @@ function Contact() {
                       <div className="text-xs uppercase font-serif font-bold tracking-wider leading-none" style={{ color: '#AB7A57' }}>
                         Email Helpline
                       </div>
-                      <p className="text-sm font-semibold text-[#D8CFEB] mt-1 truncate max-w-[140px] sm:max-w-none">singh.21kundan@gmail.com</p>
+                      <p className="text-sm font-semibold text-[#D8CFEB] mt-1 truncate max-w-[140px] sm:max-w-none">astroadvicebyks@gmail.com</p>
                     </div>
                   </a>
                   <button 
                     type="button"
-                    onClick={() => handleCopyText("singh.21kundan@gmail.com", "email")}
+                    onClick={() => handleCopyText("astroadvicebyks@gmail.com", "email")}
                     className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer relative shrink-0"
                   >
                     {copiedType === "email" ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
@@ -299,7 +322,7 @@ function Contact() {
             <div className="pt-6 border-t border-white/10 mt-6 relative z-10 text-left">
               <p className="text-xs text-slate-300 flex items-center gap-1.5">
                 <Clock size={13} />
-                <span>Mon - Sat: 9:00 AM - 7:00 PM</span>
+                <span>Mon - Sat: 10:00 AM - 12:00 PM & 3:00 PM - 6:00 PM</span>
               </p>
               <a 
                 href="https://www.google.com/maps/place/Varanasi,+Uttar+Pradesh/@25.3216181,82.9087063" 
@@ -316,27 +339,50 @@ function Contact() {
           {/* Right Side: Clean Compact Form Panel */}
           <div className="md:col-span-7 p-6 md:p-8 flex flex-col justify-center">
             {submitted ? (
-              <div className="text-center py-8 space-y-4">
+              <div className="text-center py-6 space-y-4">
                 <div className="w-12 h-12 rounded-full bg-emerald-100 border border-emerald-500 flex items-center justify-center text-emerald-600 text-xl mx-auto shadow-sm">
                   ✓
                 </div>
-                <h4 className="font-serif font-bold text-[#181122] text-lg">Message Submitted!</h4>
-                <p className="text-xs text-slate-500 font-sans max-w-xs mx-auto leading-relaxed">
-                  Thank you. Astrologer Kundan Singh will review your query and respond via email or call within 24 hours.
+                <h4 className="font-serif font-bold text-[#181122] text-lg tracking-wide">Message Submitted!</h4>
+                <p className="text-[11px] text-slate-500 font-sans max-w-xs mx-auto leading-relaxed">
+                  Thank you. Your inquiry has been received by our server and saved locally in `local_contacts.json`. If SMS credentials are set, it has been sent directly to +91 8114292972.
                 </p>
+                
+                <div className="max-w-xs mx-auto pt-2 flex flex-col gap-2.5">
+                  {/* WhatsApp backup live-chat direct link */}
+                  <a 
+                    href={currentWhatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#128C7E] text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-300 text-xs shadow w-full uppercase tracking-wider font-sans cursor-pointer hover:scale-[1.02]"
+                  >
+                    <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M17.472 14.382c-.022-.079-.186-.208-.432-.332-.246-.125-1.453-.717-1.677-.799-.224-.083-.388-.124-.552.124-.164.248-.636.799-.78 1.002-.144.202-.288.227-.534.103-.247-.124-.967-.356-1.842-1.139-.68-.606-1.138-1.353-1.272-1.584-.134-.23-.014-.354.11-.478.11-.112.247-.29.37-.435.124-.144.164-.247.247-.413.082-.164.041-.309-.02-.433-.062-.124-.552-1.332-.756-1.823-.198-.477-.399-.413-.55-.413-.142-.002-.306-.002-.471-.002-.165 0-.435.062-.662.309-.227.247-.866.845-.866 2.062 0 1.218.887 2.395.986 2.548.099.15 1.745 2.664 4.228 3.733.59.255 1.05.408 1.408.522.593.189 1.133.162 1.558.1.474-.071 1.453-.593 1.657-1.137.204-.544.204-1.01.144-1.107L17.472 14.382zM12 2C6.478 2 2 6.478 2 12c0 1.91.536 3.693 1.464 5.228L2 22l4.908-1.294C8.36 21.572 10.106 22 12 22c5.522 0 10-4.478 10-10S17.522 2 12 2zm0 18c-1.634 0-3.15-.472-4.436-1.282l-.318-.202-2.923.77.784-2.85-.22-.352C3.968 14.86 3.5 13.5 3.5 12c0-4.687 3.813-8.5 8.5-8.5s8.5 3.813 8.5 8.5-3.813 8.5-8.5 8.5z"/>
+                    </svg>
+                    <span>Chat on WhatsApp (Backup)</span>
+                  </a>
+                </div>
+                
                 <button 
                   type="button" 
                   onClick={() => {
                     setSubmitted(false)
+                    setAttemptedSubmit(false)
+                    setCurrentWhatsappUrl("")
                     setFormData({ name: "", email: "", phone: "", subject: "General Inquiry", message: "" })
                   }}
-                  className="bg-[#D3AF54] hover:bg-[#D3AF54]/90 text-[#181122] font-semibold px-5 py-2 rounded-xl transition text-xs shadow-md shadow-[#D3AF54]/10 cursor-pointer"
+                  className="text-slate-400 hover:text-slate-600 transition text-[11px] underline mt-3 block mx-auto cursor-pointer font-sans"
                 >
                   Send Another Message
                 </button>
               </div>
             ) : (
               <form onSubmit={handleContactSubmit} className="space-y-4 text-left">
+                {serverError && (
+                  <div className="p-3 bg-red-950/60 border border-red-500/40 rounded-xl text-red-200 text-xs text-center font-sans tracking-wide">
+                    ⚠️ {serverError}
+                  </div>
+                )}
                 {/* Full Name */}
                 <div className="space-y-1.5">
                   <label htmlFor="name" className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider">

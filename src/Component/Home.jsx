@@ -498,6 +498,7 @@ export default function Home() {
     comment: ""
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [serverError, setServerError] = useState("")
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({
@@ -506,24 +507,49 @@ export default function Home() {
     }))
   }
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault()
+    setServerError("")
     if (!formData.selectedService) {
       alert("Please select a service of interest.")
       return
     }
     console.log("Contact Form Submitted Data:", formData)
-    setIsSubmitted(true)
-    setTimeout(() => {
-      setFormData({
-        name: "",
-        dob: "",
-        email: "",
-        selectedService: "",
-        comment: ""
+    
+    try {
+      const response = await fetch("http://localhost:8000/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.dob ? `DOB: ${formData.dob}` : "N/A",
+          subject: formData.selectedService,
+          message: formData.comment || "No message comment provided.",
+        }),
       })
-      setIsSubmitted(false)
-    }, 5000)
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.detail || "Failed to submit contact query.")
+      }
+
+      setIsSubmitted(true)
+      setTimeout(() => {
+        setFormData({
+          name: "",
+          dob: "",
+          email: "",
+          selectedService: "",
+          comment: ""
+        })
+        setIsSubmitted(false)
+      }, 5000)
+    } catch (err) {
+      setServerError(err.message || "Failed to connect to backend server. Please verify that the backend is running.")
+    }
   }
 
    return (
@@ -1270,7 +1296,7 @@ export default function Home() {
                       <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
                         <img src={gmailLogo} alt="Gmail" className="w-5 h-5 object-contain" />
                       </div>
-                      <span className="truncate">singh.21kundan@gmail.com</span>
+                      <span className="truncate">astroadvicebyks@gmail.com</span>
                     </div>
                     <div className="flex items-center gap-3.5">
                       <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
@@ -1336,6 +1362,11 @@ export default function Home() {
                   </motion.div>
                 ) : (
                   <form onSubmit={handleFormSubmit} className="space-y-4 z-10 relative">
+                    {serverError && (
+                      <div className="p-3 bg-red-950/60 border border-red-500/40 rounded-xl text-red-200 text-xs text-center font-sans tracking-wide">
+                        ⚠️ {serverError}
+                      </div>
+                    )}
                     {/* Header info */}
                     <div className="space-y-1">
                       <span className="text-xs tracking-[0.25em] font-bold text-[#D3AF54] uppercase font-sans block">

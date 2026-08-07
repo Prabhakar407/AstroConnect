@@ -77,6 +77,7 @@ function Appointment_Booking() {
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
   const [eventLink, setEventLink] = useState("")
+  const [meetLink, setMeetLink] = useState("")
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
 
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
@@ -240,6 +241,7 @@ function Appointment_Booking() {
         body: JSON.stringify({
           full_name: formData.name,
           email: formData.email,
+          phone: formData.phone,
           service_name: formData.readingType,
           date: formData.bookingDate,
           time_slot: timeSlot,
@@ -328,8 +330,8 @@ function Appointment_Booking() {
               <p className="text-sm md:text-base text-[#D8CFEB] max-w-md font-sans leading-relaxed">
                 Thank you. Astrologer Kundan Singh will review your credentials and confirm your selected slot. An email and WhatsApp confirmation will be sent shortly.
               </p>
-              {eventLink && (
-                <div className="pt-2">
+              <div className="pt-2 flex flex-wrap justify-center gap-3">
+                {eventLink && (
                   <a 
                     href={eventLink} 
                     target="_blank" 
@@ -338,12 +340,23 @@ function Appointment_Booking() {
                   >
                     <span>View In Google Calendar</span>
                   </a>
-                </div>
-              )}
+                )}
+                {meetLink && (
+                  <a 
+                    href={meetLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-xl transition duration-300 font-semibold text-xs tracking-wider uppercase cursor-pointer shadow-md shadow-emerald-500/20"
+                  >
+                    <span>Join Google Meet Session</span>
+                  </a>
+                )}
+              </div>
               <CelestialDivider />
               <button 
                 onClick={() => {
                   setSubmitted(false)
+                  setMeetLink("")
                   setFormData({
                     name: "",
                     phone: "",
