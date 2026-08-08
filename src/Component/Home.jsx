@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send, Mail, MapPin, HelpCircle } from "lucide-react";
+import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send, Mail, MapPin, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import logoImg from "../assets/logos/Logo.png";
 import featureBg from "../assets/images/Feature.png";
@@ -348,6 +348,7 @@ export default function Home() {
   const [visibleCardsCount, setVisibleCardsCount] = useState(0);
   const [isTimelineStarted, setIsTimelineStarted] = useState(false);
   const [activeServiceTab, setActiveServiceTab] = useState(0);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const startTimelineSequence = () => {
     if (isTimelineStarted) return;
@@ -827,8 +828,88 @@ export default function Home() {
                 </h3>
               </div>
 
-              {/* Professional and Unique Showcase Dashboard */}
-              <div className="grid grid-cols-1 lg:grid-cols-10 gap-12 lg:gap-14 items-stretch mt-6 text-[#181122] max-w-4xl mx-auto">
+              {/* Mobile & Tablet Services Grid (3 rows, 2 columns - Text only, updates active tab) */}
+              <div className="grid lg:hidden grid-cols-2 gap-3 sm:gap-4 mt-6 text-[#181122] max-w-2xl mx-auto w-full">
+                {allServices.map((item, idx) => {
+                  const isActive = activeServiceTab === idx;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setActiveServiceTab(idx)}
+                      className={`border rounded-2xl p-3 sm:p-4 flex items-center justify-center text-center transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] cursor-pointer min-h-[52px] h-full p-2 sm:p-3 ${
+                        isActive 
+                          ? "bg-[#FFFDEE] border-[#D3AF54] text-[#181122] font-bold shadow-md" 
+                          : "bg-white border-[#AB7A57]/15 text-[#181122]/70 hover:bg-[#181122]/5"
+                      }`}
+                    >
+                      <span className="font-serif font-bold text-[10px] sm:text-xs tracking-wide leading-tight">
+                        {item.title}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Mobile & Tablet Service Details Card */}
+              <div className="block lg:hidden mt-6 w-full text-white max-w-2xl mx-auto">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeServiceTab}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ duration: 0.25 }}
+                    className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-5 sm:p-6 flex flex-col justify-between shadow-2xl relative overflow-hidden text-white text-left"
+                  >
+                    <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.3),transparent_70%)] pointer-events-none" />
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
+
+                    <div className="space-y-4">
+                      {/* Service Image banner */}
+                      <div className="w-full h-40 sm:h-48 rounded-xl overflow-hidden border border-white/10 relative">
+                        <img 
+                          src={
+                            activeServiceTab === 0 ? vedicAstrologyImg :
+                            activeServiceTab === 1 ? numerologyImg :
+                            activeServiceTab === 2 ? vastuConsultationImg :
+                            activeServiceTab === 3 ? laalKitaabImg :
+                            activeServiceTab === 4 ? prashnaKundliImg :
+                            reikiHealerImg
+                          }
+                          alt={allServices[activeServiceTab].title}
+                          className="w-full h-full object-cover opacity-80"
+                        />
+                      </div>
+
+                      <div className="space-y-2 text-left">
+                        <span className="text-[9px] tracking-[0.2em] font-bold text-[#D3AF54] uppercase font-sans block">
+                          ✦ CELESTIAL ALIGNMENT ✦
+                        </span>
+                        <h3 className="text-base sm:text-lg font-serif font-bold text-white tracking-wide">
+                          {allServices[activeServiceTab].title}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans">
+                          {allServices[activeServiceTab].text}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 flex justify-start w-full">
+                      <Link 
+                        to="/booking"
+                        className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-semibold px-5 py-2 rounded-xl transition duration-300 shadow-md shadow-[#D3AF54]/10 cursor-pointer text-xs uppercase tracking-wider flex items-center gap-2"
+                      >
+                        <Calendar size={14} />
+                        <span>Book Consultation</span>
+                      </Link>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Desktop Showcase Dashboard (lg screens only) */}
+              <div className="hidden lg:grid lg:grid-cols-10 gap-12 lg:gap-14 items-stretch mt-6 text-[#181122] max-w-4xl mx-auto">
                 {/* Left Column - Service tabs list */}
                 <div className="lg:col-span-4 flex flex-col gap-3">
                   {/* Mobile Horizontal Scroll Tab Row */}
@@ -966,7 +1047,7 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 5. LUXURIOUS CALL-TO-ACTION (CTA) BANNER STRIP            */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#F4F1E3] flex justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
+      <div className="w-full bg-[#F4F1E3] flex justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] mt-0 lg:-mt-10 py-8 lg:py-0 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
         <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pb-4 sm:pb-6">
 
           <motion.section 
@@ -1015,7 +1096,7 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 6. INFINITE SLIDING MARQUEE TESTIMONIALS SECTION          */}
       {/* ========================================================= */}
-      <div className="w-full bg-white flex justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
+      <div className="w-full bg-white flex justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] mt-0 lg:-mt-10 py-8 lg:py-0 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
         <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
           <motion.section 
@@ -1116,13 +1197,13 @@ export default function Home() {
 
             <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               
-              {/* Left Column Astrologer Portrait (Slides in from the bottom) */}
+              {/* Left Column Astrologer Portrait (Slides in from the bottom - Desktop only) */}
               <motion.div 
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="lg:col-span-5 flex justify-center items-center relative w-full min-h-[400px]"
+                className="hidden lg:flex lg:col-span-5 justify-center items-center relative w-full min-h-[400px]"
               >
                 <div className="absolute -inset-2 border-2 border-dashed border-[#AB7A57]/40 rounded-3xl -z-10"></div>
                 
@@ -1150,6 +1231,18 @@ export default function Home() {
                 <h3 className="text-[clamp(1.4rem,2.2vw,2.4rem)] font-serif font-bold text-[#181122] tracking-wide mt-1 text-left">
                   Your Guide to a Brighter Future
                 </h3>
+
+                {/* Mobile/Tablet Image - visible only on screens smaller than lg */}
+                <div className="block lg:hidden w-full my-4 flex justify-center items-center relative min-h-[260px] z-10">
+                  <div className="absolute -inset-1 border-2 border-dashed border-[#AB7A57]/30 rounded-3xl -z-10"></div>
+                  <div className="w-full max-w-[14rem] aspect-[4/5] rounded-3xl overflow-hidden border-4 border-[#D3AF54] bg-[#181122] shadow-lg flex items-center justify-center relative">
+                    <img 
+                      src={astrologerPortrait} 
+                      alt="Astrologer Kundan Singh" 
+                      className="w-full h-full object-cover opacity-90"
+                    />
+                  </div>
+                </div>
 
                 <div className="relative p-5 rounded-2xl bg-white/40 border border-[#AB7A57]/15 shadow-sm text-left backdrop-blur-xs">
                   <div className="absolute top-0 left-0 w-2 h-full bg-[#D3AF54] rounded-l-2xl" />
@@ -1229,11 +1322,11 @@ export default function Home() {
               </svg>
             </div>
 
-            <div className="w-full max-w-5xl mx-auto px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-[clamp(2rem,4vw,5rem)] items-stretch relative z-10">
+            <div className="w-full max-w-5xl mx-auto px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-[clamp(2rem,4vw,5rem)] items-stretch relative z-10">
               
               {/* Left Panel: Services Selection Section */}
               <div
-                className="hidden md:flex flex-col justify-between bg-[#181122] border border-[#AB7A57]/20 rounded-2xl p-5 lg:p-6 text-left shadow-lg hover:border-[#D3AF54] transition-all duration-300 relative group overflow-hidden"
+                className="hidden lg:flex flex-col justify-between bg-[#181122] border border-[#AB7A57]/20 rounded-2xl p-5 lg:p-6 text-left shadow-lg hover:border-[#D3AF54] transition-all duration-300 relative group overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.01] to-transparent pointer-events-none" />
 
@@ -1428,36 +1521,42 @@ export default function Home() {
                         />
                       </div>
 
-                      {/* Services selector visible only on mobile */}
-                      <div className="block md:hidden space-y-1.5 text-left">
+                      {/* Custom In-Screen Dropdown Selector visible only on mobile/tablets */}
+                      <div className="block lg:hidden space-y-1.5 text-left relative z-30">
                         <label className="block text-xs sm:text-sm font-semibold text-[#D3AF54] uppercase tracking-wider">
                           Select Service of Interest (Required)*
                         </label>
-                        <div className="grid grid-cols-2 gap-2">
-                          {services.map((item, idx) => {
-                            const isSelected = formData.selectedService === item.title;
-                            return (
-                              <button 
-                                key={idx}
-                                type="button"
-                                onClick={() => {
-                                  setFormData(prev => ({
-                                    ...prev,
-                                    selectedService: item.title,
-                                    comment: prev.comment || `I am requesting a consultation for ${item.title}.`
-                                  }));
-                                }}
-                                className={`flex items-center gap-2 px-2.5 py-3 border rounded-xl text-[10px] transition-all duration-300 shadow-sm cursor-pointer ${
-                                  isSelected 
-                                    ? "bg-[#D3AF54]/15 border-[#D3AF54] text-white shadow-[0_0_10px_rgba(211,175,84,0.2)]" 
-                                    : "bg-white/[0.02] border-white/5 text-[#D8CFEB]/90 hover:bg-white/10 hover:border-white/20"
-                                }`}
-                              >
-                                <span className="text-[10px] shrink-0">{item.icon}</span>
-                                <span className="font-semibold tracking-wide truncate">{item.title}</span>
-                              </button>
-                            );
-                          })}
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => setIsDropdownOpen(prev => !prev)}
+                            className="w-full bg-[#181122] border border-white/10 rounded-xl px-3.5 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 transition-all duration-300 cursor-pointer flex justify-between items-center text-left"
+                          >
+                            <span>{formData.selectedService || "-- Select a service --"}</span>
+                            <ChevronDown size={16} className={`text-[#D3AF54]/80 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                          </button>
+
+                          {isDropdownOpen && (
+                            <div className="absolute left-0 right-0 mt-1 bg-[#181122] border border-[#AB7A57]/30 rounded-xl shadow-2xl overflow-hidden z-50 flex flex-col py-1">
+                              {services.map((item, idx) => (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  onClick={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      selectedService: item.title,
+                                      comment: prev.comment || `I am requesting a consultation for ${item.title}.`
+                                    }));
+                                    setIsDropdownOpen(false);
+                                  }}
+                                  className="w-full text-left px-4 py-3 text-xs sm:text-sm text-[#D8CFEB] hover:bg-[#D3AF54]/15 hover:text-white transition-colors cursor-pointer border-b border-white/5 last:border-0"
+                                >
+                                  {item.title}
+                                </button>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
 

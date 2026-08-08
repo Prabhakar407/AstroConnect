@@ -525,6 +525,100 @@ function Appointment_Booking() {
                   </motion.div>
 
                 </div>
+              </div>
+
+              {/* RIGHT COLUMN: Calendar (Shifted above Consultation details in Mobile) */}
+              <div className="lg:col-span-5 space-y-6">
+                
+                {/* 3. Date Selection Calendar */}
+                <motion.div variants={itemVariants} className="space-y-3 text-left">
+                  <h3 className="font-serif text-base font-bold !text-[#D3AF54] border-b border-white/10 pb-2">
+                    3. Select Date
+                  </h3>
+                  
+                  <div className="flex flex-col gap-4">
+                    
+                    {/* Visual Calendar taking full width of column */}
+                    <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col gap-3 relative z-20">
+                      
+                      {/* Calendar Nav Header */}
+                      <div className="flex justify-between items-center pb-2 border-b border-white/5">
+                        <h4 className="font-serif text-sm sm:text-base font-bold !text-[#D3AF54] tracking-wide">
+                          {monthNames[currentMonth]} {currentYear}
+                        </h4>
+                        <div className="flex gap-2">
+                          <button 
+                            type="button"
+                            onClick={handlePrevMonth}
+                            className="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center text-[#D3AF54] hover:bg-white/5 cursor-pointer active:scale-95 transition-all"
+                          >
+                            <ChevronLeft size={16} />
+                          </button>
+                          <button 
+                            type="button"
+                            onClick={handleNextMonth}
+                            className="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center text-[#D3AF54] hover:bg-white/5 cursor-pointer active:scale-95 transition-all"
+                          >
+                            <ChevronRight size={16} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Days of Week Header */}
+                      <div className="grid grid-cols-7 gap-1 text-center text-[10px] sm:text-xs font-bold text-[#D3AF54] uppercase tracking-wider py-1">
+                        {daysOfWeek.map((day, idx) => (
+                          <div key={idx} className="py-0.5">{day}</div>
+                        ))}
+                      </div>
+
+                      {/* Calendar Day Cells */}
+                      <div className="grid grid-cols-7 gap-1 sm:gap-1.5 text-center mt-1">
+                        {/* Empty padding offsets before first day of month */}
+                        {Array.from({ length: getFirstDayOfMonth(currentYear, currentMonth) }).map((_, idx) => (
+                          <div key={`offset-${idx}`} className="aspect-square" />
+                        ))}
+
+                        {/* Day cells */}
+                        {Array.from({ length: getDaysInMonth(currentYear, currentMonth) }).map((_, idx) => {
+                          const day = idx + 1
+                          const isPast = isPastDay(day)
+                          const isSelected = isDateSelected(day)
+                          const isTodayDay = isToday(day)
+
+                          return (
+                            <button
+                              key={`day-${day}`}
+                              type="button"
+                              disabled={isPast}
+                              onClick={() => selectDate(day)}
+                              className={`aspect-square rounded-lg flex items-center justify-center text-xs font-medium transition-all cursor-pointer relative ${
+                                isPast
+                                  ? "text-white/20 bg-transparent cursor-not-allowed"
+                                  : isSelected
+                                  ? "bg-[#D3AF54] text-[#181122] font-bold shadow-[0_0_10px_rgba(211,175,84,0.3)] scale-[1.05]"
+                                  : isTodayDay
+                                  ? "border border-[#D3AF54] text-[#D3AF54] hover:bg-[#D3AF54]/10"
+                                  : "text-slate-300 hover:bg-white/5 hover:border-white/20 border border-transparent"
+                              }`}
+                            >
+                              <span>{day}</span>
+                              {isTodayDay && !isSelected && (
+                                <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-[#D3AF54] left-1/2 -translate-x-1/2" />
+                              )}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+
+                    <input type="hidden" name="bookingDate" required value={formData.bookingDate} />
+                  </div>
+                </motion.div>
+
+              </div>
+
+              {/* LEFT COLUMN PART 2: Consultation Details & Submit */}
+              <div className="lg:col-span-7 space-y-6">
 
                 {/* 3. Session Selection Fields (Placed directly below birth credentials) */}
                 <motion.div variants={itemVariants} className="space-y-4 text-left border-t border-[#AB7A57]/20 pt-4">
@@ -663,95 +757,7 @@ function Appointment_Booking() {
 
               </div>
 
-              {/* RIGHT COLUMN: Calendar only */}
-              <div className="lg:col-span-5 space-y-6">
-                
-                {/* 3. Date Selection Calendar */}
-                <motion.div variants={itemVariants} className="space-y-3 text-left">
-                  <h3 className="font-serif text-base font-bold !text-[#D3AF54] border-b border-white/10 pb-2">
-                    3. Select Date
-                  </h3>
-                  
-                  <div className="flex flex-col gap-4">
-                    
-                    {/* Visual Calendar taking full width of column */}
-                    <div className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col gap-3 relative z-20">
-                      
-                      {/* Calendar Nav Header */}
-                      <div className="flex justify-between items-center pb-2 border-b border-white/5">
-                        <h4 className="font-serif text-sm sm:text-base font-bold !text-[#D3AF54] tracking-wide">
-                          {monthNames[currentMonth]} {currentYear}
-                        </h4>
-                        <div className="flex gap-2">
-                          <button 
-                            type="button"
-                            onClick={handlePrevMonth}
-                            className="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center text-[#D3AF54] hover:bg-white/5 cursor-pointer active:scale-95 transition-all"
-                          >
-                            <ChevronLeft size={16} />
-                          </button>
-                          <button 
-                            type="button"
-                            onClick={handleNextMonth}
-                            className="w-8 h-8 rounded-lg border border-white/10 flex items-center justify-center text-[#D3AF54] hover:bg-white/5 cursor-pointer active:scale-95 transition-all"
-                          >
-                            <ChevronRight size={16} />
-                          </button>
-                        </div>
-                      </div>
 
-                      {/* Days of Week Header */}
-                      <div className="grid grid-cols-7 gap-1 text-center text-[10px] sm:text-xs font-bold text-[#D3AF54] uppercase tracking-wider py-1">
-                        {daysOfWeek.map((day, idx) => (
-                          <div key={idx} className="py-0.5">{day}</div>
-                        ))}
-                      </div>
-
-                      {/* Calendar Day Cells */}
-                      <div className="grid grid-cols-7 gap-1 sm:gap-1.5 text-center mt-1">
-                        {/* Empty padding offsets before first day of month */}
-                        {Array.from({ length: getFirstDayOfMonth(currentYear, currentMonth) }).map((_, idx) => (
-                          <div key={`offset-${idx}`} className="aspect-square" />
-                        ))}
-
-                        {/* Day cells */}
-                        {Array.from({ length: getDaysInMonth(currentYear, currentMonth) }).map((_, idx) => {
-                          const day = idx + 1
-                          const isPast = isPastDay(day)
-                          const isSelected = isDateSelected(day)
-                          const isTodayDay = isToday(day)
-
-                          return (
-                            <button
-                              key={`day-${day}`}
-                              type="button"
-                              disabled={isPast}
-                              onClick={() => selectDate(day)}
-                              className={`aspect-square rounded-lg flex items-center justify-center text-xs font-medium transition-all cursor-pointer relative ${
-                                isPast
-                                  ? "text-white/20 bg-transparent cursor-not-allowed"
-                                  : isSelected
-                                  ? "bg-[#D3AF54] text-[#181122] font-bold shadow-[0_0_10px_rgba(211,175,84,0.3)] scale-[1.05]"
-                                  : isTodayDay
-                                  ? "border border-[#D3AF54] text-[#D3AF54] hover:bg-[#D3AF54]/10"
-                                  : "text-slate-300 hover:bg-white/5 hover:border-white/20 border border-transparent"
-                              }`}
-                            >
-                              <span>{day}</span>
-                              {isTodayDay && !isSelected && (
-                                <span className="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-[#D3AF54] left-1/2 -translate-x-1/2" />
-                              )}
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
-
-                    <input type="hidden" name="bookingDate" required value={formData.bookingDate} />
-                  </div>
-                </motion.div>
-
-              </div>
             </motion.form>
           )}
         </div>

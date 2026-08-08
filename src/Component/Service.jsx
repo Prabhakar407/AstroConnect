@@ -155,7 +155,7 @@ function Service() {
   ]
 
   return (
-    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans">
+    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans overflow-x-hidden">
       
       {/* ========================================================= */}
       {/* 1. HEADER SECTION (Warm Ivory bg-[#F4F1E3])               */}
@@ -229,9 +229,9 @@ function Service() {
               </div>
 
               {/* Card Contents Area (Slides up slightly on hover) */}
-              <div className="p-6 relative z-20 flex flex-col gap-2 translate-y-12 group-hover:translate-y-0 transition-transform duration-500 ease-out">
+              <div className="p-6 relative z-20 flex flex-col gap-2 translate-y-0 lg:translate-y-12 lg:group-hover:translate-y-0 transition-transform duration-500 ease-out">
                 
-                <h3 className="font-serif font-bold text-xl text-white group-hover:text-[#D3AF54] transition-colors leading-tight">
+                <h3 style={{ color: '#D3AF54' }} className="font-serif font-bold text-xl transition-colors leading-tight">
                   {item.title}
                 </h3>
                 
@@ -240,7 +240,7 @@ function Service() {
                 </p>
 
                 {/* Action Buttons (Fades and translates up on hover) */}
-                <div className="flex gap-2.5 pt-2 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out delay-75">
+                <div className="flex gap-2.5 pt-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0 transition-all duration-500 ease-out delay-75">
                   <Link 
                     to={`/services/${item.id}`}
                     className="flex-1 border border-[#D3AF54]/30 hover:border-[#D3AF54] hover:bg-[#D3AF54]/10 text-white font-bold text-[10px] uppercase tracking-wider py-2.5 rounded-xl text-center transition-all duration-300"

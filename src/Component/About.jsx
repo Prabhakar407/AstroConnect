@@ -278,8 +278,8 @@ function About() {
       {/* ========================================================= */}
       <div className="w-full bg-white flex flex-col items-center relative z-30">
         
-        {/* Floating Glassmorphic Stat bar sitting exactly at the boundary */}
-        <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
+        {/* Floating Glassmorphic Stat bar sitting exactly at the boundary (Responsive spacing to prevent overlap) */}
+        <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 relative z-30 mt-10 lg:mt-0 -translate-y-0 lg:-translate-y-1/2">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

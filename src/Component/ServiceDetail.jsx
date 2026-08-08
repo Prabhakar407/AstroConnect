@@ -579,8 +579,8 @@ export default function ServiceDetail() {
         </div>
 
         {/* Section 5: Numerology Services Section (bg-[#EDE9D7]) */}
-        <div className="w-full bg-[#EDE9D7] py-16 flex flex-col items-center px-6 relative z-10 pb-20">
-          <div className="w-full max-w-5xl space-y-10 text-left">
+        <div className="w-full bg-[#EDE9D7] py-8 md:py-16 flex flex-col items-center px-6 relative z-10 pb-8 md:pb-20">
+          <div className="w-full max-w-5xl space-y-6 md:space-y-10 text-left">
             <motion.div 
               variants={itemVariants}
               initial="hidden"
@@ -850,8 +850,8 @@ export default function ServiceDetail() {
         </div>
 
         {/* Section 3: Core Life Pathways Explored (bg-[#EDE9D7]) */}
-        <div className="w-full bg-[#EDE9D7] py-16 flex flex-col items-center px-6 relative z-10 pb-20">
-          <div className="w-full max-w-5xl space-y-10 text-left">
+        <div className="w-full bg-[#EDE9D7] py-8 md:py-16 flex flex-col items-center px-6 relative z-10 pb-8 md:pb-20">
+          <div className="w-full max-w-5xl space-y-6 md:space-y-10 text-left">
             <motion.div 
               variants={itemVariants}
               initial="hidden"
@@ -1198,7 +1198,7 @@ export default function ServiceDetail() {
         </div>
 
         {/* Section 3: Back to Home (bg-[#EDE9D7]) */}
-        <div className="w-full bg-[#EDE9D7] py-12 flex flex-col items-center px-6 relative z-10 pb-20">
+        <div className="w-full bg-[#EDE9D7] py-8 md:py-12 flex flex-col items-center px-6 relative z-10 pb-8 md:pb-20">
           <div className="w-full max-w-5xl">
             <motion.div variants={itemVariants} className="flex justify-center">
               <Link 
@@ -1375,8 +1375,8 @@ export default function ServiceDetail() {
         </div>
 
         {/* Section 4: Essential Vastu Tips & Back button (bg-white with border-t) */}
-        <div className="w-full bg-white border-t border-[#AB7A57]/10 py-16 flex flex-col items-center px-6 relative z-10 pb-20">
-          <div className="w-full max-w-5xl space-y-10 text-left">
+        <div className="w-full bg-white border-t border-[#AB7A57]/10 py-8 md:py-16 flex flex-col items-center px-6 relative z-10 pb-8 md:pb-20">
+          <div className="w-full max-w-5xl space-y-6 md:space-y-10 text-left">
             <motion.div 
               variants={itemVariants}
               initial="hidden"
@@ -1488,7 +1488,7 @@ export default function ServiceDetail() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-16 overflow-x-hidden">
+    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-8 md:pb-16 overflow-x-hidden">
       
       {/* Decorative patterns */}
       <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
@@ -1517,7 +1517,7 @@ export default function ServiceDetail() {
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="w-full max-w-5xl px-6 md:px-12 -mt-16 sm:-mt-24 relative z-10 space-y-10 text-left"
+        className="w-full max-w-5xl px-6 md:px-12 -mt-16 sm:-mt-24 relative z-10 space-y-6 md:space-y-10 text-left"
       >
         
         {/* Intro Service Card */}
@@ -1825,7 +1825,7 @@ function ReikiHealingDetail({ details, navigate }) {
       {/* ========================================================= */}
       {/* 3. TRANSFORMATIONS SECTION (Distinct Warm Sand bg-[#EDE9D7])*/}
       {/* ========================================================= */}
-      <div className="w-full bg-[#EDE9D7] py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
+      <div className="w-full bg-[#EDE9D7] py-8 md:py-20 flex flex-col items-center relative z-10 px-6">
         <div className="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-[#D3AF54]/5 rounded-full blur-[120px] pointer-events-none -z-10" />
 
         <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
@@ -1882,7 +1882,7 @@ function ReikiHealingDetail({ details, navigate }) {
       {/* ========================================================= */}
       {/* 4. FOOTER RETURN LINK SECTION (Warm Ivory bg-[#F4F1E3])    */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#F4F1E3] py-10 flex justify-center z-10 px-6">
+      <div className="w-full bg-[#F4F1E3] py-6 md:py-10 flex justify-center z-10 px-6">
         <Link 
           to="/" 
           className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors"
@@ -2122,7 +2122,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
       {/* ========================================================= */}
       {/* 3. TYPES OF QUESTIONS SECTION (Warm Sand bg-[#EDE9D7])     */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#EDE9D7] py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
+      <div className="w-full bg-[#EDE9D7] py-8 md:py-20 flex flex-col items-center relative z-10 px-6">
         
         <div className="w-full max-w-5xl mb-10 text-left">
           <span className="text-[#AB7A57] text-xs font-bold uppercase tracking-widest block mb-2">✦ CHANNELS OF INQUIRY ✦</span>
@@ -2158,7 +2158,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
       {/* ========================================================= */}
       {/* 4. INTERACTIVE CTA FORM SECTION (Pure White bg-white)     */}
       {/* ========================================================= */}
-      <div id="questionForm" className="w-full bg-white border-t border-[#AB7A57]/10 py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
+      <div id="questionForm" className="w-full bg-white border-t border-[#AB7A57]/10 py-8 md:py-20 flex flex-col items-center relative z-10 px-6">
         
         <div className="w-full max-w-md mb-8 text-center">
           <span className="text-[#AB7A57] text-xs font-bold uppercase tracking-widest block mb-2">✦ GET INSTANT CLARITY ✦</span>
@@ -2269,7 +2269,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
       {/* ========================================================= */}
       {/* 5. FOOTER RETURN LINK SECTION (Warm Ivory bg-[#F4F1E3])    */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#F4F1E3] py-10 flex justify-center z-10 px-6">
+      <div className="w-full bg-[#F4F1E3] py-6 md:py-10 flex justify-center z-10 px-6">
         <Link 
           to="/" 
           className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors"
