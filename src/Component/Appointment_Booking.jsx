@@ -222,12 +222,7 @@ function Appointment_Booking() {
     const timeSlot = formData.bookingSlot || "10:00"
 
     // Determine the appointment duration from selected reading type
-    let duration = 45
-    if (formData.readingType === "Vedic Astrology" || formData.readingType === "Reiki Energy Healing" || formData.readingType === "Vastu Consultation") {
-      duration = 60
-    } else if (formData.readingType === "Prashna Kundali (Horary)") {
-      duration = 30
-    }
+    let duration = 30
 
     // Pack intake questions into service details description
     const birthDetails = `Phone: ${formData.phone}\nBirth Date: ${formData.birthDate}\nBirth Time: ${formData.birthTime || 'Not Provided'}\nBirth Place: ${formData.birthPlace || 'Not Provided'}\nClient Notes: ${formData.notes || 'None'}`
@@ -639,12 +634,12 @@ function Appointment_Booking() {
                         onChange={handleInputChange}
                         className="w-full bg-[#181122] border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 transition-all duration-300 cursor-pointer"
                       >
-                        <option value="Vedic Astrology">Vedic Astrology</option>
-                        <option value="Numerology Reading">Numerology Reading</option>
-                        <option value="Vastu Consultation">Vastu Consultation</option>
-                        <option value="Laal Kitaab Remedies">Laal Kitaab Remedies</option>
-                        <option value="Prashna Kundali (Horary)">Prashna Kundali (Horary)</option>
-                        <option value="Reiki Energy Healing">Reiki Energy Healing</option>
+                        <option value="Vedic Astrology">Vedic Astrology (₹2,100)</option>
+                        <option value="Numerology Reading">Numerology Reading (₹1,100)</option>
+                        <option value="Vastu Consultation">Vastu Consultation (₹5,100)</option>
+                        <option value="Laal Kitaab Remedies">Laal Kitaab Remedies (₹1,100)</option>
+                        <option value="Prashna Kundali (Horary)">Prashna Kundali (Horary) (₹1,100)</option>
+
                       </select>
                     </div>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send, Mail, MapPin, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import logoImg from "../assets/logos/Logo.png";
+import logoImg from "../assets/logos/Nav-Logo.png";
 import featureBg from "../assets/images/Feature.png";
 import astrologerPortrait from "../assets/images/astrologer_portrait.jpg";
 import zodiacWheel from "../assets/images/zodiac_wheel.jpg";
@@ -11,7 +11,6 @@ import numerologyImg from '../assets/images/Numerology.png'
 import vastuConsultationImg from '../assets/images/Vastu Consultation.png'
 import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.png'
 import prashnaKundliImg from '../assets/images/Prashna Kundli.png'
-import reikiHealerImg from '../assets/images/Reiki Healer.png'
 import people1 from '../assets/images/people1.jpg'
 import people2 from '../assets/images/people2.jpg'
 import people3 from '../assets/images/people3.jpg'
@@ -48,38 +47,42 @@ const allServices = [
   { 
     id: 1, 
     title: 'VEDIC ASTROLOGY', 
+    price: '₹2,100',
+    duration: '30 min',
     text: 'Comprehensive evaluation of planetary positions, houses, and transits (Janam Kundli) to clarify your destiny, strengths, weaknesses, and future timelines.', 
     iconKey: 'file' 
   },
   { 
     id: 2, 
-    title: 'NUMEROLOGIST', 
+    title: 'NUMEROLOGY', 
+    price: '₹1,100',
+    duration: '30 min',
     text: 'Uncover the hidden patterns of your life path, destiny, and name frequencies. Align your personal vibrations to unlock career opportunities and wealth luck.', 
     iconKey: 'hash' 
   },
   { 
     id: 3, 
     title: 'VASTU CONSULTANT', 
+    price: '₹5,100',
+    duration: '30 min',
     text: 'Optimize the flow of energy at home or work. Align rooms, elements, and layouts to clear blocking influences and invite growth, harmony, and prosperity.', 
     iconKey: 'home' 
   },
   { 
     id: 4, 
     title: 'LAAL KITAAB REMEDIES', 
+    price: '₹1,100',
+    duration: '30 min',
     text: 'Simple, practical, and highly effective remedial measures for planetary afflictions, debts, obstacles in career/marriage, and negative influences without complex rituals.', 
     iconKey: 'book' 
   },
   { 
     id: 5, 
     title: 'EXPERTISE IN PRASHNA KUNDALI', 
+    price: '₹1,100',
+    duration: '30 min',
     text: 'Get instant, precise answers to specific questions (concerning career, finance, marriage, missing items, etc.) based on the exact moment the question is asked.', 
     iconKey: 'help' 
-  },
-  { 
-    id: 6, 
-    title: 'REIKI HEALER', 
-    text: 'Harmonize and channel life force energy to clear spiritual blocks, reduce stress, accelerate physical healing, and restore deep emotional balance.', 
-    iconKey: 'heart' 
   }
 ];
 
@@ -444,14 +447,14 @@ export default function Home() {
       name: "Neha Gupta",
       rating: 5,
       text: "The compatibility reading was spot on. Kundan suggested simple mantra remedies that helped ease the relationship friction.",
-      service: "Reiki Healer",
+      service: "Vedic Astrology",
       image: people5
     },
     {
       name: "Vikram Aditya",
       rating: 5,
       text: "Changing my business name spelling as suggested by Kundan Singh did wonders for our customer outreach and conversion rate.",
-      service: "Numerologist",
+      service: "Numerology",
       image: people6
     }
   ]
@@ -460,33 +463,38 @@ export default function Home() {
   const services = [
     {
       title: 'Vedic Astrology',
+      price: '₹2,100',
+      duration: '30 min',
       desc: 'Comprehensive evaluation of planetary positions, houses, and transits (Janam Kundli) to clarify your destiny, strengths, weaknesses, and future timelines.',
       icon: <FileText size={20} className="text-[#fcb900]" />
     },
     {
-      title: 'Numerologist',
+      title: 'Numerology',
+      price: '₹1,100',
+      duration: '30 min',
       desc: 'Uncover the hidden patterns of your life path, destiny, and name frequencies. Align your personal vibrations to unlock career opportunities and wealth luck.',
       icon: <Hash size={20} className="text-[#fcb900]" />
     },
     {
       title: 'Vastu Consultant',
+      price: '₹5,100',
+      duration: '30 min',
       desc: 'Optimize the flow of energy at home or work. Align rooms, elements, and layouts to clear blocking influences and invite growth, harmony, and prosperity.',
       icon: <HomeIcon size={20} className="text-[#fcb900]" />
     },
     {
       title: 'Laal Kitaab Remedies',
+      price: '₹1,100',
+      duration: '30 min',
       desc: 'Simple, practical, and highly effective remedial measures for planetary afflictions, debts, obstacles in career/marriage, and negative influences without complex rituals.',
       icon: <BookOpen size={20} className="text-[#fcb900]" />
     },
     {
       title: 'Expertise in Prashna Kundali',
+      price: '₹1,100',
+      duration: '30 min',
       desc: 'Get instant, precise answers to specific questions (concerning career, finance, marriage, missing items, etc.) based on the exact moment the question is asked.',
       icon: <HelpCircle size={20} className="text-[#fcb900]" />
-    },
-    {
-      title: 'Reiki Healer',
-      desc: 'Harmonize and channel life force energy to clear spiritual blocks, reduce stress, accelerate physical healing, and restore deep emotional balance.',
-      icon: <Heart size={20} className="text-[#fcb900]" />
     }
   ]
 
@@ -874,8 +882,7 @@ export default function Home() {
                             activeServiceTab === 1 ? numerologyImg :
                             activeServiceTab === 2 ? vastuConsultationImg :
                             activeServiceTab === 3 ? laalKitaabImg :
-                            activeServiceTab === 4 ? prashnaKundliImg :
-                            reikiHealerImg
+                            prashnaKundliImg
                           }
                           alt={allServices[activeServiceTab].title}
                           className="w-full h-full object-cover opacity-80"
@@ -886,9 +893,19 @@ export default function Home() {
                         <span className="text-[9px] tracking-[0.2em] font-bold text-[#D3AF54] uppercase font-sans block">
                           ✦ CELESTIAL ALIGNMENT ✦
                         </span>
-                        <h3 className="text-base sm:text-lg font-serif font-bold text-white tracking-wide">
-                          {allServices[activeServiceTab].title}
-                        </h3>
+                        <div className="flex items-center justify-between gap-4">
+                          <h3 className="text-base sm:text-lg font-serif font-bold text-white tracking-wide">
+                            {allServices[activeServiceTab].title}
+                          </h3>
+                          <div className="text-right">
+                            <span className="text-sm font-bold text-[#D3AF54] font-sans block whitespace-nowrap">
+                              {allServices[activeServiceTab].price}
+                            </span>
+                            <span className="text-[10px] text-[#D8CFEB] font-sans block whitespace-nowrap">
+                              {allServices[activeServiceTab].duration}
+                            </span>
+                          </div>
+                        </div>
                         <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans">
                           {allServices[activeServiceTab].text}
                         </p>
@@ -1003,8 +1020,7 @@ export default function Home() {
                                activeServiceTab === 1 ? numerologyImg :
                                activeServiceTab === 2 ? vastuConsultationImg :
                                activeServiceTab === 3 ? laalKitaabImg :
-                               activeServiceTab === 4 ? prashnaKundliImg :
-                               reikiHealerImg
+                               prashnaKundliImg
                              }
                              alt={allServices[activeServiceTab].title}
                              className="w-full h-full object-cover opacity-80 group-hover:opacity-95 group-hover:scale-102 transition-all duration-500"
@@ -1015,9 +1031,19 @@ export default function Home() {
                            <span className="text-[10px] tracking-[0.25em] font-bold text-[#D3AF54] uppercase font-sans block">
                              ✦ CELESTIAL ALIGNMENT ✦
                            </span>
-                           <h3 className="text-lg sm:text-xl font-serif font-bold text-white tracking-wide">
-                             {allServices[activeServiceTab].title}
-                           </h3>
+                           <div className="flex items-center justify-between gap-4">
+                              <h3 className="text-lg sm:text-xl font-serif font-bold text-white tracking-wide">
+                                {allServices[activeServiceTab].title}
+                              </h3>
+                              <div className="text-right">
+                                <span className="text-base font-bold text-[#D3AF54] font-sans block whitespace-nowrap">
+                                  {allServices[activeServiceTab].price}
+                                </span>
+                                <span className="text-xs text-[#D8CFEB] font-sans block whitespace-nowrap">
+                                  {allServices[activeServiceTab].duration}
+                                </span>
+                              </div>
+                            </div>
                            <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans">
                              {allServices[activeServiceTab].text}
                            </p>
@@ -1395,7 +1421,7 @@ export default function Home() {
                       <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
                         <img src={callLogo} alt="Call" className="w-5 h-5 object-contain" />
                       </div>
-                      <span>+91 8130808758</span>
+                      <span>+91 8130808758, +91 8527790801</span>
                     </div>
                     <div className="flex items-center gap-3.5">
                       <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">

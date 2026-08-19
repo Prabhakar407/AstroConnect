@@ -122,7 +122,7 @@ class BookingRequest(BaseModel):
     full_name: str
     email: EmailStr
     phone: str
-    service_name: str  # e.g. "Vedic Astrology", "Prashna Kundali", "Reiki Healing"
+    service_name: str  # e.g. "Vedic Astrology", "Prashna Kundali", "Vastu Consultation"
     date: str          # Format: "YYYY-MM-DD"
     time_slot: str     # Format: "HH:MM" (24-hour time, e.g. "10:00", "15:30")
     duration_minutes: Optional[int] = 45

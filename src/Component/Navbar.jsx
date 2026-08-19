@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
-import logoImg from "../assets/logos/Logo.png";
+import logoImg from "../assets/logos/Nav-Logo.png";
 
 const MotionLink = motion.create ? motion.create(Link) : motion(Link);
 
@@ -157,16 +157,7 @@ export default function Navbar() {
                         >
                           Prashna Kundali
                         </Link>
-                        <Link
-                          to="/services/reiki-healing"
-                          className={`block px-5 py-2 text-sm transition-colors ${
-                            location.pathname === "/services/reiki-healing"
-                              ? "text-[#D3AF54] font-semibold bg-white/5"
-                              : "text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5"
-                          }`}
-                        >
-                          Reiki Healing
-                        </Link>
+
                       </div>
                     </div>
                   </div>
@@ -209,7 +200,7 @@ export default function Navbar() {
             {/* Contact Phone */}
             <div className="flex items-center gap-1.5 text-[#D3AF54] text-xs font-semibold">
               <span>☎</span>
-              <span>+91 8130808758</span>
+              <span>+91 8130808758, +91 8527790801</span>
             </div>
 
             <div className="relative">
@@ -356,17 +347,7 @@ export default function Navbar() {
                         >
                           Expertise in Prashna Kundli
                         </Link>
-                        <Link
-                          to="/services/reiki-healing"
-                          onClick={() => setIsOpen(false)}
-                          className={`block text-xs py-1.5 transition-colors ${
-                            location.pathname === "/services/reiki-healing"
-                              ? "text-[#D3AF54] font-semibold"
-                              : "text-slate-400 hover:text-white"
-                          }`}
-                        >
-                          Reiki Healer
-                        </Link>
+
                       </div>
                     )}
                   </div>
@@ -409,7 +390,7 @@ export default function Navbar() {
             {/* Phone */}
             <div className="flex items-center gap-1.5 text-[#D3AF54] text-sm font-medium">
               <span>☎</span>
-              <span>+91 8130808758</span>
+              <span>+91 8130808758, +91 8527790801</span>
             </div>
 
             {/* CTA Button */}

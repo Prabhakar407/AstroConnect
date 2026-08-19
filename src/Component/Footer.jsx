@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { MessageCircle, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { motion } from 'framer-motion'
-import logoImg from "../assets/logos/Logo.png";
+import logoImg from "../assets/logos/Nav-Logo.png";
 import fbLogo from "../assets/logos/facebook.png";
 import instaLogo from "../assets/logos/Instagram.png";
 import ytLogo from "../assets/logos/Youtube.png";
@@ -101,7 +101,7 @@ export default function Footer() {
             <li><Link to="/services/vastu" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Vastu Consultation</Link></li>
             <li><Link to="/services/laal-kitaab" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Laal Kitaab Remedies</Link></li>
             <li><Link to="/services/prashna-kundali" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Expertise in Prashna Kundli</Link></li>
-            <li><Link to="/services/reiki-healing" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Reiki Healer</Link></li>
+
           </ul>
         </div>
  
@@ -111,7 +111,7 @@ export default function Footer() {
           <ul className="space-y-2.5 text-xs text-[#D8CFEB]">
             <li className="flex items-center gap-2.5">
               <img src={callLogo} alt="Call" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0" />
-              <span>☎ +91 8130808758</span>
+              <span>☎ +91 8130808758, +91 8527790801</span>
             </li>
             <li className="flex items-center gap-2.5">
               <img src={gmailLogo} alt="Email" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0" />

@@ -24,8 +24,7 @@ import numerologyImg from '../assets/images/Numerology.png'
 import vastuConsultationImg from '../assets/images/Vastu Consultation.png'
 import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.png'
 import prashnaKundliImg from '../assets/images/Prashna Kundli.png'
-import reikiHealerImg from '../assets/images/Reiki Healer.png'
-import reikiChakrasImg from '../assets/images/reiki_chakras.jpg'
+
 
 import solutionsLogo from '../assets/logos/solutions.png'
 import guidanceLogo from '../assets/logos/guidance.png'
@@ -55,8 +54,8 @@ const serviceDetails = {
     title: 'Vedic Astrology (Janam Kundli)',
     subtitle: 'Celestial Map of Your Life\'s Journey',
     image: vedicAstrologyImg,
-    price: '$120 / ₹9,999',
-    duration: '60 mins',
+    price: '₹2,100',
+    duration: '30 min',
     desc: 'Vedic Astrology is an ancient science that maps the exact positions of stars and planets at the time of your birth to read your life\'s blueprint. Through rigorous mathematics and classical scriptures, this reading decodes your natural strengths, karmic challenges, and the optimal timing for critical life choices.',
     process: [
       'Submit exact birth details (date, time, and city of birth).',
@@ -88,8 +87,8 @@ const serviceDetails = {
     title: 'Numerology Reading',
     subtitle: 'Aligning Your Personal Vibrations',
     image: numerologyImg,
-    price: '$80 / ₹6,499',
-    duration: '45 mins',
+    price: '₹1,100',
+    duration: '30 min',
     desc: 'Numbers are the fundamental frequencies of the universe. Numerology decodes the vibration of your date of birth and name spelling. By aligning these numbers, you can open doors to wealth, improve relationships, and remove hidden blockages from your daily path.',
     process: [
       'Provide current full name, signature details, and birth date.',
@@ -121,8 +120,8 @@ const serviceDetails = {
     title: 'Vastu Consultation',
     subtitle: 'Harmonizing Elements in Your Living Space',
     image: vastuConsultationImg,
-    price: '$200 / ₹15,999',
-    duration: 'Site Specific',
+    price: '₹5,100',
+    duration: '30 min',
     desc: 'Vastu Shastra is the ancient Indian science of architecture and spatial harmony. Every building has energy fields. By aligning rooms, entrances, and colors with elemental forces (Water, Fire, Earth, Space, Air), Vastu attracts positive energy, prosperity, and mental peace.',
     process: [
       'Provide layout blueprint or digital floor plan of the residential/commercial property.',
@@ -154,8 +153,8 @@ const serviceDetails = {
     title: 'Laal Kitaab Remedies',
     subtitle: 'Simple & Practical Karmic Antidotes',
     image: laalKitaabImg,
-    price: '$90 / ₹7,499',
-    duration: '45 mins',
+    price: '₹1,100',
+    duration: '30 min',
     desc: 'Laal Kitaab is a unique branch of Vedic astrology famous for its simple, practical, and highly direct remedial measures. Instead of costly rituals or complex pujas, Laal Kitaab focuses on daily habit adjustments, food charity, and metal placements to ease planetary debts.',
     process: [
       'Chart analysis specifically focused on planetary debts (Rin).',
@@ -187,8 +186,8 @@ const serviceDetails = {
     title: 'Prashna Kundali (Horary Astrology)',
     subtitle: 'Real-time Answers to Stagnant Questions',
     image: prashnaKundliImg,
-    price: '$110 / ₹8,999',
-    duration: '45 mins',
+    price: '₹1,100',
+    duration: '30 min',
     desc: 'Horary astrology is used when exact birth details are unavailable, or when a quick answer is needed for a single, pressing question. The chart is cast for the exact second you ask the question, giving incredibly precise outcomes.',
     process: [
       'Formulate a single, sincere, and direct question in mind.',
@@ -214,39 +213,6 @@ const serviceDetails = {
       client: 'Amit Patel',
       text: 'I had to decide between two business partnerships immediately. Kundan used Prashna Kundali to tell me which partnership would be profitable. It saved me from a major financial trap.',
       timeline: 'Immediate decision clarity'
-    }
-  },
-  'reiki-healing': {
-    title: 'Reiki Healing & Alignment',
-    subtitle: 'Restoring Vital Life Force Energy',
-    image: reikiHealerImg,
-    price: '$75 / ₹5,999',
-    duration: '30 mins',
-    desc: 'Reiki is a Japanese form of energy healing. By channeling universal life force energy, this session clears emotional blocks, relieves stress, aligns your chakras, and accelerates physical and spiritual healing.',
-    process: [
-      'Initial discussion to identify physical/emotional stress areas and blocks.',
-      'Distant or personal energy transmission session.',
-      'Chakra alignment assessment and balance check.',
-      'Post-healing integration guidance and home tips.'
-    ],
-    benefits: [
-      {
-        title: 'Emotional Release',
-        desc: 'Dissolve deep-rooted stress, anxiety, fear, and emotional blockages.'
-      },
-      {
-        title: 'Chakra Alignment',
-        desc: 'Rebalance the body\'s major energy centers for physical and mental wellness.'
-      },
-      {
-        title: 'Spiritual Strength',
-        desc: 'Connect with higher consciousness and feel deep inner peace and light.'
-      }
-    ],
-    story: {
-      client: 'Neha Gupta',
-      text: 'I suffered from chronic fatigue and sleep issues for months. Just three remote Reiki sessions with Kundan brought back my sleep cycle and filled me with positive energy.',
-      timeline: 'Fatigue cleared in 3 Sessions'
     }
   }
 };
@@ -1475,11 +1441,7 @@ export default function ServiceDetail() {
     );
   }
 
-  if (serviceId === 'reiki-healing') {
-    return (
-      <ReikiHealingDetail details={details} navigate={navigate} />
-    );
-  }
+
 
   if (serviceId === 'prashna-kundali') {
     return (
@@ -1680,221 +1642,7 @@ export default function ServiceDetail() {
   )
 }
 
-function ReikiHealingDetail({ details, navigate }) {
-  const [hoveredIdx, setHoveredIdx] = useState(null);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  const modalities = [
-    {
-      title: "Chakra Balancing",
-      desc: "Clearing and aligning the 7 primary energy centers.",
-      icon: <RefreshCw size={18} />
-    },
-    {
-      title: "Aura Cleansing",
-      desc: "Purifying your energetic field from external stress and negativity.",
-      icon: <Sparkles size={18} />
-    },
-    {
-      title: "Distance Healing",
-      desc: "Remote energy transmissions that cross boundaries seamlessly.",
-      icon: <Globe size={18} />
-    },
-    {
-      title: "Emotional Release",
-      desc: "Dissolving chronic mental blocks and suppressed tension.",
-      icon: <Heart size={18} />
-    }
-  ];
-
-  return (
-    <div className="w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center overflow-hidden font-sans">
-      
-      {/* ========================================================= */}
-      {/* 1. HERO SECTION (Warm Ivory bg-[#F4F1E3])                  */}
-      {/* ========================================================= */}
-      <div className="w-full py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
-        {/* Ambient glowing energy fields */}
-        <div className="absolute top-10 left-1/4 w-[350px] h-[350px] bg-[#D3AF54]/5 rounded-full blur-[100px] pointer-events-none -z-10 animate-pulse" />
-
-        {/* Back button link */}
-        <div className="w-full max-w-5xl mb-10 text-left">
-          <button 
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
-          >
-            <ArrowLeft size={14} />
-            <span>Home</span>
-          </button>
-        </div>
-
-        {/* Hero Content */}
-        <motion.div 
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full max-w-4xl text-center flex flex-col items-center space-y-6"
-        >
-          {/* Rounded Pill Badge with Gold Glow */}
-          <div className="px-4 py-1.5 rounded-full text-[#AB7A57] bg-[#FFFDEE] border border-[#D3AF54]/30 text-xs font-bold uppercase tracking-widest inline-flex items-center gap-1.5 shadow-[0_0_10px_rgba(211,175,84,0.15)]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#D3AF54] animate-pulse"></span>
-            <span>Energy Alignment • Deep Restoration</span>
-          </div>
-
-          {/* Main Headline with Gold Gradient text style matching True Destiny */}
-          <h1 className="text-3xl md:text-5xl font-serif font-bold text-[#181122] tracking-wide leading-tight max-w-3xl">
-            <span className="text-xl md:text-2xl font-sans font-medium text-slate-500 block mb-2 tracking-normal">
-              Restore Inner Peace & Align Your Energy:
-            </span>
-            <span className="bg-gradient-to-r from-[#D3AF54] via-[#AB7A57] to-[#D3AF54] bg-clip-text text-transparent drop-shadow-sm">
-              Professional Reiki Healing
-            </span>
-          </h1>
-
-          {/* Description */}
-          <p className="text-sm md:text-base text-slate-600 leading-relaxed max-w-2xl font-sans font-medium">
-            Reiki is a natural, non-invasive Japanese energy healing technique that promotes deep relaxation, dissolves energetic blocks, and accelerates your body's natural ability to heal physically, emotionally, and spiritually.
-          </p>
-
-          {/* Book Appointment CTA Button with lighter gold styling */}
-          <div className="pt-2">
-            <Link 
-              to="/booking"
-              className="inline-flex items-center gap-2.5 bg-[#F1E4C3] hover:bg-[#EAD18D] text-[#181122] font-bold px-8 py-3.5 rounded-xl border border-[#D3AF54]/30 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-xs sm:text-sm uppercase tracking-wider cursor-pointer font-sans"
-            >
-              <Calendar size={16} />
-              <span>Book Appointment</span>
-            </Link>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* ========================================================= */}
-      {/* 2. CORE OFFERINGS SECTION (Pure White bg-white)           */}
-      {/* ========================================================= */}
-      <div className="w-full bg-white border-y border-[#AB7A57]/10 py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
-        
-        <div className="w-full max-w-5xl mb-10 text-left">
-          <span className="text-[#AB7A57] text-xs font-bold uppercase tracking-widest block mb-2">✦ CORE OFFERINGS ✦</span>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#181122]">Channeled Healing Modalities</h2>
-        </div>
-
-        {/* Minimalist interactive card grid */}
-        <div className="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {modalities.map((item, idx) => {
-            const isHovered = hoveredIdx === idx;
-            const isAnyHovered = hoveredIdx !== null;
-            return (
-              <motion.div 
-                key={idx}
-                onMouseEnter={() => setHoveredIdx(idx)}
-                onMouseLeave={() => setHoveredIdx(null)}
-                whileHover={{ y: -8 }}
-                className={`border rounded-2xl p-6 text-left transition-all duration-300 flex flex-col justify-between group min-h-[190px] shadow-xs relative overflow-hidden cursor-pointer ${
-                  isHovered 
-                    ? 'bg-white border-[#D3AF54] shadow-[0_4px_20px_rgba(211,175,84,0.15)] scale-[1.02]' 
-                    : isAnyHovered 
-                      ? 'bg-[#F6F3E6]/30 border-[#AB7A57]/10 opacity-50' 
-                      : 'bg-[#F6F3E6]/60 border-[#AB7A57]/15'
-                }`}
-              >
-                <div>
-                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 shrink-0 shadow-inner transition-all duration-300 ${
-                    isHovered 
-                      ? 'bg-[#181122] text-white border-[#181122] scale-105' 
-                      : 'bg-[#FFFDEE] border-[#D3AF54]/30 text-[#D3AF54]'
-                  }`}>
-                    {item.icon}
-                  </div>
-                  <h3 className="font-serif font-bold text-lg text-[#181122] mb-2">{item.title}</h3>
-                </div>
-                
-                <p className="text-xs text-slate-600 leading-relaxed font-sans font-medium">
-                  {item.desc}
-                </p>
-              </motion.div>
-            );
-          })}
-        </div>
-
-      </div>
-
-      {/* ========================================================= */}
-      {/* 3. TRANSFORMATIONS SECTION (Distinct Warm Sand bg-[#EDE9D7])*/}
-      {/* ========================================================= */}
-      <div className="w-full bg-[#EDE9D7] py-8 md:py-20 flex flex-col items-center relative z-10 px-6">
-        <div className="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-[#D3AF54]/5 rounded-full blur-[120px] pointer-events-none -z-10" />
-
-        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          
-          {/* Left Side: Illustrative Chakra Axis Image */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center p-2 bg-white border border-[#AB7A57]/15 rounded-3xl overflow-hidden shadow-xs h-[380px]">
-            <img 
-              src={reikiChakrasImg} 
-              alt="Chakra Energy Axis" 
-              className="w-full h-full object-cover rounded-2xl hover:scale-[1.02] transition-transform duration-500" 
-            />
-          </div>
-
-          {/* Right Side: Benefits Grid */}
-          <div className="lg:col-span-7 space-y-6 text-left">
-            <div className="space-y-2">
-              <span className="text-[#AB7A57] text-xs font-bold uppercase tracking-widest block">✦ TRANSFORMATIONS ✦</span>
-              <h3 className="font-serif font-bold text-2xl md:text-3xl text-[#181122]">The Path to Energy Balance</h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans font-medium max-w-md">
-                Reiki healing changes how energy flows in your body, leading to deep, measurable improvements in your physical and emotional wellbeing.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Anxiety & Stress Relief */}
-              <div className="p-4 rounded-xl bg-white border border-[#AB7A57]/20 flex items-center gap-3 shadow-2xs">
-                <CheckCircle size={18} className="text-[#D3AF54] shrink-0" />
-                <span className="font-serif font-bold text-sm text-[#181122]">Anxiety & Stress Relief</span>
-              </div>
-
-              {/* Better Sleep & Fatigue Recovery */}
-              <div className="p-4 rounded-xl bg-white border border-[#AB7A57]/20 flex items-center gap-3 shadow-2xs">
-                <CheckCircle size={18} className="text-[#D3AF54] shrink-0" />
-                <span className="font-serif font-bold text-sm text-[#181122]">Better Sleep & Fatigue Recovery</span>
-              </div>
-
-              {/* Sharp Mental Clarity */}
-              <div className="p-4 rounded-xl bg-white border border-[#AB7A57]/20 flex items-center gap-3 shadow-2xs">
-                <CheckCircle size={18} className="text-[#D3AF54] shrink-0" />
-                <span className="font-serif font-bold text-sm text-[#181122]">Sharp Mental Clarity</span>
-              </div>
-
-              {/* Accelerated Biological Healing */}
-              <div className="p-4 rounded-xl bg-white border border-[#AB7A57]/20 flex items-center gap-3 shadow-2xs">
-                <CheckCircle size={18} className="text-[#D3AF54] shrink-0" />
-                <span className="font-serif font-bold text-sm text-[#181122]">Accelerated Biological Healing</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* ========================================================= */}
-      {/* 4. FOOTER RETURN LINK SECTION (Warm Ivory bg-[#F4F1E3])    */}
-      {/* ========================================================= */}
-      <div className="w-full bg-[#F4F1E3] py-6 md:py-10 flex justify-center z-10 px-6">
-        <Link 
-          to="/" 
-          className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors"
-        >
-          <ArrowLeft size={12} />
-          <span>Back to Home</span>
-        </Link>
-      </div>
-
-    </div>
-  );
-}
 
 function PrashnaKundaliDetail({ details, navigate }) {
   const [hoveredIdx, setHoveredIdx] = useState(null);

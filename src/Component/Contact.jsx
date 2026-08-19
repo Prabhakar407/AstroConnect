@@ -253,29 +253,55 @@ function Contact() {
                   </div>
                 </a>
 
-                {/* Call Row */}
-                <div className="flex items-center justify-between group">
-                  <a href="tel:+918130808758" className="flex items-center gap-3 hover:text-[#D3AF54] transition-colors">
-                    <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                      <img src={callLogo} alt="Call" className="w-4.5 h-4.5 object-contain" />
-                    </div>
-                    <div>
-                      <div className="text-xs uppercase font-serif font-bold tracking-wider leading-none" style={{ color: '#AB7A57' }}>
-                        Call Helpline
+                {/* Call Rows */}
+                <div className="flex flex-col gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/5 w-full">
+                  <div className="flex items-center justify-between group">
+                    <a href="tel:+918130808758" className="flex items-center gap-3 hover:text-[#D3AF54] transition-colors">
+                      <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                        <img src={callLogo} alt="Call" className="w-4.5 h-4.5 object-contain" />
                       </div>
-                      <p className="text-sm font-semibold text-[#D8CFEB] mt-1">+91 8130808758</p>
-                    </div>
-                  </a>
-                  <button 
-                    type="button"
-                    onClick={() => handleCopyText("+918130808758", "phone")}
-                    className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer relative shrink-0"
-                  >
-                    {copiedType === "phone" ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-                    {copiedType === "phone" && (
-                      <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded shadow">Copied</span>
-                    )}
-                  </button>
+                      <div>
+                        <div className="text-xs uppercase font-serif font-bold tracking-wider leading-none" style={{ color: '#AB7A57' }}>
+                          Call Helpline 1
+                        </div>
+                        <p className="text-sm font-semibold text-[#D8CFEB] mt-1">+91 8130808758</p>
+                      </div>
+                    </a>
+                    <button 
+                      type="button"
+                      onClick={() => handleCopyText("+918130808758", "phone")}
+                      className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer relative shrink-0"
+                    >
+                      {copiedType === "phone" ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                      {copiedType === "phone" && (
+                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded shadow">Copied</span>
+                      )}
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between group border-t border-white/5 pt-3">
+                    <a href="tel:+918527790801" className="flex items-center gap-3 hover:text-[#D3AF54] transition-colors">
+                      <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                        <img src={callLogo} alt="Call" className="w-4.5 h-4.5 object-contain" />
+                      </div>
+                      <div>
+                        <div className="text-xs uppercase font-serif font-bold tracking-wider leading-none" style={{ color: '#AB7A57' }}>
+                          Call Helpline 2
+                        </div>
+                        <p className="text-sm font-semibold text-[#D8CFEB] mt-1">+91 8527790801</p>
+                      </div>
+                    </a>
+                    <button 
+                      type="button"
+                      onClick={() => handleCopyText("+918527790801", "phone2")}
+                      className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer relative shrink-0"
+                    >
+                      {copiedType === "phone2" ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                      {copiedType === "phone2" && (
+                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded shadow">Copied</span>
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Email Row */}
@@ -468,7 +494,7 @@ function Contact() {
                       <option value="Birth Chart Reading">Birth Chart Reading</option>
                       <option value="Match Making (Kundli Milan)">Match Making (Kundli Milan)</option>
                       <option value="Vastu Consultation">Vastu Consultation</option>
-                      <option value="Reiki Energy Healing">Reiki Energy Healing</option>
+
                     </select>
                     <ChevronDown size={14} className="absolute right-3.5 top-3.5 text-[#AB7A57] pointer-events-none" />
                   </div>

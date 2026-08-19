@@ -8,7 +8,7 @@ import numerologyImg from '../assets/images/Numerology.png'
 import vastuConsultationImg from '../assets/images/Vastu Consultation.png'
 import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.png'
 import prashnaKundliImg from '../assets/images/Prashna Kundli.png'
-import reikiHealerImg from '../assets/images/Reiki Healer.png'
+
 
 const MotionLink = motion.create ? motion.create(Link) : motion(Link);
 
@@ -65,8 +65,8 @@ function Service() {
     {
       id: 'vedic-astrology',
       title: 'Vedic Astrology',
-      price: '$120 / ₹9,999',
-      duration: '60 mins',
+      price: '₹2,100',
+      duration: '30 min',
       desc: 'Comprehensive evaluation of planetary positions, houses, and transits (Janam Kundli) to clarify your destiny, strengths, weaknesses, and future timelines.',
       icon: <FileText size={20} className="text-[#D3AF54]" />,
       image: vedicAstrologyImg,
@@ -79,9 +79,9 @@ function Service() {
     },
     {
       id: 'numerology',
-      title: 'Numerology Reading',
-      price: '$80 / ₹6,499',
-      duration: '45 mins',
+      title: 'Numerology',
+      price: '₹1,100',
+      duration: '30 min',
       desc: 'Uncover the hidden patterns of your life path, destiny, and name frequencies. Align your personal vibrations to unlock career opportunities and wealth luck.',
       icon: <Hash size={20} className="text-[#D3AF54]" />,
       image: numerologyImg,
@@ -95,8 +95,8 @@ function Service() {
     {
       id: 'vastu',
       title: 'Vastu Consultation',
-      price: '$200 / ₹15,999',
-      duration: 'Site Specific',
+      price: '₹5,100',
+      duration: '30 min',
       desc: 'Optimize the flow of energy at home or work. Align rooms, elements, and layouts to clear blocking influences and invite growth, harmony, and prosperity.',
       icon: <HomeIcon size={20} className="text-[#D3AF54]" />,
       image: vastuConsultationImg,
@@ -110,8 +110,8 @@ function Service() {
     {
       id: 'laal-kitaab',
       title: 'Laal Kitaab Remedies',
-      price: '$90 / ₹7,499',
-      duration: '45 mins',
+      price: '₹1,100',
+      duration: '30 min',
       desc: 'Simple, practical, and highly effective remedial measures for planetary afflictions, debts, obstacles in career/marriage, and negative influences without complex rituals.',
       icon: <BookOpen size={20} className="text-[#D3AF54]" />,
       image: laalKitaabImg,
@@ -125,8 +125,8 @@ function Service() {
     {
       id: 'prashna-kundali',
       title: 'Expertise in Prashna Kundali',
-      price: '$110 / ₹8,999',
-      duration: '45 mins',
+      price: '₹1,100',
+      duration: '30 min',
       desc: 'Get instant, precise answers to specific questions (concerning career, finance, marriage, missing items, etc.) based on the exact moment the question is asked.',
       icon: <HelpCircle size={20} className="text-[#D3AF54]" />,
       image: prashnaKundliImg,
@@ -136,21 +136,6 @@ function Service() {
         'Locating missing assets and timing career shifts.'
       ],
       impact: 'Amit Patel obtained clear directions on his business transition timeline during a critical trade block.'
-    },
-    {
-      id: 'reiki-healing',
-      title: 'Reiki Healer',
-      price: '$75 / ₹5,999',
-      duration: '30 mins',
-      desc: 'Harmonize and channel life force energy to clear spiritual blocks, reduce stress, accelerate physical healing, and restore deep emotional balance.',
-      icon: <Heart size={20} className="text-[#D3AF54]" />,
-      image: reikiHealerImg,
-      points: [
-        'Distant and personal chakra energy healing.',
-        'Stagnant aura clearance and stress reduction.',
-        'Accelerating emotional and physical wellness.'
-      ],
-      impact: 'Neha Gupta resolved chronic fatigue and restored peace through remote chakra healing sessions.'
     }
   ]
 
@@ -223,9 +208,8 @@ function Service() {
                 {item.icon}
               </div>
 
-              {/* Price/Duration Badge (Top Right) */}
               <div className="absolute top-4 right-4 bg-[#D3AF54]/15 border border-[#D3AF54]/40 backdrop-blur-md px-3 py-1 rounded-lg z-20 text-[10px] uppercase font-bold tracking-widest text-[#D3AF54]">
-                {item.duration}
+                {item.price} • {item.duration}
               </div>
 
               {/* Card Contents Area (Slides up slightly on hover) */}

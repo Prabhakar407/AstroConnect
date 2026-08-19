@@ -7,7 +7,7 @@ import numerologyImg from '../assets/images/Numerology.png'
 import vastuConsultationImg from '../assets/images/Vastu Consultation.png'
 import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.png'
 import prashnaKundliImg from '../assets/images/Prashna Kundli.png'
-import reikiHealerImg from '../assets/images/Reiki Healer.png'
+
 import { 
   Award, 
   Users, 
@@ -80,10 +80,7 @@ function About() {
       title: "Prashna Kundli",
       image: prashnaKundliImg
     },
-    {
-      title: "Reiki Healer",
-      image: reikiHealerImg
-    }
+
   ]
 
 
@@ -523,8 +520,7 @@ function FeatureCard({ feature, className, ...props }) {
         return "/services/laal-kitaab";
       case "prashna kundli":
         return "/services/prashna-kundali";
-      case "reiki healer":
-        return "/services/reiki-healing";
+
       default:
         return "/services";
     }
