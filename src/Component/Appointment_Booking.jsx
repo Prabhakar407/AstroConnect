@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Calendar, Clock, Sparkles, Send, MapPin, User, Mail, Phone, ChevronLeft, ChevronRight } from 'lucide-react'
 
+const API_BASE_URL = import.meta.env.DEV 
+  ? "http://localhost:8000" 
+  : "https://astrologer-kundan-singh.onrender.com"
+
 /**
  * CelestialDivider Component
  * Elegant visual separator designed with gold gradient lines and a central star symbol.
@@ -126,7 +130,7 @@ function Appointment_Booking() {
     
     const fetchAvailability = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/availability?date=${formData.bookingDate}`)
+        const response = await fetch(`${API_BASE_URL}/api/availability?date=${formData.bookingDate}`)
         if (response.ok) {
           const data = await response.json()
           setSlotAvailability(data)
@@ -228,7 +232,7 @@ function Appointment_Booking() {
     const birthDetails = `Phone: ${formData.phone}\nBirth Date: ${formData.birthDate}\nBirth Time: ${formData.birthTime || 'Not Provided'}\nBirth Place: ${formData.birthPlace || 'Not Provided'}\nClient Notes: ${formData.notes || 'None'}`
 
     try {
-      const response = await fetch("http://localhost:8000/api/book-appointment", {
+      const response = await fetch(`${API_BASE_URL}/api/book-appointment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

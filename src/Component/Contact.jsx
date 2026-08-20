@@ -17,6 +17,10 @@ import gmailLogo from "../assets/logos/gmail.png"
 import mapsLogo from "../assets/logos/google-maps.png"
 import waLogo from "../assets/logos/whatsapp.png"
 
+const API_BASE_URL = import.meta.env.DEV 
+  ? "http://localhost:8000" 
+  : "https://astrologer-kundan-singh.onrender.com"
+
 const faqs = [
   {
     q: "What birth details are required?",
@@ -148,7 +152,7 @@ function Contact() {
     console.log("Submitting Contact Message to Server:", formData)
 
     try {
-      const response = await fetch("http://localhost:8000/api/contact", {
+      const response = await fetch(`${API_BASE_URL}/api/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send, Mail, MapPin, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+const API_BASE_URL = import.meta.env.DEV 
+  ? "http://localhost:8000" 
+  : "https://astrologer-kundan-singh.onrender.com"
+
 import logoImg from "../assets/logos/Nav-Logo.png";
 import featureBg from "../assets/images/Feature.png";
 import astrologerPortrait from "../assets/images/astrologer_portrait.jpg";
@@ -526,7 +530,7 @@ export default function Home() {
     console.log("Contact Form Submitted Data:", formData)
     
     try {
-      const response = await fetch("http://localhost:8000/api/contact", {
+      const response = await fetch(`${API_BASE_URL}/api/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

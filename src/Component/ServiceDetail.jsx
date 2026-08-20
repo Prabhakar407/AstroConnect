@@ -3,6 +3,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, ArrowRight, Home, Sofa, Bed, Utensils, Bath, Briefcase, Heart, RefreshCw, Globe, User, BookOpen, Compass } from 'lucide-react'
 
+const API_BASE_URL = import.meta.env.DEV 
+  ? "http://localhost:8000" 
+  : "https://astrologer-kundan-singh.onrender.com"
+
 import sunIcon from '../assets/planets/sun.jpg'
 import moonIcon from '../assets/planets/moon.jpg'
 import jupiterIcon from '../assets/planets/jupiter.jpg'
@@ -1664,7 +1668,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
     setServerError("");
     if (formData.name && formData.phone && formData.location && formData.question) {
       try {
-        const response = await fetch("http://localhost:8000/api/prashna", {
+        const response = await fetch(`${API_BASE_URL}/api/prashna`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
