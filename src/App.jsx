@@ -1,3 +1,4 @@
+// AstroAdvice Client Routing Engine
 import { useEffect } from 'react'
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './Component/Navbar'
