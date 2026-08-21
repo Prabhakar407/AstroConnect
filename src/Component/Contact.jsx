@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Phone, 
   Mail, 
@@ -38,6 +38,7 @@ const faqs = [
 ];
 
 function Contact() {
+  const helpFormRef = useRef(null)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -626,7 +627,7 @@ function Contact() {
       {/* 3. FAQ ACCORDION SECTION (Warm Sand bg-[#EDE9D7])          */}
       {/* ========================================================= */}
       <div className="w-full bg-[#EDE9D7] py-16 px-4 flex flex-col items-center relative z-10">
-        <div className="w-full max-w-4xl px-4">
+        <div className="w-full max-w-4xl px-4 relative">
           
           {/* Toggle Bar */}
           <button
@@ -665,48 +666,51 @@ function Contact() {
           )}
 
         </div>
+
+        {/* Bottom Right Help Support Button (static to FAQ section corner) */}
+        {!showHelpForm && (
+          <div className="absolute bottom-3 right-6 z-20">
+            <button
+              onClick={() => {
+                setShowHelpForm(true)
+                setTimeout(() => {
+                  helpFormRef.current?.scrollIntoView({ behavior: 'smooth' })
+                }, 100)
+              }}
+              className="flex items-center gap-2 bg-[#181122] hover:bg-[#D3AF54] border border-[#D3AF54]/40 hover:border-[#D3AF54] text-[#D3AF54] hover:text-[#181122] px-5 py-3 rounded-full shadow-lg transition-all duration-300 font-sans text-xs font-bold uppercase tracking-wider cursor-pointer group"
+            >
+              <HelpCircle size={16} className="group-hover:scale-110 transition-transform duration-300" />
+              <span>Help Support</span>
+            </button>
+          </div>
+        )}
+
       </div>
 
 
       {/* ========================================================= */}
-      {/* 4. HELP / SUPPORT POINT SECTION                            */}
+      {/* 4. HELP / SUPPORT FORM SECTION (Ivory bg-[#FDFCF5])        */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#181122] py-16 px-4 flex flex-col items-center border-t border-white/5 relative z-10 text-white">
-        <div className="w-full max-w-md mx-auto text-center space-y-6">
-          {!showHelpForm ? (
-            <motion.div 
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              onClick={() => setShowHelpForm(true)}
-              className="p-8 rounded-3xl bg-white/[0.02] border border-white/10 hover:border-[#D3AF54]/40 hover:bg-white/[0.04] transition-all duration-300 cursor-pointer group shadow-xl flex flex-col items-center gap-4"
-            >
-              <div className="w-14 h-14 rounded-full bg-[#D3AF54]/10 border border-[#D3AF54]/30 flex items-center justify-center text-[#D3AF54] group-hover:scale-110 transition-transform duration-300 shadow-inner">
-                <HelpCircle size={28} />
-              </div>
-              <div className="space-y-1.5">
-                <h4 className="font-serif font-bold text-lg text-white group-hover:text-[#D3AF54] transition-colors">Need Help or Support?</h4>
-                <p className="text-xs text-[#D8CFEB] max-w-sm mx-auto leading-relaxed">
-                  Have questions about our platform or need assistance? Click here to raise a support query directly.
-                </p>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="p-6 sm:p-8 rounded-3xl bg-white/[0.02] border border-white/10 shadow-2xl space-y-6 text-left relative overflow-hidden"
-            >
+      <AnimatePresence>
+        {showHelpForm && (
+          <motion.div 
+            ref={helpFormRef}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="w-full bg-[#FDFCF5] py-16 px-4 flex flex-col items-center border-t border-[#AB7A57]/10 relative z-10 overflow-hidden"
+          >
+            <div className="w-full max-w-xl bg-white border border-[#AB7A57]/15 rounded-3xl shadow-xl p-6 sm:p-8 space-y-6 text-[#181122] relative">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
               
-              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+              <div className="flex items-center justify-between border-b border-[#AB7A57]/10 pb-4">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg bg-[#D3AF54]/10 border border-[#D3AF54]/25 flex items-center justify-center text-[#D3AF54]">
                     <HelpCircle size={16} />
                   </div>
                   <div>
-                    <h4 className="font-serif font-bold text-sm text-white">Submit Help Ticket</h4>
-                    <p className="text-[10px] text-slate-400">Response will be sent to your email</p>
+                    <h4 className="font-serif font-bold text-base text-[#181122] tracking-wide">Submit Help Ticket</h4>
                   </div>
                 </div>
                 <button 
@@ -717,7 +721,7 @@ function Contact() {
                     setHelpAttemptedSubmit(false)
                     setHelpFormData({ name: "", phone: "", email: "", query: "" })
                   }}
-                  className="text-xs text-slate-400 hover:text-white transition-colors cursor-pointer"
+                  className="text-xs text-[#AB7A57] hover:text-[#181122] transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -729,90 +733,92 @@ function Contact() {
                   animate={{ opacity: 1, y: 0 }}
                   className="py-8 flex flex-col items-center justify-center text-center gap-3"
                 >
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600">
                     <Check size={24} />
                   </div>
-                  <h5 className="font-serif font-bold text-base text-white">Query Submitted</h5>
-                  <p className="text-xs text-[#D8CFEB] max-w-xs leading-relaxed">
-                    Your request has been successfully dispatched to support. We will get back to you shortly at the email address provided.
+                  <h5 className="font-serif font-bold text-base text-[#181122]">Query Submitted Successfully</h5>
+                  <p className="text-xs text-slate-600 max-w-xs leading-relaxed font-sans">
+                    Thank you. Your support ticket has been received. Our team will get back to you shortly at the email address provided.
                   </p>
                 </motion.div>
               ) : (
-                <form onSubmit={handleHelpSubmit} className="space-y-4">
+                <form onSubmit={handleHelpSubmit} className="space-y-4 text-left">
                   {helpServerError && (
-                    <div className="p-3 bg-red-950/60 border border-red-500/40 rounded-xl text-red-200 text-xs text-center font-sans tracking-wide">
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs text-center font-sans tracking-wide">
                       ⚠️ {helpServerError}
                     </div>
                   )}
 
                   {/* Name */}
-                  <div className="space-y-1">
-                    <label className="block text-[10px] font-bold text-[#D3AF54] uppercase tracking-wider">Your Name</label>
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider font-sans">Your Name <span className="text-[#D3AF54]">*</span></label>
                     <input 
                       type="text" 
                       name="name"
                       value={helpFormData.name}
                       onChange={handleHelpInputChange}
                       placeholder="Enter your name"
-                      className="w-full bg-[#181122] border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-[#D3AF54] transition"
+                      className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl px-4 py-2 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] transition"
                     />
                     {helpAttemptedSubmit && helpErrors.name && <p className="text-red-500 text-[10px] mt-1">⚠️ {helpErrors.name}</p>}
                   </div>
 
                   {/* Mobile Number */}
-                  <div className="space-y-1">
-                    <label className="block text-[10px] font-bold text-[#D3AF54] uppercase tracking-wider">Mobile Number</label>
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider font-sans">Mobile Number <span className="text-[#D3AF54]">*</span></label>
                     <input 
                       type="text" 
                       name="phone"
                       value={helpFormData.phone}
                       onChange={handleHelpInputChange}
                       placeholder="Enter mobile number"
-                      className="w-full bg-[#181122] border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-[#D3AF54] transition"
+                      className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl px-4 py-2 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] transition"
                     />
                     {helpAttemptedSubmit && helpErrors.phone && <p className="text-red-500 text-[10px] mt-1">⚠️ {helpErrors.phone}</p>}
                   </div>
 
                   {/* Email */}
-                  <div className="space-y-1">
-                    <label className="block text-[10px] font-bold text-[#D3AF54] uppercase tracking-wider">Email Address</label>
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider font-sans">Email Address <span className="text-[#D3AF54]">*</span></label>
                     <input 
                       type="email" 
                       name="email"
                       value={helpFormData.email}
                       onChange={handleHelpInputChange}
                       placeholder="Enter email address"
-                      className="w-full bg-[#181122] border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-[#D3AF54] transition"
+                      className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl px-4 py-2 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] transition"
                     />
                     {helpAttemptedSubmit && helpErrors.email && <p className="text-red-500 text-[10px] mt-1">⚠️ {helpErrors.email}</p>}
                   </div>
 
                   {/* Query */}
-                  <div className="space-y-1">
-                    <label className="block text-[10px] font-bold text-[#D3AF54] uppercase tracking-wider">Describe Your Query</label>
+                  <div className="space-y-1.5">
+                    <label className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider font-sans">Describe Your Query <span className="text-[#D3AF54]">*</span></label>
                     <textarea 
                       name="query"
-                      rows={3}
+                      rows={4}
                       value={helpFormData.query}
                       onChange={handleHelpInputChange}
-                      placeholder="What do you need help with?"
-                      className="w-full bg-[#181122] border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-[#D3AF54] transition resize-none"
+                      placeholder="What do you need assistance with?"
+                      className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl px-4 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] transition min-h-[100px] resize-none"
                     />
                     {helpAttemptedSubmit && helpErrors.query && <p className="text-red-500 text-[10px] mt-1">⚠️ {helpErrors.query}</p>}
                   </div>
 
-                  <button 
-                    type="submit"
-                    className="w-full bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-semibold py-2.5 rounded-xl transition text-xs uppercase tracking-wider cursor-pointer shadow-md font-sans"
-                  >
-                    Submit Query
-                  </button>
+                  <div className="w-full flex justify-center pt-2">
+                    <button 
+                      type="submit"
+                      className="w-fit px-8 bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] font-semibold py-3 rounded-xl transition duration-300 text-xs uppercase tracking-wider cursor-pointer shadow-md font-sans"
+                    >
+                      Submit Query
+                    </button>
+                  </div>
                 </form>
               )}
-            </motion.div>
-          )}
-        </div>
-      </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
 
     </div>
