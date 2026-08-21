@@ -60,6 +60,24 @@ function Contact() {
   const [showFaq, setShowFaq] = useState(false)
   const [openFaqIndex, setOpenFaqIndex] = useState(null)
 
+  // Help Support form state hooks
+  const [showHelpForm, setShowHelpForm] = useState(false)
+  const [helpFormData, setHelpFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    query: ""
+  })
+  const [helpSubmitted, setHelpSubmitted] = useState(false)
+  const [helpAttemptedSubmit, setHelpAttemptedSubmit] = useState(false)
+  const [helpServerError, setHelpServerError] = useState("")
+  const [helpErrors, setHelpErrors] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    query: ""
+  })
+
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => {
@@ -193,6 +211,71 @@ function Contact() {
     navigator.clipboard.writeText(text)
     setCopiedType(type)
     setTimeout(() => setCopiedType(null), 2000)
+  }
+
+  const validateHelpForm = () => {
+    let isValid = true
+    const newErrors = { name: "", phone: "", email: "", query: "" }
+
+    if (!helpFormData.name.trim()) {
+      newErrors.name = "Name is required."
+      isValid = false
+    }
+    if (!helpFormData.phone.trim()) {
+      newErrors.phone = "Mobile number is required."
+      isValid = false
+    } else if (!/^\+?[0-9\s\-]{8,20}$/.test(helpFormData.phone)) {
+      newErrors.phone = "Please enter a valid mobile number."
+      isValid = false
+    }
+    if (!helpFormData.email.trim()) {
+      newErrors.email = "Email is required."
+      isValid = false
+    } else if (!/\S+@\S+\.\S+/.test(helpFormData.email)) {
+      newErrors.email = "Please enter a valid email address."
+      isValid = false
+    }
+    if (!helpFormData.query.trim()) {
+      newErrors.query = "Query is required."
+      isValid = false
+    }
+
+    setHelpErrors(newErrors)
+    return isValid
+  }
+
+  const handleHelpSubmit = async (e) => {
+    e.preventDefault()
+    setHelpAttemptedSubmit(true)
+    setHelpServerError("")
+
+    if (!validateHelpForm()) {
+      return
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/help`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(helpFormData),
+      })
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.detail || "Failed to submit support request.")
+      }
+
+      setHelpSubmitted(true)
+    } catch (err) {
+      setHelpServerError(err.message || "Failed to connect to the server.")
+    }
+  }
+
+  const handleHelpInputChange = (e) => {
+    const { name, value } = e.target
+    setHelpFormData((prev) => ({ ...prev, [name]: value }))
   }
 
   return (
@@ -583,6 +666,152 @@ function Contact() {
         </div>
       </div>
 
+
+      {/* ========================================================= */}
+      {/* 4. HELP / SUPPORT POINT SECTION                            */}
+      {/* ========================================================= */}
+      <div className="w-full bg-[#181122] py-16 px-4 flex flex-col items-center border-t border-white/5 relative z-10 text-white">
+        <div className="w-full max-w-md mx-auto text-center space-y-6">
+          {!showHelpForm ? (
+            <motion.div 
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              onClick={() => setShowHelpForm(true)}
+              className="p-8 rounded-3xl bg-white/[0.02] border border-white/10 hover:border-[#D3AF54]/40 hover:bg-white/[0.04] transition-all duration-300 cursor-pointer group shadow-xl flex flex-col items-center gap-4"
+            >
+              <div className="w-14 h-14 rounded-full bg-[#D3AF54]/10 border border-[#D3AF54]/30 flex items-center justify-center text-[#D3AF54] group-hover:scale-110 transition-transform duration-300 shadow-inner">
+                <HelpCircle size={28} />
+              </div>
+              <div className="space-y-1.5">
+                <h4 className="font-serif font-bold text-lg text-white group-hover:text-[#D3AF54] transition-colors">Need Help or Support?</h4>
+                <p className="text-xs text-[#D8CFEB] max-w-sm mx-auto leading-relaxed">
+                  Have questions about our platform or need assistance? Click here to raise a support query directly.
+                </p>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="p-6 sm:p-8 rounded-3xl bg-white/[0.02] border border-white/10 shadow-2xl space-y-6 text-left relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
+              
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#D3AF54]/10 border border-[#D3AF54]/25 flex items-center justify-center text-[#D3AF54]">
+                    <HelpCircle size={16} />
+                  </div>
+                  <div>
+                    <h4 className="font-serif font-bold text-sm text-white">Submit Help Ticket</h4>
+                    <p className="text-[10px] text-slate-400">Response will be sent to your email</p>
+                  </div>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setShowHelpForm(false)
+                    setHelpSubmitted(false)
+                    setHelpAttemptedSubmit(false)
+                    setHelpFormData({ name: "", phone: "", email: "", query: "" })
+                  }}
+                  className="text-xs text-slate-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+
+              {helpSubmitted ? (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="py-8 flex flex-col items-center justify-center text-center gap-3"
+                >
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                    <Check size={24} />
+                  </div>
+                  <h5 className="font-serif font-bold text-base text-white">Query Submitted</h5>
+                  <p className="text-xs text-[#D8CFEB] max-w-xs leading-relaxed">
+                    Your request has been successfully dispatched to support. We will get back to you shortly at the email address provided.
+                  </p>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleHelpSubmit} className="space-y-4">
+                  {helpServerError && (
+                    <div className="p-3 bg-red-950/60 border border-red-500/40 rounded-xl text-red-200 text-xs text-center font-sans tracking-wide">
+                      ⚠️ {helpServerError}
+                    </div>
+                  )}
+
+                  {/* Name */}
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-bold text-[#D3AF54] uppercase tracking-wider">Your Name</label>
+                    <input 
+                      type="text" 
+                      name="name"
+                      value={helpFormData.name}
+                      onChange={handleHelpInputChange}
+                      placeholder="Enter your name"
+                      className="w-full bg-[#181122] border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-[#D3AF54] transition"
+                    />
+                    {helpAttemptedSubmit && helpErrors.name && <p className="text-red-500 text-[10px] mt-1">⚠️ {helpErrors.name}</p>}
+                  </div>
+
+                  {/* Mobile Number */}
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-bold text-[#D3AF54] uppercase tracking-wider">Mobile Number</label>
+                    <input 
+                      type="text" 
+                      name="phone"
+                      value={helpFormData.phone}
+                      onChange={handleHelpInputChange}
+                      placeholder="Enter mobile number"
+                      className="w-full bg-[#181122] border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-[#D3AF54] transition"
+                    />
+                    {helpAttemptedSubmit && helpErrors.phone && <p className="text-red-500 text-[10px] mt-1">⚠️ {helpErrors.phone}</p>}
+                  </div>
+
+                  {/* Email */}
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-bold text-[#D3AF54] uppercase tracking-wider">Email Address</label>
+                    <input 
+                      type="email" 
+                      name="email"
+                      value={helpFormData.email}
+                      onChange={handleHelpInputChange}
+                      placeholder="Enter email address"
+                      className="w-full bg-[#181122] border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-[#D3AF54] transition"
+                    />
+                    {helpAttemptedSubmit && helpErrors.email && <p className="text-red-500 text-[10px] mt-1">⚠️ {helpErrors.email}</p>}
+                  </div>
+
+                  {/* Query */}
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-bold text-[#D3AF54] uppercase tracking-wider">Describe Your Query</label>
+                    <textarea 
+                      name="query"
+                      rows={3}
+                      value={helpFormData.query}
+                      onChange={handleHelpInputChange}
+                      placeholder="What do you need help with?"
+                      className="w-full bg-[#181122] border border-white/10 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-[#D3AF54] transition resize-none"
+                    />
+                    {helpAttemptedSubmit && helpErrors.query && <p className="text-red-500 text-[10px] mt-1">⚠️ {helpErrors.query}</p>}
+                  </div>
+
+                  <button 
+                    type="submit"
+                    className="w-full bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-semibold py-2.5 rounded-xl transition text-xs uppercase tracking-wider cursor-pointer shadow-md font-sans"
+                  >
+                    Submit Query
+                  </button>
+                </form>
+              )}
+            </motion.div>
+          )}
+        </div>
+      </div>
 
 
     </div>

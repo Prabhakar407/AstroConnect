@@ -118,6 +118,13 @@ class ContactRequest(BaseModel):
     message: str
 
 
+class HelpRequest(BaseModel):
+    name: str
+    phone: str
+    email: str
+    query: str
+
+
 class BookingRequest(BaseModel):
     full_name: str
     email: EmailStr
@@ -318,6 +325,93 @@ MESSAGE DETAIL:
         "sms_status": sms_status,
         "email_status": email_status,
         "message": "Message received by server successfully!"
+    }
+
+
+@app.post("/api/help")
+def save_help(help_req: HelpRequest):
+    """Saves help queries locally and attempts to send SMTP email to neuraflowuser1@gmail.com."""
+    import json
+    local_queries_file = "local_queries.json"
+    queries_list = []
+    
+    if os.path.exists(local_queries_file):
+        try:
+            with open(local_queries_file, "r") as f:
+                queries_list = json.load(f)
+        except Exception:
+            pass
+            
+    new_entry = {
+        "query_type": "help_inquiry",
+        "name": help_req.name,
+        "phone": help_req.phone,
+        "email": help_req.email,
+        "query": help_req.query,
+        "timestamp": datetime.utcnow().isoformat()
+    }
+    queries_list.append(new_entry)
+    
+    try:
+        with open(local_queries_file, "w") as f:
+            json.dump(queries_list, f, indent=4)
+        print("✓ Help query saved to local_queries.json")
+    except Exception as e:
+        print(f"Error saving help query locally: {str(e)}")
+        
+    smtp_sender = os.getenv("SMTP_EMAIL")
+    smtp_password = os.getenv("SMTP_PASSWORD")
+    smtp_receiver = "neuraflowuser1@gmail.com"
+    
+    email_status = "not_configured"
+    
+    if smtp_sender and smtp_password:
+        try:
+            import smtplib
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+            
+            # Construct Email Message
+            msg = MIMEMultipart()
+            msg['From'] = smtp_sender
+            msg['To'] = smtp_receiver
+            msg['Subject'] = "★ New Help/Support Request ★"
+            
+            email_body = f"""
+Hello,
+
+You have received a new Help/Support inquiry from the website:
+
+----------------------------------------
+USER NAME:    {help_req.name}
+USER PHONE:   {help_req.phone}
+USER EMAIL:   {help_req.email}
+
+QUERY/MESSAGE:
+{help_req.query}
+----------------------------------------
+
+*This message was logged locally and dispatched automatically via website backend*
+"""
+            msg.attach(MIMEText(email_body, 'plain'))
+            
+            # Connect to SMTP Server
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.starttls()
+            server.login(smtp_sender, smtp_password)
+            server.sendmail(smtp_sender, smtp_receiver, msg.as_string())
+            server.quit()
+            
+            email_status = "sent_via_smtp"
+            print("✓ Help inquiry successfully dispatched via SMTP email to neuraflowuser1@gmail.com")
+        except Exception as e:
+            print(f"SMTP Email delivery failed: {str(e)}")
+            email_status = "smtp_failed"
+            
+    return {
+        "status": "success",
+        "email_status": email_status,
+        "message": "Help query received by server successfully!"
     }
 
 
