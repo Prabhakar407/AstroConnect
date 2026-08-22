@@ -1,10 +1,12 @@
 import os
 import uuid
+import re
+import html
 from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
@@ -102,27 +104,85 @@ def get_calendar_service():
 
 
 
-# Input Data Model for Booking Requests
+# Sanitization & Security Helper Functions
+def sanitize_string(value: str) -> str:
+    """Escapes HTML special characters to prevent HTML/XSS injection."""
+    return html.escape(value.strip())
+
+
+def validate_phone_number(phone_str: str) -> str:
+    """Validates phone number format and filters out fake/spam phone numbers."""
+    cleaned = re.sub(r'[\s\-\(\)\.]', '', phone_str)
+    
+    # Allow optional '+' prefix followed by 7 to 15 digits
+    if not re.match(r'^\+?[0-9]{7,15}$', cleaned):
+        raise ValueError("Phone number must contain between 7 and 15 digits and may start with '+'")
+    
+    # Strip optional '+' prefix to test digit patterns
+    digits = cleaned.replace('+', '')
+    
+    # 1. Block repeated identical digits (e.g. 9999999999)
+    if re.match(r'^(\d)\1+$', digits):
+        raise ValueError("Fake phone number: cannot consist entirely of identical repeating digits.")
+        
+    # 2. Block sequential digits (e.g. 1234567890 or 9876543210)
+    if digits in "01234567890123456789" or digits in "98765432109876543210":
+        raise ValueError("Fake phone number: cannot be a simple consecutive sequence of digits.")
+        
+    return cleaned
+
+
+# Input Data Models with strict validations and XSS sanitizations
 class PrashnaRequest(BaseModel):
     name: str
     phone: str
     location: str
     question: str
 
+    @field_validator('name', 'location', 'question')
+    @classmethod
+    def sanitize_input(cls, v: str) -> str:
+        return sanitize_string(v)
+
+    @field_validator('phone')
+    @classmethod
+    def check_phone(cls, v: str) -> str:
+        return validate_phone_number(v)
+
 
 class ContactRequest(BaseModel):
     name: str
-    email: str
+    email: EmailStr
     phone: str
     subject: str
     message: str
+
+    @field_validator('name', 'subject', 'message')
+    @classmethod
+    def sanitize_input(cls, v: str) -> str:
+        return sanitize_string(v)
+
+    @field_validator('phone')
+    @classmethod
+    def check_phone(cls, v: str) -> str:
+        return validate_phone_number(v)
 
 
 class HelpRequest(BaseModel):
     name: str
     phone: str
-    email: str
+    email: EmailStr
     query: str
+
+    @field_validator('name', 'query')
+    @classmethod
+    def sanitize_input(cls, v: str) -> str:
+        return sanitize_string(v)
+
+    @field_validator('phone')
+    @classmethod
+    def check_phone(cls, v: str) -> str:
+        return validate_phone_number(v)
 
 
 class BookingRequest(BaseModel):
@@ -134,6 +194,18 @@ class BookingRequest(BaseModel):
     time_slot: str     # Format: "HH:MM" (24-hour time, e.g. "10:00", "15:30")
     duration_minutes: Optional[int] = 45
     birth_details: Optional[str] = None  # Intake details (DOB, Time, Place, or Specific Question)
+
+    @field_validator('full_name', 'service_name', 'birth_details')
+    @classmethod
+    def sanitize_input(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        return sanitize_string(v)
+
+    @field_validator('phone')
+    @classmethod
+    def check_phone(cls, v: str) -> str:
+        return validate_phone_number(v)
 
 
 @app.get("/")
@@ -717,6 +789,11 @@ INTAKE/BIRTH DETAILS:
 
     except HTTPException as http_ex:
         raise http_ex
+    except ValueError as val_err:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid date or time format. Please check your inputs. (Error: {str(val_err)})"
+        )
     except Exception as e:
         print(f"Error creating calendar event: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

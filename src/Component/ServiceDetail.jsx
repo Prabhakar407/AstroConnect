@@ -1666,30 +1666,72 @@ function PrashnaKundaliDetail({ details, navigate }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setServerError("");
-    if (formData.name && formData.phone && formData.location && formData.question) {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/prashna`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            phone: formData.phone,
-            location: formData.location,
-            question: formData.question,
-          }),
-        });
+    
+    if (!formData.name.trim()) {
+      setServerError("Name is required.");
+      return;
+    }
+    if (formData.name.trim().length < 2) {
+      setServerError("Name must be at least 2 characters.");
+      return;
+    }
+    if (!formData.phone.trim()) {
+      setServerError("Mobile number is required.");
+      return;
+    }
+    
+    const cleanPhone = formData.phone.trim().replace(/[\s\-]/g, '');
+    let phoneBody = cleanPhone;
+    if (cleanPhone.startsWith('+91')) {
+      phoneBody = cleanPhone.slice(3);
+    } else if (cleanPhone.startsWith('91') && cleanPhone.length === 12) {
+      phoneBody = cleanPhone.slice(2);
+    }
+    
+    const isTenDigits = /^[0-9]{10}$/.test(phoneBody);
+    if (!isTenDigits) {
+      setServerError("Mobile number must be exactly 10 digits (excluding +91 country code).");
+      return;
+    }
+    if (/^(\d)\1+$/.test(phoneBody)) {
+      setServerError("Mobile number cannot consist of only repeating identical digits.");
+      return;
+    }
+    if ("01234567890123456789".includes(phoneBody) || "98765432109876543210".includes(phoneBody)) {
+      setServerError("Mobile number cannot be a simple consecutive sequence.");
+      return;
+    }
+    if (!formData.location.trim()) {
+      setServerError("Location is required.");
+      return;
+    }
+    if (!formData.question.trim()) {
+      setServerError("Question/Inquiry is required.");
+      return;
+    }
 
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.detail || "Failed to submit Prashna question.");
-        }
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/prashna`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          location: formData.location,
+          question: formData.question,
+        }),
+      });
 
-        setSubmitted(true);
-      } catch (err) {
-        setServerError(err.message || "Failed to connect to backend server. Please verify that the backend is running.");
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.detail || "Failed to submit Prashna question.");
       }
+
+      setSubmitted(true);
+    } catch (err) {
+      setServerError(err.message || "Failed to connect to backend server. Please verify that the backend is running.");
     }
   };
 

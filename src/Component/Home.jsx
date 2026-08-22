@@ -523,6 +523,24 @@ export default function Home() {
   const handleFormSubmit = async (e) => {
     e.preventDefault()
     setServerError("")
+    
+    if (!formData.name.trim()) {
+      alert("Please enter your Name.")
+      return
+    }
+    if (formData.name.trim().length < 2) {
+      alert("Name must be at least 2 characters.")
+      return
+    }
+    if (!formData.email.trim()) {
+      alert("Please enter your Email Address.")
+      return
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      alert("Please enter a valid email address.")
+      return
+    }
     if (!formData.selectedService) {
       alert("Please select a service of interest.")
       return

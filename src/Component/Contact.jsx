@@ -134,6 +134,12 @@ function Contact() {
       if (!isTenDigits) {
         newErrors.phone = "Mobile number must be exactly 10 digits (excluding +91 country code)."
         isValid = false
+      } else if (/^(\d)\1+$/.test(phoneBody)) {
+        newErrors.phone = "Mobile number cannot consist of only repeating identical digits."
+        isValid = false
+      } else if ("01234567890123456789".includes(phoneBody) || "98765432109876543210".includes(phoneBody)) {
+        newErrors.phone = "Mobile number cannot be a simple consecutive sequence."
+        isValid = false
       }
     }
 
@@ -226,9 +232,26 @@ function Contact() {
     if (!helpFormData.phone.trim()) {
       newErrors.phone = "Mobile number is required."
       isValid = false
-    } else if (!/^\+?[0-9\s\-]{8,20}$/.test(helpFormData.phone)) {
-      newErrors.phone = "Please enter a valid mobile number."
-      isValid = false
+    } else {
+      const cleanPhone = helpFormData.phone.trim().replace(/[\s\-]/g, '')
+      let phoneBody = cleanPhone
+      if (cleanPhone.startsWith('+91')) {
+        phoneBody = cleanPhone.slice(3)
+      } else if (cleanPhone.startsWith('91') && cleanPhone.length === 12) {
+        phoneBody = cleanPhone.slice(2)
+      }
+      
+      const isTenDigits = /^[0-9]{10}$/.test(phoneBody)
+      if (!isTenDigits) {
+        newErrors.phone = "Mobile number must be exactly 10 digits (excluding +91 country code)."
+        isValid = false
+      } else if (/^(\d)\1+$/.test(phoneBody)) {
+        newErrors.phone = "Mobile number cannot consist of only repeating identical digits."
+        isValid = false
+      } else if ("01234567890123456789".includes(phoneBody) || "98765432109876543210".includes(phoneBody)) {
+        newErrors.phone = "Mobile number cannot be a simple consecutive sequence."
+        isValid = false
+      }
     }
     if (!helpFormData.email.trim()) {
       newErrors.email = "Email is required."

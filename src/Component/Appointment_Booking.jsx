@@ -176,9 +176,17 @@ function Appointment_Booking() {
     if (!formData.phone.trim()) {
       return "Please enter your Mobile Number.";
     }
+    const cleanPhone = formData.phone.trim().replace(/[\s\-]/g, '')
     const phoneRegex = /^\+?[0-9]{7,15}$/;
-    if (!phoneRegex.test(formData.phone.trim().replace(/[\s\-]/g, ''))) {
+    if (!phoneRegex.test(cleanPhone)) {
       return "Please enter a valid mobile number (digits only, e.g. +1234567890).";
+    }
+    const digits = cleanPhone.replace('+', '')
+    if (/^(\d)\1+$/.test(digits)) {
+      return "Mobile number cannot consist of only repeating identical digits.";
+    }
+    if ("01234567890123456789".includes(digits) || "98765432109876543210".includes(digits)) {
+      return "Mobile number cannot be a simple consecutive sequence.";
     }
     if (!formData.bookingDate) {
       return "Please select a date from the calendar grid.";
