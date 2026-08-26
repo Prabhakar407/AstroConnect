@@ -625,13 +625,13 @@ export default function Home() {
               </div>
 
               {/* Large Headline */}
-              <h2 className="text-[clamp(2.25rem,4.8vw,5.5rem)] font-serif !text-[#FDFCF5] leading-tight font-bold tracking-wide">
+              <h1 className="text-[clamp(2.25rem,4.8vw,5.5rem)] font-serif !text-[#FDFCF5] leading-tight font-bold tracking-wide">
                 Discover Your{" "}
                 <span className="bg-gradient-to-r from-[#D3AF54] via-[#AB7A57] to-[#D3AF54] bg-clip-text text-transparent drop-shadow-sm whitespace-nowrap">
                   True Destiny
                 </span>{" "}
                 <span className="sm:whitespace-nowrap">with Expert Guidance</span>
-              </h2>
+              </h1>
 
               {/* Subheading */}
               <p className="text-[clamp(0.875rem,1.1vw,1.15rem)] text-[#D8CFEB] leading-relaxed max-w-xl font-sans">

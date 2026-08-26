@@ -25,6 +25,7 @@ service_account.json
 local_bookings.json
 local_queries.json
 calendar_config.json
+sheets_config.json
 
 # Editor & System Files
 .vscode/

@@ -28,7 +28,11 @@ app.add_middleware(
 # File and Credentials Setup
 SERVICE_ACCOUNT_FILE = "service_account.json"
 CALENDAR_ID = "primary" # Store bookings on the Service Account calendar master database
-SCOPES = ["https://www.googleapis.com/auth/calendar"]
+SCOPES = [
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
 
 # ==========================================
 # ⚙️ BOOKING RULES & CONFIGURATION
@@ -101,6 +105,124 @@ def get_calendar_service():
             
     CALENDAR_ID = calendar_id
     return service
+
+
+
+def get_sheets_service():
+    """Initializes and returns Google Sheets and Drive API client services, creating & sharing the spreadsheet if it does not exist."""
+    if not os.path.exists(SERVICE_ACCOUNT_FILE):
+        return None, None
+        
+    try:
+        creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        sheets_service = build("sheets", "v4", credentials=creds)
+        drive_service = build("drive", "v3", credentials=creds)
+        return sheets_service, drive_service
+    except Exception as e:
+        print(f"Error initializing Sheets/Drive services: {str(e)}")
+        return None, None
+
+
+def get_or_create_spreadsheet(sheets_service, drive_service):
+    """Retrieves the existing spreadsheet ID from sheets_config.json or creates a new one in the Service Account drive and shares it."""
+    config_file = "sheets_config.json"
+    spreadsheet_id = os.getenv("GOOGLE_SHEET_ID")
+    astrologer_email = os.getenv("SMTP_EMAIL", "astroadvicebyks@gmail.com")
+    
+    # 1. Try reading from local config file
+    if not spreadsheet_id and os.path.exists(config_file):
+        try:
+            import json
+            with open(config_file, "r") as f:
+                config_data = json.load(f)
+                spreadsheet_id = config_data.get("spreadsheet_id")
+        except Exception:
+            pass
+            
+    # 2. If still not found, create a new spreadsheet
+    if not spreadsheet_id:
+        try:
+            print("Creating a new Google Sheet: 'Astrologer Kundan Singh Customer Database'...")
+            spreadsheet_body = {
+                'properties': {
+                    'title': 'Astrologer Kundan Singh Customer Database'
+                },
+                'sheets': [
+                    {'properties': {'title': 'Bookings'}},
+                    {'properties': {'title': 'Contact Queries'}},
+                    {'properties': {'title': 'Help Tickets'}},
+                    {'properties': {'title': 'Prashna Inquiries'}}
+                ]
+            }
+            spreadsheet = sheets_service.spreadsheets().create(
+                body=spreadsheet_body, 
+                fields='spreadsheetId'
+            ).execute()
+            spreadsheet_id = spreadsheet.get('spreadsheetId')
+            
+            # Share the spreadsheet with the astrologer as Writer (Editor)
+            permission_body = {
+                'type': 'user',
+                'role': 'writer',
+                'emailAddress': astrologer_email
+            }
+            drive_service.permissions().create(
+                fileId=spreadsheet_id,
+                body=permission_body
+            ).execute()
+            print(f"✓ Created and shared spreadsheet {spreadsheet_id} with {astrologer_email}")
+            
+            # Initialize headers for each sheet
+            headers_config = {
+                'Bookings': ["Timestamp", "Full Name", "Email", "Phone", "Service Name", "Date", "Time Slot", "Duration (Min)", "Birth Details"],
+                'Contact Queries': ["Timestamp", "Name", "Email", "Phone", "Subject", "Message"],
+                'Help Tickets': ["Timestamp", "Name", "Email", "Phone", "Query"],
+                'Prashna Inquiries': ["Timestamp", "Name", "Phone", "Location", "Question"]
+            }
+            for sheet_name, headers in headers_config.items():
+                sheets_service.spreadsheets().values().update(
+                    spreadsheetId=spreadsheet_id,
+                    range=f"{sheet_name}!A1",
+                    valueInputOption="USER_ENTERED",
+                    body={'values': [headers]}
+                ).execute()
+                
+            # Save spreadsheet ID to config file
+            import json
+            with open(config_file, "w") as f:
+                json.dump({"spreadsheet_id": spreadsheet_id, "shared_with": astrologer_email}, f, indent=4)
+                
+        except Exception as e:
+            print(f"Error creating Google Sheet: {str(e)}")
+            return None
+            
+    return spreadsheet_id
+
+
+def append_row_to_sheet(sheet_name: str, row: list):
+    """Utility to append a row of data to the Google Sheet if enabled."""
+    sheets_service, drive_service = get_sheets_service()
+    if not sheets_service or not drive_service:
+        return
+        
+    spreadsheet_id = get_or_create_spreadsheet(sheets_service, drive_service)
+    if not spreadsheet_id:
+        return
+        
+    try:
+        body = {
+            'values': [row]
+        }
+        sheets_service.spreadsheets().values().append(
+            spreadsheetId=spreadsheet_id,
+            range=f"{sheet_name}!A:Z",
+            valueInputOption="USER_ENTERED",
+            insertDataOption="INSERT_ROWS",
+            body=body
+        ).execute()
+        print(f"✓ Appended data row to Google Sheet tab '{sheet_name}'")
+    except Exception as e:
+        print(f"Failed to append row to Google Sheet: {str(e)}")
 
 
 
@@ -392,6 +514,20 @@ MESSAGE DETAIL:
             print(f"SMTP Email delivery failed: {str(e)}")
             email_status = "smtp_failed"
             
+    # Append to Google Sheets
+    try:
+        timestamp_str = datetime.utcnow().isoformat()
+        append_row_to_sheet("Contact Queries", [
+            timestamp_str,
+            contact.name,
+            contact.email,
+            contact.phone,
+            contact.subject,
+            contact.message
+        ])
+    except Exception as sheets_err:
+        print(f"Failed to log contact inquiry to Google Sheets: {str(sheets_err)}")
+
     return {
         "status": "success",
         "sms_status": sms_status,
@@ -480,6 +616,19 @@ QUERY/MESSAGE:
             print(f"SMTP Email delivery failed: {str(e)}")
             email_status = "smtp_failed"
             
+    # Append to Google Sheets
+    try:
+        timestamp_str = datetime.utcnow().isoformat()
+        append_row_to_sheet("Help Tickets", [
+            timestamp_str,
+            help_req.name,
+            help_req.email,
+            help_req.phone,
+            help_req.query
+        ])
+    except Exception as sheets_err:
+        print(f"Failed to log help query to Google Sheets: {str(sheets_err)}")
+
     return {
         "status": "success",
         "email_status": email_status,
@@ -567,6 +716,19 @@ SPECIFIC QUESTION:
             print(f"SMTP Email delivery failed: {str(e)}")
             email_status = "smtp_failed"
             
+    # Append to Google Sheets
+    try:
+        timestamp_str = datetime.utcnow().isoformat()
+        append_row_to_sheet("Prashna Inquiries", [
+            timestamp_str,
+            prashna.name,
+            prashna.phone,
+            prashna.location,
+            prashna.question
+        ])
+    except Exception as sheets_err:
+        print(f"Failed to log Prashna inquiry to Google Sheets: {str(sheets_err)}")
+
     return {
         "status": "success",
         "email_status": email_status,
@@ -739,6 +901,23 @@ INTAKE/BIRTH DETAILS:
                     print("✓ Booking notification email sent successfully")
                 except Exception as e:
                     print(f"Failed to send booking notification email: {str(e)}")
+
+            # Append to Google Sheets
+            try:
+                timestamp_str = datetime.utcnow().isoformat()
+                append_row_to_sheet("Bookings", [
+                    timestamp_str,
+                    booking.full_name,
+                    booking.email,
+                    booking.phone,
+                    booking.service_name,
+                    booking.date,
+                    booking.time_slot,
+                    booking.duration_minutes,
+                    booking.birth_details
+                ])
+            except Exception as sheets_err:
+                print(f"Failed to log booking to Google Sheets: {str(sheets_err)}")
 
             return {
                 "status": "success",

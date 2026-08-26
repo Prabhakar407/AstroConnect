@@ -165,7 +165,7 @@ export default function Footer() {
       {/* Footer Bottom Metadata Bar */}
       <div className="max-w-7xl mx-auto px-6 lg:px-8 pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-[#D8CFEB]/85 gap-4">
         <div>
-          <span>© 2025 Astroadvice. All Rights Reserved.</span>
+          <span>© 2026 Astroadvice. All Rights Reserved.</span>
         </div>
         
         {/* Policies Links */}
