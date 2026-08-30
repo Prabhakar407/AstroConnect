@@ -9,6 +9,8 @@ const API_BASE_URL = import.meta.env.DEV
 import logoImg from "../assets/logos/Nav-Logo.png";
 import featureBg from "../assets/images/Feature.png";
 import astrologerPortrait from "../assets/images/astrologer_portrait.jpg";
+import hero1 from "../assets/images/Hero1.png";
+import aboutImg from "../assets/images/About.png";
 import zodiacWheel from "../assets/images/zodiac_wheel.jpg";
 import vedicAstrologyImg from '../assets/images/Vedic Astrology.png'
 import numerologyImg from '../assets/images/Numerology.png'
@@ -351,6 +353,18 @@ const ServiceSlider = () => {
  */
 export default function Home() {
   const timelineRef = useRef(null);
+  const imageVariants = {
+    initial: { opacity: 0, scale: 0.95 },
+    animate: { 
+      opacity: 0.95, 
+      scale: 1,
+      transition: { duration: 1.0, ease: "easeInOut", delay: 0.3 }
+    },
+    hover: { 
+      scale: 1.05,
+      transition: { duration: 0.7, ease: "easeOut" }
+    }
+  };
   const [dotStep, setDotStep] = useState(0);
   const [visibleCardsCount, setVisibleCardsCount] = useState(0);
   const [isTimelineStarted, setIsTimelineStarted] = useState(false);
@@ -683,13 +697,44 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="absolute w-[clamp(15rem,21vw,22rem)] h-[clamp(15rem,21vw,22rem)] rounded-full overflow-hidden border-4 border-[#D3AF54] bg-[#06091B] shadow-2xl flex items-center justify-center group hover:scale-[1.02] transition-all duration-500 hover:shadow-[0_20px_45px_rgba(211,175,84,0.3)]">
-                <img 
-                  src={astrologerPortrait} 
-                  alt="Astrologer Kundan Singh at work" 
-                  className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
+              {/* Original Circle Container with 3D pop-out Hero1 image */}
+              <motion.div 
+                whileHover="hover"
+                className="absolute w-[clamp(15rem,21vw,22rem)] h-[clamp(15rem,21vw,22rem)] flex items-end justify-center group"
+              >
+                
+                {/* Layer 1: Background Circle & Full Border (overflow-hidden to clip bottom image to circle curve) */}
+                <div className="absolute inset-0 rounded-full border-4 border-[#D3AF54] bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.25)_0%,#0c0817_80%)] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.85),_0_0_25px_rgba(211,175,84,0.15)] overflow-hidden">
+                  <motion.img 
+                    src={hero1} 
+                    alt="Astrologer Kundan Singh base" 
+                    variants={imageVariants}
+                    initial="initial"
+                    animate="animate"
+                    className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[120%] w-auto object-contain origin-bottom"
+                  />
+                </div>
+
+                {/* Layer 2: Top-half overlay image (crosses top border, bottom is clipped at 50%) */}
+                <motion.img 
+                  src={hero1} 
+                  alt="Astrologer Kundan Singh pop-out" 
+                  variants={imageVariants}
+                  initial="initial"
+                  animate="animate"
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[120%] w-auto object-contain origin-bottom pointer-events-none z-10"
+                  style={{ 
+                    clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 50%)',
+                    filter: 'drop-shadow(0 10px 15px rgba(0, 0, 0, 0.6))'
+                  }}
                 />
-              </div>
+
+                {/* Layer 3: Front Border Overlay (covers only the bottom half of the image to make it look behind the bottom border) */}
+                <div 
+                  className="absolute inset-0 rounded-full border-4 border-[#D3AF54] pointer-events-none z-20"
+                  style={{ clipPath: 'polygon(0 50%, 100% 50%, 100% 100%, 0 100%)' }}
+                />
+              </motion.div>
             </motion.div>
 
           </section>
@@ -1257,13 +1302,13 @@ export default function Home() {
                 
                 <div className="w-full max-w-[clamp(18rem,26vw,28rem)] aspect-[4/5] rounded-3xl overflow-hidden border-4 border-[#D3AF54] bg-[#181122] shadow-xl hover:shadow-[0_20px_45px_rgba(211,175,84,0.25)] flex items-center justify-center relative group hover:scale-[1.03] transition-all duration-500">
                   <img 
-                    src={astrologerPortrait} 
+                    src={aboutImg} 
                     alt="Astrologer Kundan Singh at work" 
                     className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
                   />
                 </div>
               </motion.div>
-
+ 
               {/* Right Column Profile Details (Slides in from the bottom) */}
               <motion.div 
                 initial={{ opacity: 0, y: 40 }}
@@ -1279,13 +1324,13 @@ export default function Home() {
                 <h3 className="text-[clamp(1.4rem,2.2vw,2.4rem)] font-serif font-bold text-[#181122] tracking-wide mt-1 text-left">
                   Your Guide to a Brighter Future
                 </h3>
-
+ 
                 {/* Mobile/Tablet Image - visible only on screens smaller than lg */}
                 <div className="block lg:hidden w-full my-4 flex justify-center items-center relative min-h-[260px] z-10">
                   <div className="absolute -inset-1 border-2 border-dashed border-[#AB7A57]/30 rounded-3xl -z-10"></div>
                   <div className="w-full max-w-[14rem] aspect-[4/5] rounded-3xl overflow-hidden border-4 border-[#D3AF54] bg-[#181122] shadow-lg flex items-center justify-center relative">
                     <img 
-                      src={astrologerPortrait} 
+                      src={aboutImg} 
                       alt="Astrologer Kundan Singh" 
                       className="w-full h-full object-cover opacity-90"
                     />

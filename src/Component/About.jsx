@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import astrologerPortrait from '../assets/images/astrologer_portrait.jpg'
+import aboutImg from '../assets/images/About.png'
 import vedicAstrologyImg from '../assets/images/Vedic Astrology.png'
 import numerologyImg from '../assets/images/Numerology.png'
 import vastuConsultationImg from '../assets/images/Vastu Consultation.png'
@@ -246,7 +246,7 @@ function About() {
               {/* Elegant Archway/Temple Portal Frame */}
               <div className="relative w-[clamp(15rem,24vw,22rem)] aspect-[3/4] rounded-t-full border-2 border-[#D3AF54] bg-[#181122] shadow-[0_20px_50px_rgba(211,175,84,0.25)] overflow-hidden flex items-center justify-center group z-10">
                 <img 
-                  src={astrologerPortrait} 
+                  src={aboutImg} 
                   alt="Astrologer Kundan Singh" 
                   className="w-full h-full object-cover opacity-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 absolute inset-0"
                 />
