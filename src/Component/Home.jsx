@@ -10,7 +10,7 @@ import logoImg from "../assets/logos/Nav-Logo.png";
 import featureBg from "../assets/images/Feature.png";
 import astrologerPortrait from "../assets/images/astrologer_portrait.jpg";
 import hero1 from "../assets/images/Hero1.png";
-import aboutImg from "../assets/images/About.png";
+import about1 from "../assets/images/About1.jpeg";
 import zodiacWheel from "../assets/images/zodiac_wheel.jpg";
 import vedicAstrologyImg from '../assets/images/Vedic Astrology.png'
 import numerologyImg from '../assets/images/Numerology.png'
@@ -639,7 +639,7 @@ export default function Home() {
               </div>
 
               {/* Large Headline */}
-              <h1 className="text-[clamp(2.25rem,4.8vw,5.5rem)] font-serif !text-[#FDFCF5] leading-tight font-bold tracking-wide">
+              <h1 className="text-[clamp(2.25rem,4.8vw,5.5rem)] font-serif !text-[#FDFCF5] leading-tight font-normal tracking-wide">
                 Discover Your{" "}
                 <span className="bg-gradient-to-r from-[#D3AF54] via-[#AB7A57] to-[#D3AF54] bg-clip-text text-transparent drop-shadow-sm whitespace-nowrap">
                   True Destiny
@@ -648,8 +648,8 @@ export default function Home() {
               </h1>
 
               {/* Subheading */}
-              <p className="text-[clamp(0.875rem,1.1vw,1.15rem)] text-[#D8CFEB] leading-relaxed max-w-xl font-sans">
-                Astrologer Kundan Singh offers precise birth chart analysis, Vedic predictions, gemstones recommendation, and Vastu consultations. Over a decade of cosmic map readings.
+              <p className="text-[clamp(0.85rem,1.1vw,1.1rem)] tracking-[0.15em] font-semibold text-[#D3AF54]/90 uppercase font-sans">
+                KUNDLI • VEDIC ASTROLOGY • NUMEROLOGY • VASTU
               </p>
 
               {/* Action Buttons Row */}
@@ -662,12 +662,12 @@ export default function Home() {
                   <span>Book Consultation</span>
                 </Link>
 
-                <a 
-                  href="#quick-connect"
+                <Link 
+                  to="/about"
                   className="border border-[#AB7A57] hover:border-[#D3AF54] text-white hover:text-[#D3AF54] font-bold px-8 py-3.5 rounded-xl flex items-center gap-2 hover:scale-[1.03] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 backdrop-blur-md cursor-pointer text-sm tracking-wide bg-white/[0.02]"
                 >
                   <span>Quick Inquiry</span>
-                </a>
+                </Link>
               </div>
             </motion.div>
 
@@ -1298,11 +1298,9 @@ export default function Home() {
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="hidden lg:flex lg:col-span-5 justify-center items-center relative w-full min-h-[400px]"
               >
-                <div className="absolute -inset-2 border-2 border-dashed border-[#AB7A57]/40 rounded-3xl -z-10"></div>
-                
                 <div className="w-full max-w-[clamp(18rem,26vw,28rem)] aspect-[4/5] rounded-3xl overflow-hidden border-4 border-[#D3AF54] bg-[#181122] shadow-xl hover:shadow-[0_20px_45px_rgba(211,175,84,0.25)] flex items-center justify-center relative group hover:scale-[1.03] transition-all duration-500">
                   <img 
-                    src={aboutImg} 
+                    src={about1} 
                     alt="Astrologer Kundan Singh at work" 
                     className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
                   />
@@ -1327,20 +1325,19 @@ export default function Home() {
  
                 {/* Mobile/Tablet Image - visible only on screens smaller than lg */}
                 <div className="block lg:hidden w-full my-4 flex justify-center items-center relative min-h-[260px] z-10">
-                  <div className="absolute -inset-1 border-2 border-dashed border-[#AB7A57]/30 rounded-3xl -z-10"></div>
                   <div className="w-full max-w-[14rem] aspect-[4/5] rounded-3xl overflow-hidden border-4 border-[#D3AF54] bg-[#181122] shadow-lg flex items-center justify-center relative">
                     <img 
-                      src={aboutImg} 
+                      src={about1} 
                       alt="Astrologer Kundan Singh" 
                       className="w-full h-full object-cover opacity-90"
                     />
                   </div>
                 </div>
-
+ 
                 <div className="relative p-5 rounded-2xl bg-white/40 border border-[#AB7A57]/15 shadow-sm text-left backdrop-blur-xs">
                   <div className="absolute top-0 left-0 w-2 h-full bg-[#D3AF54] rounded-l-2xl" />
                   <p className="text-xs sm:text-sm text-[#181122]/90 leading-relaxed font-sans pl-2">
-                    I am a qualified Vedic astrologer with over 15 years of experience, specializing in Janam Kundli analysis, Vastu Shastra, and Numerology. My approach combines traditional planetary wisdom—honed through rigorous education in Astrology and Alankar at Bharatiya Vidya Bhavan—with practical remedial insights to help you navigate modern life's career, relationship, and financial pathways.
+                    As a qualified Vedic astrologer with over 15 years of experience, I specialize in Kundli analysis, Vastu Shastra, and Numerology. Educated at Bharatiya Vidya Bhavan, I combine traditional planetary wisdom with practical remedies to guide your career, relationships, and finance.
                   </p>
                 </div>
 
@@ -1426,13 +1423,18 @@ export default function Home() {
                 <div className="space-y-3">
                   {/* Header Title */}
                   <div className="space-y-1">
-                    <span className="text-[10px] tracking-[0.2em] font-bold text-[#D3AF54] uppercase font-sans block">
-                      ✦ TRUSTED & CONFIDENTIAL ✦
-                    </span>
-                    <h3 className="text-[clamp(1.1rem,1.5vw,1.5rem)] font-serif font-bold text-white tracking-wide">
+                    <div className="text-center pb-1.5 space-y-0.5">
+                      <span className="text-xs sm:text-sm tracking-[0.2em] font-bold text-[#D3AF54] uppercase font-sans block">
+                        Send Query
+                      </span>
+                      <span className="text-[11px] sm:text-xs tracking-[0.2em] font-bold text-[#D3AF54]/85 uppercase font-sans block">
+                        ✦ TRUSTED & CONFIDENTIAL ✦
+                      </span>
+                    </div>
+                    <h3 style={{ color: '#D3AF54' }} className="text-[clamp(1.1rem,1.5vw,1.5rem)] font-serif font-bold !text-[#D3AF54] tracking-wide">
                       Select Vedic Service*
                     </h3>
-                    <p className="text-[clamp(0.8rem,1vw,1.1rem)] text-[#D8CFEB] leading-relaxed font-sans">
+                    <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans">
                       Select a service below to request your consultation. Selection is compulsory.
                     </p>
                   </div>
@@ -1513,7 +1515,7 @@ export default function Home() {
 
               {/* Right Panel: Contact Form */}
               <div
-                className="flex flex-col justify-between bg-[#181122] border border-[#AB7A57]/20 rounded-2xl p-5 lg:p-6 text-left shadow-lg hover:border-[#D3AF54] transition-all duration-300 relative overflow-hidden"
+                className="flex flex-col justify-start bg-[#181122] border border-[#AB7A57]/20 rounded-2xl pt-5 px-5 pb-6 lg:pt-6 lg:px-6 lg:pb-7 text-left shadow-lg hover:border-[#D3AF54] transition-all duration-300 relative overflow-hidden"
               >
                 {/* Orbiting Planetary Decor */}
                 <div className="absolute top-3 right-3 w-20 h-20 pointer-events-none select-none opacity-40 z-0">
@@ -1555,17 +1557,20 @@ export default function Home() {
                     )}
                     {/* Header info */}
                     <div className="space-y-1">
-                      <span className="text-xs tracking-[0.25em] font-bold text-[#D3AF54] uppercase font-sans block">
+                      <span className="text-[11px] sm:text-xs tracking-[0.2em] font-bold text-[#D3AF54]/85 uppercase font-sans block">
                         ✦ ACCURATE PREDICTIONS ✦
                       </span>
+                      <h3 style={{ color: '#D3AF54' }} className="text-[clamp(1.1rem,1.5vw,1.5rem)] font-serif font-bold !text-[#D3AF54] tracking-wide">
+                        Vedic Inquiry Details*
+                      </h3>
                       <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans">
                         Fill in your details below. Fields marked with * are required.
                       </p>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-4 pt-1">
                       {/* Name field */}
-                      <div className="space-y-1 text-left">
+                      <div className="space-y-1.5 text-left">
                         <label htmlFor="form-name" className="block text-xs sm:text-sm font-semibold text-[#D3AF54] uppercase tracking-wide">
                           Your Name*
                         </label>
@@ -1582,7 +1587,7 @@ export default function Home() {
                       </div>
 
                       {/* DOB field */}
-                      <div className="space-y-1 text-left">
+                      <div className="space-y-1.5 text-left">
                         <label htmlFor="form-dob" className="block text-xs sm:text-sm font-semibold text-[#D3AF54] uppercase tracking-wide">
                           Date of Birth (YYYY-MM-DD)*
                         </label>
@@ -1598,7 +1603,7 @@ export default function Home() {
                       </div>
 
                       {/* Email field */}
-                      <div className="space-y-1 text-left">
+                      <div className="space-y-1.5 text-left">
                         <label htmlFor="form-email" className="block text-xs sm:text-sm font-semibold text-[#D3AF54] uppercase tracking-wide">
                           Email Address*
                         </label>
@@ -1654,7 +1659,7 @@ export default function Home() {
                       </div>
 
                       {/* Cosmic Comment */}
-                      <div className="space-y-1 text-left">
+                      <div className="space-y-1.5 text-left">
                         <label htmlFor="form-comment" className="block text-xs sm:text-sm font-semibold text-[#D3AF54] uppercase tracking-wide">
                           Cosmic Comment / Vedic Inquiry
                         </label>
@@ -1673,7 +1678,7 @@ export default function Home() {
                     {/* Submit button */}
                     <button 
                       type="submit"
-                      className="w-full bg-[#D3AF54] hover:bg-[#D3AF54]/90 text-[#181122] font-bold py-3.5 rounded-lg hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-300 shadow-md hover:shadow-[0_0_15px_rgba(211,175,84,0.3)] cursor-pointer flex items-center justify-center gap-2 mt-4 text-xs sm:text-sm tracking-wider uppercase"
+                      className="w-full bg-[#D3AF54] hover:bg-[#D3AF54]/90 text-[#181122] font-bold py-3.5 rounded-lg hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-300 shadow-md hover:shadow-[0_0_15px_rgba(211,175,84,0.3)] cursor-pointer flex items-center justify-center gap-2 mt-5 text-xs sm:text-sm tracking-wider uppercase"
                     >
                       <Send size={12} />
                       <span>Send Vedic Inquiry Request</span>

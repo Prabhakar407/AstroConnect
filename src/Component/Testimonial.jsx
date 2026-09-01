@@ -148,7 +148,7 @@ function Testimonial() {
 
       {/* Rotating Background Zodiac Motif */}
       <motion.div 
-        style={{ y: yZodiac, rotate: rZodiac }}
+        style={{ y: yZodiac, rotate: rZodiac, willChange: 'transform' }}
         className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.02] flex justify-center items-center"
       >
         <svg className="w-[550px] h-[550px] text-[#AB7A57] animate-[spin_260s_linear_infinite]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.4">

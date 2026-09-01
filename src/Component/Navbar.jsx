@@ -200,7 +200,7 @@ export default function Navbar() {
             {/* Contact Phone */}
             <div className="flex items-center gap-1.5 text-[#D3AF54] text-xs font-semibold">
               <span>☎</span>
-              <span>+91 8130808758, +91 8527790801</span>
+              <span>+91 8130808758 | +91 8527790801</span>
             </div>
 
             <div className="relative">
@@ -390,7 +390,7 @@ export default function Navbar() {
             {/* Phone */}
             <div className="flex items-center gap-1.5 text-[#D3AF54] text-sm font-medium">
               <span>☎</span>
-              <span>+91 8130808758, +91 8527790801</span>
+              <span>+91 8130808758 | +91 8527790801</span>
             </div>
 
             {/* CTA Button */}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, ArrowRight, Home, Sofa, Bed, Utensils, Bath, Briefcase, Heart, RefreshCw, Globe, User, BookOpen, Compass } from 'lucide-react'
+import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, ArrowRight, Home, Sofa, Bed, Utensils, Bath, Briefcase, Heart, RefreshCw, Globe, User, BookOpen, Compass, Send, Phone, MapPin, MessageSquare } from 'lucide-react'
 
 const API_BASE_URL = import.meta.env.DEV 
   ? "http://localhost:8000" 
@@ -347,7 +347,7 @@ export default function ServiceDetail() {
                   <Star size={12} className="fill-[#D3AF54]" />
                   <Star size={12} className="fill-[#D3AF54]" />
                   <Star size={12} className="fill-[#D3AF54]" />
-                  <span className="text-[10px] text-[#AB7A57] font-semibold font-sans ml-1">Trusted Expert</span>
+                  <span className="text-xs sm:text-sm text-[#AB7A57] font-bold font-sans ml-1">Trusted Expert</span>
                 </div>
               </div>
             </motion.div>
@@ -381,7 +381,7 @@ export default function ServiceDetail() {
                 ].map((item, idx) => (
                   <div key={idx} className="bg-[#181122] text-white border border-[#D3AF54]/25 rounded-2xl p-3 flex flex-col items-center justify-center shadow-md hover:border-[#D3AF54] transition-all duration-300">
                     <span className="text-xl sm:text-2xl font-bold font-serif text-[#D3AF54]">{item.n}</span>
-                    <span className="text-[10px] font-sans font-semibold tracking-wide text-white/80 mt-0.5">{item.p}</span>
+                    <span className="text-xs sm:text-sm font-sans font-bold tracking-wide text-white/90 mt-1">{item.p}</span>
                   </div>
                 ))}
               </div>
@@ -758,7 +758,7 @@ export default function ServiceDetail() {
                           <p className={`text-xs sm:text-sm font-bold font-sans ${activeAstrologyBenefit === idx ? 'text-[#D3AF54]' : 'text-[#181122]'}`}>
                             {benefit.label}
                           </p>
-                          <p className={`text-[11px] ${activeAstrologyBenefit === idx ? 'text-[#D8CFEB]' : 'text-[#181122]/60'}`}>
+                          <p className={`text-xs sm:text-sm ${activeAstrologyBenefit === idx ? 'text-[#D8CFEB]' : 'text-[#181122]/80'}`}>
                             {benefit.sub}
                           </p>
                         </div>
@@ -1332,9 +1332,9 @@ export default function ServiceDetail() {
                     <div className="w-14 h-14 rounded-full bg-[#FFF9E6] border border-gold-aura/30 flex items-center justify-center mb-2 overflow-hidden p-1.5 shadow-xs">
                       <img src={item.icon} alt={item.name} className="w-full h-full object-contain" />
                     </div>
-                    <span className="font-serif font-bold text-[#181122] text-sm sm:text-base">{item.name}</span>
-                    <span className="text-[10px] font-sans font-bold text-[#AB7A57] uppercase tracking-wide mt-0.5">{item.sanskrit}</span>
-                    <div className="mt-3 px-3 py-0.5 bg-[#181122] text-gold-aura rounded-full border border-gold-aura/25 text-[10px] font-bold uppercase tracking-wider">
+                    <span className="font-serif font-bold text-[#181122] text-base sm:text-lg">{item.name}</span>
+                    <span className="text-xs sm:text-sm font-sans font-bold text-[#AB7A57] uppercase tracking-wide mt-0.5">{item.sanskrit}</span>
+                    <div className="mt-3 px-3 py-0.5 bg-[#181122] text-gold-aura rounded-full border border-gold-aura/25 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
                       Direction: {item.dir}
                     </div>
                   </div>
@@ -1657,29 +1657,24 @@ function PrashnaKundaliDetail({ details, navigate }) {
     question: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setServerError("");
-    
+  const validatePrashnaForm = () => {
     if (!formData.name.trim()) {
-      setServerError("Name is required.");
-      return;
+      return "Please enter your Full Name.";
     }
     if (formData.name.trim().length < 2) {
-      setServerError("Name must be at least 2 characters.");
-      return;
+      return "Name must be at least 2 characters.";
     }
     if (!formData.phone.trim()) {
-      setServerError("Mobile number is required.");
-      return;
+      return "Please enter your Mobile Number.";
     }
-    
     const cleanPhone = formData.phone.trim().replace(/[\s\-]/g, '');
     let phoneBody = cleanPhone;
     if (cleanPhone.startsWith('+91')) {
@@ -1687,28 +1682,55 @@ function PrashnaKundaliDetail({ details, navigate }) {
     } else if (cleanPhone.startsWith('91') && cleanPhone.length === 12) {
       phoneBody = cleanPhone.slice(2);
     }
-    
-    const isTenDigits = /^[0-9]{10}$/.test(phoneBody);
-    if (!isTenDigits) {
-      setServerError("Mobile number must be exactly 10 digits (excluding +91 country code).");
-      return;
+    const phoneRegex = /^\+?[0-9]{7,15}$/;
+    if (!phoneRegex.test(cleanPhone)) {
+      return "Please enter a valid mobile number (digits only, e.g. +1234567890).";
     }
-    if (/^(\d)\1+$/.test(phoneBody)) {
-      setServerError("Mobile number cannot consist of only repeating identical digits.");
-      return;
+    const digits = cleanPhone.replace('+', '');
+    if (/^(\d)\1+$/.test(digits)) {
+      return "Mobile number cannot consist of only repeating identical digits.";
     }
-    if ("01234567890123456789".includes(phoneBody) || "98765432109876543210".includes(phoneBody)) {
-      setServerError("Mobile number cannot be a simple consecutive sequence.");
-      return;
+    if ("01234567890123456789".includes(digits) || "98765432109876543210".includes(digits)) {
+      return "Mobile number cannot be a simple consecutive sequence.";
     }
     if (!formData.location.trim()) {
-      setServerError("Location is required.");
-      return;
+      return "Please enter your Current Location (City, Country).";
+    }
+    if (formData.location.trim().length < 2) {
+      return "Please enter a valid location.";
     }
     if (!formData.question.trim()) {
-      setServerError("Question/Inquiry is required.");
+      return "Please enter your Specific Question.";
+    }
+    if (formData.question.trim().length < 10) {
+      return "Your question must be at least 10 characters so we can perform an accurate Prashna chart reading.";
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    if (attemptedSubmit) {
+      const err = validatePrashnaForm();
+      setServerError(err || "");
+    }
+  }, [formData, attemptedSubmit]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setAttemptedSubmit(true);
+    
+    const validationError = validatePrashnaForm();
+    if (validationError) {
+      setServerError(validationError);
+      const formElement = document.getElementById("prashna-form");
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
       return;
     }
+
+    setLoading(true);
+    setServerError("");
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/prashna`, {
@@ -1732,6 +1754,8 @@ function PrashnaKundaliDetail({ details, navigate }) {
       setSubmitted(true);
     } catch (err) {
       setServerError(err.message || "Failed to connect to backend server. Please verify that the backend is running.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -1982,6 +2006,8 @@ function PrashnaKundaliDetail({ details, navigate }) {
                 onClick={() => {
                   setSubmitted(false);
                   setFormData({ name: '', phone: '', location: '', question: '' });
+                  setAttemptedSubmit(false);
+                  setServerError("");
                 }}
                 className="mt-4 text-xs font-bold text-[#D3AF54] hover:text-[#EAD18D] underline cursor-pointer"
               >
@@ -1989,69 +2015,108 @@ function PrashnaKundaliDetail({ details, navigate }) {
               </button>
             </motion.div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-5 text-left">
+            <form id="prashna-form" onSubmit={handleSubmit} className="space-y-4 text-left">
               {serverError && (
-                <div className="p-3 bg-red-950/60 border border-red-500/40 rounded-xl text-red-200 text-xs text-center font-sans tracking-wide">
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3.5 bg-red-950/70 border border-red-500/40 rounded-xl text-red-200 text-xs md:text-sm text-center font-sans tracking-wide leading-relaxed shadow-[0_0_15px_rgba(239,68,68,0.15)]"
+                >
                   ⚠️ {serverError}
-                </div>
+                </motion.div>
               )}
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider mb-2">Full Name</label>
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
+                    Full Name <span className="text-[#D3AF54]">*</span>
+                  </label>
+                  <div className="relative">
+                    <User size={15} className="absolute left-3 top-3 text-[#D3AF54]/60" />
+                    <input 
+                      type="text" 
+                      required
+                      placeholder="e.g. John Doe"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full bg-[#241B33] text-[#FDFCF5] border border-white/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition placeholder-white/40 font-sans"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
+                    Mobile Number <span className="text-[#D3AF54]">*</span>
+                  </label>
+                  <div className="relative">
+                    <Phone size={15} className="absolute left-3 top-3 text-[#D3AF54]/60" />
+                    <input 
+                      type="tel" 
+                      required
+                      placeholder="e.g. +91 9876543210"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full bg-[#241B33] text-[#FDFCF5] border border-white/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition placeholder-white/40 font-sans"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
+                  Current Location (City, Country) <span className="text-[#D3AF54]">*</span>
+                </label>
+                <div className="relative">
+                  <MapPin size={15} className="absolute left-3 top-3 text-[#D3AF54]/60" />
                   <input 
                     type="text" 
                     required
-                    placeholder="e.g. John Doe"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-[#241B33] text-[#FDFCF5] border border-slate-700/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#D3AF54] transition placeholder-slate-500 font-sans"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider mb-2">Mobile Number</label>
-                  <input 
-                    type="tel" 
-                    required
-                    placeholder="e.g. +1 555-0199"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full bg-[#241B33] text-[#FDFCF5] border border-slate-700/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#D3AF54] transition placeholder-slate-500 font-sans"
+                    placeholder="e.g. New Delhi, India"
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    className="w-full bg-[#241B33] text-[#FDFCF5] border border-white/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition placeholder-white/40 font-sans"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider mb-2">Current Location (City, Country)</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="e.g. London, UK"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="w-full bg-[#241B33] text-[#FDFCF5] border border-slate-700/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#D3AF54] transition placeholder-slate-500 font-sans"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider mb-2">Your Specific Question</label>
+              <div className="space-y-1">
+                <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
+                  Your Specific Question <span className="text-[#D3AF54]">*</span>
+                </label>
                 <textarea 
                   required
                   placeholder="e.g. Will my visa application be approved this month?"
-                  rows={4}
+                  rows={3}
                   value={formData.question}
                   onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                  className="w-full bg-[#241B33] text-[#FDFCF5] border border-slate-700/50 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#D3AF54] transition placeholder-slate-500 min-h-[120px] resize-none font-sans"
+                  className="w-full bg-[#241B33] text-[#FDFCF5] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition placeholder-white/40 min-h-[90px] resize-none font-sans"
                 />
               </div>
 
-              <div className="pt-2">
-                <button 
+              <div className="pt-2 flex justify-center">
+                <motion.button 
                   type="submit"
-                  className="w-full inline-flex items-center justify-center gap-2 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-8 py-4 rounded-xl shadow-lg shadow-[#D3AF54]/10 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 text-xs sm:text-sm uppercase tracking-wider cursor-pointer font-sans"
+                  disabled={loading}
+                  whileHover={loading ? {} : { scale: 1.02, y: -1, boxShadow: "0 8px 18px rgba(211, 175, 84, 0.15), 0 0 15px rgba(211, 175, 84, 0.3)" }}
+                  whileTap={loading ? {} : { scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                  className={`w-auto inline-flex items-center justify-center gap-2 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] border border-[#D3AF54] font-semibold px-8 sm:px-10 py-3 rounded-xl shadow-md transition duration-300 text-xs sm:text-sm cursor-pointer font-sans ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
-                  <span>Analyze My Question Now</span>
-                  <ArrowRight size={14} />
-                </button>
+                  {loading ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-[#181122]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Analyzing Cosmic Alignments...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Analyze My Question Now</span>
+                      <ArrowRight size={15} />
+                    </>
+                  )}
+                </motion.button>
               </div>
             </form>
           )}
@@ -2066,7 +2131,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
       <div className="w-full bg-[#F4F1E3] py-6 md:py-10 flex justify-center z-10 px-6">
         <Link 
           to="/" 
-          className="flex items-center gap-2 hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors"
+          className="flex items-center gap-2 text-[#AB7A57] hover:text-[#D3AF54] text-xs font-semibold uppercase tracking-wider transition-colors"
         >
           <ArrowLeft size={12} />
           <span>Back to Home</span>

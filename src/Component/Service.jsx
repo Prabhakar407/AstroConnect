@@ -154,7 +154,7 @@ function Service() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          style={{ y: yDrift }}
+          style={{ y: yDrift, willChange: 'transform' }}
           className="text-center max-w-2xl relative z-10"
         >
           <span className="text-[#AB7A57] text-xs tracking-[0.25em] font-bold uppercase block mb-3 font-sans">
@@ -208,7 +208,7 @@ function Service() {
                 {item.icon}
               </div>
 
-              <div className="absolute top-4 right-4 bg-[#D3AF54]/15 border border-[#D3AF54]/40 backdrop-blur-md px-3 py-1 rounded-lg z-20 text-[10px] uppercase font-bold tracking-widest text-[#D3AF54]">
+              <div className="absolute top-4 right-4 bg-[#D3AF54]/15 border border-[#D3AF54]/40 backdrop-blur-md px-3 py-1 rounded-lg z-20 text-[11px] sm:text-xs uppercase font-bold tracking-widest text-[#D3AF54]">
                 {item.price} • {item.duration}
               </div>
 
@@ -219,7 +219,7 @@ function Service() {
                   {item.title}
                 </h3>
                 
-                <p className="text-xs text-[#D8CFEB] leading-relaxed font-sans font-light line-clamp-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300 mb-2">
+                <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans font-normal line-clamp-2 opacity-95 group-hover:opacity-100 transition-opacity duration-300 mb-2">
                   {item.desc}
                 </p>
 
@@ -227,13 +227,13 @@ function Service() {
                 <div className="flex gap-2.5 pt-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0 transition-all duration-500 ease-out delay-75">
                   <Link 
                     to={`/services/${item.id}`}
-                    className="flex-1 border border-[#D3AF54]/30 hover:border-[#D3AF54] hover:bg-[#D3AF54]/10 text-white font-bold text-[10px] uppercase tracking-wider py-2.5 rounded-xl text-center transition-all duration-300"
+                    className="flex-1 border border-[#D3AF54]/30 hover:border-[#D3AF54] hover:bg-[#D3AF54]/10 text-white font-bold text-xs sm:text-sm uppercase tracking-wider py-2.5 rounded-xl text-center transition-all duration-300"
                   >
                     Details
                   </Link>
                   <Link 
                     to="/booking"
-                    className="flex-1 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold text-[10px] uppercase tracking-wider py-2.5 rounded-xl text-center transition-all duration-300 shadow-md shadow-[#D3AF54]/10"
+                    className="flex-1 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold text-xs sm:text-sm uppercase tracking-wider py-2.5 rounded-xl text-center transition-all duration-300 shadow-md shadow-[#D3AF54]/10"
                   >
                     Book Now
                   </Link>

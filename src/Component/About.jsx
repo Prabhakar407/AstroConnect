@@ -114,7 +114,7 @@ function About() {
         
         {/* Glow & Luxury SVG Decor Background */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.1),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
-        <motion.div style={{ y: yZodiac, rotate: rZodiac }} className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.04] flex justify-center items-center">
+        <motion.div style={{ y: yZodiac, rotate: rZodiac, willChange: 'transform' }} className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.04] flex justify-center items-center">
           <svg className="w-[500px] h-[500px] text-[#AB7A57] animate-[spin_200s_linear_infinite]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.4">
             <circle cx="100" cy="100" r="90" strokeDasharray="3 3" />
             <circle cx="100" cy="100" r="70" />
@@ -349,7 +349,7 @@ function About() {
                 Divine Methods of Guidance
               </h2>
               <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-3 mb-3"></div>
-              <p className="text-xs md:text-sm text-[#181122]/80 font-sans leading-relaxed italic">
+              <p className="text-xs md:text-sm text-[#181122] font-sans leading-relaxed italic">
                 "Comprehensive guidance for every important aspect of life."
               </p>
             </div>
@@ -373,7 +373,7 @@ function About() {
       <div className="w-full bg-[#EDE9D7] flex justify-center py-16 overflow-hidden relative border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
         
         {/* Parallax Background Zodiac Wheel outline */}
-        <motion.div style={{ y: yCertZodiac, rotate: rCertZodiac }} className="absolute right-4 top-10 w-96 h-96 text-[#AB7A57]/5 pointer-events-none -z-10 select-none opacity-40">
+        <motion.div style={{ y: yCertZodiac, rotate: rCertZodiac, willChange: 'transform' }} className="absolute right-4 top-10 w-96 h-96 text-[#AB7A57]/5 pointer-events-none -z-10 select-none opacity-40">
           <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.2">
             <circle cx="50" cy="50" r="45" strokeDasharray="1,1" />
             <circle cx="50" cy="50" r="30" />
@@ -542,8 +542,7 @@ function FeatureCard({ feature, className, ...props }) {
 
       {/* 1. Heading (top) */}
       <h3 
-        style={{ color: '#D3AF54' }}
-        className="text-base sm:text-lg font-serif font-bold text-center mb-4 tracking-wider uppercase block relative z-20 group-hover:text-white transition-colors duration-300 shrink-0"
+        className="text-base sm:text-lg font-serif font-bold text-center mb-4 tracking-wider uppercase block relative z-20 text-[#D3AF54] group-hover:text-white transition-colors duration-300 shrink-0"
       >
         {feature.title}
       </h3>
@@ -562,13 +561,13 @@ function FeatureCard({ feature, className, ...props }) {
       <div className="flex gap-2.5 w-full mt-1 relative z-10">
         <Link 
           to={getServicePath(feature.title)}
-          className="flex-grow border border-[#AB7A57]/60 hover:border-[#D3AF54] text-white hover:text-[#D3AF54] font-bold text-xs py-2 px-3 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] shadow-sm bg-white/[0.02]"
+          className="flex-grow border border-[#AB7A57]/60 hover:border-[#D3AF54] text-white hover:text-[#D3AF54] font-bold text-xs py-2 px-3 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 shadow-sm bg-white/[0.02]"
         >
           Read More
         </Link>
         <Link 
           to="/booking"
-          className="flex-grow bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold text-xs py-2 px-3 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 hover:scale-[1.02] active:scale-[0.98] shadow-md shadow-[#D3AF54]/10"
+          className="flex-grow bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold text-xs py-2 px-3 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-[#D3AF54]/10"
         >
           Book Now
         </Link>

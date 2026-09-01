@@ -148,14 +148,6 @@ function Contact() {
       isValid = false
     }
 
-    if (!formData.message.trim()) {
-      newErrors.message = "Message is required."
-      isValid = false
-    } else if (formData.message.trim().length < 10) {
-      newErrors.message = "Message must be at least 10 characters."
-      isValid = false
-    }
-
     setErrors(newErrors)
     return isValid
   }
@@ -313,11 +305,17 @@ function Contact() {
         <div className="absolute bottom-10 right-10 w-72 h-72 bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.03),transparent_70%)] rounded-full -z-10 pointer-events-none"></div>
 
         {/* Header Area directly above the box */}
-        <div className="text-center max-w-xl relative flex flex-col items-center mb-4">
-          <span className="text-[#AB7A57] text-xs sm:text-sm tracking-[0.25em] font-bold uppercase mb-2">
+        <div className="text-center max-w-xl relative flex flex-col items-center mb-6">
+          <span className="text-[#AB7A57] text-xs sm:text-sm tracking-[0.25em] font-bold uppercase mb-1">
             ✦ CONNECT WITH THE STARS ✦
           </span>
-          <div className="w-12 h-[2px] bg-[#D3AF54] mt-2"></div>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#181122] tracking-wide mt-1 mb-2">
+            Contact Our Studio
+          </h1>
+          <p className="text-xs sm:text-sm text-[#181122]/70 font-sans leading-relaxed">
+            Have questions or want to request a reading? Reach out to Astrologer Kundan Singh.
+          </p>
+          <div className="w-12 h-[2px] bg-[#D3AF54] mt-3"></div>
         </div>
 
         {/* Main Split Panel Card */}
@@ -336,11 +334,10 @@ function Contact() {
 
             <div className="space-y-6 relative z-10 text-left">
               <div>
-                {/* Styled div overrides default h2 color of var(--color-plum-plate) in index.css */}
-                <div className="font-serif font-bold text-2xl" style={{ color: '#D3AF54' }}>
+                <h3 className="font-serif font-bold text-xl sm:text-2xl text-[#D3AF54] tracking-wide">
                   Astroadvice Studio
-                </div>
-                <p className="text-sm text-[#D8CFEB] mt-2 leading-relaxed">
+                </h3>
+                <p className="text-xs sm:text-sm text-[#D8CFEB] mt-2 leading-relaxed font-sans">
                   Guiding seekers with authentic Vedic forecasts and planetary transits support.
                 </p>
               </div>
@@ -521,6 +518,15 @@ function Contact() {
                     ⚠️ {serverError}
                   </div>
                 )}
+                {/* Symmetrical Header */}
+                <div className="pb-1 space-y-1">
+                  <h3 className="font-serif font-bold text-xl sm:text-2xl text-[#AB7A57] tracking-wide">
+                    Send Us a Message
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-sans">
+                    Fill in your details below to submit your query directly to our studio.
+                  </p>
+                </div>
                 {/* Full Name */}
                 <div className="space-y-1.5">
                   <label htmlFor="name" className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider">
@@ -615,7 +621,7 @@ function Contact() {
                 {/* Message Box */}
                 <div className="space-y-1.5">
                   <label htmlFor="message" className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider">
-                    Your Message / Question <span className="text-[#D3AF54]">*</span>
+                    Your Message / Question <span className="text-slate-400 text-[10px] normal-case font-normal italic">(Optional)</span>
                   </label>
                   <textarea 
                     id="message"
@@ -626,9 +632,6 @@ function Contact() {
                     placeholder="Describe your situation or list any key questions you want answered..."
                     className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl px-4 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition min-h-[100px] resize-none font-sans"
                   />
-                  {errors.message && (
-                    <p className="text-red-500 text-[10px] font-sans font-medium mt-1">⚠️ {errors.message}</p>
-                  )}
                 </div>
 
                 <button 
