@@ -149,15 +149,11 @@ def check_email_verified(email: str, purpose: str, token: Optional[str]):
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 RESEND_FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL", "AstroAdvice <onboarding@resend.dev>")
+SMTP_EMAIL = os.getenv("SMTP_EMAIL", "astroadvicebyks@gmail.com")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "cmmpsmkwctuwjgrj")
 
 def send_resend_otp_email(to_email: str, otp: str, purpose: str = "Verification") -> bool:
-    """Sends a luxury branded HTML email with the 6-digit OTP code using Resend API."""
-    if not RESEND_API_KEY:
-        print(f"⚠️ RESEND_API_KEY not configured in .env. Generated OTP for {to_email} is: {otp}")
-        return True
-        
-    resend.api_key = RESEND_API_KEY
-    
+    """Sends a luxury branded HTML email with the 6-digit OTP code using Resend API with automatic SMTP fallback."""
     purpose_label = {
         "booking": "Consultation Booking",
         "contact": "Contact Inquiry",
@@ -206,18 +202,45 @@ def send_resend_otp_email(to_email: str, otp: str, purpose: str = "Verification"
     </html>
     """
     
-    try:
-        r = resend.Emails.send({
-            "from": RESEND_FROM_EMAIL,
-            "to": [to_email],
-            "subject": f"✦ Your AstroAdvice Verification Code: {otp} ✦",
-            "html": html_content
-        })
-        print(f"✓ Resend OTP dispatched to {to_email}")
-        return True
-    except Exception as e:
-        print(f"⚠️ Resend email sending failed: {str(e)}")
-        return False
+    # 1. Attempt delivery via Resend API
+    if RESEND_API_KEY:
+        resend.api_key = RESEND_API_KEY
+        try:
+            r = resend.Emails.send({
+                "from": RESEND_FROM_EMAIL,
+                "to": [to_email],
+                "subject": f"✦ Your AstroAdvice Verification Code: {otp} ✦",
+                "html": html_content
+            })
+            print(f"✓ Resend OTP dispatched to {to_email}")
+            return True
+        except Exception as e:
+            print(f"⚠️ Resend email sending failed ({str(e)}). Attempting SMTP fallback...")
+
+    # 2. Resilient Fallback: Dispatch via SMTP
+    if SMTP_EMAIL and SMTP_PASSWORD:
+        try:
+            import smtplib
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+
+            msg = MIMEMultipart('alternative')
+            msg['Subject'] = f"✦ Your AstroAdvice Verification Code: {otp} ✦"
+            msg['From'] = f"AstroAdvice <{SMTP_EMAIL}>"
+            msg['To'] = to_email
+            msg.attach(MIMEText(html_content, 'html'))
+
+            server = smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10)
+            server.login(SMTP_EMAIL, SMTP_PASSWORD)
+            server.sendmail(SMTP_EMAIL, [to_email], msg.as_string())
+            server.quit()
+            print(f"✓ SMTP Fallback OTP dispatched successfully to {to_email}")
+            return True
+        except Exception as smtp_err:
+            print(f"⚠️ SMTP fallback also failed: {str(smtp_err)}")
+
+    print(f"⚠️ Unable to dispatch OTP email. Generated code for {to_email} is: {otp}")
+    return False
 
 # ==========================================
 # ⚙️ BOOKING RULES & CONFIGURATION
@@ -557,8 +580,13 @@ def send_otp(req: SendOtpRequest):
     cache_key = f"otp:{email_clean}:{purpose_clean}"
     set_cache_key(cache_key, otp_code, ex_seconds=300)
     
-    # 4. Dispatch Email via Resend API
-    send_resend_otp_email(email_clean, otp_code, purpose=purpose_clean)
+    # 4. Dispatch Email via Resend API (with automatic SMTP fallback)
+    dispatched = send_resend_otp_email(email_clean, otp_code, purpose=purpose_clean)
+    if not dispatched:
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to deliver verification code to this email. Please check the email address or try again."
+        )
         
     return {
         "success": True,
