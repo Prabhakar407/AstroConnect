@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShieldCheck, Mail, RefreshCw, X, ArrowRight } from 'lucide-react'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || ""
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "" : "https://astrologer-kundan-singh.onrender.com")
 
 /**
  * EmailOtpModal Component
