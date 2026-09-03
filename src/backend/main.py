@@ -15,6 +15,7 @@ try:
 except ImportError:
     Credentials = None
     build = None
+import sqlite3
 from dotenv import load_dotenv
 import redis
 import resend
@@ -43,7 +44,7 @@ SCOPES = [
 ]
 
 # ==========================================
-# ⚙️ REDIS & RESEND CONFIGURATION
+# ⚙️ REDIS & PERSISTENT MULTI-WORKER CACHE
 # ==========================================
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 redis_client = None
@@ -53,52 +54,86 @@ try:
     redis_client.ping()
     print("✓ Successfully connected to External Redis server.")
 except Exception as e:
-    try:
-        import fakeredis
-        redis_client = fakeredis.FakeRedis(decode_responses=True)
-        redis_client.ping()
-        print("✓ Connected to Embedded Redis engine (fakeredis).")
-    except Exception as e2:
-        print(f"⚠️ Embedded Redis unavailable ({e2}). Using in-memory fallback.")
-        redis_client = None
+    redis_client = None
 
-# In-memory storage fallback
-in_memory_store = {}
+# Shared SQLite Disk Cache (100% shared across all Uvicorn worker processes & restarts)
+DB_CACHE_PATH = os.path.join(os.path.dirname(__file__), "astro_cache.db")
+
+def init_cache_db():
+    try:
+        conn = sqlite3.connect(DB_CACHE_PATH, timeout=10)
+        c = conn.cursor()
+        c.execute("CREATE TABLE IF NOT EXISTS cache (key TEXT PRIMARY KEY, value TEXT, expires_at REAL)")
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Cache DB init error: {e}")
+
+init_cache_db()
 
 def set_cache_key(key: str, value: str, ex_seconds: int):
+    # 1. External Redis
     if redis_client:
         try:
             redis_client.set(key, value, ex=ex_seconds)
-            return
-        except Exception as e:
-            print(f"Redis set error: {e}")
-    in_memory_store[key] = {
-        "value": value,
-        "expires_at": time.time() + ex_seconds
-    }
+        except Exception:
+            pass
+            
+    # 2. Shared Multi-Worker SQLite Store
+    try:
+        now = time.time()
+        conn = sqlite3.connect(DB_CACHE_PATH, timeout=10)
+        c = conn.cursor()
+        c.execute("INSERT OR REPLACE INTO cache VALUES (?, ?, ?)", (key, str(value), now + ex_seconds))
+        c.execute("DELETE FROM cache WHERE expires_at < ?", (now,))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Cache set error: {e}")
 
 def get_cache_key(key: str) -> Optional[str]:
+    # 1. External Redis
     if redis_client:
         try:
-            return redis_client.get(key)
-        except Exception as e:
-            print(f"Redis get error: {e}")
-    item = in_memory_store.get(key)
-    if not item:
-        return None
-    if time.time() > item["expires_at"]:
-        in_memory_store.pop(key, None)
-        return None
-    return item["value"]
+            val = redis_client.get(key)
+            if val:
+                return val
+        except Exception:
+            pass
+            
+    # 2. Shared Multi-Worker SQLite Store
+    try:
+        now = time.time()
+        conn = sqlite3.connect(DB_CACHE_PATH, timeout=10)
+        c = conn.cursor()
+        c.execute("SELECT value, expires_at FROM cache WHERE key = ?", (key,))
+        row = c.fetchone()
+        conn.close()
+        if row:
+            val, expires_at = row
+            if now <= expires_at:
+                return str(val)
+            else:
+                delete_cache_key(key)
+                return None
+    except Exception as e:
+        print(f"Cache get error: {e}")
+    return None
 
 def delete_cache_key(key: str):
     if redis_client:
         try:
             redis_client.delete(key)
-            return
         except Exception:
             pass
-    in_memory_store.pop(key, None)
+    try:
+        conn = sqlite3.connect(DB_CACHE_PATH, timeout=10)
+        c = conn.cursor()
+        c.execute("DELETE FROM cache WHERE key = ?", (key,))
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass
 
 def incr_rate_limit(key: str, window_seconds: int = 600) -> int:
     if redis_client:
@@ -109,14 +144,24 @@ def incr_rate_limit(key: str, window_seconds: int = 600) -> int:
             return val
         except Exception:
             pass
-    now = time.time()
-    item = in_memory_store.get(key)
-    if not item or now > item.get("expires_at", 0):
-        in_memory_store[key] = {"value": "1", "expires_at": now + window_seconds}
+    try:
+        now = time.time()
+        conn = sqlite3.connect(DB_CACHE_PATH, timeout=10)
+        c = conn.cursor()
+        c.execute("SELECT value, expires_at FROM cache WHERE key = ?", (key,))
+        row = c.fetchone()
+        if not row or now > row[1]:
+            c.execute("INSERT OR REPLACE INTO cache VALUES (?, ?, ?)", (key, "1", now + window_seconds))
+            conn.commit()
+            conn.close()
+            return 1
+        new_val = int(row[0]) + 1
+        c.execute("UPDATE cache SET value = ? WHERE key = ?", (str(new_val), key))
+        conn.commit()
+        conn.close()
+        return new_val
+    except Exception:
         return 1
-    new_val = int(item.get("value", 0)) + 1
-    in_memory_store[key]["value"] = str(new_val)
-    return new_val
 
 def check_email_verified(email: str, purpose: str, token: Optional[str]):
     """Validates that the client email has been verified via OTP and stored in Redis."""
@@ -607,7 +652,7 @@ def send_otp(req: SendOtpRequest):
 
 @app.post("/api/auth/verify-otp")
 def verify_otp(req: VerifyOtpRequest):
-    """Verifies OTP from Redis, burns it on success, and issues 15-min verification state."""
+    """Verifies OTP from shared cache, burns it on success, and issues 15-min verification state."""
     email_clean = req.email.strip().lower()
     purpose_clean = (req.purpose or "verification").strip().lower()
     otp_clean = req.otp.strip()
@@ -615,6 +660,16 @@ def verify_otp(req: VerifyOtpRequest):
     cache_key = f"otp:{email_clean}:{purpose_clean}"
     stored_otp = get_cache_key(cache_key)
     
+    # If not found under exact purpose, check across other scopes (inquiry, booking, contact, prashna, verification)
+    if not stored_otp:
+        for alt_p in ["inquiry", "booking", "contact", "prashna", "verification"]:
+            alt_key = f"otp:{email_clean}:{alt_p}"
+            alt_otp = get_cache_key(alt_key)
+            if alt_otp:
+                stored_otp = alt_otp
+                cache_key = alt_key
+                break
+                
     if not stored_otp:
         raise HTTPException(
             status_code=400,
@@ -629,11 +684,16 @@ def verify_otp(req: VerifyOtpRequest):
         
     # Delete OTP key to prevent replay attacks
     delete_cache_key(cache_key)
+    delete_cache_key(f"otp:{email_clean}:{purpose_clean}")
     
-    # Generate verification token and mark verified in Redis with 15-minute TTL (900 seconds)
+    # Generate verification token and mark verified in cache with 15-minute TTL (900 seconds)
     verification_token = f"tok_{secrets.token_hex(16)}"
     verified_key = f"verified:{email_clean}:{purpose_clean}"
     set_cache_key(verified_key, verification_token, ex_seconds=900)
+    set_cache_key(f"verified:{email_clean}:verification", verification_token, ex_seconds=900)
+    set_cache_key(f"verified:{email_clean}:inquiry", verification_token, ex_seconds=900)
+    set_cache_key(f"verified:{email_clean}:contact", verification_token, ex_seconds=900)
+    set_cache_key(f"verified:{email_clean}:booking", verification_token, ex_seconds=900)
     
     return {
         "success": True,
