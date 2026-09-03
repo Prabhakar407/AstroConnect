@@ -54,3 +54,4 @@ env/
 scratch/
 tmp/
 temp/
+*.db

@@ -583,16 +583,20 @@ def get_or_create_spreadsheet(sheets_service, drive_service):
 def append_row_to_sheet(sheet_name: str, row: list):
     """Utility to append a row of data to the Google Sheet if enabled."""
     sheets_service, drive_service = get_sheets_service()
-    if not sheets_service or not drive_service:
+    if not sheets_service:
         return
         
-    spreadsheet_id = get_or_create_spreadsheet(sheets_service, drive_service)
+    spreadsheet_id = os.getenv("GOOGLE_SHEET_ID") or (get_or_create_spreadsheet(sheets_service, drive_service) if drive_service else None)
     if not spreadsheet_id:
         return
         
     try:
+        sanitized_row = [
+            f"'{item}" if isinstance(item, str) and item.startswith("+") else item
+            for item in row
+        ]
         body = {
-            'values': [row]
+            'values': [sanitized_row]
         }
         sheets_service.spreadsheets().values().append(
             spreadsheetId=spreadsheet_id,
