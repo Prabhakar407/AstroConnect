@@ -356,28 +356,6 @@ function Appointment_Booking() {
               <p className="text-xs md:text-sm text-[#D8CFEB] max-w-md font-sans leading-relaxed">
                 Thank you. Astrologer Kundan Singh will review your credentials and confirm your selected slot. An email and WhatsApp confirmation will be sent shortly.
               </p>
-              <div className="pt-2 flex flex-wrap justify-center gap-3">
-                {eventLink && (
-                  <a 
-                    href={eventLink} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-flex items-center gap-2 bg-[#D3AF54]/15 hover:bg-[#D3AF54]/25 text-[#D3AF54] border border-[#D3AF54]/45 px-4 py-2 rounded-xl transition duration-300 font-semibold text-xs tracking-wider uppercase cursor-pointer"
-                  >
-                    <span>View In Google Calendar</span>
-                  </a>
-                )}
-                {meetLink && (
-                  <a 
-                    href={meetLink} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl transition duration-300 font-semibold text-xs tracking-wider uppercase cursor-pointer shadow-md shadow-emerald-500/20"
-                  >
-                    <span>Join Google Meet Session</span>
-                  </a>
-                )}
-              </div>
               <CelestialDivider />
               <button 
                 onClick={() => {
