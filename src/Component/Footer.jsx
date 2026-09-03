@@ -103,10 +103,12 @@ export default function Footer() {
           <h4 className="font-serif font-bold !text-[#D3AF54] text-sm uppercase tracking-wider">Contact Info</h4>
           <ul className="space-y-2.5 text-xs text-[#D8CFEB]">
             <li className="flex items-start gap-2.5">
-              <img src={callLogo} alt="Call" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0 mt-0.5" />
+              <div className="w-5.5 h-5.5 rounded-full bg-[#D3AF54] text-[#181122] flex items-center justify-center shadow-[0_0_8px_rgba(211,175,84,0.3)] shrink-0 mt-0.5">
+                <Phone size={11} className="fill-[#181122] text-[#181122]" />
+              </div>
               <div className="flex flex-col space-y-0.5">
-                <a href="tel:+918130808758" className="hover:text-[#D3AF54] transition">☎ +91 8130808758</a>
-                <a href="tel:+918527790801" className="hover:text-[#D3AF54] transition">☎ +91 8527790801</a>
+                <a href="tel:+918130808758" className="hover:text-[#D3AF54] transition font-medium">+91 8130808758</a>
+                <a href="tel:+918527790801" className="hover:text-[#D3AF54] transition font-medium">+91 8527790801</a>
               </div>
             </li>
             <li className="flex items-center gap-2.5">

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, Calendar } from "lucide-react";
+import { Menu, X, ChevronDown, Calendar, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 import logoImg from "../assets/logos/Nav-Logo.png";
 
@@ -198,9 +198,11 @@ export default function Navbar() {
           {/* Desktop Right Action Panel */}
           <div className="hidden lg:flex flex-col items-end gap-1 relative group">
             {/* Contact Phone */}
-            <div className="flex items-center gap-1.5 text-[#D3AF54] text-xs font-semibold">
-              <span>☎</span>
-              <span>+91 8130808758 | +91 8527790801</span>
+            <div className="flex items-center gap-2 text-[#D3AF54] text-xs font-semibold">
+              <div className="w-5 h-5 rounded-full bg-[#D3AF54] text-[#181122] flex items-center justify-center shadow-[0_0_8px_rgba(211,175,84,0.35)] shrink-0">
+                <Phone size={10} className="fill-[#181122] text-[#181122]" />
+              </div>
+              <span className="tracking-wide">+91 8130808758 | +91 8527790801</span>
             </div>
 
             <div className="relative">
@@ -388,8 +390,10 @@ export default function Navbar() {
           {/* Drawer Call Actions Footer */}
           <div className="border-t border-white/10 pt-4 flex flex-col items-center gap-2">
             {/* Phone */}
-            <div className="flex items-center gap-1.5 text-[#D3AF54] text-sm font-medium">
-              <span>☎</span>
+            <div className="flex items-center gap-2 text-[#D3AF54] text-sm font-medium">
+              <div className="w-6 h-6 rounded-full bg-[#D3AF54] text-[#181122] flex items-center justify-center shadow-[0_0_8px_rgba(211,175,84,0.35)] shrink-0">
+                <Phone size={12} className="fill-[#181122] text-[#181122]" />
+              </div>
               <span>+91 8130808758 | +91 8527790801</span>
             </div>
 

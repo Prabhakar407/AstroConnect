@@ -249,14 +249,16 @@ function Appointment_Booking() {
   }
 
   const executeBooking = async (verificationToken) => {
-    setLoading(true)
+    // 1. Immediately close OTP modal and display confirmation screen (zero waiting time)
+    setShowOtpModal(false)
+    setSubmitted(true)
     setErrorMsg("")
-    setEventLink("")
 
     const timeSlot = formData.bookingSlot || "10:00"
     let duration = 30
     const birthDetails = `Phone: ${formData.phone}\nBirth Date: ${formData.birthDate}\nBirth Time: ${formData.birthTime || 'Not Provided'}\nBirth Place: ${formData.birthPlace || 'Not Provided'}\nClient Notes: ${formData.notes || 'None'}`
 
+    // 2. Dispatch booking to Google Calendar & Resend in the background
     try {
       const response = await fetch(`${API_BASE_URL}/api/book-appointment`, {
         method: "POST",
@@ -277,18 +279,14 @@ function Appointment_Booking() {
       })
 
       const data = await response.json()
-      if (!response.ok) {
-        throw new Error(data.detail || "Something went wrong while booking your appointment.")
-      }
-
-      if (data.event_link) {
+      if (data && data.event_link) {
         setEventLink(data.event_link)
       }
-      setShowOtpModal(false)
-      setSubmitted(true)
+      if (data && data.meet_link) {
+        setMeetLink(data.meet_link)
+      }
     } catch (err) {
-      setErrorMsg(err.message || "Failed to connect to the booking server. Please verify that the FastAPI backend is running.")
-      setShowOtpModal(false)
+      console.error("Background booking dispatch error:", err)
     } finally {
       setLoading(false)
     }

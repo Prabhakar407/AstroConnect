@@ -432,13 +432,36 @@ TIMEZONE = "Asia/Kolkata"  # Change to your local timezone if different
 # ==========================================
 
 
+def get_google_credentials():
+    """Loads Google Service Account credentials from file paths or environment variables."""
+    if not Credentials:
+        return None
+    for p in [SERVICE_ACCOUNT_FILE, "service_account.json", "src/backend/service_account.json", "../service_account.json"]:
+        if os.path.exists(p):
+            try:
+                return Credentials.from_service_account_file(p, scopes=SCOPES)
+            except Exception as e:
+                print(f"Error loading service account from {p}: {e}")
+                
+    sa_env = os.getenv("SERVICE_ACCOUNT_JSON") or os.getenv("GOOGLE_CREDENTIALS_JSON")
+    if sa_env:
+        try:
+            import json
+            info = json.loads(sa_env)
+            return Credentials.from_service_account_info(info, scopes=SCOPES)
+        except Exception as e:
+            print(f"Error loading SERVICE_ACCOUNT_JSON env: {e}")
+            
+    return None
+
+
 def get_calendar_service():
     """Initializes and returns the Google Calendar API service, ensuring a shared read-only secondary calendar exists."""
-    if not os.path.exists(SERVICE_ACCOUNT_FILE):
+    creds = get_google_credentials()
+    if not creds:
         raise FileNotFoundError(
-            f"Error: Could not find '{SERVICE_ACCOUNT_FILE}'. Make sure it is placed in the backend root directory."
+            f"Error: Could not find Google credentials. Make sure service_account.json is available."
         )
-    creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     service = build("calendar", "v3", credentials=creds)
     
     global CALENDAR_ID
@@ -491,11 +514,11 @@ def get_calendar_service():
 
 def get_sheets_service():
     """Initializes and returns Google Sheets and Drive API client services, creating & sharing the spreadsheet if it does not exist."""
-    if not os.path.exists(SERVICE_ACCOUNT_FILE):
+    creds = get_google_credentials()
+    if not creds:
         return None, None
         
     try:
-        creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
         sheets_service = build("sheets", "v4", credentials=creds)
         drive_service = build("drive", "v3", credentials=creds)
         return sheets_service, drive_service
@@ -556,7 +579,7 @@ def get_or_create_spreadsheet(sheets_service, drive_service):
             # Initialize headers for each sheet
             headers_config = {
                 'Bookings': ["Timestamp", "Full Name", "Email", "Phone", "Service Name", "Date", "Time Slot", "Duration (Min)", "Birth Details"],
-                'Contact Queries': ["Timestamp", "Name", "Email", "Phone", "Subject", "Message"],
+                'Contact Queries': ["Timestamp", "Name", "Email", "Phone", "Date of Birth", "Subject", "Message"],
                 'Help Tickets': ["Timestamp", "Name", "Email", "Phone", "Query"],
                 'Prashna Inquiries': ["Timestamp", "Name", "Phone", "Location", "Question"]
             }
@@ -673,7 +696,8 @@ class PrashnaRequest(BaseModel):
 class ContactRequest(BaseModel):
     name: str
     email: EmailStr
-    phone: str
+    phone: Optional[str] = "N/A"
+    dob: Optional[str] = "N/A"
     subject: str
     message: str
     verification_token: Optional[str] = None
@@ -685,9 +709,9 @@ class ContactRequest(BaseModel):
 
     @field_validator('phone')
     @classmethod
-    def check_phone(cls, v: str) -> str:
+    def check_phone(cls, v: Optional[str]) -> str:
         if not v or v.strip().lower() in ["n/a", "none", "not provided"] or v.startswith("DOB:"):
-            return v
+            return v or "N/A"
         return validate_phone_number(v)
 
 
@@ -979,14 +1003,22 @@ def save_contact(contact: ContactRequest):
     )
     email_status = "sent" if dispatched else "failed"
             
-    # Append to Google Sheets
+    # Append to Google Sheets with clean separation of Phone and DOB
     try:
-        timestamp_str = datetime.utcnow().isoformat()
+        timestamp_str = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+        phone_clean = contact.phone or "N/A"
+        dob_clean = contact.dob or "N/A"
+        if phone_clean.startswith("DOB:"):
+            if dob_clean == "N/A":
+                dob_clean = phone_clean.replace("DOB:", "").strip()
+            phone_clean = "N/A"
+
         append_row_to_sheet("Contact Queries", [
             timestamp_str,
             contact.name,
             contact.email,
-            contact.phone,
+            phone_clean,
+            dob_clean,
             contact.subject,
             contact.message
         ])
@@ -1135,58 +1167,20 @@ def save_prashna(prashna: PrashnaRequest):
     except Exception as e:
         print(f"Error saving Prashna query locally: {str(e)}")
         
-    smtp_sender = os.getenv("SMTP_EMAIL")
-    smtp_password = os.getenv("SMTP_PASSWORD")
-    smtp_receiver = os.getenv("SMTP_EMAIL", "astroadvicebyks@gmail.com")
-    
-    email_status = "not_configured"
-    
-    if smtp_sender and smtp_password:
-        try:
-            import smtplib
-            from email.mime.text import MIMEText
-            from email.mime.multipart import MIMEMultipart
-            
-            # Construct Email Message
-            msg = MIMEMultipart()
-            msg['From'] = smtp_sender
-            msg['To'] = smtp_receiver
-            msg['Subject'] = f"★ New Horary Prashna Question ★"
-            
-            email_body = f"""
-Hello Kundan Singh,
-
-You have received a new horary Prashna question from the website:
-
-----------------------------------------
-CLIENT NAME:      {prashna.name}
-CLIENT PHONE:     {prashna.phone}
-CURRENT LOCATION: {prashna.location}
-
-SPECIFIC QUESTION:
-{prashna.question}
-----------------------------------------
-
-*This question was logged locally and dispatched automatically via website backend*
-"""
-            msg.attach(MIMEText(email_body, 'plain'))
-            
-            # Connect to SMTP Server
-            server = smtplib.SMTP("smtp.gmail.com", 587)
-            server.starttls()
-            server.login(smtp_sender, smtp_password)
-            server.sendmail(smtp_sender, smtp_receiver, msg.as_string())
-            server.quit()
-            
-            email_status = "sent_via_smtp"
-            print("✓ Prashna inquiry successfully dispatched via SMTP email")
-        except Exception as e:
-            print(f"SMTP Email delivery failed: {str(e)}")
-            email_status = "smtp_failed"
+    # Dispatch Prashna inquiry notification directly to Astrologer
+    dispatched = send_astrologer_notification_email(
+        subject="Horary Prashna Question",
+        client_name=prashna.name,
+        client_email=str(prashna.email) if prashna.email else "Not Provided",
+        client_phone=f"{prashna.phone} (Location: {prashna.location})",
+        details=prashna.question,
+        service_type="Horary Prashna Question"
+    )
+    email_status = "sent" if dispatched else "failed"
             
     # Append to Google Sheets
     try:
-        timestamp_str = datetime.utcnow().isoformat()
+        timestamp_str = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
         append_row_to_sheet("Prashna Inquiries", [
             timestamp_str,
             prashna.name,
@@ -1251,191 +1245,135 @@ async def book_appointment(booking: BookingRequest):
         # ----------------------------------------------------
         # 3. RULE CHECK & CREATION
         # ----------------------------------------------------
-        if use_google_calendar:
-            service = get_calendar_service()
-
-            # Calculate the 1-hour window for the requested slot
-            hour_window_start = start_datetime.replace(minute=0, second=0)
-            hour_window_end = hour_window_start + timedelta(hours=1)
-
-            # Query Google Calendar for existing bookings in this specific hour
-            existing_events_result = service.events().list(
-                calendarId=CALENDAR_ID,
-                timeMin=hour_window_start.isoformat() + "+05:30",
-                timeMax=hour_window_end.isoformat() + "+05:30",
-                singleEvents=True
-            ).execute()
-
-            existing_bookings_count = len(existing_events_result.get("items", []))
-
-            if existing_bookings_count >= MAX_BOOKINGS_PER_HOUR:
-                raise HTTPException(
-                    status_code=400, 
-                    detail=f"This hourly slot has reached its limit of {MAX_BOOKINGS_PER_HOUR} appointments. Please select a different time slot."
-                )
-
-            # Create event in Google Calendar
-            description_body = f"""
-🔮 ASTROLOGY SERVICE APPOINTMENT
-----------------------------------------
-Client Name: {booking.full_name}
-Client Email: {booking.email}
-Client Phone: {booking.phone}
-Service Requested: {booking.service_name}
-
-INTAKE & SERVICE DETAILS:
-{booking.birth_details or 'No additional details provided.'}
-----------------------------------------
-*Generated automatically via Astrology Website Booking Engine*
-            """
-
-            event_body = {
-                "summary": f"[{booking.service_name}] - {booking.full_name}",
-                "description": description_body,
-                "start": {
-                    "dateTime": start_datetime.isoformat(),
-                    "timeZone": TIMEZONE,
-                },
-                "end": {
-                    "dateTime": end_datetime.isoformat(),
-                    "timeZone": TIMEZONE,
-                },
-                "guestsCanInviteOthers": False,
-                "reminders": {
-                    "useDefault": False,
-                    "overrides": [
-                        {"method": "email", "minutes": 24 * 60},  # Email reminder 24h before
-                        {"method": "popup", "minutes": 15},       # Pop-up reminder 15m before
-                    ],
-                },
-            }
-
-            # Determine dynamic meeting link
-            static_meet = os.getenv("STATIC_MEET_LINK")
-            if static_meet:
-                meet_link = static_meet
-            else:
-                meet_link = f"https://meet.jit.si/AstroAdvice-Consultation-{uuid.uuid4().hex[:8]}"
-
-            # Add Meet Link directly inside Google Calendar description
-            event_body["description"] += f"\nOnline Session Link: {meet_link}\n"
-
-            # Insert into Google Calendar (reverted conferenceData to bypass Service Account restriction)
-            created_event = service.events().insert(
-                calendarId=CALENDAR_ID, 
-                body=event_body
-            ).execute()
-
-            # Send SMTP email confirmation for new booking
-            smtp_sender = os.getenv("SMTP_EMAIL")
-            smtp_password = os.getenv("SMTP_PASSWORD")
-            smtp_receiver = os.getenv("SMTP_EMAIL", "astroadvicebyks@gmail.com")
-            
-            if smtp_sender and smtp_password:
-                try:
-                    import smtplib
-                    from email.mime.text import MIMEText
-                    from email.mime.multipart import MIMEMultipart
-                    
-                    msg = MIMEMultipart()
-                    msg['From'] = smtp_sender
-                    msg['To'] = smtp_receiver
-                    msg['Subject'] = f"★ New Appointment Booked: {booking.service_name} ★"
-                    
-                    email_body = f"""
-Hello Kundan Singh,
-
-A new appointment has been successfully booked on the website:
-
-----------------------------------------
-CLIENT NAME:       {booking.full_name}
-CLIENT EMAIL:      {booking.email}
-CLIENT PHONE:      {booking.phone}
-SERVICE NAME:      {booking.service_name}
-MEET CALL LINK:    {meet_link or 'No Meet Link generated'}
-DATE:              {booking.date}
-TIME SLOT:         {booking.time_slot} (Duration: {booking.duration_minutes} min)
-
-INTAKE/BIRTH DETAILS:
-{booking.birth_details or 'None provided.'}
-----------------------------------------
-
-*This appointment is synced with Google Calendar and notified via website backend*
-"""
-                    msg.attach(MIMEText(email_body, 'plain'))
-                    
-                    server = smtplib.SMTP("smtp.gmail.com", 587)
-                    server.starttls()
-                    server.login(smtp_sender, smtp_password)
-                    server.sendmail(smtp_sender, smtp_receiver, msg.as_string())
-                    server.quit()
-                    print("✓ Booking notification email sent successfully")
-                except Exception as e:
-                    print(f"Failed to send booking notification email: {str(e)}")
-
-            # Append to Google Sheets
-            try:
-                timestamp_str = datetime.utcnow().isoformat()
-                append_row_to_sheet("Bookings", [
-                    timestamp_str,
-                    booking.full_name,
-                    booking.email,
-                    booking.phone,
-                    booking.service_name,
-                    booking.date,
-                    booking.time_slot,
-                    booking.duration_minutes,
-                    booking.birth_details
-                ])
-            except Exception as sheets_err:
-                print(f"Failed to log booking to Google Sheets: {str(sheets_err)}")
-
-            return {
-                "status": "success",
-                "message": "Appointment booked successfully!",
-                "event_link": created_event.get("htmlLink"),
-                "meet_link": meet_link
-            }
+        # ----------------------------------------------------
+        # 3. Dynamic Meeting Link & Data Preparation
+        # ----------------------------------------------------
+        static_meet = os.getenv("STATIC_MEET_LINK")
+        if static_meet:
+            meet_link = static_meet
         else:
-            # Fallback Development Mode: Save bookings locally
+            meet_link = f"https://meet.jit.si/AstroAdvice-Consultation-{uuid.uuid4().hex[:8]}"
+
+        # Save the new booking to local backup
+        try:
             import json
             local_bookings_file = "local_bookings.json"
             bookings_list = []
-            
             if os.path.exists(local_bookings_file):
                 try:
                     with open(local_bookings_file, "r") as f:
                         bookings_list = json.load(f)
                 except Exception:
                     pass
-
-            # Local conflict check
-            hour_prefix = f"{booking.date}T{booking.time_slot.split(':')[0]}"
-            hourly_count = 0
-            for b in bookings_list:
-                b_date = b.get("date")
-                b_slot = b.get("time_slot", "")
-                if b_date == booking.date and b_slot.startswith(booking.time_slot.split(":")[0]):
-                    hourly_count += 1
-
-            if hourly_count >= MAX_BOOKINGS_PER_HOUR:
-                raise HTTPException(
-                    status_code=400, 
-                    detail=f"This hourly slot has reached its limit of {MAX_BOOKINGS_PER_HOUR} appointments. Please select a different time slot."
-                )
-
-            # Save the new booking
             new_booking = booking.dict()
             new_booking["booked_at"] = datetime.now().isoformat()
             bookings_list.append(new_booking)
-            
             with open(local_bookings_file, "w") as f:
                 json.dump(bookings_list, f, indent=4)
+        except Exception as local_err:
+            print(f"Error logging booking locally: {str(local_err)}")
 
-            return {
-                "status": "success",
-                "message": "Appointment booked successfully! (Saved locally in development mode. Please add service_account.json for Google Calendar sync.)"
-            }
+        # ----------------------------------------------------
+        # 4. ALWAYS Append to Google Sheets (Bookings Tab)
+        # ----------------------------------------------------
+        try:
+            timestamp_str = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+            append_row_to_sheet("Bookings", [
+                timestamp_str,
+                booking.full_name,
+                booking.email,
+                booking.phone,
+                booking.service_name,
+                booking.date,
+                booking.time_slot,
+                booking.duration_minutes,
+                booking.birth_details or "Not Provided"
+            ])
+            print(f"✓ Booking for {booking.full_name} logged to Google Sheets 'Bookings' tab")
+        except Exception as sheets_err:
+            print(f"Failed to log booking to Google Sheets: {str(sheets_err)}")
+
+        # ----------------------------------------------------
+        # 5. ALWAYS Dispatch Notification Email via Resend Domain
+        # ----------------------------------------------------
+        booking_details_text = f"Date: {booking.date} | Time Slot: {booking.time_slot} ({booking.duration_minutes} min)\nVideo Call Link: {meet_link}\n\nIntake & Birth Details:\n{booking.birth_details or 'None provided.'}"
+        send_astrologer_notification_email(
+            subject=f"New Booking: {booking.service_name} ({booking.date} at {booking.time_slot})",
+            client_name=booking.full_name,
+            client_email=booking.email,
+            client_phone=booking.phone,
+            details=booking_details_text,
+            service_type=f"Consultation Booking: {booking.service_name}"
+        )
+
+        # ----------------------------------------------------
+        # 6. Google Calendar Sync (if credentials configured)
+        # ----------------------------------------------------
+        event_link = None
+        try:
+            service = get_calendar_service()
+            if service:
+                # Calculate the 1-hour window for the requested slot
+                hour_window_start = start_datetime.replace(minute=0, second=0)
+                hour_window_end = hour_window_start + timedelta(hours=1)
+
+                # Query Google Calendar for existing bookings in this specific hour
+                existing_events_result = service.events().list(
+                    calendarId=CALENDAR_ID,
+                    timeMin=hour_window_start.isoformat() + "+05:30",
+                    timeMax=hour_window_end.isoformat() + "+05:30",
+                    singleEvents=True
+                ).execute()
+
+                description_body = f"""
+🔮 ASTROLOGY SERVICE APPOINTMENT
+----------------------------------------
+Client Name: {booking.full_name}
+Client Email: {booking.email}
+Client Phone: {booking.phone}
+Service Requested: {booking.service_name}
+Session Link: {meet_link}
+
+INTAKE & SERVICE DETAILS:
+{booking.birth_details or 'No additional details provided.'}
+----------------------------------------
+*Generated automatically via Astrology Website Booking Engine*
+"""
+                event_body = {
+                    "summary": f"[{booking.service_name}] - {booking.full_name}",
+                    "description": description_body,
+                    "start": {
+                        "dateTime": start_datetime.isoformat(),
+                        "timeZone": TIMEZONE,
+                    },
+                    "end": {
+                        "dateTime": end_datetime.isoformat(),
+                        "timeZone": TIMEZONE,
+                    },
+                    "guestsCanInviteOthers": False,
+                    "reminders": {
+                        "useDefault": False,
+                        "overrides": [
+                            {"method": "email", "minutes": 24 * 60},
+                            {"method": "popup", "minutes": 15},
+                        ],
+                    },
+                }
+
+                created_event = service.events().insert(
+                    calendarId=CALENDAR_ID, 
+                    body=event_body
+                ).execute()
+                event_link = created_event.get("htmlLink")
+        except Exception as cal_err:
+            print(f"Google Calendar sync notice: {str(cal_err)}")
+
+        return {
+            "status": "success",
+            "message": "Appointment booked successfully!",
+            "event_link": event_link,
+            "meet_link": meet_link
+        }
 
     except HTTPException as http_ex:
         raise http_ex

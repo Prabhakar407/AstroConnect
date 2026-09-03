@@ -1773,11 +1773,14 @@ function PrashnaKundaliDetail({ details, navigate }) {
   };
 
   const executePrashnaSubmit = async (verificationToken) => {
-    setLoading(true);
+    // 1. Immediately close OTP modal and display confirmation screen (zero waiting time)
+    setShowOtpModal(false);
+    setSubmitted(true);
     setServerError("");
 
+    // 2. Dispatch the Prashna inquiry in the background
     try {
-      const response = await fetch(`${API_BASE_URL}/api/prashna`, {
+      await fetch(`${API_BASE_URL}/api/prashna`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1791,17 +1794,8 @@ function PrashnaKundaliDetail({ details, navigate }) {
           verification_token: verificationToken,
         }),
       });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.detail || "Failed to submit Prashna question.");
-      }
-
-      setShowOtpModal(false);
-      setSubmitted(true);
     } catch (err) {
-      setServerError(err.message || "Failed to connect to backend server. Please verify that the backend is running.");
-      setShowOtpModal(false);
+      console.error("Background Prashna dispatch error:", err);
     } finally {
       setLoading(false);
     }

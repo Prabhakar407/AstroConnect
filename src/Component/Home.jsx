@@ -605,7 +605,8 @@ export default function Home() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          phone: formData.dob ? `DOB: ${formData.dob}` : "N/A",
+          phone: "N/A",
+          dob: formData.dob || "N/A",
           subject: formData.selectedService,
           message: formData.comment || "No message comment provided.",
           verification_token: verificationToken,
