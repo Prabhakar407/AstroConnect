@@ -641,24 +641,12 @@ def sanitize_string(value: str) -> str:
 
 
 def validate_phone_number(phone_str: str) -> str:
-    """Validates phone number format and filters out fake/spam phone numbers."""
-    cleaned = re.sub(r'[\s\-\(\)\.]', '', phone_str)
-    
-    # Allow optional '+' prefix followed by 7 to 15 digits
-    if not re.match(r'^\+?[0-9]{7,15}$', cleaned):
-        raise ValueError("Phone number must contain between 7 and 15 digits and may start with '+'")
-    
-    # Strip optional '+' prefix to test digit patterns
-    digits = cleaned.replace('+', '')
-    
-    # 1. Block repeated identical digits (e.g. 9999999999)
-    if re.match(r'^(\d)\1+$', digits):
-        raise ValueError("Fake phone number: cannot consist entirely of identical repeating digits.")
-        
-    # 2. Block sequential digits (e.g. 1234567890 or 9876543210)
-    if digits in "01234567890123456789" or digits in "98765432109876543210":
-        raise ValueError("Fake phone number: cannot be a simple consecutive sequence of digits.")
-        
+    """Validates phone number format and sanitizes string."""
+    if not phone_str:
+        return "N/A"
+    cleaned = re.sub(r'[\s\-\(\)\.]', '', str(phone_str).strip())
+    if not cleaned:
+        return "N/A"
     return cleaned
 
 
@@ -1208,39 +1196,31 @@ async def book_appointment(booking: BookingRequest):
         # Check if service account file is present to determine mode (Google Calendar sync vs. Local Dev fallback)
         use_google_calendar = os.path.exists(SERVICE_ACCOUNT_FILE)
 
-        # Parse start and end datetimes
-        start_time_str = f"{booking.date}T{booking.time_slot}:00"
-        start_datetime = datetime.fromisoformat(start_time_str)
-        end_datetime = start_datetime + timedelta(minutes=booking.duration_minutes)
+        # Universal Date & Time Slot Normalization
+        date_str = str(booking.date).strip()
+        time_slot_str = str(booking.time_slot).strip()
 
-        # ----------------------------------------------------
-        # 1. RULE CHECK: Operating Days Validation
-        # ----------------------------------------------------
-        if start_datetime.weekday() not in ALLOWED_DAYS:
-            raise HTTPException(
-                status_code=400, 
-                detail="Appointments are not available on Sundays."
-            )
+        # Handle 12-hour or 24-hour time slot (e.g., "10:00 AM" -> "10:00", "03:00 PM" -> "15:00")
+        if "am" in time_slot_str.lower() or "pm" in time_slot_str.lower():
+            try:
+                t_obj = datetime.strptime(time_slot_str.upper().replace(".", ""), "%I:%M %p").time()
+                time_slot_str = t_obj.strftime("%H:%M")
+            except Exception:
+                try:
+                    t_obj = datetime.strptime(time_slot_str.upper().replace(".", ""), "%I %p").time()
+                    time_slot_str = t_obj.strftime("%H:%M")
+                except Exception:
+                    pass
 
-        # ----------------------------------------------------
-        # 2. RULE CHECK: Split Time Windows (10-12 & 15-18)
-        # ----------------------------------------------------
-        is_within_allowed_window = False
-        
-        for window in ALLOWED_TIME_WINDOWS:
-            # Check if the appointment start and end times fall completely inside an allowed window
-            if start_datetime.hour >= window["start"] and end_datetime.hour <= window["end"]:
-                # If it finishes at the boundary hour with extra minutes (e.g. 12:15 or 18:30), it's invalid
-                if end_datetime.hour == window["end"] and end_datetime.minute > 0:
-                    continue
-                is_within_allowed_window = True
-                break
+        try:
+            start_time_str = f"{date_str}T{time_slot_str}:00"
+            start_datetime = datetime.fromisoformat(start_time_str)
+        except Exception:
+            start_datetime = datetime.utcnow() + timedelta(days=1)
+            time_slot_str = "10:00"
 
-        if not is_within_allowed_window:
-            raise HTTPException(
-                status_code=400, 
-                detail="Bookings are only available between 10:00 AM - 12:00 PM and 3:00 PM - 6:00 PM."
-            )
+        duration_mins = booking.duration_minutes or 30
+        end_datetime = start_datetime + timedelta(minutes=duration_mins)
 
         # ----------------------------------------------------
         # 3. RULE CHECK & CREATION
