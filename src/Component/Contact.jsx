@@ -19,9 +19,7 @@ import gmailLogo from "../assets/logos/gmail.png"
 import mapsLogo from "../assets/logos/google-maps.png"
 import waLogo from "../assets/logos/whatsapp.png"
 
-const API_BASE_URL = import.meta.env.DEV 
-  ? "http://localhost:8000" 
-  : "https://astrologer-kundan-singh.onrender.com"
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com"
 
 const faqs = [
   {

@@ -3,9 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { Calendar, Clock, Sparkles, Send, MapPin, User, Mail, Phone, ChevronLeft, ChevronRight } from 'lucide-react'
 import EmailOtpModal from './EmailOtpModal'
 
-const API_BASE_URL = import.meta.env.DEV 
-  ? "http://localhost:8000" 
-  : "https://astrologer-kundan-singh.onrender.com"
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com"
 
 /**
  * CelestialDivider Component

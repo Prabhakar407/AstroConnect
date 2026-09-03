@@ -4,9 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, ArrowRight, Home, Sofa, Bed, Utensils, Bath, Briefcase, Heart, RefreshCw, Globe, User, BookOpen, Compass, Send, Phone, MapPin, MessageSquare, Mail } from 'lucide-react'
 import EmailOtpModal from './EmailOtpModal'
 
-const API_BASE_URL = import.meta.env.DEV 
-  ? "http://localhost:8000" 
-  : "https://astrologer-kundan-singh.onrender.com"
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com"
 
 import sunIcon from '../assets/planets/sun.jpg'
 import moonIcon from '../assets/planets/moon.jpg'

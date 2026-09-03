@@ -217,7 +217,7 @@ def send_resend_otp_email(to_email: str, otp: str, purpose: str = "Verification"
         except Exception as e:
             print(f"⚠️ Resend email sending failed ({str(e)}). Attempting SMTP fallback...")
 
-    # 2. Resilient Fallback: Dispatch via SMTP
+    # 2. Resilient Fallback: Dispatch via Gmail SMTP (Port 587 STARTTLS & Port 465 SSL)
     if SMTP_EMAIL and SMTP_PASSWORD:
         try:
             import smtplib
@@ -230,14 +230,25 @@ def send_resend_otp_email(to_email: str, otp: str, purpose: str = "Verification"
             msg['To'] = to_email
             msg.attach(MIMEText(html_content, 'html'))
 
-            server = smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10)
-            server.login(SMTP_EMAIL, SMTP_PASSWORD)
-            server.sendmail(SMTP_EMAIL, [to_email], msg.as_string())
-            server.quit()
-            print(f"✓ SMTP Fallback OTP dispatched successfully to {to_email}")
-            return True
+            # Try Port 587 (STARTTLS) first - standard across cloud providers
+            try:
+                server = smtplib.SMTP("smtp.gmail.com", 587, timeout=8)
+                server.starttls()
+                server.login(SMTP_EMAIL, SMTP_PASSWORD)
+                server.sendmail(SMTP_EMAIL, [to_email], msg.as_string())
+                server.quit()
+                print(f"✓ SMTP (Port 587) Fallback OTP dispatched successfully to {to_email}")
+                return True
+            except Exception as e587:
+                print(f"⚠️ SMTP Port 587 failed ({e587}), trying Port 465 SSL...")
+                server = smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=8)
+                server.login(SMTP_EMAIL, SMTP_PASSWORD)
+                server.sendmail(SMTP_EMAIL, [to_email], msg.as_string())
+                server.quit()
+                print(f"✓ SMTP (Port 465) Fallback OTP dispatched successfully to {to_email}")
+                return True
         except Exception as smtp_err:
-            print(f"⚠️ SMTP fallback also failed: {str(smtp_err)}")
+            print(f"⚠️ All SMTP dispatch options failed: {str(smtp_err)}")
 
     print(f"⚠️ Unable to dispatch OTP email. Generated code for {to_email} is: {otp}")
     return False

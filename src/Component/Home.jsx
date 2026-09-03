@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send, Mail, MapPin, HelpCircle } from "lucide-react";
+import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send, Mail, MapPin, HelpCircle, Loader2 } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import EmailOtpModal from './EmailOtpModal';
-const API_BASE_URL = import.meta.env.DEV 
-  ? "http://localhost:8000" 
-  : "https://astrologer-kundan-singh.onrender.com"
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com"
 
 import logoImg from "../assets/logos/Nav-Logo.png";
 import featureBg from "../assets/images/Feature.png";
@@ -1688,13 +1686,29 @@ export default function Home() {
                       </div>
                     </div>
 
+                    {serverError && (
+                      <div className="p-3 bg-red-950/80 border border-red-500/60 rounded-xl text-red-200 text-xs text-center font-sans tracking-wide">
+                        ⚠️ {serverError}
+                      </div>
+                    )}
+
                     {/* Submit button */}
                     <button 
                       type="submit"
-                      className="w-full bg-[#D3AF54] hover:bg-[#D3AF54]/90 text-[#181122] font-bold py-3.5 rounded-lg hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-300 shadow-md hover:shadow-[0_0_15px_rgba(211,175,84,0.3)] cursor-pointer flex items-center justify-center gap-2 mt-5 text-xs sm:text-sm tracking-wider uppercase"
+                      disabled={submitting}
+                      className="w-full bg-[#D3AF54] hover:bg-[#D3AF54]/90 disabled:opacity-70 disabled:cursor-not-allowed text-[#181122] font-bold py-3.5 rounded-lg hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-300 shadow-md hover:shadow-[0_0_15px_rgba(211,175,84,0.3)] cursor-pointer flex items-center justify-center gap-2 mt-2 text-xs sm:text-sm tracking-wider uppercase"
                     >
-                      <Send size={12} />
-                      <span>Send Vedic Inquiry Request</span>
+                      {submitting ? (
+                        <>
+                          <Loader2 size={15} className="animate-spin text-[#181122]" />
+                          <span>Sending Verification Code...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send size={12} />
+                          <span>Send Vedic Inquiry Request</span>
+                        </>
+                      )}
                     </button>
                   </form>
                 )}
