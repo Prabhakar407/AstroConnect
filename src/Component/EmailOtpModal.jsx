@@ -134,9 +134,9 @@ export default function EmailOtpModal({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email,
-          otp: fullCode,
-          purpose
+          email: (email || "").trim().toLowerCase(),
+          otp: (fullCode || "").trim(),
+          purpose: (purpose || "verification").trim().toLowerCase()
         })
       })
 

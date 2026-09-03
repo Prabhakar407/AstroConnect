@@ -43,6 +43,8 @@ SCOPES = [
     "https://www.googleapis.com/auth/drive"
 ]
 
+import tempfile
+
 # ==========================================
 # ⚙️ REDIS & PERSISTENT MULTI-WORKER CACHE
 # ==========================================
@@ -56,8 +58,9 @@ try:
 except Exception as e:
     redis_client = None
 
-# Shared SQLite Disk Cache (100% shared across all Uvicorn worker processes & restarts)
-DB_CACHE_PATH = os.path.join(os.path.dirname(__file__), "astro_cache.db")
+# Shared SQLite Disk Cache in /tmp (guaranteed writable across all cloud workers & restarts)
+DB_CACHE_PATH = os.path.join(tempfile.gettempdir(), "astro_cache.db")
+in_memory_store = {}
 
 def init_cache_db():
     try:
@@ -72,16 +75,23 @@ def init_cache_db():
 init_cache_db()
 
 def set_cache_key(key: str, value: str, ex_seconds: int):
+    now = time.time()
+    
     # 1. External Redis
     if redis_client:
         try:
             redis_client.set(key, value, ex=ex_seconds)
         except Exception:
             pass
+
+    # 2. In-Memory Local RAM
+    in_memory_store[key] = {
+        "value": str(value),
+        "expires_at": now + ex_seconds
+    }
             
-    # 2. Shared Multi-Worker SQLite Store
+    # 3. Shared Multi-Worker /tmp SQLite Store
     try:
-        now = time.time()
         conn = sqlite3.connect(DB_CACHE_PATH, timeout=10)
         c = conn.cursor()
         c.execute("INSERT OR REPLACE INTO cache VALUES (?, ?, ?)", (key, str(value), now + ex_seconds))
@@ -92,18 +102,19 @@ def set_cache_key(key: str, value: str, ex_seconds: int):
         print(f"Cache set error: {e}")
 
 def get_cache_key(key: str) -> Optional[str]:
+    now = time.time()
+    
     # 1. External Redis
     if redis_client:
         try:
             val = redis_client.get(key)
             if val:
-                return val
+                return str(val)
         except Exception:
             pass
             
-    # 2. Shared Multi-Worker SQLite Store
+    # 2. Shared Multi-Worker /tmp SQLite Store
     try:
-        now = time.time()
         conn = sqlite3.connect(DB_CACHE_PATH, timeout=10)
         c = conn.cursor()
         c.execute("SELECT value, expires_at FROM cache WHERE key = ?", (key,))
@@ -118,6 +129,15 @@ def get_cache_key(key: str) -> Optional[str]:
                 return None
     except Exception as e:
         print(f"Cache get error: {e}")
+
+    # 3. In-Memory RAM Fallback
+    item = in_memory_store.get(key)
+    if item:
+        if now <= item.get("expires_at", 0):
+            return item.get("value")
+        else:
+            in_memory_store.pop(key, None)
+
     return None
 
 def delete_cache_key(key: str):
@@ -126,6 +146,7 @@ def delete_cache_key(key: str):
             redis_client.delete(key)
         except Exception:
             pass
+    in_memory_store.pop(key, None)
     try:
         conn = sqlite3.connect(DB_CACHE_PATH, timeout=10)
         c = conn.cursor()
