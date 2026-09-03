@@ -1489,15 +1489,15 @@ export default function Home() {
                       <span className="truncate">astroadvicebyks@gmail.com</span>
                     </div>
                     <div className="flex items-center gap-3.5">
-                      <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                        <img src={callLogo} alt="Call" className="w-5 h-5 object-contain" />
+                      <div className="w-8 h-8 rounded-full bg-[#D3AF54] text-[#181122] flex items-center justify-center shrink-0 shadow-[0_0_8px_rgba(211,175,84,0.3)]">
+                        <Phone size={13} className="fill-[#181122] text-[#181122]" />
                       </div>
                       <span>+91 8130808758, +91 8527790801</span>
                     </div>
                     <a 
-                      href="https://www.google.com/maps/search/?api=1&query=B-23+Shantikunj+B-Block+Avenue-9+Church+Road+Vasant+Kunj+New+Delhi-110070" 
+                      href="https://www.google.com/maps/search/?api=1&query=B-23,+Shanti+Kunj,+Church+Road,+Vasant+Kunj,+New+Delhi,+Delhi+110070" 
                       target="_blank" 
-                      rel="noreferrer"
+                      rel="noreferrer" 
                       className="flex items-center gap-3.5 hover:text-[#D3AF54] transition-colors"
                     >
                       <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
@@ -1642,7 +1642,7 @@ export default function Home() {
                           </button>
 
                           {isDropdownOpen && (
-                            <div className="absolute left-0 right-0 mt-1 bg-[#181122] border border-[#AB7A57]/30 rounded-xl shadow-2xl overflow-hidden z-50 flex flex-col py-1">
+                            <div className="absolute left-0 right-0 mt-1 bg-[#181122] border border-[#D3AF54]/40 rounded-xl shadow-2xl overflow-y-auto max-h-56 z-50 flex flex-col py-1 touch-pan-y divide-y divide-white/5">
                               {services.map((item, idx) => (
                                 <button
                                   key={idx}
@@ -1655,7 +1655,7 @@ export default function Home() {
                                     }));
                                     setIsDropdownOpen(false);
                                   }}
-                                  className="w-full text-left px-4 py-3 text-xs sm:text-sm text-[#D8CFEB] hover:bg-[#D3AF54]/15 hover:text-white transition-colors cursor-pointer border-b border-white/5 last:border-0"
+                                  className="w-full text-left px-4 py-3 text-xs sm:text-sm text-[#D8CFEB] hover:bg-[#D3AF54]/20 hover:text-[#D3AF54] active:bg-[#D3AF54]/30 transition-colors cursor-pointer"
                                 >
                                   {item.title}
                                 </button>

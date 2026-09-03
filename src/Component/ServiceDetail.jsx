@@ -1949,8 +1949,8 @@ function PrashnaKundaliDetail({ details, navigate }) {
                 key={idx}
                 onMouseEnter={() => setHoveredIdx(idx)}
                 onMouseLeave={() => setHoveredIdx(null)}
-                whileHover={{ y: -6 }}
-                className={`border rounded-2xl p-6 text-left transition-all duration-300 flex flex-col justify-between group min-h-[190px] shadow-xs relative overflow-hidden cursor-pointer ${
+                whileHover={{ y: -5 }}
+                className={`border rounded-2xl p-5 text-left transition-all duration-300 flex flex-col justify-start gap-2.5 group shadow-xs relative overflow-hidden cursor-pointer ${
                   isHovered 
                     ? 'bg-white border-[#D3AF54] shadow-[0_4px_20px_rgba(211,175,84,0.15)] scale-[1.02]' 
                     : isAnyHovered 
@@ -1958,17 +1958,15 @@ function PrashnaKundaliDetail({ details, navigate }) {
                       : 'bg-[#F6F3E6]/60 border-[#AB7A57]/15'
                 }`}
               >
-                <div>
-                  <div className="flex items-center gap-3.5 mb-3">
-                    <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 shadow-inner transition-all duration-300 ${
-                      isHovered 
-                        ? 'bg-[#181122] text-white border-[#181122] scale-105' 
-                        : 'bg-[#FFFDEE] border-[#D3AF54]/30 text-[#D3AF54]'
-                    }`}>
-                      {item.icon}
-                    </div>
-                    <h3 className="font-serif font-bold text-base sm:text-lg text-[#181122] leading-tight">{item.title}</h3>
+                <div className="flex items-center gap-3">
+                  <div className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 shadow-inner transition-all duration-300 ${
+                    isHovered 
+                      ? 'bg-[#181122] text-white border-[#181122] scale-105' 
+                      : 'bg-[#FFFDEE] border-[#D3AF54]/30 text-[#D3AF54]'
+                  }`}>
+                    {item.icon}
                   </div>
+                  <h3 className="font-serif font-bold text-sm sm:text-base text-[#181122] leading-snug">{item.title}</h3>
                 </div>
                 
                 <p className="text-xs text-slate-600 leading-relaxed font-sans font-medium">

@@ -118,7 +118,7 @@ export default function Footer() {
             <li className="flex items-start gap-2.5">
               <img src={mapsLogo} alt="Map" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0 mt-0.5" />
               <a 
-                href="https://www.google.com/maps/search/?api=1&query=B-23+Shantikunj+B-Block+Avenue-9+Church+Road+Vasant+Kunj+New+Delhi-110070" 
+                href="https://www.google.com/maps/search/?api=1&query=B-23,+Shanti+Kunj,+Church+Road,+Vasant+Kunj,+New+Delhi,+Delhi+110070" 
                 target="_blank" 
                 rel="noreferrer"
                 className="hover:text-[#D3AF54] transition leading-snug"

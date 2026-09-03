@@ -368,8 +368,18 @@ function Contact() {
                 <Clock size={13} />
                 <span>Mon - Sat: 10:00 AM - 12:00 PM & 3:00 PM - 6:00 PM</span>
               </p>
+              <div className="w-full rounded-xl overflow-hidden border border-white/10 shadow-md">
+                <iframe 
+                  title="Astrologer Kundan Singh Location Map"
+                  src="https://maps.google.com/maps?q=B-23%2C%20Shanti%20Kunj%2C%20Church%20Road%2C%20Vasant%20Kunj%2C%20New%20Delhi%2C%20Delhi%20110070&t=&z=17&ie=UTF8&iwloc=B&output=embed"
+                  className="w-full h-36 border-0 rounded-xl"
+                  loading="lazy"
+                  allowFullScreen
+                ></iframe>
+              </div>
+
               <a 
-                href="https://www.google.com/maps/search/?api=1&query=B-23+Shantikunj+B-Block+Avenue-9+Church+Road+Vasant+Kunj+New+Delhi-110070" 
+                href="https://www.google.com/maps/search/?api=1&query=B-23,+Shanti+Kunj,+Church+Road,+Vasant+Kunj,+New+Delhi,+Delhi+110070" 
                 target="_blank" 
                 rel="noreferrer"
                 className="w-full bg-white/5 border border-white/10 hover:bg-[#D3AF54] text-[#D8CFEB] hover:text-[#181122] text-xs uppercase font-bold py-3 rounded-xl transition duration-300 flex items-center justify-center gap-1.5 shadow"
