@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Calendar, Clock, Sparkles, Send, MapPin, User, Mail, Phone, ChevronLeft, ChevronRight } from 'lucide-react'
+import EmailOtpModal from './EmailOtpModal'
 
 const API_BASE_URL = import.meta.env.DEV 
   ? "http://localhost:8000" 
@@ -83,6 +84,7 @@ function Appointment_Booking() {
   const [eventLink, setEventLink] = useState("")
   const [meetLink, setMeetLink] = useState("")
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
+  const [showOtpModal, setShowOtpModal] = useState(false)
 
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
@@ -228,15 +230,33 @@ function Appointment_Booking() {
 
     setLoading(true)
     setErrorMsg("")
+
+    // Send OTP first via Resend & Redis
+    try {
+      const otpRes = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, purpose: "booking" })
+      })
+      const otpData = await otpRes.json()
+      if (!otpRes.ok) {
+        throw new Error(otpData.detail || "Failed to send verification code to your email.")
+      }
+      setShowOtpModal(true)
+    } catch (err) {
+      setErrorMsg(err.message || "Failed to initiate email verification.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const executeBooking = async (verificationToken) => {
+    setLoading(true)
+    setErrorMsg("")
     setEventLink("")
 
-    // Use the selected hourly slot directly
     const timeSlot = formData.bookingSlot || "10:00"
-
-    // Determine the appointment duration from selected reading type
     let duration = 30
-
-    // Pack intake questions into service details description
     const birthDetails = `Phone: ${formData.phone}\nBirth Date: ${formData.birthDate}\nBirth Time: ${formData.birthTime || 'Not Provided'}\nBirth Place: ${formData.birthPlace || 'Not Provided'}\nClient Notes: ${formData.notes || 'None'}`
 
     try {
@@ -254,6 +274,7 @@ function Appointment_Booking() {
           time_slot: timeSlot,
           duration_minutes: duration,
           birth_details: birthDetails,
+          verification_token: verificationToken,
         }),
       })
 
@@ -265,9 +286,11 @@ function Appointment_Booking() {
       if (data.event_link) {
         setEventLink(data.event_link)
       }
+      setShowOtpModal(false)
       setSubmitted(true)
     } catch (err) {
       setErrorMsg(err.message || "Failed to connect to the booking server. Please verify that the FastAPI backend is running.")
+      setShowOtpModal(false)
     } finally {
       setLoading(false)
     }
@@ -761,6 +784,15 @@ function Appointment_Booking() {
         </div>
 
       </div>
+
+      {/* Email OTP Verification Modal */}
+      <EmailOtpModal
+        isOpen={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        email={formData.email}
+        purpose="booking"
+        onVerified={executeBooking}
+      />
 
     </div>
   )

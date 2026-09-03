@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, ArrowRight, Home, Sofa, Bed, Utensils, Bath, Briefcase, Heart, RefreshCw, Globe, User, BookOpen, Compass, Send, Phone, MapPin, MessageSquare } from 'lucide-react'
+import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, ArrowRight, Home, Sofa, Bed, Utensils, Bath, Briefcase, Heart, RefreshCw, Globe, User, BookOpen, Compass, Send, Phone, MapPin, MessageSquare, Mail } from 'lucide-react'
+import EmailOtpModal from './EmailOtpModal'
 
 const API_BASE_URL = import.meta.env.DEV 
   ? "http://localhost:8000" 
@@ -242,6 +243,16 @@ export default function ServiceDetail() {
     window.scrollTo(0, 0);
   }, [serviceId]);
 
+  // Auto-advance benefit point every 3 seconds for Vedic Astrology
+  useEffect(() => {
+    if (serviceId === 'vedic-astrology') {
+      const timer = setInterval(() => {
+        setActiveAstrologyBenefit((prev) => (prev + 1) % 6);
+      }, 3000);
+      return () => clearInterval(timer);
+    }
+  }, [serviceId]);
+
   if (!details) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#FDFCF5] px-6 text-[#181122]">
@@ -270,11 +281,11 @@ export default function ServiceDetail() {
           
           {/* Back Link Overlay */}
           <button 
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/services')}
             className="absolute top-6 left-6 md:left-12 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
           >
             <ArrowLeft size={14} />
-            <span>Home</span>
+            <span>Services</span>
           </button>
         </div>
 
@@ -640,11 +651,11 @@ export default function ServiceDetail() {
           
           {/* Back Link Overlay */}
           <button 
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/services')}
             className="absolute top-6 left-6 md:left-12 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
           >
             <ArrowLeft size={14} />
-            <span>Home</span>
+            <span>Services</span>
           </button>
         </div>
 
@@ -733,86 +744,83 @@ export default function ServiceDetail() {
                   </p>
                 </div>
 
-                {/* Interactive Selector Layout */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch flex-grow">
-                  {/* Left Side: Buttons */}
-                  <div className="md:col-span-5 flex flex-col gap-2">
-                    {[
-                      { label: 'Natural Talents & Strengths', sub: 'Discover hidden gifts' },
-                      { label: 'Karmic Roadblocks & Obstacles', sub: 'Map your Saturn tests' },
-                      { label: 'Career Alignment', sub: 'Maximize business growth' },
-                      { label: 'Timeline & Dasha Cycles', sub: 'Decide optimal timings' },
-                      { label: 'Relationship Compatibility', sub: 'Build marital harmony' },
-                      { label: 'Remedial Shielding', sub: 'Neutralize heavy transits' }
-                    ].map((benefit, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setActiveAstrologyBenefit(idx)}
-                        className={`p-2.5 px-3.5 rounded-xl text-left border transition-all duration-300 flex items-center justify-between cursor-pointer group ${
-                          activeAstrologyBenefit === idx
-                            ? 'bg-[#181122] text-white border-transparent shadow-md translate-x-1.5'
-                            : 'bg-white/80 hover:bg-white text-[#181122] border-[#AB7A57]/20'
-                        }`}
-                      >
-                        <div className="space-y-0.5 text-left flex-grow">
-                          <p className={`text-xs sm:text-sm font-bold font-sans ${activeAstrologyBenefit === idx ? 'text-[#D3AF54]' : 'text-[#181122]'}`}>
-                            {benefit.label}
-                          </p>
-                          <p className={`text-xs sm:text-sm ${activeAstrologyBenefit === idx ? 'text-[#D8CFEB]' : 'text-[#181122]/80'}`}>
-                            {benefit.sub}
-                          </p>
-                        </div>
-                        <ArrowRight size={14} className={`shrink-0 transition-transform ${
-                          activeAstrologyBenefit === idx ? 'text-[#D3AF54] translate-x-0.5' : 'text-[#AB7A57] opacity-60'
-                        }`} />
-                      </button>
-                    ))}
-                  </div>
+                {/* 3 Rows x 2 Columns Interactive Points Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                  {[
+                    { label: 'Natural Talents & Strengths', sub: 'Discover hidden gifts' },
+                    { label: 'Karmic Roadblocks & Obstacles', sub: 'Map your Saturn tests' },
+                    { label: 'Career Alignment', sub: 'Maximize business growth' },
+                    { label: 'Timeline & Dasha Cycles', sub: 'Decide optimal timings' },
+                    { label: 'Relationship Compatibility', sub: 'Build marital harmony' },
+                    { label: 'Remedial Shielding', sub: 'Neutralize heavy transits' }
+                  ].map((benefit, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveAstrologyBenefit(idx)}
+                      className={`p-3 px-4 rounded-xl text-left border transition-all duration-300 flex items-center justify-between cursor-pointer group ${
+                        activeAstrologyBenefit === idx
+                          ? 'bg-[#181122] text-white border-transparent shadow-md scale-[1.01]'
+                          : 'bg-white/85 hover:bg-white text-[#181122] border-[#AB7A57]/20'
+                      }`}
+                    >
+                      <div className="space-y-0.5 text-left flex-grow">
+                        <p className={`text-xs sm:text-sm font-bold font-sans ${activeAstrologyBenefit === idx ? 'text-[#D3AF54]' : 'text-[#181122]'}`}>
+                          {benefit.label}
+                        </p>
+                        <p className={`text-[11px] sm:text-xs ${activeAstrologyBenefit === idx ? 'text-[#D8CFEB]' : 'text-[#181122]/80'}`}>
+                          {benefit.sub}
+                        </p>
+                      </div>
+                      <ArrowRight size={14} className={`shrink-0 transition-transform ${
+                        activeAstrologyBenefit === idx ? 'text-[#D3AF54] translate-x-0.5' : 'text-[#AB7A57] opacity-60'
+                      }`} />
+                    </button>
+                  ))}
+                </div>
 
-                  {/* Right Side: Detailed Highlight Box */}
-                  <div className="md:col-span-7 bg-[#181122] text-white rounded-2xl p-5 sm:p-6 flex flex-col justify-start border border-[#AB7A57]/20 relative overflow-hidden shadow-inner min-h-[235px] text-left">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
-                    
-                    {[
-                      {
-                        title: 'Natural Talents & Strengths',
-                        desc: 'Discover your intrinsic gifts and primary elements, guiding you toward fields where you flow naturally rather than fighting upstream.'
-                      },
-                      {
-                        title: 'Karmic Roadblocks & Obstacles',
-                        desc: 'Identify Saturnian tests, karmic blockages, and difficult planetary placements to know exactly where you must build discipline and caution.'
-                      },
-                      {
-                        title: 'Career Alignment',
-                        desc: 'Pinpoint business growth prospects, potential corporate roles, wealth-generation timing, and auspicious dates for career moves.'
-                      },
-                      {
-                        title: 'Timeline & Dasha Cycles',
-                        desc: 'Map out the active Vimshottari Dasha cycles to analyze the energetic theme of your current years, deciding optimal windows for major steps.'
-                      },
-                      {
-                        title: 'Relationship Compatibility',
-                        desc: 'Verify chart harmonies, marital timelines, partnership dynamics, and energetic sync profiles to foster long-term marital bliss.'
-                      },
-                      {
-                        title: 'Remedial Shielding',
-                        desc: 'Pinpoint heavy transits and activate protective shielding using traditional Vedic remedies, gemstones, fasting, and mantra vibrations.'
-                      }
-                    ].map((item, idx) => (
-                      activeAstrologyBenefit === idx && (
-                        <motion.div 
-                          key={idx}
-                          initial={{ opacity: 0, x: 10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="space-y-2 text-left"
-                        >
-                          <h4 className="font-serif font-bold text-base text-[#D3AF54]">{item.title}</h4>
-                          <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans font-medium">{item.desc}</p>
-                        </motion.div>
-                      )
-                    ))}
-                  </div>
+                {/* Purple/Dark Highlight Box Positioned BELOW the Points Grid */}
+                <div className="w-full bg-[#181122] text-white rounded-2xl p-5 sm:p-6 flex flex-col justify-start border border-[#AB7A57]/20 relative overflow-hidden shadow-inner min-h-[105px] text-left">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
+                  
+                  {[
+                    {
+                      title: 'Natural Talents & Strengths',
+                      desc: 'Discover your intrinsic gifts and primary elements, guiding you toward fields where you flow naturally rather than fighting upstream.'
+                    },
+                    {
+                      title: 'Karmic Roadblocks & Obstacles',
+                      desc: 'Identify Saturnian tests, karmic blockages, and difficult planetary placements to know exactly where you must build discipline and caution.'
+                    },
+                    {
+                      title: 'Career Alignment',
+                      desc: 'Pinpoint business growth prospects, potential corporate roles, wealth-generation timing, and auspicious dates for career moves.'
+                    },
+                    {
+                      title: 'Timeline & Dasha Cycles',
+                      desc: 'Map out the active Vimshottari Dasha cycles to analyze the energetic theme of your current years, deciding optimal windows for major steps.'
+                    },
+                    {
+                      title: 'Relationship Compatibility',
+                      desc: 'Verify chart harmonies, marital timelines, partnership dynamics, and energetic sync profiles to foster long-term marital bliss.'
+                    },
+                    {
+                      title: 'Remedial Shielding',
+                      desc: 'Pinpoint heavy transits and activate protective shielding using traditional Vedic remedies, gemstones, fasting, and mantra vibrations.'
+                    }
+                  ].map((item, idx) => (
+                    activeAstrologyBenefit === idx && (
+                      <motion.div 
+                        key={idx}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="space-y-1.5 text-left"
+                      >
+                        <h4 className="font-serif font-bold text-sm sm:text-base text-[#D3AF54]">{item.title}</h4>
+                        <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans font-medium">{item.desc}</p>
+                      </motion.div>
+                    )
+                  ))}
                 </div>
               </motion.div>
             </div>
@@ -918,11 +926,11 @@ export default function ServiceDetail() {
           
           {/* Back Link Overlay */}
           <button 
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/services')}
             className="absolute top-6 left-6 md:left-12 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
           >
             <ArrowLeft size={14} />
-            <span>Home</span>
+            <span>Services</span>
           </button>
         </div>
 
@@ -1202,11 +1210,11 @@ export default function ServiceDetail() {
           
           {/* Back Link Overlay */}
           <button 
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/services')}
             className="absolute top-6 left-6 md:left-12 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
           >
             <ArrowLeft size={14} />
-            <span>Home</span>
+            <span>Services</span>
           </button>
         </div>
 
@@ -1320,25 +1328,33 @@ export default function ServiceDetail() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                   { name: 'Earth', sanskrit: 'Prithvi', dir: 'SW', icon: earthImg },
-                  { name: 'Water', sanskrit: 'Jal', dir: 'NE', icon: waterImg },
                   { name: 'Fire', sanskrit: 'Agni', dir: 'SE', icon: fireImg },
                   { name: 'Air', sanskrit: 'Vayu', dir: 'NW', icon: airImg },
+                  { name: 'Water', sanskrit: 'Jal', dir: 'NE', icon: waterImg },
                   { name: 'Space', sanskrit: 'Akash', dir: 'Center', icon: spaceImg }
-                ].map((item, idx) => (
-                  <div key={idx} className="bg-white border border-[#AB7A57]/15 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:scale-[1.02] hover:border-gold-aura transition-all duration-300">
-                    <div className="w-14 h-14 rounded-full bg-[#FFF9E6] border border-gold-aura/30 flex items-center justify-center mb-2 overflow-hidden p-1.5 shadow-xs">
-                      <img src={item.icon} alt={item.name} className="w-full h-full object-contain" />
+                ].map((item, idx) => {
+                  const isSpace = item.name === 'Space';
+                  return (
+                    <div 
+                      key={idx} 
+                      className={`bg-white border border-[#AB7A57]/15 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:scale-[1.02] hover:border-gold-aura transition-all duration-300 ${
+                        isSpace ? 'col-span-2 md:col-span-4 max-w-[220px] justify-self-center mx-auto w-full' : 'w-full'
+                      }`}
+                    >
+                      <div className="w-14 h-14 rounded-full bg-[#FFF9E6] border border-gold-aura/30 flex items-center justify-center mb-2 overflow-hidden p-1.5 shadow-xs">
+                        <img src={item.icon} alt={item.name} className="w-full h-full object-contain" />
+                      </div>
+                      <span className="font-serif font-bold text-[#181122] text-base sm:text-lg">{item.name}</span>
+                      <span className="text-xs sm:text-sm font-sans font-bold text-[#AB7A57] uppercase tracking-wide mt-0.5">{item.sanskrit}</span>
+                      <div className="mt-3 px-3 py-0.5 bg-[#181122] text-gold-aura rounded-full border border-gold-aura/25 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
+                        Direction: {item.dir}
+                      </div>
                     </div>
-                    <span className="font-serif font-bold text-[#181122] text-base sm:text-lg">{item.name}</span>
-                    <span className="text-xs sm:text-sm font-sans font-bold text-[#AB7A57] uppercase tracking-wide mt-0.5">{item.sanskrit}</span>
-                    <div className="mt-3 px-3 py-0.5 bg-[#181122] text-gold-aura rounded-full border border-gold-aura/25 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
-                      Direction: {item.dir}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </motion.div>
           </div>
@@ -1470,11 +1486,11 @@ export default function ServiceDetail() {
         
         {/* Back Link Overlay */}
         <button 
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/services')}
           className="absolute top-6 left-6 md:left-12 flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
         >
           <ArrowLeft size={14} />
-          <span>Home</span>
+          <span>Services</span>
         </button>
       </div>
 
@@ -1652,6 +1668,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
   const [hoveredIdx, setHoveredIdx] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     phone: '',
     location: '',
     question: ''
@@ -1660,6 +1677,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -1671,6 +1689,12 @@ function PrashnaKundaliDetail({ details, navigate }) {
     }
     if (formData.name.trim().length < 2) {
       return "Name must be at least 2 characters.";
+    }
+    if (!formData.email.trim()) {
+      return "Please enter your Email Address.";
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      return "Please enter a valid email address.";
     }
     if (!formData.phone.trim()) {
       return "Please enter your Mobile Number.";
@@ -1733,6 +1757,28 @@ function PrashnaKundaliDetail({ details, navigate }) {
     setServerError("");
 
     try {
+      const otpRes = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, purpose: "prashna" })
+      });
+      const otpData = await otpRes.json();
+      if (!otpRes.ok) {
+        throw new Error(otpData.detail || "Failed to send verification code to your email.");
+      }
+      setShowOtpModal(true);
+    } catch (err) {
+      setServerError(err.message || "Failed to initiate email verification.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const executePrashnaSubmit = async (verificationToken) => {
+    setLoading(true);
+    setServerError("");
+
+    try {
       const response = await fetch(`${API_BASE_URL}/api/prashna`, {
         method: "POST",
         headers: {
@@ -1740,9 +1786,11 @@ function PrashnaKundaliDetail({ details, navigate }) {
         },
         body: JSON.stringify({
           name: formData.name,
+          email: formData.email,
           phone: formData.phone,
           location: formData.location,
           question: formData.question,
+          verification_token: verificationToken,
         }),
       });
 
@@ -1751,9 +1799,11 @@ function PrashnaKundaliDetail({ details, navigate }) {
         throw new Error(data.detail || "Failed to submit Prashna question.");
       }
 
+      setShowOtpModal(false);
       setSubmitted(true);
     } catch (err) {
       setServerError(err.message || "Failed to connect to backend server. Please verify that the backend is running.");
+      setShowOtpModal(false);
     } finally {
       setLoading(false);
     }
@@ -1838,11 +1888,11 @@ function PrashnaKundaliDetail({ details, navigate }) {
         {/* Back button link */}
         <div className="w-full max-w-5xl mb-10 text-left">
           <button 
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/services')}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] transition-colors shadow-md text-xs font-bold uppercase tracking-wider cursor-pointer"
           >
             <ArrowLeft size={14} />
-            <span>Home</span>
+            <span>Services</span>
           </button>
         </div>
 
@@ -1917,14 +1967,16 @@ function PrashnaKundaliDetail({ details, navigate }) {
                 }`}
               >
                 <div>
-                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center mb-4 shrink-0 shadow-inner transition-all duration-300 ${
-                    isHovered 
-                      ? 'bg-[#181122] text-white border-[#181122] scale-105' 
-                      : 'bg-[#FFFDEE] border-[#D3AF54]/30 text-[#D3AF54]'
-                  }`}>
-                    {item.icon}
+                  <div className="flex items-center gap-3.5 mb-3">
+                    <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 shadow-inner transition-all duration-300 ${
+                      isHovered 
+                        ? 'bg-[#181122] text-white border-[#181122] scale-105' 
+                        : 'bg-[#FFFDEE] border-[#D3AF54]/30 text-[#D3AF54]'
+                    }`}>
+                      {item.icon}
+                    </div>
+                    <h3 className="font-serif font-bold text-base sm:text-lg text-[#181122] leading-tight">{item.title}</h3>
                   </div>
-                  <h3 className="font-serif font-bold text-lg text-[#181122] mb-2">{item.title}</h3>
                 </div>
                 
                 <p className="text-xs text-slate-600 leading-relaxed font-sans font-medium">
@@ -1955,10 +2007,12 @@ function PrashnaKundaliDetail({ details, navigate }) {
               className="bg-white border border-[#AB7A57]/20 rounded-2xl p-5 flex flex-col justify-between shadow-2xs hover:shadow-md transition-all duration-300 hover:scale-[1.01]"
             >
               <div>
-                <div className="w-10 h-10 rounded-lg bg-[#FFFDEE] border border-[#D3AF54]/20 flex items-center justify-center mb-4 shrink-0 overflow-hidden shadow-inner">
-                  <img src={item.logo} alt={item.title} className="w-6 h-6 object-contain" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-9 h-9 rounded-lg bg-[#FFFDEE] border border-[#D3AF54]/20 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
+                    <img src={item.logo} alt={item.title} className="w-5 h-5 object-contain" />
+                  </div>
+                  <h4 className="font-serif font-bold text-sm sm:text-base text-[#181122] leading-tight">{item.title}</h4>
                 </div>
-                <h4 className="font-serif font-bold text-sm text-[#181122] mb-3">{item.title}</h4>
                 <div className="space-y-2 mt-2">
                   {item.queries.map((q, qidx) => (
                     <p key={qidx} className="text-xs sm:text-sm text-slate-700 font-sans italic leading-relaxed font-semibold">
@@ -2046,6 +2100,23 @@ function PrashnaKundaliDetail({ details, navigate }) {
 
                 <div className="space-y-1">
                   <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
+                    Email Address <span className="text-[#D3AF54]">*</span>
+                  </label>
+                  <div className="relative">
+                    <Mail size={15} className="absolute left-3 top-3 text-[#D3AF54]/60" />
+                    <input 
+                      type="email" 
+                      required
+                      placeholder="e.g. john@example.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full bg-[#241B33] text-[#FDFCF5] border border-white/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition placeholder-white/40 font-sans"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
                     Mobile Number <span className="text-[#D3AF54]">*</span>
                   </label>
                   <div className="relative">
@@ -2060,22 +2131,22 @@ function PrashnaKundaliDetail({ details, navigate }) {
                     />
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-1">
-                <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
-                  Current Location (City, Country) <span className="text-[#D3AF54]">*</span>
-                </label>
-                <div className="relative">
-                  <MapPin size={15} className="absolute left-3 top-3 text-[#D3AF54]/60" />
-                  <input 
-                    type="text" 
-                    required
-                    placeholder="e.g. New Delhi, India"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="w-full bg-[#241B33] text-[#FDFCF5] border border-white/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition placeholder-white/40 font-sans"
-                  />
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
+                    Current Location (City, Country) <span className="text-[#D3AF54]">*</span>
+                  </label>
+                  <div className="relative">
+                    <MapPin size={15} className="absolute left-3 top-3 text-[#D3AF54]/60" />
+                    <input 
+                      type="text" 
+                      required
+                      placeholder="e.g. New Delhi, India"
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      className="w-full bg-[#241B33] text-[#FDFCF5] border border-white/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition placeholder-white/40 font-sans"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -2112,7 +2183,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
                     </>
                   ) : (
                     <>
-                      <span>Analyze My Question Now</span>
+                      <span>Submit your Prashna</span>
                       <ArrowRight size={15} />
                     </>
                   )}
@@ -2137,6 +2208,15 @@ function PrashnaKundaliDetail({ details, navigate }) {
           <span>Back to Home</span>
         </Link>
       </div>
+
+      {/* Email OTP Verification Modal */}
+      <EmailOtpModal
+        isOpen={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        email={formData.email}
+        purpose="prashna"
+        onVerified={executePrashnaSubmit}
+      />
 
     </div>
   );

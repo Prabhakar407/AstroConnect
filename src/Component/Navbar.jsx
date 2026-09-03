@@ -25,7 +25,7 @@ export default function Navbar() {
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
     { name: "Services", path: "/services", isDropdown: true },
-    { name: "Testimonial", path: "/testimonials" },
+    { name: "Testimonials", path: "/testimonials" },
     { name: "Contact", path: "/contact" }
   ];
 

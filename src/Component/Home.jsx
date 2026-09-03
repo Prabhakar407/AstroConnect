@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send, Mail, MapPin, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import EmailOtpModal from './EmailOtpModal';
 const API_BASE_URL = import.meta.env.DEV 
   ? "http://localhost:8000" 
   : "https://astrologer-kundan-singh.onrender.com"
@@ -371,6 +372,13 @@ export default function Home() {
   const [activeServiceTab, setActiveServiceTab] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveServiceTab((prev) => (prev + 1) % allServices.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
   const startTimelineSequence = () => {
     if (isTimelineStarted) return;
     setIsTimelineStarted(true);
@@ -526,6 +534,9 @@ export default function Home() {
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [serverError, setServerError] = useState("")
+  const [showOtpModal, setShowOtpModal] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({
@@ -539,28 +550,51 @@ export default function Home() {
     setServerError("")
     
     if (!formData.name.trim()) {
-      alert("Please enter your Name.")
+      setServerError("Please enter your Name.")
       return
     }
     if (formData.name.trim().length < 2) {
-      alert("Name must be at least 2 characters.")
+      setServerError("Name must be at least 2 characters.")
       return
     }
     if (!formData.email.trim()) {
-      alert("Please enter your Email Address.")
+      setServerError("Please enter your Email Address.")
       return
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email.trim())) {
-      alert("Please enter a valid email address.")
+      setServerError("Please enter a valid email address.")
       return
     }
     if (!formData.selectedService) {
-      alert("Please select a service of interest.")
+      setServerError("Please select a service of interest.")
       return
     }
-    console.log("Contact Form Submitted Data:", formData)
+
+    setSubmitting(true)
     
+    try {
+      const otpRes = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, purpose: "inquiry" })
+      })
+      const otpData = await otpRes.json()
+      if (!otpRes.ok) {
+        throw new Error(otpData.detail || "Failed to send verification code to your email.")
+      }
+      setShowOtpModal(true)
+    } catch (err) {
+      setServerError(err.message || "Failed to initiate email verification.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const executeHomeQuerySubmit = async (verificationToken) => {
+    setSubmitting(true)
+    setServerError("")
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/contact`, {
         method: "POST",
@@ -573,6 +607,7 @@ export default function Home() {
           phone: formData.dob ? `DOB: ${formData.dob}` : "N/A",
           subject: formData.selectedService,
           message: formData.comment || "No message comment provided.",
+          verification_token: verificationToken,
         }),
       })
 
@@ -581,6 +616,7 @@ export default function Home() {
         throw new Error(data.detail || "Failed to submit contact query.")
       }
 
+      setShowOtpModal(false)
       setIsSubmitted(true)
       setTimeout(() => {
         setFormData({
@@ -594,6 +630,9 @@ export default function Home() {
       }, 5000)
     } catch (err) {
       setServerError(err.message || "Failed to connect to backend server. Please verify that the backend is running.")
+      setShowOtpModal(false)
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -662,12 +701,14 @@ export default function Home() {
                   <span>Book Consultation</span>
                 </Link>
 
-                <Link 
-                  to="/about"
+                <a 
+                  href="https://wa.me/918527790801?text=Hello%20Astrologer%20Kundan%20Singh,%20I%20would%20like%20to%20make%20an%20inquiry%20regarding%20a%20consultation."
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="border border-[#AB7A57] hover:border-[#D3AF54] text-white hover:text-[#D3AF54] font-bold px-8 py-3.5 rounded-xl flex items-center gap-2 hover:scale-[1.03] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 backdrop-blur-md cursor-pointer text-sm tracking-wide bg-white/[0.02]"
                 >
                   <span>Quick Inquiry</span>
-                </Link>
+                </a>
               </div>
             </motion.div>
 
@@ -764,7 +805,7 @@ export default function Home() {
               </div>
               <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
                 <span className="text-[8px] sm:text-[10px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold w-full text-center lg:text-left lg:whitespace-nowrap">Experience</span>
-                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">10+ Years</span>
+                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">15+ Years</span>
               </div>
             </div>
 
@@ -907,12 +948,15 @@ export default function Home() {
               <div className="grid lg:hidden grid-cols-2 gap-3 sm:gap-4 mt-6 text-[#181122] max-w-2xl mx-auto w-full">
                 {allServices.map((item, idx) => {
                   const isActive = activeServiceTab === idx;
+                  const isLastItem = idx === 4;
                   return (
                     <button
                       key={item.id}
                       type="button"
                       onClick={() => setActiveServiceTab(idx)}
-                      className={`border rounded-2xl p-3 sm:p-4 flex items-center justify-center text-center transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] cursor-pointer min-h-[52px] h-full p-2 sm:p-3 ${
+                      className={`border rounded-2xl p-3 sm:p-4 flex items-center justify-center text-center transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] cursor-pointer min-h-[52px] h-full ${
+                        isLastItem ? "col-span-2 max-w-[65%] sm:max-w-[55%] justify-self-center mx-auto w-full" : ""
+                      } ${
                         isActive 
                           ? "bg-[#FFFDEE] border-[#D3AF54] text-[#181122] font-bold shadow-md" 
                           : "bg-white border-[#AB7A57]/15 text-[#181122]/70 hover:bg-[#181122]/5"
@@ -952,7 +996,7 @@ export default function Home() {
                             prashnaKundliImg
                           }
                           alt={allServices[activeServiceTab].title}
-                          className="w-full h-full object-cover opacity-80"
+                          className="w-full h-full object-cover opacity-100"
                         />
                       </div>
 
@@ -995,39 +1039,9 @@ export default function Home() {
               {/* Desktop Showcase Dashboard (lg screens only) */}
               <div className="hidden lg:grid lg:grid-cols-10 gap-12 lg:gap-14 items-stretch mt-6 text-[#181122] max-w-4xl mx-auto">
                 {/* Left Column - Service tabs list */}
-                <div className="lg:col-span-4 flex flex-col gap-3">
-                  {/* Mobile Horizontal Scroll Tab Row */}
-                  <div className="flex md:hidden overflow-x-auto gap-3 pb-2 scrollbar-none w-full">
-                    {allServices.map((item, idx) => {
-                      const isActive = activeServiceTab === idx;
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => setActiveServiceTab(idx)}
-                          className={`flex-shrink-0 w-[180px] flex items-center gap-3 p-3 rounded-xl border text-left transition-all duration-300 cursor-pointer ${
-                            isActive 
-                              ? "bg-[#FFFDEE] border-[#D3AF54] text-[#181122] shadow-md" 
-                              : "bg-white border-[#AB7A57]/15 text-[#181122]/70 hover:bg-[#181122]/5"
-                          }`}
-                        >
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                            isActive ? "bg-[#181122] border border-[#D3AF54] text-white" : "bg-[#FFFDEE] border border-[#AB7A57]/20 text-[#181122]"
-                          }`}>
-                            {renderServiceIcon(item.iconKey, isActive)}
-                          </div>
-                          <span className={`font-semibold tracking-wide text-xs truncate ${
-                            isActive ? "text-[#181122] font-bold" : "text-[#181122]/70"
-                          }`}>
-                            {item.title}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
+                <div className="lg:col-span-4 flex flex-col h-full">
                   {/* Desktop Vertical Tab List */}
-                  <div className="hidden md:flex flex-col gap-3">
+                  <div className="hidden md:flex flex-col justify-between h-full gap-4">
                     {allServices.map((item, idx) => {
                       const isActive = activeServiceTab === idx;
                       return (
@@ -1035,7 +1049,7 @@ export default function Home() {
                           key={item.id}
                           type="button"
                           onClick={() => setActiveServiceTab(idx)}
-                          className={`flex items-center gap-4 p-3.5 rounded-2xl border text-left transition-all duration-300 w-full cursor-pointer relative overflow-hidden group ${
+                          className={`flex items-center gap-4 py-4 px-4 rounded-2xl border text-left transition-all duration-300 w-full cursor-pointer relative overflow-hidden group flex-1 ${
                             isActive 
                               ? "bg-[#FFFDEE] border-[#D3AF54] text-[#181122] shadow-xl hover:border-[#D3AF54]" 
                               : "bg-white border-[#AB7A57]/15 text-[#181122]/70 hover:bg-[#181122]/5 hover:border-[#AB7A57]/30"
@@ -1044,7 +1058,7 @@ export default function Home() {
                           {isActive && (
                             <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#D3AF54]" />
                           )}
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-inner transition-transform group-hover:scale-105 ${
+                          <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 shadow-inner transition-transform group-hover:scale-105 ${
                             isActive 
                               ? "bg-[#181122] border border-[#D3AF54] text-white" 
                               : "bg-[#FFFDEE] border border-[#AB7A57]/20 text-[#181122]"
@@ -1090,7 +1104,7 @@ export default function Home() {
                                prashnaKundliImg
                              }
                              alt={allServices[activeServiceTab].title}
-                             className="w-full h-full object-cover opacity-80 group-hover:opacity-95 group-hover:scale-102 transition-all duration-500"
+                             className="w-full h-full object-cover opacity-100 group-hover:scale-102 transition-all duration-500"
                            />
                          </div>
 
@@ -1138,56 +1152,7 @@ export default function Home() {
       </div>
 
       {/* ========================================================= */}
-      {/* 5. LUXURIOUS CALL-TO-ACTION (CTA) BANNER STRIP            */}
-      {/* ========================================================= */}
-      <div className="w-full bg-[#F4F1E3] flex justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] mt-0 lg:-mt-10 py-8 lg:py-0 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
-        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pb-4 sm:pb-6">
-
-          <motion.section 
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="w-full"
-          >
-            <div className="bg-[#181122] border border-[#D3AF54]/30 rounded-3xl p-4 sm:p-5 md:p-6 relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 w-full">
-              
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#D3AF54]/5 rounded-full blur-2xl"></div>
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
-
-              <div className="flex items-center gap-6 text-left">
-                <div className="hidden sm:flex w-16 h-16 rounded-full border border-[#D3AF54]/30 bg-white/5 items-center justify-center text-[#D3AF54] shrink-0">
-                  <Moon size={32} className="fill-[#D3AF54]/10 animate-pulse" />
-                </div>
-
-                <div className="space-y-2">
-                  <span className="block text-[clamp(1.5rem,2.8vw,3rem)] font-serif font-bold text-white tracking-wide">
-                    Ready to Transform Your Life?
-                  </span>
-                  <p className="text-xs md:text-sm text-[#D8CFEB] leading-relaxed max-w-xl font-sans">
-                    Book your consultation today and take the first step toward a better tomorrow.
-                  </p>
-                </div>
-              </div>
-
-              <div className="w-full md:w-auto flex justify-center shrink-0">
-                <Link 
-                  to="/booking"
-                  className="bg-[#D3AF54] hover:bg-[#D3AF54]/90 text-[#181122] font-bold px-8 py-3.5 rounded-xl flex items-center justify-center gap-2 hover:scale-[1.03] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 shadow-lg shadow-[#D3AF54]/20 tracking-wide text-sm w-full md:w-auto"
-                >
-                  <Calendar size={18} />
-                  <span>Book Consultation</span>
-                </Link>
-              </div>
-
-            </div>
-          </motion.section>
-
-        </div>
-      </div>
-
-      {/* ========================================================= */}
-      {/* 6. INFINITE SLIDING MARQUEE TESTIMONIALS SECTION          */}
+      {/* 5. INFINITE SLIDING MARQUEE TESTIMONIALS SECTION          */}
       {/* ========================================================= */}
       <div className="w-full bg-white flex justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] mt-0 lg:-mt-10 py-8 lg:py-0 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
         <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
@@ -1197,7 +1162,7 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full bg-transparent py-[clamp(2.5rem,5vw,6rem)] relative overflow-hidden flex flex-col items-center"
+            className="w-full bg-transparent pt-[clamp(2.5rem,5vw,6rem)] pb-28 sm:pb-36 lg:pb-44 relative overflow-hidden flex flex-col items-center"
           >
             <div className="absolute top-10 left-10 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-2xl -z-10"></div>
             <div className="absolute top-12 right-12 text-[#D3AF54]/50 animate-pulse">✦</div>
@@ -1279,12 +1244,52 @@ export default function Home() {
       </div>
 
       {/* ========================================================= */}
-      {/* 7. SECTION 2 — ABOUT THE ASTROLOGER                       */}
+      {/* 6. SECTION 2 — ABOUT THE ASTROLOGER                       */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#EDE9D7] flex justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
+      <div className="w-full bg-[#EDE9D7] flex flex-col items-center justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] relative z-20">
+        
+        {/* Floating CTA Banner sitting at the boundary between Testimonials and About Me */}
+        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="w-full bg-[#181122] border border-[#D3AF54]/30 rounded-3xl p-4 sm:p-5 md:p-6 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 text-center md:text-left z-30"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#D3AF54]/5 rounded-full blur-2xl pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div className="flex items-center gap-4 sm:gap-6 text-center md:text-left">
+              <div className="hidden sm:flex w-14 h-14 rounded-full border border-[#D3AF54]/30 bg-white/5 items-center justify-center text-[#D3AF54] shrink-0">
+                <Moon size={28} className="fill-[#D3AF54]/10 animate-pulse" />
+              </div>
+
+              <div className="space-y-1 sm:space-y-1.5">
+                <span className="block text-[clamp(1.25rem,2.2vw,2rem)] font-serif font-bold text-white tracking-wide">
+                  Ready to Transform Your Life?
+                </span>
+                <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed max-w-xl font-sans">
+                  Book your consultation today and take the first step toward a better tomorrow.
+                </p>
+              </div>
+            </div>
+
+            <div className="w-full md:w-auto flex justify-center shrink-0">
+              <Link 
+                to="/booking"
+                className="bg-[#D3AF54] hover:bg-[#D3AF54]/90 text-[#181122] font-bold px-7 py-3 rounded-xl flex items-center justify-center gap-2 hover:scale-[1.03] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 shadow-lg shadow-[#D3AF54]/20 tracking-wide text-xs sm:text-sm w-full md:w-auto"
+              >
+                <Calendar size={16} />
+                <span>Book Consultation</span>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+
         <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
-          <section className="w-full bg-transparent py-[clamp(3rem,6vw,7rem)] relative overflow-hidden flex flex-col items-center">
+          <section className="w-full bg-transparent pt-2 pb-[clamp(3rem,6vw,7rem)] relative overflow-hidden flex flex-col items-center">
             
             <div className="absolute bottom-4 left-4 w-80 h-80 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.03),transparent_70%)] rounded-full -z-10 animate-pulse"></div>
 
@@ -1348,7 +1353,7 @@ export default function Home() {
                     <div className="w-9 h-9 rounded-full border border-[#AB7A57]/30 flex items-center justify-center bg-[#FFFDEE] shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                       <img src={experienceLogo} alt="Experience" className="w-5 h-5 object-contain" />
                     </div>
-                    <h4 className="font-serif text-[#181122] font-bold text-xs sm:text-sm tracking-wide">10+ Years of Experience</h4>
+                    <h4 className="font-serif text-[#181122] font-bold text-xs sm:text-sm tracking-wide">15+ Years of Experience</h4>
                   </div>
 
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 shadow-md cursor-default group">
@@ -1443,6 +1448,7 @@ export default function Home() {
                   <div className="grid grid-cols-2 gap-2 py-1">
                     {services.map((item, idx) => {
                       const isSelected = formData.selectedService === item.title;
+                      const isFifthItem = idx === 4;
                       return (
                         <button 
                           key={idx}
@@ -1455,6 +1461,8 @@ export default function Home() {
                             }));
                           }}
                           className={`flex items-center gap-2 p-2 rounded-xl border transition-all duration-300 cursor-pointer ${
+                            isFifthItem ? "col-span-2 w-full max-w-[65%] sm:max-w-[55%] justify-self-center mx-auto" : ""
+                          } ${
                             isSelected 
                               ? "bg-[#D3AF54]/15 border-[#D3AF54] text-white shadow-[0_0_10px_rgba(211,175,84,0.2)]" 
                               : "bg-white/[0.02] border-white/5 text-[#D8CFEB]/95 hover:bg-white/10 hover:border-white/20"
@@ -1492,12 +1500,17 @@ export default function Home() {
                       </div>
                       <span>+91 8130808758, +91 8527790801</span>
                     </div>
-                    <div className="flex items-center gap-3.5">
+                    <a 
+                      href="https://www.google.com/maps/search/?api=1&query=B-23+Shantikunj+B-Block+Avenue-9+Church+Road+Vasant+Kunj+New+Delhi-110070" 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="flex items-center gap-3.5 hover:text-[#D3AF54] transition-colors"
+                    >
                       <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
                         <img src={mapsLogo} alt="Maps" className="w-5 h-5 object-contain" />
                       </div>
-                      <span>Vasant Kunj, Delhi, India</span>
-                    </div>
+                      <span>B-23 Shantikunj, Church Rd, Vasant Kunj, New Delhi-110070</span>
+                    </a>
                     <a 
                       href="https://wa.me/918527790801" 
                       target="_blank" 
@@ -1691,6 +1704,16 @@ export default function Home() {
           </motion.section>
         </div>
       </div>
+
+      {/* Email OTP Verification Modal */}
+      <EmailOtpModal
+        isOpen={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        email={formData.email}
+        purpose="inquiry"
+        onVerified={executeHomeQuerySubmit}
+      />
+
     </div>
   )
 }

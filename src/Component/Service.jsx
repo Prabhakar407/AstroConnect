@@ -179,7 +179,7 @@ function Service() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-100px" }}
-          className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10"
+          className="w-full max-w-7xl mx-auto flex flex-wrap justify-center gap-8 relative z-10"
         >
           {serviceOfferings.map((item, index) => (
             <motion.div 
@@ -191,13 +191,13 @@ function Service() {
                 boxShadow: "0 25px 50px -12px rgba(24,17,34,0.5), 0 0 30px rgba(211,175,84,0.3)"
               }}
               transition={{ duration: 0.4, ease: "easeOut" }}
-              className="relative h-[310px] sm:h-[330px] rounded-3xl overflow-hidden border border-[#AB7A57]/30 bg-[#181122] group shadow-xl transition-all duration-500 cursor-pointer flex flex-col justify-end text-white text-left"
+              className="relative w-full md:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] max-w-[390px] h-[310px] sm:h-[330px] rounded-3xl overflow-hidden border border-[#AB7A57]/30 bg-[#181122] group shadow-xl transition-all duration-500 cursor-pointer flex flex-col justify-end text-white text-left"
             >
-              {/* Full Bleed Background Image with Scale Transition */}
+              {/* Full Bleed Background Image with Scale Transition & Shifted Upward */}
               <img 
                 src={item.image} 
                 alt={item.title} 
-                className="absolute inset-0 w-full h-full object-cover z-0 group-hover:scale-105 transition-transform duration-700 ease-out" 
+                className="absolute -top-12 sm:-top-16 inset-x-0 w-full h-[calc(100%+4rem)] object-cover object-top z-0 group-hover:scale-105 transition-transform duration-700 ease-out" 
               />
               
               {/* Radial gradient overlay vignettes for high-contrast and depth */}
@@ -213,18 +213,18 @@ function Service() {
               </div>
 
               {/* Card Contents Area (Slides up slightly on hover) */}
-              <div className="p-6 relative z-20 flex flex-col gap-2 translate-y-0 lg:translate-y-12 lg:group-hover:translate-y-0 transition-transform duration-500 ease-out">
+              <div className="p-6 relative z-20 flex flex-col gap-1.5 translate-y-0 lg:translate-y-12 lg:group-hover:translate-y-0 transition-transform duration-500 ease-out">
                 
                 <h3 style={{ color: '#D3AF54' }} className="font-serif font-bold text-xl transition-colors leading-tight">
                   {item.title}
                 </h3>
                 
-                <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans font-normal line-clamp-2 opacity-95 group-hover:opacity-100 transition-opacity duration-300 mb-2">
+                <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans font-normal line-clamp-2 opacity-95 group-hover:opacity-100 transition-opacity duration-300 mb-0.5">
                   {item.desc}
                 </p>
 
                 {/* Action Buttons (Fades and translates up on hover) */}
-                <div className="flex gap-2.5 pt-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0 transition-all duration-500 ease-out delay-75">
+                <div className="flex gap-2.5 pt-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0 transition-all duration-500 ease-out delay-75">
                   <Link 
                     to={`/services/${item.id}`}
                     className="flex-1 border border-[#D3AF54]/30 hover:border-[#D3AF54] hover:bg-[#D3AF54]/10 text-white font-bold text-xs sm:text-sm uppercase tracking-wider py-2.5 rounded-xl text-center transition-all duration-300"
@@ -260,16 +260,18 @@ function Service() {
             </p>
           </div>
 
-          <MotionLink 
-            to="/contact"
+          <motion.a 
+            href="https://wa.me/918527790801?text=Hello%20Astrologer%20Kundan%20Singh,%20I%20need%20guidance%20on%20which%20consultation%20reading%20fits%20my%20situation."
+            target="_blank"
+            rel="noopener noreferrer"
             whileHover={{ scale: 1.05, y: -2, boxShadow: "0 10px 20px rgba(24, 17, 34, 0.15)" }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 400, damping: 15 }}
-            className="bg-[#181122] hover:bg-[#181122]/90 text-white font-bold px-6 py-3 rounded-xl flex items-center justify-center gap-2 tracking-wide text-xs w-full md:w-auto shrink-0 z-10"
+            className="bg-[#181122] hover:bg-[#181122]/90 text-white font-bold px-6 py-3 rounded-xl flex items-center justify-center gap-2 tracking-wide text-xs w-full md:w-auto shrink-0 z-10 cursor-pointer"
           >
             <Calendar size={14} />
             <span>Connect Personally</span>
-          </MotionLink>
+          </motion.a>
         </motion.div>
       </div>
 

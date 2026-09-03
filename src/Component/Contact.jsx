@@ -13,6 +13,7 @@ import {
   MessageSquare,
   HelpCircle
 } from 'lucide-react'
+import EmailOtpModal from './EmailOtpModal'
 import callLogo from "../assets/logos/Call.png"
 import gmailLogo from "../assets/logos/gmail.png"
 import mapsLogo from "../assets/logos/google-maps.png"
@@ -33,7 +34,7 @@ const faqs = [
   },
   {
     q: "How long does a session last?",
-    a: "Standard readings last between 45 to 60 minutes, which includes chart details analysis and a dedicated Q&A session."
+    a: "Standard readings last 30 minutes, which includes chart details analysis and a dedicated Q&A session."
   }
 ];
 
@@ -51,6 +52,8 @@ function Contact() {
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
   const [serverError, setServerError] = useState("")
   const [currentWhatsappUrl, setCurrentWhatsappUrl] = useState("")
+  const [showOtpModal, setShowOtpModal] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -59,26 +62,8 @@ function Contact() {
     message: ""
   })
   const [copiedType, setCopiedType] = useState(null)
-  const [showFaq, setShowFaq] = useState(false)
+  const [showFaq, setShowFaq] = useState(true)
   const [openFaqIndex, setOpenFaqIndex] = useState(null)
-
-  // Help Support form state hooks
-  const [showHelpForm, setShowHelpForm] = useState(false)
-  const [helpFormData, setHelpFormData] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    query: ""
-  })
-  const [helpSubmitted, setHelpSubmitted] = useState(false)
-  const [helpAttemptedSubmit, setHelpAttemptedSubmit] = useState(false)
-  const [helpServerError, setHelpServerError] = useState("")
-  const [helpErrors, setHelpErrors] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    query: ""
-  })
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -90,6 +75,7 @@ function Contact() {
   }
 
   const validateContactForm = () => {
+    let isValid = true
     const newErrors = {
       name: "",
       email: "",
@@ -97,54 +83,31 @@ function Contact() {
       subject: "",
       message: ""
     }
-    let isValid = true
 
     if (!formData.name.trim()) {
-      newErrors.name = "Full Name is required."
-      isValid = false
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = "Full Name must be at least 2 characters."
+      newErrors.name = "Full name is required."
       isValid = false
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = "Email Address is required."
+      newErrors.email = "Email address is required."
       isValid = false
-    } else {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email.trim())) {
-        newErrors.email = "Please enter a valid email address (e.g. name@example.com)."
-        isValid = false
-      }
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      newErrors.email = "Please enter a valid email address."
+      isValid = false
     }
 
+    const phoneClean = formData.phone.replace(/[\s\-]/g, "")
     if (!formData.phone.trim()) {
-      newErrors.phone = "Mobile Number is required."
+      newErrors.phone = "Phone number is required."
       isValid = false
-    } else {
-      const cleanPhone = formData.phone.trim().replace(/[\s\-]/g, '')
-      let phoneBody = cleanPhone
-      if (cleanPhone.startsWith('+91')) {
-        phoneBody = cleanPhone.slice(3)
-      } else if (cleanPhone.startsWith('91') && cleanPhone.length === 12) {
-        phoneBody = cleanPhone.slice(2)
-      }
-      
-      const isTenDigits = /^[0-9]{10}$/.test(phoneBody)
-      if (!isTenDigits) {
-        newErrors.phone = "Mobile number must be exactly 10 digits (excluding +91 country code)."
-        isValid = false
-      } else if (/^(\d)\1+$/.test(phoneBody)) {
-        newErrors.phone = "Mobile number cannot consist of only repeating identical digits."
-        isValid = false
-      } else if ("01234567890123456789".includes(phoneBody) || "98765432109876543210".includes(phoneBody)) {
-        newErrors.phone = "Mobile number cannot be a simple consecutive sequence."
-        isValid = false
-      }
+    } else if (!/^\+?[0-9]{7,15}$/.test(phoneClean)) {
+      newErrors.phone = "Enter a valid phone number (7-15 digits)."
+      isValid = false
     }
 
     if (!formData.subject) {
-      newErrors.subject = "Inquiry Topic is required."
+      newErrors.subject = "Please select an inquiry topic."
       isValid = false
     }
 
@@ -167,7 +130,30 @@ function Contact() {
       return
     }
 
-    console.log("Submitting Contact Message to Server:", formData)
+    setSubmitting(true)
+
+    // Trigger OTP sending first
+    try {
+      const otpRes = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, purpose: "contact" })
+      })
+      const otpData = await otpRes.json()
+      if (!otpRes.ok) {
+        throw new Error(otpData.detail || "Failed to send verification code to your email.")
+      }
+      setShowOtpModal(true)
+    } catch (err) {
+      setServerError(err.message || "Failed to initiate email verification.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const executeContactSubmit = async (verificationToken) => {
+    setSubmitting(true)
+    setServerError("")
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/contact`, {
@@ -181,6 +167,7 @@ function Contact() {
           phone: formData.phone,
           subject: formData.subject,
           message: formData.message,
+          verification_token: verificationToken,
         }),
       })
 
@@ -201,9 +188,13 @@ function Contact() {
       const whatsappUrl = `https://wa.me/918114292972?text=${encodedText}`
       setCurrentWhatsappUrl(whatsappUrl)
 
+      setShowOtpModal(false)
       setSubmitted(true)
     } catch (err) {
       setServerError(err.message || "Failed to connect to the backend server. Please verify that the FastAPI backend is running.")
+      setShowOtpModal(false)
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -211,88 +202,6 @@ function Contact() {
     navigator.clipboard.writeText(text)
     setCopiedType(type)
     setTimeout(() => setCopiedType(null), 2000)
-  }
-
-  const validateHelpForm = () => {
-    let isValid = true
-    const newErrors = { name: "", phone: "", email: "", query: "" }
-
-    if (!helpFormData.name.trim()) {
-      newErrors.name = "Name is required."
-      isValid = false
-    }
-    if (!helpFormData.phone.trim()) {
-      newErrors.phone = "Mobile number is required."
-      isValid = false
-    } else {
-      const cleanPhone = helpFormData.phone.trim().replace(/[\s\-]/g, '')
-      let phoneBody = cleanPhone
-      if (cleanPhone.startsWith('+91')) {
-        phoneBody = cleanPhone.slice(3)
-      } else if (cleanPhone.startsWith('91') && cleanPhone.length === 12) {
-        phoneBody = cleanPhone.slice(2)
-      }
-      
-      const isTenDigits = /^[0-9]{10}$/.test(phoneBody)
-      if (!isTenDigits) {
-        newErrors.phone = "Mobile number must be exactly 10 digits (excluding +91 country code)."
-        isValid = false
-      } else if (/^(\d)\1+$/.test(phoneBody)) {
-        newErrors.phone = "Mobile number cannot consist of only repeating identical digits."
-        isValid = false
-      } else if ("01234567890123456789".includes(phoneBody) || "98765432109876543210".includes(phoneBody)) {
-        newErrors.phone = "Mobile number cannot be a simple consecutive sequence."
-        isValid = false
-      }
-    }
-    if (!helpFormData.email.trim()) {
-      newErrors.email = "Email is required."
-      isValid = false
-    } else if (!/\S+@\S+\.\S+/.test(helpFormData.email)) {
-      newErrors.email = "Please enter a valid email address."
-      isValid = false
-    }
-    if (!helpFormData.query.trim()) {
-      newErrors.query = "Query is required."
-      isValid = false
-    }
-
-    setHelpErrors(newErrors)
-    return isValid
-  }
-
-  const handleHelpSubmit = async (e) => {
-    e.preventDefault()
-    setHelpAttemptedSubmit(true)
-    setHelpServerError("")
-
-    if (!validateHelpForm()) {
-      return
-    }
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/help`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(helpFormData),
-      })
-
-      const data = await response.json()
-      if (!response.ok) {
-        throw new Error(data.detail || "Failed to submit support request.")
-      }
-
-      setHelpSubmitted(true)
-    } catch (err) {
-      setHelpServerError(err.message || "Failed to connect to the server.")
-    }
-  }
-
-  const handleHelpInputChange = (e) => {
-    const { name, value } = e.target
-    setHelpFormData((prev) => ({ ...prev, [name]: value }))
   }
 
   return (
@@ -332,18 +241,18 @@ function Contact() {
               </svg>
             </div>
 
-            <div className="space-y-6 relative z-10 text-left">
-              <div>
+            <div className="space-y-5 relative z-10 text-left">
+              <div className="pb-1 space-y-1">
                 <h3 className="font-serif font-bold text-xl sm:text-2xl text-[#D3AF54] tracking-wide">
                   Astroadvice Studio
                 </h3>
-                <p className="text-xs sm:text-sm text-[#D8CFEB] mt-2 leading-relaxed font-sans">
+                <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans">
                   Guiding seekers with authentic Vedic forecasts and planetary transits support.
                 </p>
               </div>
 
               {/* Compact Details Rows */}
-              <div className="space-y-4 pt-2">
+              <div className="space-y-3.5 pt-1">
                 {/* WhatsApp Row */}
                 <a 
                   href="https://wa.me/918527790801" 
@@ -363,7 +272,7 @@ function Contact() {
                 </a>
 
                 {/* Call Rows */}
-                <div className="flex flex-col gap-3 p-3 rounded-2xl bg-white/[0.02] border border-white/5 w-full">
+                <div className="flex flex-col gap-2.5 p-3 rounded-2xl bg-white/[0.02] border border-white/5 w-full">
                   <div className="flex items-center justify-between group">
                     <a href="tel:+918130808758" className="flex items-center gap-3 hover:text-[#D3AF54] transition-colors">
                       <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
@@ -388,7 +297,7 @@ function Contact() {
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-between group border-t border-white/5 pt-3">
+                  <div className="flex items-center justify-between group border-t border-white/5 pt-2.5">
                     <a href="tel:+918527790801" className="flex items-center gap-3 hover:text-[#D3AF54] transition-colors">
                       <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
                         <img src={callLogo} alt="Call" className="w-4.5 h-4.5 object-contain" />
@@ -439,31 +348,33 @@ function Contact() {
                 </div>
 
                 {/* Office Location */}
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#D3AF54] shrink-0">
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#D3AF54] shrink-0 mt-0.5">
                     <MapPin size={16} />
                   </div>
                   <div>
                     <div className="text-xs uppercase font-serif font-bold tracking-wider leading-none" style={{ color: '#AB7A57' }}>
                       Main Office
                     </div>
-                    <p className="text-sm text-[#D8CFEB] mt-1">Vasant Kunj, Delhi, India</p>
+                    <p className="text-xs text-[#D8CFEB] mt-1 leading-snug font-sans">
+                      B-23 Shantikunj, B-Block, Avenue-9, Church Road, Vasant Kunj, New Delhi - 110070
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Operational Hours / Map Button */}
-            <div className="pt-6 border-t border-white/10 mt-6 relative z-10 text-left">
+            <div className="pt-4 border-t border-white/10 mt-auto relative z-10 text-left space-y-2.5">
               <p className="text-xs text-slate-300 flex items-center gap-1.5">
                 <Clock size={13} />
                 <span>Mon - Sat: 10:00 AM - 12:00 PM & 3:00 PM - 6:00 PM</span>
               </p>
               <a 
-                href="https://www.google.com/maps/place/Varanasi,+Uttar+Pradesh/@25.3216181,82.9087063" 
+                href="https://www.google.com/maps/search/?api=1&query=B-23+Shantikunj+B-Block+Avenue-9+Church+Road+Vasant+Kunj+New+Delhi-110070" 
                 target="_blank" 
                 rel="noreferrer"
-                className="mt-4 w-full bg-white/5 border border-white/10 hover:bg-[#D3AF54] text-[#D8CFEB] hover:text-[#181122] text-xs uppercase font-bold py-2.5 rounded-xl transition duration-300 flex items-center justify-center gap-1.5 shadow"
+                className="w-full bg-white/5 border border-white/10 hover:bg-[#D3AF54] text-[#D8CFEB] hover:text-[#181122] text-xs uppercase font-bold py-3 rounded-xl transition duration-300 flex items-center justify-center gap-1.5 shadow"
               >
                 <img src={mapsLogo} alt="Maps" className="w-4.5 h-4.5 object-contain" />
                 <span>Open Google Directions</span>
@@ -472,9 +383,9 @@ function Contact() {
           </div>
 
           {/* Right Side: Clean Compact Form Panel */}
-          <div className="md:col-span-7 p-6 md:p-8 flex flex-col justify-center">
+          <div className="md:col-span-7 p-6 md:p-8 flex flex-col justify-between h-full">
             {submitted ? (
-              <div className="text-center py-6 space-y-4">
+              <div className="text-center py-6 space-y-4 my-auto">
                 <div className="w-12 h-12 rounded-full bg-emerald-100 border border-emerald-500 flex items-center justify-center text-emerald-600 text-xl mx-auto shadow-sm">
                   ✓
                 </div>
@@ -512,7 +423,7 @@ function Contact() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleContactSubmit} className="space-y-4 text-left">
+              <form onSubmit={handleContactSubmit} className="space-y-3.5 text-left flex flex-col justify-between h-full">
                 {serverError && (
                   <div className="p-3 bg-red-950/60 border border-red-500/40 rounded-xl text-red-200 text-xs text-center font-sans tracking-wide">
                     ⚠️ {serverError}
@@ -634,13 +545,15 @@ function Contact() {
                   />
                 </div>
 
-                <button 
-                  type="submit"
-                  className="w-full bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] font-semibold py-3 rounded-xl transition duration-300 flex items-center justify-center gap-1.5 text-sm uppercase tracking-wider cursor-pointer shadow"
-                >
-                  <Send size={12} />
-                  <span>Submit Message</span>
-                </button>
+                <div className="pt-2 mt-auto">
+                  <button 
+                    type="submit"
+                    className="w-full bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] font-semibold py-3 rounded-xl transition duration-300 flex items-center justify-center gap-1.5 text-xs sm:text-sm uppercase tracking-wider cursor-pointer shadow"
+                  >
+                    <Send size={13} />
+                    <span>Submit Message</span>
+                  </button>
+                </div>
 
               </form>
             )}
@@ -655,197 +568,46 @@ function Contact() {
       <div className="w-full bg-[#EDE9D7] py-16 px-4 flex flex-col items-center relative z-10">
         <div className="w-full max-w-4xl px-4 relative">
           
-          {/* Toggle Bar */}
-          <button
-            type="button"
-            onClick={() => setShowFaq(!showFaq)}
-            className="mx-auto flex items-center justify-center gap-1.5 text-sm font-serif font-bold text-[#AB7A57] hover:text-[#181122] transition-colors focus:outline-none cursor-pointer"
-          >
-            <HelpCircle size={15} />
-            <span>{showFaq ? "Hide Frequently Asked Questions" : "Show Frequently Asked Questions"}</span>
-            <ChevronDown size={15} className={`transform transition-transform duration-300 ${showFaq ? "rotate-180" : ""}`} />
-          </button>
-
-          {showFaq && (
-            <div className="mt-4 space-y-2.5 max-w-2xl mx-auto transition-all duration-300">
-              {faqs.map((faq, idx) => {
-                const isOpen = openFaqIndex === idx;
-                return (
-                  <div key={idx} className="border border-slate-200 rounded-xl bg-white text-left overflow-hidden shadow-sm">
-                    <button
-                      type="button"
-                      onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                      className="w-full px-5 py-3 flex items-center justify-between text-left text-sm font-serif font-bold text-[#181122] hover:text-[#AB7A57] focus:outline-none cursor-pointer"
-                    >
-                      <span>{faq.q}</span>
-                      <ChevronDown size={13} className={`text-[#D3AF54] transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
-                    </button>
-                    {isOpen && (
-                      <div className="px-5 pb-4 pt-1.5 text-sm text-slate-600 border-t border-slate-100 leading-relaxed font-sans">
-                        {faq.a}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          )}
-
-        </div>
-
-        {/* Bottom Right Help Support Button (static to FAQ section corner) */}
-        {!showHelpForm && (
-          <div className="absolute bottom-3 right-6 z-20">
-            <button
-              onClick={() => {
-                setShowHelpForm(true)
-                setTimeout(() => {
-                  helpFormRef.current?.scrollIntoView({ behavior: 'smooth' })
-                }, 100)
-              }}
-              className="flex items-center gap-2 bg-[#181122] hover:bg-[#D3AF54] border border-[#D3AF54]/40 hover:border-[#D3AF54] text-[#D3AF54] hover:text-[#181122] px-5 py-3 rounded-full shadow-lg transition-all duration-300 font-sans text-xs font-bold uppercase tracking-wider cursor-pointer group"
-            >
-              <HelpCircle size={16} className="group-hover:scale-110 transition-transform duration-300" />
-              <span>Help Support</span>
-            </button>
+          {/* Header / Toggle */}
+          <div className="text-center mb-6">
+            <span className="text-[#AB7A57] text-xs font-bold uppercase tracking-widest block mb-2">✦ GOT QUESTIONS? ✦</span>
+            <h3 className="text-2xl md:text-3xl font-serif font-bold text-[#181122]">Frequently Asked Questions</h3>
           </div>
-        )}
 
-      </div>
-
-
-      {/* ========================================================= */}
-      {/* 4. HELP / SUPPORT FORM SECTION (Ivory bg-[#FDFCF5])        */}
-      {/* ========================================================= */}
-      <AnimatePresence>
-        {showHelpForm && (
-          <motion.div 
-            ref={helpFormRef}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="w-full bg-[#FDFCF5] py-16 px-4 flex flex-col items-center border-t border-[#AB7A57]/10 relative z-10 overflow-hidden"
-          >
-            <div className="w-full max-w-xl bg-white border border-[#AB7A57]/15 rounded-3xl shadow-xl p-6 sm:p-8 space-y-6 text-[#181122] relative">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
-              
-              <div className="flex items-center justify-between border-b border-[#AB7A57]/10 pb-4">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-[#D3AF54]/10 border border-[#D3AF54]/25 flex items-center justify-center text-[#D3AF54]">
-                    <HelpCircle size={16} />
-                  </div>
-                  <div>
-                    <h4 className="font-serif font-bold text-base text-[#181122] tracking-wide">Submit Help Ticket</h4>
-                  </div>
-                </div>
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    setShowHelpForm(false)
-                    setHelpSubmitted(false)
-                    setHelpAttemptedSubmit(false)
-                    setHelpFormData({ name: "", phone: "", email: "", query: "" })
-                  }}
-                  className="text-xs text-[#AB7A57] hover:text-[#181122] transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-              </div>
-
-              {helpSubmitted ? (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="py-8 flex flex-col items-center justify-center text-center gap-3"
-                >
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600">
-                    <Check size={24} />
-                  </div>
-                  <h5 className="font-serif font-bold text-base text-[#181122]">Query Submitted Successfully</h5>
-                  <p className="text-xs text-slate-600 max-w-xs leading-relaxed font-sans">
-                    Thank you. Your support ticket has been received. Our team will get back to you shortly at the email address provided.
-                  </p>
-                </motion.div>
-              ) : (
-                <form onSubmit={handleHelpSubmit} className="space-y-4 text-left">
-                  {helpServerError && (
-                    <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs text-center font-sans tracking-wide">
-                      ⚠️ {helpServerError}
+          <div className="mt-4 space-y-2.5 max-w-2xl mx-auto transition-all duration-300">
+            {faqs.map((faq, idx) => {
+              const isOpen = openFaqIndex === idx;
+              return (
+                <div key={idx} className="border border-slate-200 rounded-xl bg-white text-left overflow-hidden shadow-sm">
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                    className="w-full px-5 py-3.5 flex items-center justify-between text-left text-sm font-serif font-bold text-[#181122] hover:text-[#AB7A57] focus:outline-none cursor-pointer"
+                  >
+                    <span>{faq.q}</span>
+                    <ChevronDown size={14} className={`text-[#D3AF54] transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  {isOpen && (
+                    <div className="px-5 pb-4 pt-1.5 text-xs sm:text-sm text-slate-600 border-t border-slate-100 leading-relaxed font-sans">
+                      {faq.a}
                     </div>
                   )}
+                </div>
+              )
+            })}
+          </div>
 
-                  {/* Name */}
-                  <div className="space-y-1.5">
-                    <label className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider font-sans">Your Name <span className="text-[#D3AF54]">*</span></label>
-                    <input 
-                      type="text" 
-                      name="name"
-                      value={helpFormData.name}
-                      onChange={handleHelpInputChange}
-                      placeholder="Enter your name"
-                      className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl px-4 py-2 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] transition"
-                    />
-                    {helpAttemptedSubmit && helpErrors.name && <p className="text-red-500 text-[10px] mt-1">⚠️ {helpErrors.name}</p>}
-                  </div>
+        </div>
+      </div>
 
-                  {/* Mobile Number */}
-                  <div className="space-y-1.5">
-                    <label className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider font-sans">Mobile Number <span className="text-[#D3AF54]">*</span></label>
-                    <input 
-                      type="text" 
-                      name="phone"
-                      value={helpFormData.phone}
-                      onChange={handleHelpInputChange}
-                      placeholder="Enter mobile number"
-                      className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl px-4 py-2 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] transition"
-                    />
-                    {helpAttemptedSubmit && helpErrors.phone && <p className="text-red-500 text-[10px] mt-1">⚠️ {helpErrors.phone}</p>}
-                  </div>
-
-                  {/* Email */}
-                  <div className="space-y-1.5">
-                    <label className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider font-sans">Email Address <span className="text-[#D3AF54]">*</span></label>
-                    <input 
-                      type="email" 
-                      name="email"
-                      value={helpFormData.email}
-                      onChange={handleHelpInputChange}
-                      placeholder="Enter email address"
-                      className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl px-4 py-2 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] transition"
-                    />
-                    {helpAttemptedSubmit && helpErrors.email && <p className="text-red-500 text-[10px] mt-1">⚠️ {helpErrors.email}</p>}
-                  </div>
-
-                  {/* Query */}
-                  <div className="space-y-1.5">
-                    <label className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider font-sans">Describe Your Query <span className="text-[#D3AF54]">*</span></label>
-                    <textarea 
-                      name="query"
-                      rows={4}
-                      value={helpFormData.query}
-                      onChange={handleHelpInputChange}
-                      placeholder="What do you need assistance with?"
-                      className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl px-4 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] transition min-h-[100px] resize-none"
-                    />
-                    {helpAttemptedSubmit && helpErrors.query && <p className="text-red-500 text-[10px] mt-1">⚠️ {helpErrors.query}</p>}
-                  </div>
-
-                  <div className="w-full flex justify-center pt-2">
-                    <button 
-                      type="submit"
-                      className="w-fit px-8 bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] font-semibold py-3 rounded-xl transition duration-300 text-xs uppercase tracking-wider cursor-pointer shadow-md font-sans"
-                    >
-                      Submit Query
-                    </button>
-                  </div>
-                </form>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+      {/* Email OTP Verification Modal */}
+      <EmailOtpModal
+        isOpen={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        email={formData.email}
+        purpose="contact"
+        onVerified={executeContactSubmit}
+      />
 
     </div>
   )

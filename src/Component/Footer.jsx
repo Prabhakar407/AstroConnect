@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { MessageCircle, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { motion } from 'framer-motion'
+import LegalModal from './LegalModal'
 import logoImg from "../assets/logos/Nav-Logo.png";
 import fbLogo from "../assets/logos/facebook.png";
 import instaLogo from "../assets/logos/Instagram.png";
@@ -19,6 +20,13 @@ import callLogo from "../assets/logos/Call.png";
  * Displays brand info, social channels, routing shortcuts, contact links, and decorative art.
  */
 export default function Footer() {
+  const [legalModalOpen, setLegalModalOpen] = useState(false)
+  const [activeLegalTab, setActiveLegalTab] = useState('privacy')
+
+  const openLegalModal = (tab) => {
+    setActiveLegalTab(tab)
+    setLegalModalOpen(true)
+  }
   return (
     <motion.footer 
       initial={{ opacity: 0 }}
@@ -41,13 +49,13 @@ export default function Footer() {
             <img
               src={logoImg}
               alt="Kundan Singh Logo"
-              className="w-24 h-24 object-contain"
+              className="w-20 h-20 sm:w-22 sm:h-22 object-contain shrink-0"
             />
             <div className="flex flex-col text-left">
-              <span className="text-[9px] text-[#D8CFEB] tracking-widest uppercase font-medium leading-none">
+              <span className="text-[9px] sm:text-[10px] text-[#D8CFEB] tracking-widest uppercase font-medium leading-none">
                 Astroadvice by
               </span>
-              <span className="text-base font-bold text-[#D3AF54] font-serif tracking-wide mt-0.5 leading-none block">
+              <span className="text-base sm:text-lg font-bold text-[#D3AF54] font-serif tracking-wide mt-1 leading-tight block">
                 Kundan Singh
               </span>
             </div>
@@ -56,23 +64,8 @@ export default function Footer() {
             Guiding you towards a better tomorrow with the wisdom of Vedic Astrology.
           </p>
           
-          {/* Social Channels Icons */}
+          {/* Social Channels Icons (WhatsApp only) */}
           <div className="flex gap-4 pt-2">
-            {/* Facebook */}
-            <a href="#" className="w-10 h-10 rounded-full bg-white/5 hover:bg-[#D3AF54]/15 border border-[#D3AF54]/30 hover:border-[#D3AF54] flex items-center justify-center transition-all duration-300 overflow-hidden shadow-sm">
-              <img src={fbLogo} alt="Facebook" className="w-8 h-8 object-contain hover:scale-125 transition-transform duration-300" />
-            </a>
-            
-            {/* Instagram */}
-            <a href="#" className="w-10 h-10 rounded-full bg-white/5 hover:bg-[#D3AF54]/15 border border-[#D3AF54]/30 hover:border-[#D3AF54] flex items-center justify-center transition-all duration-300 overflow-hidden shadow-sm">
-              <img src={instaLogo} alt="Instagram" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300" />
-            </a>
-            
-            {/* YouTube */}
-            <a href="#" className="w-10 h-10 rounded-full bg-white/5 hover:bg-[#D3AF54]/15 border border-[#D3AF54]/30 hover:border-[#D3AF54] flex items-center justify-center transition-all duration-300 overflow-hidden shadow-sm">
-              <img src={ytLogo} alt="YouTube" className="w-8 h-8 object-contain hover:scale-125 transition-transform duration-300" />
-            </a>
-            
             {/* WhatsApp */}
             <a href="https://wa.me/918527790801" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-white/5 hover:bg-[#D3AF54]/15 border border-[#D3AF54]/30 hover:border-[#D3AF54] flex items-center justify-center transition-all duration-300 overflow-hidden shadow-sm">
               <img src={waLogo} alt="WhatsApp" className="w-8 h-8 object-contain hover:scale-125 transition-transform duration-300" />
@@ -86,9 +79,9 @@ export default function Footer() {
           <ul className="space-y-2 text-xs">
             <li><Link to="/" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Home</Link></li>
             <li><Link to="/about" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">About</Link></li>
-            <li><Link to="/booking" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Book Consultation</Link></li>
             <li><Link to="/testimonials" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Testimonials</Link></li>
             <li><Link to="/contact" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Contact</Link></li>
+            <li><Link to="/booking" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Book Consultation</Link></li>
           </ul>
         </div>
  
@@ -109,17 +102,27 @@ export default function Footer() {
         <div className="space-y-4 text-left">
           <h4 className="font-serif font-bold !text-[#D3AF54] text-sm uppercase tracking-wider">Contact Info</h4>
           <ul className="space-y-2.5 text-xs text-[#D8CFEB]">
-            <li className="flex items-center gap-2.5">
-              <img src={callLogo} alt="Call" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0" />
-              <span>☎ +91 8130808758, +91 8527790801</span>
+            <li className="flex items-start gap-2.5">
+              <img src={callLogo} alt="Call" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0 mt-0.5" />
+              <div className="flex flex-col space-y-0.5">
+                <a href="tel:+918130808758" className="hover:text-[#D3AF54] transition">☎ +91 8130808758</a>
+                <a href="tel:+918527790801" className="hover:text-[#D3AF54] transition">☎ +91 8527790801</a>
+              </div>
             </li>
             <li className="flex items-center gap-2.5">
               <img src={gmailLogo} alt="Email" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0" />
               <span>astroadvicebyks@gmail.com</span>
             </li>
-            <li className="flex items-center gap-2.5">
-              <img src={mapsLogo} alt="Map" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0" />
-              <span>Vasant Kunj, Delhi, India</span>
+            <li className="flex items-start gap-2.5">
+              <img src={mapsLogo} alt="Map" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0 mt-0.5" />
+              <a 
+                href="https://www.google.com/maps/search/?api=1&query=B-23+Shantikunj+B-Block+Avenue-9+Church+Road+Vasant+Kunj+New+Delhi-110070" 
+                target="_blank" 
+                rel="noreferrer"
+                className="hover:text-[#D3AF54] transition leading-snug"
+              >
+                B-23 Shantikunj, Church Rd, Vasant Kunj, New Delhi-110070
+              </a>
             </li>
             <li className="flex items-center gap-2.5">
               <img src={clockLogo} alt="Clock" className="w-5.5 h-5.5 object-contain hover:scale-125 transition-transform duration-300 shadow-sm shrink-0 bg-white rounded-full p-0.5" />
@@ -168,13 +171,39 @@ export default function Footer() {
           <span>© 2026 Astroadvice. All Rights Reserved.</span>
         </div>
         
-        {/* Policies Links */}
-        <div className="flex gap-6">
-          <a href="#" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Privacy Policy</a>
-          <a href="#" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Terms & Conditions</a>
-          <a href="#" className="text-[#D8CFEB] hover:text-[#D3AF54] transition">Refund Policy</a>
+        {/* Policies Popup Modal Triggers */}
+        <div className="flex flex-wrap justify-center gap-6">
+          <button 
+            type="button" 
+            onClick={() => openLegalModal('privacy')} 
+            className="text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer text-xs focus:outline-none"
+          >
+            Privacy Policy
+          </button>
+          <button 
+            type="button" 
+            onClick={() => openLegalModal('terms')} 
+            className="text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer text-xs focus:outline-none"
+          >
+            Terms & Conditions
+          </button>
+          <button 
+            type="button" 
+            onClick={() => openLegalModal('refund')} 
+            className="text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer text-xs focus:outline-none"
+          >
+            Refund Policy
+          </button>
         </div>
       </div>
+
+      {/* Global Interactive Legal Modal */}
+      <LegalModal
+        isOpen={legalModalOpen}
+        onClose={() => setLegalModalOpen(false)}
+        activeTab={activeLegalTab}
+        onTabChange={setActiveLegalTab}
+      />
 
     </motion.footer>
   )

@@ -23,7 +23,8 @@ import {
   Hash, 
   Home as HomeIcon,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  MessageCircle
 } from 'lucide-react'
 
 const MotionLink = motion.create ? motion.create(Link) : motion(Link);
@@ -177,7 +178,7 @@ function About() {
                 <div className="flex gap-3 items-start">
                   <span className="text-[#D3AF54] text-xs mt-1 shrink-0">✦</span>
                   <div className="flex flex-col text-left">
-                    <span className="text-white font-serif font-bold text-xs sm:text-sm">10+ Years of Guidance</span>
+                    <span className="text-white font-serif font-bold text-xs sm:text-sm">15+ Years of Experience</span>
                     <span className="text-[11px] sm:text-xs text-[#D8CFEB] font-sans">Trusted alignments since 2003.</span>
                   </div>
                 </div>
@@ -222,16 +223,18 @@ function About() {
                   <span>Book Consultation</span>
                 </MotionLink>
 
-                <MotionLink 
-                  to="/contact" 
+                <motion.a 
+                  href="https://wa.me/918527790801" 
+                  target="_blank"
+                  rel="noreferrer"
                   whileHover={{ scale: 1.03, y: -2, boxShadow: "0 10px 20px rgba(211, 175, 84, 0.1)" }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 450, damping: 15 }}
                   className="border border-[#AB7A57] hover:border-[#D3AF54] text-white hover:text-[#D3AF54] font-semibold px-6 py-3.5 rounded-xl flex items-center gap-2 shadow-sm cursor-pointer text-sm bg-white/[0.02]"
                 >
-                  <Phone size={18} className="text-[#D3AF54]" />
-                  <span>Call Now</span>
-                </MotionLink>
+                  <MessageCircle size={18} className="text-[#D3AF54]" />
+                  <span>Chat Now</span>
+                </motion.a>
               </div>
 
             </motion.div>
@@ -292,7 +295,7 @@ function About() {
               </div>
               <div className="flex flex-col items-center lg:items-start min-w-0 w-full">
                 <span className="text-[8px] sm:text-[10px] lg:text-xs uppercase text-[#D3AF54] tracking-wider font-semibold w-full text-center lg:text-left lg:whitespace-nowrap">Experience</span>
-                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">10+ Years</span>
+                <span className="text-[9px] sm:text-[11px] lg:text-sm font-bold text-white font-serif mt-0.5 lg:mt-0.5 w-full text-center lg:text-left lg:whitespace-nowrap">15+ Years</span>
               </div>
             </div>
 
@@ -354,10 +357,12 @@ function About() {
               </p>
             </div>
 
-            {/* 3x2 Grid layout on desktop */}
-            <div className="w-full max-w-5xl z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+            {/* 3 + 2 Centered Layout on desktop */}
+            <div className="w-full max-w-5xl z-10 flex flex-wrap justify-center gap-6 px-4">
               {expertiseData.map((item, idx) => (
-                <FeatureCard key={idx} feature={item} />
+                <div key={idx} className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-[320px]">
+                  <FeatureCard feature={item} />
+                </div>
               ))}
             </div>
 

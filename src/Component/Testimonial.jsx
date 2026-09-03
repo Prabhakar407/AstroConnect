@@ -19,15 +19,13 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 25, scale: 0.96 },
+  hidden: { opacity: 0, y: 20 },
   show: {
     opacity: 1,
     y: 0,
-    scale: 1,
     transition: {
-      type: "spring",
-      stiffness: 120,
-      damping: 18
+      duration: 0.5,
+      ease: "easeOut"
     }
   }
 };
@@ -37,13 +35,12 @@ const itemVariants = {
  * Premium luxury astrology website Testimonial Section.
  * Implements an open, spacious editorial layout with smooth 3-second automatic cycling,
  * pagination dot controls, and minimal circular navigation buttons.
- * Optimized with compact vertical spacing to load completely above the fold.
+ * Restored to original design with buttery-smooth natural scrolling.
  */
 function Testimonial() {
   const { scrollY } = useScroll()
-  const yZodiac = useTransform(scrollY, [0, 1000], [0, -80])
+  const yZodiac = useTransform(scrollY, [0, 1000], [0, -60])
   const rZodiac = useTransform(scrollY, [0, 1000], [0, 30])
-  const yStage = useTransform(scrollY, [0, 1000], [0, -35])
 
   const reviews = [
     {
@@ -116,7 +113,7 @@ function Testimonial() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center justify-center px-6 py-12 font-sans text-[#181122] overflow-x-hidden">
+    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center justify-start pt-12 sm:pt-20 md:pt-24 pb-16 px-6 font-sans text-[#181122]">
       
       {/* ========================================================= */}
       {/* DECORATIVE BACKGROUND ELEMENTS                            */}
@@ -148,7 +145,7 @@ function Testimonial() {
 
       {/* Rotating Background Zodiac Motif */}
       <motion.div 
-        style={{ y: yZodiac, rotate: rZodiac, willChange: 'transform' }}
+        style={{ y: yZodiac, rotate: rZodiac }}
         className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.02] flex justify-center items-center"
       >
         <svg className="w-[550px] h-[550px] text-[#AB7A57] animate-[spin_260s_linear_infinite]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.4">
@@ -166,8 +163,7 @@ function Testimonial() {
       <motion.div 
         variants={containerVariants}
         initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, margin: "-100px" }}
+        animate="show"
         className="w-full max-w-4xl relative z-10 flex flex-col items-center"
       >
         <motion.div variants={itemVariants} className="text-center max-w-2xl mb-4 relative z-10 flex flex-col items-center">
@@ -192,7 +188,7 @@ function Testimonial() {
       {/* ========================================================= */}
       {/* TESTIMONIAL DISPLAY STAGE (No borders, open & spacious)    */}
       {/* ========================================================= */}
-      <motion.div variants={itemVariants} style={{ y: yStage }} className="w-full max-w-4xl relative z-10 min-h-[220px] flex items-center justify-center px-4">
+      <motion.div variants={itemVariants} className="w-full max-w-4xl relative z-10 min-h-[220px] flex items-center justify-center px-4">
         
         {/* Decorative Quote Icon behind/beside the quote */}
         <span className="absolute top-2 left-4 text-[#D3AF54]/10 text-[10rem] font-serif leading-none select-none pointer-events-none">

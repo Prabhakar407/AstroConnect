@@ -2,14 +2,22 @@ import os
 import uuid
 import re
 import html
+import time
+import secrets
 from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, field_validator
-from google.oauth2.service_account import Credentials
-from googleapiclient.discovery import build
+try:
+    from google.oauth2.service_account import Credentials
+    from googleapiclient.discovery import build
+except ImportError:
+    Credentials = None
+    build = None
 from dotenv import load_dotenv
+import redis
+import resend
 
 # Load environment variables from .env file
 load_dotenv()
@@ -33,6 +41,183 @@ SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"
 ]
+
+# ==========================================
+# ⚙️ REDIS & RESEND CONFIGURATION
+# ==========================================
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+redis_client = None
+
+try:
+    redis_client = redis.from_url(REDIS_URL, decode_responses=True)
+    redis_client.ping()
+    print("✓ Successfully connected to External Redis server.")
+except Exception as e:
+    try:
+        import fakeredis
+        redis_client = fakeredis.FakeRedis(decode_responses=True)
+        redis_client.ping()
+        print("✓ Connected to Embedded Redis engine (fakeredis).")
+    except Exception as e2:
+        print(f"⚠️ Embedded Redis unavailable ({e2}). Using in-memory fallback.")
+        redis_client = None
+
+# In-memory storage fallback
+in_memory_store = {}
+
+def set_cache_key(key: str, value: str, ex_seconds: int):
+    if redis_client:
+        try:
+            redis_client.set(key, value, ex=ex_seconds)
+            return
+        except Exception as e:
+            print(f"Redis set error: {e}")
+    in_memory_store[key] = {
+        "value": value,
+        "expires_at": time.time() + ex_seconds
+    }
+
+def get_cache_key(key: str) -> Optional[str]:
+    if redis_client:
+        try:
+            return redis_client.get(key)
+        except Exception as e:
+            print(f"Redis get error: {e}")
+    item = in_memory_store.get(key)
+    if not item:
+        return None
+    if time.time() > item["expires_at"]:
+        in_memory_store.pop(key, None)
+        return None
+    return item["value"]
+
+def delete_cache_key(key: str):
+    if redis_client:
+        try:
+            redis_client.delete(key)
+            return
+        except Exception:
+            pass
+    in_memory_store.pop(key, None)
+
+def incr_rate_limit(key: str, window_seconds: int = 600) -> int:
+    if redis_client:
+        try:
+            val = redis_client.incr(key)
+            if val == 1:
+                redis_client.expire(key, window_seconds)
+            return val
+        except Exception:
+            pass
+    now = time.time()
+    item = in_memory_store.get(key)
+    if not item or now > item.get("expires_at", 0):
+        in_memory_store[key] = {"value": "1", "expires_at": now + window_seconds}
+        return 1
+    new_val = int(item.get("value", 0)) + 1
+    in_memory_store[key]["value"] = str(new_val)
+    return new_val
+
+def check_email_verified(email: str, purpose: str, token: Optional[str]):
+    """Validates that the client email has been verified via OTP and stored in Redis."""
+    email_clean = email.strip().lower()
+    purpose_clean = purpose.strip().lower()
+    
+    if not token or not str(token).strip():
+        raise HTTPException(
+            status_code=403,
+            detail="Email verification required. Please verify your email with the 6-digit OTP code before proceeding."
+        )
+    
+    token_clean = str(token).strip()
+    verified_key = f"verified:{email_clean}:{purpose_clean}"
+    stored_token = get_cache_key(verified_key)
+    
+    # Check alternate inquiry/verification purpose scopes if needed
+    if not stored_token:
+        for alt_purpose in ["verification", "booking", "contact", "prashna", "inquiry"]:
+            alt_stored = get_cache_key(f"verified:{email_clean}:{alt_purpose}")
+            if alt_stored and alt_stored == token_clean:
+                stored_token = alt_stored
+                break
+                
+    if not stored_token or stored_token != token_clean:
+        raise HTTPException(
+            status_code=403,
+            detail="Email verification has expired or is invalid. Please verify your email via OTP again."
+        )
+
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+RESEND_FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL", "AstroAdvice <onboarding@resend.dev>")
+
+def send_resend_otp_email(to_email: str, otp: str, purpose: str = "Verification") -> bool:
+    """Sends a luxury branded HTML email with the 6-digit OTP code using Resend API."""
+    if not RESEND_API_KEY:
+        print(f"⚠️ RESEND_API_KEY not configured in .env. Generated OTP for {to_email} is: {otp}")
+        return True
+        
+    resend.api_key = RESEND_API_KEY
+    
+    purpose_label = {
+        "booking": "Consultation Booking",
+        "contact": "Contact Inquiry",
+        "prashna": "Horary Prashna Question",
+        "inquiry": "Vedic Inquiry"
+    }.get(purpose.lower(), "Verification")
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>AstroAdvice Verification Code</title>
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #06091B; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #D8CFEB;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 540px; margin: 30px auto; background-color: #181122; border-radius: 20px; border: 1px solid rgba(211, 175, 84, 0.3); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        <tr>
+          <td align="center" style="padding: 35px 25px 20px 25px; border-bottom: 1px solid rgba(211, 175, 84, 0.15);">
+            <div style="font-size: 11px; letter-spacing: 3px; color: #AB7A57; text-transform: uppercase; font-weight: bold; margin-bottom: 6px;">✦ ASTROADVICE BY KUNDAN SINGH ✦</div>
+            <h1 style="margin: 0; color: #D3AF54; font-size: 24px; font-weight: 700; font-family: Georgia, serif; letter-spacing: 1px;">Security Verification Code</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 30px 35px 20px 35px; text-align: center;">
+            <p style="font-size: 14px; line-height: 1.6; color: #D8CFEB; margin: 0 0 25px 0;">
+              You have requested to authenticate your email for <strong>{purpose_label}</strong>. Please enter the 6-digit cosmic verification code below:
+            </p>
+            <div style="margin: 15px 0 25px 0; padding: 16px 24px; background: rgba(211, 175, 84, 0.08); border: 2px dashed #D3AF54; border-radius: 14px; display: inline-block;">
+              <span style="font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #ECCF86; font-family: 'Courier New', Courier, monospace; display: block; margin-left: 8px;">{otp}</span>
+            </div>
+            <p style="font-size: 12px; color: #AB7A57; margin: 10px 0 0 0;">
+              ⏳ This verification code expires in <strong>5 minutes</strong>.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 20px 35px 30px 35px; font-size: 11px; line-height: 1.5; color: #8F84A8; text-align: center; border-top: 1px solid rgba(211, 175, 84, 0.1);">
+            If you did not make this request on AstroAdvice, please ignore this email.
+            <div style="margin-top: 10px; color: #695F80; font-size: 10px;">
+              © 2026 Astroadvice. Vasant Kunj, New Delhi, India.
+            </div>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+    """
+    
+    try:
+        r = resend.Emails.send({
+            "from": RESEND_FROM_EMAIL,
+            "to": [to_email],
+            "subject": f"✦ Your AstroAdvice Verification Code: {otp} ✦",
+            "html": html_content
+        })
+        print(f"✓ Resend OTP dispatched to {to_email}")
+        return True
+    except Exception as e:
+        print(f"⚠️ Resend email sending failed: {str(e)}")
+        return False
 
 # ==========================================
 # ⚙️ BOOKING RULES & CONFIGURATION
@@ -255,11 +440,24 @@ def validate_phone_number(phone_str: str) -> str:
 
 
 # Input Data Models with strict validations and XSS sanitizations
+class SendOtpRequest(BaseModel):
+    email: EmailStr
+    purpose: Optional[str] = "verification"
+
+
+class VerifyOtpRequest(BaseModel):
+    email: EmailStr
+    otp: str
+    purpose: Optional[str] = "verification"
+
+
 class PrashnaRequest(BaseModel):
     name: str
+    email: Optional[EmailStr] = None
     phone: str
     location: str
     question: str
+    verification_token: Optional[str] = None
 
     @field_validator('name', 'location', 'question')
     @classmethod
@@ -278,6 +476,7 @@ class ContactRequest(BaseModel):
     phone: str
     subject: str
     message: str
+    verification_token: Optional[str] = None
 
     @field_validator('name', 'subject', 'message')
     @classmethod
@@ -287,6 +486,8 @@ class ContactRequest(BaseModel):
     @field_validator('phone')
     @classmethod
     def check_phone(cls, v: str) -> str:
+        if not v or v.strip().lower() in ["n/a", "none", "not provided"] or v.startswith("DOB:"):
+            return v
         return validate_phone_number(v)
 
 
@@ -316,6 +517,7 @@ class BookingRequest(BaseModel):
     time_slot: str     # Format: "HH:MM" (24-hour time, e.g. "10:00", "15:30")
     duration_minutes: Optional[int] = 45
     birth_details: Optional[str] = None  # Intake details (DOB, Time, Place, or Specific Question)
+    verification_token: Optional[str] = None
 
     @field_validator('full_name', 'service_name', 'birth_details')
     @classmethod
@@ -328,6 +530,77 @@ class BookingRequest(BaseModel):
     @classmethod
     def check_phone(cls, v: str) -> str:
         return validate_phone_number(v)
+
+
+# ==========================================
+# 🔐 AUTH & OTP VERIFICATION ENDPOINTS
+# ==========================================
+@app.post("/api/auth/send-otp")
+def send_otp(req: SendOtpRequest):
+    """Generates 6-digit OTP, caches in Redis (5 min TTL), and dispatches via Resend."""
+    email_clean = req.email.strip().lower()
+    purpose_clean = (req.purpose or "verification").strip().lower()
+    
+    # 1. Rate Limiting Check (Max 5 requests per 10 minutes)
+    rate_key = f"ratelimit:otp:{email_clean}"
+    attempts = incr_rate_limit(rate_key, window_seconds=600)
+    if attempts > 5:
+        raise HTTPException(
+            status_code=429, 
+            detail="Too many verification requests. Please wait 10 minutes before requesting another code."
+        )
+        
+    # 2. Generate secure 6-digit numeric OTP
+    otp_code = str(secrets.randbelow(900000) + 100000)
+    
+    # 3. Store in Redis/Cache with 5-minute TTL (300 seconds)
+    cache_key = f"otp:{email_clean}:{purpose_clean}"
+    set_cache_key(cache_key, otp_code, ex_seconds=300)
+    
+    # 4. Dispatch Email via Resend API
+    send_resend_otp_email(email_clean, otp_code, purpose=purpose_clean)
+        
+    return {
+        "success": True,
+        "message": f"Verification code has been dispatched to {email_clean}."
+    }
+
+
+@app.post("/api/auth/verify-otp")
+def verify_otp(req: VerifyOtpRequest):
+    """Verifies OTP from Redis, burns it on success, and issues 15-min verification state."""
+    email_clean = req.email.strip().lower()
+    purpose_clean = (req.purpose or "verification").strip().lower()
+    otp_clean = req.otp.strip()
+    
+    cache_key = f"otp:{email_clean}:{purpose_clean}"
+    stored_otp = get_cache_key(cache_key)
+    
+    if not stored_otp:
+        raise HTTPException(
+            status_code=400,
+            detail="Verification code has expired or was not requested. Please request a new code."
+        )
+        
+    if stored_otp != otp_clean:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid verification code. Please check your email and enter the correct code."
+        )
+        
+    # Delete OTP key to prevent replay attacks
+    delete_cache_key(cache_key)
+    
+    # Generate verification token and mark verified in Redis with 15-minute TTL (900 seconds)
+    verification_token = f"tok_{secrets.token_hex(16)}"
+    verified_key = f"verified:{email_clean}:{purpose_clean}"
+    set_cache_key(verified_key, verification_token, ex_seconds=900)
+    
+    return {
+        "success": True,
+        "verification_token": verification_token,
+        "message": "Email verified successfully."
+    }
 
 
 @app.get("/")
@@ -404,6 +677,9 @@ def get_availability(date: str):
 @app.post("/api/contact")
 def save_contact(contact: ContactRequest):
     """Saves contact queries locally and attempts to send SMS via Twilio if configured."""
+    # Enforce Redis verified email requirement
+    check_email_verified(contact.email, "contact", contact.verification_token)
+
     import json
     local_queries_file = "local_queries.json"
     queries_list = []
@@ -639,6 +915,9 @@ QUERY/MESSAGE:
 @app.post("/api/prashna")
 def save_prashna(prashna: PrashnaRequest):
     """Saves Prashna questions locally and attempts to send SMTP email."""
+    # Enforce Redis verified email requirement
+    check_email_verified(prashna.email, "prashna", prashna.verification_token)
+
     import json
     local_queries_file = "local_queries.json"
     queries_list = []
@@ -740,6 +1019,9 @@ SPECIFIC QUESTION:
 async def book_appointment(booking: BookingRequest):
     """Processes appointment requests, checks rules/conflicts, and books into Google Calendar."""
     try:
+        # Enforce Redis verified email requirement before booking slot
+        check_email_verified(booking.email, "booking", booking.verification_token)
+
         # Check if service account file is present to determine mode (Google Calendar sync vs. Local Dev fallback)
         use_google_calendar = os.path.exists(SERVICE_ACCOUNT_FILE)
 
