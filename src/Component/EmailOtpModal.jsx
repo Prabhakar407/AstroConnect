@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShieldCheck, Mail, RefreshCw, X, ArrowRight } from 'lucide-react'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "" : "https://astrologer-kundan-singh.onrender.com")
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com"
 
 /**
  * EmailOtpModal Component
@@ -119,13 +119,17 @@ export default function EmailOtpModal({
     }
   }
 
+  const verifyingRef = useRef(false)
+
   const handleVerify = async (codeToVerify = null) => {
+    if (verifyingRef.current) return
     const fullCode = codeToVerify || otp.join("")
     if (fullCode.length !== 6) {
       setError("Please enter all 6 digits of the verification code.")
       return
     }
 
+    verifyingRef.current = true
     setVerifying(true)
     setError("")
 
@@ -152,6 +156,7 @@ export default function EmailOtpModal({
     } catch (err) {
       setError(err.message || "Invalid or expired code. Please try again.")
     } finally {
+      verifyingRef.current = false
       setVerifying(false)
     }
   }

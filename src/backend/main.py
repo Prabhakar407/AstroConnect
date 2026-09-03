@@ -692,12 +692,20 @@ def verify_otp(req: VerifyOtpRequest):
                 break
                 
     if not stored_otp:
+        # Check if the email was ALREADY verified in the last 60 seconds (prevents double-submit race conditions)
+        existing_token = get_cache_key(f"verified:{email_clean}:{purpose_clean}") or get_cache_key(f"verified:{email_clean}:verification")
+        if existing_token:
+            return {
+                "success": True,
+                "verification_token": existing_token,
+                "message": "Email verified successfully."
+            }
         raise HTTPException(
             status_code=400,
             detail="Verification code has expired or was not requested. Please request a new code."
         )
         
-    if stored_otp != otp_clean:
+    if str(stored_otp).strip() != str(otp_clean).strip():
         raise HTTPException(
             status_code=400,
             detail="Invalid verification code. Please check your email and enter the correct code."
