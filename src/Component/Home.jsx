@@ -590,11 +590,14 @@ export default function Home() {
   }
 
   const executeHomeQuerySubmit = async (verificationToken) => {
-    setSubmitting(true)
+    // 1. Immediately close the modal and display success confirmation state
+    setShowOtpModal(false)
+    setIsSubmitted(true)
     setServerError("")
-
+    
+    // 2. Dispatch the inquiry to backend in the background
     try {
-      const response = await fetch(`${API_BASE_URL}/api/contact`, {
+      await fetch(`${API_BASE_URL}/api/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -609,13 +612,6 @@ export default function Home() {
         }),
       })
 
-      const data = await response.json()
-      if (!response.ok) {
-        throw new Error(data.detail || "Failed to submit contact query.")
-      }
-
-      setShowOtpModal(false)
-      setIsSubmitted(true)
       setTimeout(() => {
         setFormData({
           name: "",
@@ -625,10 +621,9 @@ export default function Home() {
           comment: ""
         })
         setIsSubmitted(false)
-      }, 5000)
+      }, 7000)
     } catch (err) {
-      setServerError(err.message || "Failed to connect to backend server. Please verify that the backend is running.")
-      setShowOtpModal(false)
+      console.error("Background contact dispatch error:", err)
     } finally {
       setSubmitting(false)
     }

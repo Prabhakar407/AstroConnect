@@ -319,6 +319,102 @@ def send_resend_otp_email(to_email: str, otp: str, purpose: str = "Verification"
     print(f"⚠️ Unable to dispatch OTP email. Generated code for {to_email} is: {otp}")
     return False
 
+def send_astrologer_notification_email(subject: str, client_name: str, client_email: str, client_phone: str, details: str, service_type: str = "General Inquiry") -> bool:
+    """Sends immediate branded notification to the Astrologer (astroadvicebyks@gmail.com) via Resend API with SMTP fallback."""
+    receiver_email = os.getenv("ASTROLOGER_NOTIFICATION_EMAIL", "astroadvicebyks@gmail.com")
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"></head>
+    <body style="margin:0;padding:0;background-color:#06091B;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#D8CFEB;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:580px;margin:30px auto;background-color:#181122;border-radius:18px;border:1px solid rgba(211,175,84,0.3);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+        <tr>
+          <td align="center" style="padding:28px 20px;border-bottom:1px solid rgba(211,175,84,0.15);background:rgba(211,175,84,0.05);">
+            <div style="font-size:11px;letter-spacing:3px;color:#AB7A57;text-transform:uppercase;font-weight:bold;margin-bottom:6px;">✦ ASTROADVICE WEBSITE NOTIFICATION ✦</div>
+            <h2 style="margin:0;color:#D3AF54;font-size:22px;font-weight:700;font-family:Georgia,serif;">New {service_type} Received</h2>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:25px 30px;">
+            <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse:collapse;font-size:13px;">
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                <td style="color:#AB7A57;font-weight:bold;width:120px;">Client Name:</td>
+                <td style="color:#FFFFFF;font-weight:600;">{client_name}</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                <td style="color:#AB7A57;font-weight:bold;">Client Email:</td>
+                <td style="color:#D3AF54;"><a href="mailto:{client_email}" style="color:#D3AF54;text-decoration:none;">{client_email}</a></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                <td style="color:#AB7A57;font-weight:bold;">Phone / DOB:</td>
+                <td style="color:#FFFFFF;">{client_phone}</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                <td style="color:#AB7A57;font-weight:bold;">Service / Topic:</td>
+                <td style="color:#ECCF86;font-weight:bold;">{subject}</td>
+              </tr>
+            </table>
+            
+            <div style="margin-top:20px;padding:15px;background:rgba(0,0,0,0.25);border-radius:10px;border-left:3px solid #D3AF54;">
+              <div style="font-size:11px;text-transform:uppercase;color:#AB7A57;font-weight:bold;margin-bottom:6px;">Client Message / Inquiry:</div>
+              <div style="font-size:13px;line-height:1.6;color:#D8CFEB;white-space:pre-wrap;">{details}</div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+    """
+
+    # 1. Resend API Dispatch
+    if RESEND_API_KEY:
+        resend.api_key = RESEND_API_KEY
+        try:
+            r = resend.Emails.send({
+                "from": RESEND_FROM_EMAIL,
+                "to": [receiver_email],
+                "subject": f"★ New {service_type}: {subject} - {client_name} ★",
+                "html": html_content
+            })
+            print(f"✓ Astrologer notification dispatched via Resend to {receiver_email}")
+            return True
+        except Exception as e:
+            print(f"⚠️ Astrologer Resend dispatch failed ({e}). Trying SMTP...")
+
+    # 2. SMTP Fallback
+    if SMTP_EMAIL and SMTP_PASSWORD:
+        try:
+            import smtplib
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+
+            msg = MIMEMultipart('alternative')
+            msg['Subject'] = f"★ New {service_type}: {subject} - {client_name} ★"
+            msg['From'] = f"AstroAdvice <{SMTP_EMAIL}>"
+            msg['To'] = receiver_email
+            msg.attach(MIMEText(html_content, 'html'))
+
+            try:
+                server = smtplib.SMTP("smtp.gmail.com", 587, timeout=8)
+                server.starttls()
+                server.login(SMTP_EMAIL, SMTP_PASSWORD)
+                server.sendmail(SMTP_EMAIL, [receiver_email], msg.as_string())
+                server.quit()
+                print(f"✓ Astrologer notification dispatched via SMTP (587) to {receiver_email}")
+                return True
+            except Exception:
+                server = smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=8)
+                server.login(SMTP_EMAIL, SMTP_PASSWORD)
+                server.sendmail(SMTP_EMAIL, [receiver_email], msg.as_string())
+                server.quit()
+                print(f"✓ Astrologer notification dispatched via SMTP (465) to {receiver_email}")
+                return True
+        except Exception as smtp_err:
+            print(f"⚠️ SMTP astrologer notification failed: {smtp_err}")
+
+    return False
+
 # ==========================================
 # ⚙️ BOOKING RULES & CONFIGURATION
 # ==========================================
@@ -868,55 +964,16 @@ def save_contact(contact: ContactRequest):
             print(f"Twilio SMS delivery failed: {str(e)}")
             sms_status = "twilio_failed"
             
-    smtp_sender = os.getenv("SMTP_EMAIL")
-    smtp_password = os.getenv("SMTP_PASSWORD")
-    smtp_receiver = os.getenv("SMTP_EMAIL", "astroadvicebyks@gmail.com")
-    
-    email_status = "not_configured"
-    
-    if smtp_sender and smtp_password:
-        try:
-            import smtplib
-            from email.mime.text import MIMEText
-            from email.mime.multipart import MIMEMultipart
-            
-            # Construct Email Message
-            msg = MIMEMultipart()
-            msg['From'] = smtp_sender
-            msg['To'] = smtp_receiver
-            msg['Subject'] = f"★ New Inquiry: {contact.subject} ★"
-            
-            email_body = f"""
-Hello Kundan Singh,
-
-You have received a new contact inquiry from the Astrology Website:
-
-----------------------------------------
-CLIENT NAME:    {contact.name}
-CLIENT EMAIL:   {contact.email}
-CLIENT PHONE:   {contact.phone}
-SUBJECT/TOPIC:  {contact.subject}
-
-MESSAGE DETAIL:
-{contact.message}
-----------------------------------------
-
-*This message was logged locally and dispatched automatically via website backend*
-"""
-            msg.attach(MIMEText(email_body, 'plain'))
-            
-            # Connect to SMTP Server
-            server = smtplib.SMTP("smtp.gmail.com", 587)
-            server.starttls()
-            server.login(smtp_sender, smtp_password)
-            server.sendmail(smtp_sender, smtp_receiver, msg.as_string())
-            server.quit()
-            
-            email_status = "sent_via_smtp"
-            print("✓ Contact inquiry successfully dispatched via SMTP email")
-        except Exception as e:
-            print(f"SMTP Email delivery failed: {str(e)}")
-            email_status = "smtp_failed"
+    # Dispatch inquiry notification directly to Astrologer
+    dispatched = send_astrologer_notification_email(
+        subject=contact.subject,
+        client_name=contact.name,
+        client_email=contact.email,
+        client_phone=contact.phone,
+        details=contact.message,
+        service_type="Vedic Inquiry / Contact Query"
+    )
+    email_status = "sent" if dispatched else "failed"
             
     # Append to Google Sheets
     try:
