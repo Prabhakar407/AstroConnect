@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import aboutImg from '../assets/images/About.png'
-import vedicAstrologyImg from '../assets/images/Vedic Astrology.png'
-import numerologyImg from '../assets/images/Numerology.png'
-import vastuConsultationImg from '../assets/images/Vastu Consultation.png'
-import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.png'
-import prashnaKundliImg from '../assets/images/Prashna Kundli.png'
+import aboutImg from '../assets/images/About.webp'
+import vedicAstrologyImg from '../assets/images/Vedic Astrology.webp'
+import numerologyImg from '../assets/images/Numerology.webp'
+import vastuConsultationImg from '../assets/images/Vastu Consultation.webp'
+import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.webp'
+import prashnaKundliImg from '../assets/images/Prashna Kundli.webp'
 
 import { 
   Award, 

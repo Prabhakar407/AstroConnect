@@ -5,35 +5,35 @@ import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import EmailOtpModal from './EmailOtpModal';
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com"
 
-import logoImg from "../assets/logos/Nav-Logo.png";
-import featureBg from "../assets/images/Feature.png";
-import astrologerPortrait from "../assets/images/astrologer_portrait.jpg";
-import hero1 from "../assets/images/Hero1.png";
-import about1 from "../assets/images/About1.jpeg";
-import zodiacWheel from "../assets/images/zodiac_wheel.jpg";
-import vedicAstrologyImg from '../assets/images/Vedic Astrology.png'
-import numerologyImg from '../assets/images/Numerology.png'
-import vastuConsultationImg from '../assets/images/Vastu Consultation.png'
-import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.png'
-import prashnaKundliImg from '../assets/images/Prashna Kundli.png'
-import people1 from '../assets/images/people1.jpg'
-import people2 from '../assets/images/people2.jpg'
-import people3 from '../assets/images/people3.jpg'
-import people4 from '../assets/images/people4.jpg'
-import people5 from '../assets/images/people5.jpg'
-import people6 from '../assets/images/people6.jpg'
-import confidentialityLogo from '../assets/logos/confidentiality.png'
-import accuracyLogo from '../assets/logos/accuracy.png'
-import solutionsLogo from '../assets/logos/solutions.png'
-import transformationLogo from '../assets/logos/transformation.png'
-import callLogo from "../assets/logos/Call.png"
-import gmailLogo from "../assets/logos/gmail.png"
-import mapsLogo from "../assets/logos/google-maps.png"
-import waLogo from "../assets/logos/whatsapp.png"
-import experienceLogo from '../assets/logos/experience.png'
-import clientsLogo from '../assets/logos/clients.png'
-import expertiseLogo from '../assets/logos/expertise.png'
-import guidanceLogo from '../assets/logos/guidance.png'
+import logoImg from "../assets/logos/Nav-Logo.webp";
+import featureBg from "../assets/images/Feature.webp";
+import astrologerPortrait from "../assets/images/astrologer_portrait.webp";
+import hero1 from "../assets/images/Hero1.webp";
+import about1 from "../assets/images/About1.webp";
+import zodiacWheel from "../assets/images/zodiac_wheel.webp";
+import vedicAstrologyImg from '../assets/images/Vedic Astrology.webp'
+import numerologyImg from '../assets/images/Numerology.webp'
+import vastuConsultationImg from '../assets/images/Vastu Consultation.webp'
+import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.webp'
+import prashnaKundliImg from '../assets/images/Prashna Kundli.webp'
+import people1 from '../assets/images/people1.webp'
+import people2 from '../assets/images/people2.webp'
+import people3 from '../assets/images/people3.webp'
+import people4 from '../assets/images/people4.webp'
+import people5 from '../assets/images/people5.webp'
+import people6 from '../assets/images/people6.webp'
+import confidentialityLogo from '../assets/logos/confidentiality.webp'
+import accuracyLogo from '../assets/logos/accuracy.webp'
+import solutionsLogo from '../assets/logos/solutions.webp'
+import transformationLogo from '../assets/logos/transformation.webp'
+import callLogo from "../assets/logos/Call.webp"
+import gmailLogo from "../assets/logos/gmail.webp"
+import mapsLogo from "../assets/logos/google-maps.webp"
+import waLogo from "../assets/logos/whatsapp.webp"
+import experienceLogo from '../assets/logos/experience.webp'
+import clientsLogo from '../assets/logos/clients.webp'
+import expertiseLogo from '../assets/logos/expertise.webp'
+import guidanceLogo from '../assets/logos/guidance.webp'
 
 import { VscWorkspaceTrusted } from "react-icons/vsc"
 import { BsFillPersonFill, BsBullseye } from "react-icons/bs"

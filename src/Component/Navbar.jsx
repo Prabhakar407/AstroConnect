@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown, Calendar, Phone } from "lucide-react";
 import { motion } from "framer-motion";
-import logoImg from "../assets/logos/Nav-Logo.png";
+import logoImg from "../assets/logos/Nav-Logo.webp";
 
 const MotionLink = motion.create ? motion.create(Link) : motion(Link);
 

@@ -3,16 +3,16 @@ import { Link } from 'react-router-dom'
 import { MessageCircle, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { motion } from 'framer-motion'
 import LegalModal from './LegalModal'
-import logoImg from "../assets/logos/Nav-Logo.png";
-import fbLogo from "../assets/logos/facebook.png";
-import instaLogo from "../assets/logos/Instagram.png";
-import ytLogo from "../assets/logos/Youtube.png";
-import waLogo from "../assets/logos/whatsapp.png";
-import logo2Img from "../assets/logos/logo2.png";
-import gmailLogo from "../assets/logos/gmail.png";
-import mapsLogo from "../assets/logos/google-maps.png";
-import clockLogo from "../assets/logos/clock.png";
-import callLogo from "../assets/logos/Call.png";
+import logoImg from "../assets/logos/Nav-Logo.webp";
+import fbLogo from "../assets/logos/facebook.webp";
+import instaLogo from "../assets/logos/Instagram.webp";
+import ytLogo from "../assets/logos/Youtube.webp";
+import waLogo from "../assets/logos/whatsapp.webp";
+import logo2Img from "../assets/logos/logo2.webp";
+import gmailLogo from "../assets/logos/gmail.webp";
+import mapsLogo from "../assets/logos/google-maps.webp";
+import clockLogo from "../assets/logos/clock.webp";
+import callLogo from "../assets/logos/Call.webp";
  
 /**
  * Footer Component

@@ -14,10 +14,10 @@ import {
   HelpCircle
 } from 'lucide-react'
 import EmailOtpModal from './EmailOtpModal'
-import callLogo from "../assets/logos/Call.png"
-import gmailLogo from "../assets/logos/gmail.png"
-import mapsLogo from "../assets/logos/google-maps.png"
-import waLogo from "../assets/logos/whatsapp.png"
+import callLogo from "../assets/logos/Call.webp"
+import gmailLogo from "../assets/logos/gmail.webp"
+import mapsLogo from "../assets/logos/google-maps.webp"
+import waLogo from "../assets/logos/whatsapp.webp"
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com"
 

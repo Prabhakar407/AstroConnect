@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { Star, ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
-import people1 from '../assets/images/people1.jpg'
-import people2 from '../assets/images/people2.jpg'
-import people3 from '../assets/images/people3.jpg'
-import people4 from '../assets/images/people4.jpg'
-import people5 from '../assets/images/people5.jpg'
+import people1 from '../assets/images/people1.webp'
+import people2 from '../assets/images/people2.webp'
+import people3 from '../assets/images/people3.webp'
+import people4 from '../assets/images/people4.webp'
+import people5 from '../assets/images/people5.webp'
 
 const containerVariants = {
   hidden: { opacity: 0 },
