@@ -615,16 +615,30 @@ def get_or_create_spreadsheet(sheets_service, drive_service):
     return spreadsheet_id
 
 
+DEFAULT_GOOGLE_SHEET_IDS = [
+    "16FmU2TAjrSKxCg2fyQ6j4V1SHUKCzRfYC27AGKzA4Es",
+    "1K3z5i_pfo5oc2qS27TevZIi4XGtbTjT0uWAdslvs8Bo"
+]
+
+
 def append_row_to_sheet(sheet_name: str, row: list):
-    """Utility to append a row of data to the Google Sheet if enabled."""
+    """Utility to append a row of data to BOTH Google Sheets simultaneously."""
     sheets_service, drive_service = get_sheets_service()
     if not sheets_service:
         print("Sheets service could not be initialized from credentials.")
         return
         
-    spreadsheet_id = os.getenv("GOOGLE_SHEET_ID") or "16FmU2TAjrSKxCg2fyQ6j4V1SHUKCzRfYC27AGKzA4Es"
-    if not spreadsheet_id:
-        return
+    env_ids = os.getenv("GOOGLE_SHEET_ID")
+    target_sheet_ids = []
+    if env_ids:
+        for sid in env_ids.split(","):
+            sid_clean = sid.strip()
+            if sid_clean and sid_clean not in target_sheet_ids:
+                target_sheet_ids.append(sid_clean)
+                
+    for def_id in DEFAULT_GOOGLE_SHEET_IDS:
+        if def_id not in target_sheet_ids:
+            target_sheet_ids.append(def_id)
         
     try:
         def sanitize_cell(val):
@@ -640,16 +654,20 @@ def append_row_to_sheet(sheet_name: str, row: list):
         body = {
             'values': [sanitized_row]
         }
-        sheets_service.spreadsheets().values().append(
-            spreadsheetId=spreadsheet_id,
-            range=f"{sheet_name}!A:Z",
-            valueInputOption="USER_ENTERED",
-            insertDataOption="INSERT_ROWS",
-            body=body
-        ).execute()
-        print(f"✓ Appended data row to Google Sheet tab '{sheet_name}'")
+        for sid in target_sheet_ids:
+            try:
+                sheets_service.spreadsheets().values().append(
+                    spreadsheetId=sid,
+                    range=f"{sheet_name}!A:Z",
+                    valueInputOption="USER_ENTERED",
+                    insertDataOption="INSERT_ROWS",
+                    body=body
+                ).execute()
+                print(f"✓ Appended data row to Google Sheet ({sid[:8]}...) tab '{sheet_name}'")
+            except Exception as sheet_err:
+                print(f"Failed to append row to Google Sheet {sid}: {str(sheet_err)}")
     except Exception as e:
-        print(f"Failed to append row to Google Sheet tab '{sheet_name}': {str(e)}")
+        print(f"Failed in append_row_to_sheet for tab '{sheet_name}': {str(e)}")
 
 
 
