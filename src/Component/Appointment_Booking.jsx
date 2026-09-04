@@ -176,17 +176,14 @@ function Appointment_Booking() {
     if (!formData.phone.trim()) {
       return "Please enter your Mobile Number.";
     }
-    const cleanPhone = formData.phone.trim().replace(/[\s\-]/g, '')
+    const cleanPhone = formData.phone.trim().replace(/[\s\-\(\)]/g, '')
     const phoneRegex = /^\+?[0-9]{7,15}$/;
     if (!phoneRegex.test(cleanPhone)) {
-      return "Please enter a valid mobile number (digits only, e.g. +1234567890).";
+      return "Please enter a valid mobile number (e.g. 9876543210).";
     }
     const digits = cleanPhone.replace('+', '')
-    if (/^(\d)\1+$/.test(digits)) {
+    if (/^(\d)\1{6,}$/.test(digits)) {
       return "Mobile number cannot consist of only repeating identical digits.";
-    }
-    if ("01234567890123456789".includes(digits) || "98765432109876543210".includes(digits)) {
-      return "Mobile number cannot be a simple consecutive sequence.";
     }
     if (!formData.bookingDate) {
       return "Please select a date from the calendar grid.";
@@ -458,7 +455,7 @@ function Appointment_Booking() {
                         required
                         value={formData.phone}
                         onChange={handleInputChange}
-                        placeholder="Your phone"
+                        placeholder="Mobile Number (e.g. 9876543210)"
                         className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition-all duration-300 placeholder-white/40"
                       />
                     </div>

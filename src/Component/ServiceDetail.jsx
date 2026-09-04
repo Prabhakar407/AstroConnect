@@ -1697,23 +1697,14 @@ function PrashnaKundaliDetail({ details, navigate }) {
     if (!formData.phone.trim()) {
       return "Please enter your Mobile Number.";
     }
-    const cleanPhone = formData.phone.trim().replace(/[\s\-]/g, '');
-    let phoneBody = cleanPhone;
-    if (cleanPhone.startsWith('+91')) {
-      phoneBody = cleanPhone.slice(3);
-    } else if (cleanPhone.startsWith('91') && cleanPhone.length === 12) {
-      phoneBody = cleanPhone.slice(2);
-    }
+    const cleanPhone = formData.phone.trim().replace(/[\s\-\(\)]/g, '');
     const phoneRegex = /^\+?[0-9]{7,15}$/;
     if (!phoneRegex.test(cleanPhone)) {
-      return "Please enter a valid mobile number (digits only, e.g. +1234567890).";
+      return "Please enter a valid mobile number (e.g. 9876543210).";
     }
     const digits = cleanPhone.replace('+', '');
-    if (/^(\d)\1+$/.test(digits)) {
+    if (/^(\d)\1{6,}$/.test(digits)) {
       return "Mobile number cannot consist of only repeating identical digits.";
-    }
-    if ("01234567890123456789".includes(digits) || "98765432109876543210".includes(digits)) {
-      return "Mobile number cannot be a simple consecutive sequence.";
     }
     if (!formData.location.trim()) {
       return "Please enter your Current Location (City, Country).";
@@ -2114,7 +2105,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
                     <input 
                       type="tel" 
                       required
-                      placeholder="e.g. +91 9876543210"
+                      placeholder="Mobile Number (e.g. 9876543210)"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       className="w-full bg-[#241B33] text-[#FDFCF5] border border-white/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition placeholder-white/40 font-sans"

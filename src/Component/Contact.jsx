@@ -150,11 +150,26 @@ function Contact() {
   }
 
   const executeContactSubmit = async (verificationToken) => {
-    setSubmitting(true)
+    // 1. Immediately close OTP modal and display confirmation screen (zero waiting time)
+    setShowOtpModal(false)
+    setSubmitted(true)
     setServerError("")
 
+    // Build fallback WhatsApp url immediately
+    const messageText = `✦ New Inquiry from Astrology Website ✦\n\n` +
+      `👤 Name: ${formData.name.trim()}\n` +
+      `📧 Email: ${formData.email.trim()}\n` +
+      `📱 Phone: ${formData.phone.trim()}\n` +
+      `📌 Subject: ${formData.subject}\n` +
+      `💬 Message: ${formData.message.trim()}`
+
+    const encodedText = encodeURIComponent(messageText)
+    const whatsappUrl = `https://wa.me/918114292972?text=${encodedText}`
+    setCurrentWhatsappUrl(whatsappUrl)
+
+    // 2. Dispatch contact inquiry to server in background
     try {
-      const response = await fetch(`${API_BASE_URL}/api/contact`, {
+      await fetch(`${API_BASE_URL}/api/contact`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -168,29 +183,8 @@ function Contact() {
           verification_token: verificationToken,
         }),
       })
-
-      const data = await response.json()
-      if (!response.ok) {
-        throw new Error(data.detail || "Failed to deliver contact message to the server.")
-      }
-
-      // Build fallback WhatsApp url
-      const messageText = `✦ New Inquiry from Astrology Website ✦\n\n` +
-        `👤 Name: ${formData.name.trim()}\n` +
-        `📧 Email: ${formData.email.trim()}\n` +
-        `📱 Phone: ${formData.phone.trim()}\n` +
-        `📌 Subject: ${formData.subject}\n` +
-        `💬 Message: ${formData.message.trim()}`
-
-      const encodedText = encodeURIComponent(messageText)
-      const whatsappUrl = `https://wa.me/918114292972?text=${encodedText}`
-      setCurrentWhatsappUrl(whatsappUrl)
-
-      setShowOtpModal(false)
-      setSubmitted(true)
     } catch (err) {
-      setServerError(err.message || "Failed to connect to the backend server. Please verify that the FastAPI backend is running.")
-      setShowOtpModal(false)
+      console.error("Background contact dispatch error:", err)
     } finally {
       setSubmitting(false)
     }
@@ -503,7 +497,7 @@ function Contact() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        placeholder="e.g. +91 98765 43210"
+                        placeholder="Mobile Number (e.g. 9876543210)"
                         className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition font-sans"
                       />
                     </div>

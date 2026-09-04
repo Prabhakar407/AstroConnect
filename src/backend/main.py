@@ -17,8 +17,15 @@ except ImportError:
     build = None
 import sqlite3
 from dotenv import load_dotenv
-import redis
-import resend
+try:
+    import redis
+except ImportError:
+    redis = None
+
+try:
+    import resend
+except ImportError:
+    resend = None
 
 # Load environment variables from .env file
 load_dotenv()
@@ -51,12 +58,13 @@ import tempfile
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 redis_client = None
 
-try:
-    redis_client = redis.from_url(REDIS_URL, decode_responses=True)
-    redis_client.ping()
-    print("✓ Successfully connected to External Redis server.")
-except Exception as e:
-    redis_client = None
+if redis:
+    try:
+        redis_client = redis.from_url(REDIS_URL, decode_responses=True)
+        redis_client.ping()
+        print("✓ Successfully connected to External Redis server.")
+    except Exception as e:
+        redis_client = None
 
 # Shared SQLite Disk Cache in /tmp (guaranteed writable across all cloud workers & restarts)
 DB_CACHE_PATH = os.path.join(tempfile.gettempdir(), "astro_cache.db")
@@ -513,24 +521,30 @@ def get_calendar_service():
 
 
 def get_sheets_service():
-    """Initializes and returns Google Sheets and Drive API client services, creating & sharing the spreadsheet if it does not exist."""
+    """Initializes and returns Google Sheets and Drive API client services."""
     creds = get_google_credentials()
     if not creds:
         return None, None
         
+    sheets_service = None
+    drive_service = None
     try:
         sheets_service = build("sheets", "v4", credentials=creds)
-        drive_service = build("drive", "v3", credentials=creds)
-        return sheets_service, drive_service
     except Exception as e:
-        print(f"Error initializing Sheets/Drive services: {str(e)}")
-        return None, None
+        print(f"Error initializing Sheets service: {str(e)}")
+        
+    try:
+        drive_service = build("drive", "v3", credentials=creds)
+    except Exception as e:
+        print(f"Drive service notice: {str(e)}")
+        
+    return sheets_service, drive_service
 
 
 def get_or_create_spreadsheet(sheets_service, drive_service):
     """Retrieves the existing spreadsheet ID from sheets_config.json or creates a new one in the Service Account drive and shares it."""
     config_file = "sheets_config.json"
-    spreadsheet_id = os.getenv("GOOGLE_SHEET_ID")
+    spreadsheet_id = os.getenv("GOOGLE_SHEET_ID") or "16FmU2TAjrSKxCg2fyQ6j4V1SHUKCzRfYC27AGKzA4Es"
     astrologer_email = os.getenv("SMTP_EMAIL", "astroadvicebyks@gmail.com")
     
     # 1. Try reading from local config file
@@ -564,17 +578,15 @@ def get_or_create_spreadsheet(sheets_service, drive_service):
             ).execute()
             spreadsheet_id = spreadsheet.get('spreadsheetId')
             
-            # Share the spreadsheet with the astrologer as Writer (Editor)
-            permission_body = {
-                'type': 'user',
-                'role': 'writer',
-                'emailAddress': astrologer_email
-            }
-            drive_service.permissions().create(
-                fileId=spreadsheet_id,
-                body=permission_body
-            ).execute()
-            print(f"✓ Created and shared spreadsheet {spreadsheet_id} with {astrologer_email}")
+            # Grant Astrologer editor permissions
+            if drive_service and astrologer_email:
+                drive_service.permissions().create(
+                    fileId=spreadsheet_id,
+                    body={'type': 'user', 'role': 'writer', 'emailAddress': astrologer_email},
+                    fields='id',
+                    sendNotificationEmail=True
+                ).execute()
+                print(f"✓ Google Sheet shared with {astrologer_email}")
             
             # Initialize headers for each sheet
             headers_config = {
@@ -598,7 +610,7 @@ def get_or_create_spreadsheet(sheets_service, drive_service):
                 
         except Exception as e:
             print(f"Error creating Google Sheet: {str(e)}")
-            return None
+            return "16FmU2TAjrSKxCg2fyQ6j4V1SHUKCzRfYC27AGKzA4Es"
             
     return spreadsheet_id
 
@@ -607,17 +619,24 @@ def append_row_to_sheet(sheet_name: str, row: list):
     """Utility to append a row of data to the Google Sheet if enabled."""
     sheets_service, drive_service = get_sheets_service()
     if not sheets_service:
+        print("Sheets service could not be initialized from credentials.")
         return
         
-    spreadsheet_id = os.getenv("GOOGLE_SHEET_ID") or (get_or_create_spreadsheet(sheets_service, drive_service) if drive_service else None)
+    spreadsheet_id = os.getenv("GOOGLE_SHEET_ID") or "16FmU2TAjrSKxCg2fyQ6j4V1SHUKCzRfYC27AGKzA4Es"
     if not spreadsheet_id:
         return
         
     try:
-        sanitized_row = [
-            f"'{item}" if isinstance(item, str) and item.startswith("+") else item
-            for item in row
-        ]
+        def sanitize_cell(val):
+            if val is None:
+                return "N/A"
+            s = str(val).strip()
+            # Prefix with ' for formula safety and to prevent scientific notation on multi-digit phone numbers
+            if s.startswith(("+", "=", "-", "@", "\t", "\r")) or (s.isdigit() and len(s) >= 10):
+                return f"'{s}"
+            return s
+
+        sanitized_row = [sanitize_cell(item) for item in row]
         body = {
             'values': [sanitized_row]
         }
@@ -630,7 +649,7 @@ def append_row_to_sheet(sheet_name: str, row: list):
         ).execute()
         print(f"✓ Appended data row to Google Sheet tab '{sheet_name}'")
     except Exception as e:
-        print(f"Failed to append row to Google Sheet: {str(e)}")
+        print(f"Failed to append row to Google Sheet tab '{sheet_name}': {str(e)}")
 
 
 
@@ -664,7 +683,7 @@ class VerifyOtpRequest(BaseModel):
 
 class PrashnaRequest(BaseModel):
     name: str
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     phone: str
     location: str
     question: str
@@ -675,6 +694,13 @@ class PrashnaRequest(BaseModel):
     def sanitize_input(cls, v: str) -> str:
         return sanitize_string(v)
 
+    @field_validator('email')
+    @classmethod
+    def sanitize_email(cls, v: Optional[str]) -> Optional[str]:
+        if not v or not str(v).strip():
+            return None
+        return str(v).strip().lower()
+
     @field_validator('phone')
     @classmethod
     def check_phone(cls, v: str) -> str:
@@ -683,7 +709,7 @@ class PrashnaRequest(BaseModel):
 
 class ContactRequest(BaseModel):
     name: str
-    email: EmailStr
+    email: str
     phone: Optional[str] = "N/A"
     dob: Optional[str] = "N/A"
     subject: str
@@ -694,6 +720,14 @@ class ContactRequest(BaseModel):
     @classmethod
     def sanitize_input(cls, v: str) -> str:
         return sanitize_string(v)
+
+    @field_validator('email')
+    @classmethod
+    def check_email(cls, v: str) -> str:
+        s = str(v).strip().lower()
+        if "@" not in s or "." not in s:
+            raise ValueError("Invalid email address format.")
+        return s
 
     @field_validator('phone')
     @classmethod
@@ -706,13 +740,21 @@ class ContactRequest(BaseModel):
 class HelpRequest(BaseModel):
     name: str
     phone: str
-    email: EmailStr
+    email: str
     query: str
 
     @field_validator('name', 'query')
     @classmethod
     def sanitize_input(cls, v: str) -> str:
         return sanitize_string(v)
+
+    @field_validator('email')
+    @classmethod
+    def check_email(cls, v: str) -> str:
+        s = str(v).strip().lower()
+        if "@" not in s or "." not in s:
+            raise ValueError("Invalid email address format.")
+        return s
 
     @field_validator('phone')
     @classmethod
@@ -722,12 +764,12 @@ class HelpRequest(BaseModel):
 
 class BookingRequest(BaseModel):
     full_name: str
-    email: EmailStr
+    email: str
     phone: str
     service_name: str  # e.g. "Vedic Astrology", "Prashna Kundali", "Vastu Consultation"
     date: str          # Format: "YYYY-MM-DD"
     time_slot: str     # Format: "HH:MM" (24-hour time, e.g. "10:00", "15:30")
-    duration_minutes: Optional[int] = 45
+    duration_minutes: Optional[int] = 30
     birth_details: Optional[str] = None  # Intake details (DOB, Time, Place, or Specific Question)
     verification_token: Optional[str] = None
 
@@ -737,6 +779,14 @@ class BookingRequest(BaseModel):
         if v is None:
             return None
         return sanitize_string(v)
+
+    @field_validator('email')
+    @classmethod
+    def check_email(cls, v: str) -> str:
+        s = str(v).strip().lower()
+        if "@" not in s or "." not in s:
+            raise ValueError("Invalid email address format.")
+        return s
 
     @field_validator('phone')
     @classmethod
@@ -835,6 +885,7 @@ def verify_otp(req: VerifyOtpRequest):
     set_cache_key(f"verified:{email_clean}:inquiry", verification_token, ex_seconds=900)
     set_cache_key(f"verified:{email_clean}:contact", verification_token, ex_seconds=900)
     set_cache_key(f"verified:{email_clean}:booking", verification_token, ex_seconds=900)
+    set_cache_key(f"verified:{email_clean}:prashna", verification_token, ex_seconds=900)
     
     return {
         "success": True,
