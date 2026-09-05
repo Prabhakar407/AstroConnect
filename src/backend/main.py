@@ -627,7 +627,6 @@ def get_or_create_spreadsheet(sheets_service, drive_service):
                 'sheets': [
                     {'properties': {'title': 'Bookings'}},
                     {'properties': {'title': 'Contact Queries'}},
-                    {'properties': {'title': 'Help Tickets'}},
                     {'properties': {'title': 'Prashna Inquiries'}}
                 ]
             }
@@ -651,7 +650,6 @@ def get_or_create_spreadsheet(sheets_service, drive_service):
             headers_config = {
                 'Bookings': ["Timestamp", "Full Name", "Email", "Phone", "Service Name", "Date", "Time Slot", "Duration (Min)", "Birth Details"],
                 'Contact Queries': ["Timestamp", "Name", "Email", "Phone", "Date of Birth", "Subject", "Message"],
-                'Help Tickets': ["Timestamp", "Name", "Email", "Phone", "Query"],
                 'Prashna Inquiries': ["Timestamp", "Name", "Phone", "Location", "Question"]
             }
             for sheet_name, headers in headers_config.items():
@@ -1227,14 +1225,16 @@ QUERY/MESSAGE:
             print(f"SMTP Email delivery failed: {str(e)}")
             email_status = "smtp_failed"
             
-    # Append to Google Sheets
+    # Append to Google Sheets 'Contact Queries' tab
     try:
         timestamp_str = datetime.utcnow().isoformat()
-        append_row_to_sheet("Help Tickets", [
+        append_row_to_sheet("Contact Queries", [
             timestamp_str,
             help_req.name,
             help_req.email,
             help_req.phone,
+            "N/A",
+            "Help Desk Ticket",
             help_req.query
         ])
     except Exception as sheets_err:
