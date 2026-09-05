@@ -31,6 +31,12 @@ function ScrollToTop() {
  * Root component that defines the routing layout and links components.
  */
 function App() {
+  // Pre-warm backend container on mount so there is zero cold-start delay for forms
+  useEffect(() => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com";
+    fetch(`${API_BASE_URL}/`, { method: "GET", mode: "cors" }).catch(() => {});
+  }, []);
+
   return (
     <Router>
       <ScrollToTop />

@@ -871,12 +871,9 @@ class BookingRequest(BaseModel):
         return validate_phone_number(v)
 
 
-# ==========================================
-# 🔐 AUTH & OTP VERIFICATION ENDPOINTS
-# ==========================================
 @app.post("/api/auth/send-otp")
-def send_otp(req: SendOtpRequest):
-    """Generates 6-digit OTP, caches in Redis (5 min TTL), and dispatches via Resend."""
+def send_otp(req: SendOtpRequest, background_tasks: BackgroundTasks = None):
+    """Generates 6-digit OTP, caches in Upstash Redis (5 min TTL), and dispatches email asynchronously."""
     email_clean = req.email.strip().lower()
     purpose_clean = (req.purpose or "verification").strip().lower()
     
@@ -892,17 +889,18 @@ def send_otp(req: SendOtpRequest):
     # 2. Generate secure 6-digit numeric OTP
     otp_code = str(secrets.randbelow(900000) + 100000)
     
-    # 3. Store in Redis/Cache with 5-minute TTL (300 seconds)
+    # 3. Store in Upstash Redis / Multi-Worker cache with 5-minute TTL (300 seconds)
     cache_key = f"otp:{email_clean}:{purpose_clean}"
     set_cache_key(cache_key, otp_code, ex_seconds=300)
     
-    # 4. Dispatch Email via Resend API (with automatic SMTP fallback)
-    dispatched = send_resend_otp_email(email_clean, otp_code, purpose=purpose_clean)
-    if not dispatched:
-        raise HTTPException(
-            status_code=500,
-            detail="Unable to deliver verification code to this email. Please check the email address or try again."
-        )
+    # 4. Asynchronous Non-blocking Email Dispatch (instant sub-50ms API response)
+    if background_tasks is not None:
+        background_tasks.add_task(send_resend_otp_email, email_clean, otp_code, purpose_clean)
+    else:
+        import threading
+        t = threading.Thread(target=send_resend_otp_email, args=(email_clean, otp_code, purpose_clean))
+        t.daemon = True
+        t.start()
         
     return {
         "success": True,

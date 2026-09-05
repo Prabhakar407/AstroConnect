@@ -223,29 +223,26 @@ function Appointment_Booking() {
       return
     }
 
-    setLoading(true)
+    // Instantly open the OTP modal so user experiences 0ms UI delay
+    setShowOtpModal(true)
+    setLoading(false)
     setErrorMsg("")
 
-    // Send OTP first via Resend & Redis
+    // Trigger OTP sending in parallel
     try {
-      const otpRes = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
+      fetch(`${API_BASE_URL}/api/auth/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: formData.email, purpose: "booking" })
+      }).catch((err) => {
+        console.warn("OTP dispatch notice:", err)
       })
-      const otpData = await otpRes.json()
-      if (!otpRes.ok) {
-        throw new Error(otpData.detail || "Failed to send verification code to your email.")
-      }
-      setShowOtpModal(true)
     } catch (err) {
-      setErrorMsg(err.message || "Failed to initiate email verification.")
-    } finally {
-      setLoading(false)
+      console.warn("OTP dispatch exception:", err)
     }
   }
 
-  const executeBooking = async (verificationToken) => {
+  const executeBooking = (verificationToken) => {
     // 1. Immediately close OTP modal and display confirmation screen (zero waiting time)
     setShowOtpModal(false)
     setSubmitted(true)
@@ -255,26 +252,24 @@ function Appointment_Booking() {
     let duration = 30
     const birthDetails = `Phone: ${formData.phone}\nBirth Date: ${formData.birthDate}\nBirth Time: ${formData.birthTime || 'Not Provided'}\nBirth Place: ${formData.birthPlace || 'Not Provided'}\nClient Notes: ${formData.notes || 'None'}`
 
-    // 2. Dispatch booking to Google Calendar & Resend in the background
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/book-appointment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          full_name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          service_name: formData.readingType,
-          date: formData.bookingDate,
-          time_slot: timeSlot,
-          duration_minutes: duration,
-          birth_details: birthDetails,
-          verification_token: verificationToken,
-        }),
-      })
-
+    // 2. Dispatch booking to Google Calendar, Sheets & Resend asynchronously in the background
+    fetch(`${API_BASE_URL}/api/book-appointment`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        full_name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        service_name: formData.readingType,
+        date: formData.bookingDate,
+        time_slot: timeSlot,
+        duration_minutes: duration,
+        birth_details: birthDetails,
+        verification_token: verificationToken,
+      }),
+    }).then(async (response) => {
       const data = await response.json()
       if (data && data.event_link) {
         setEventLink(data.event_link)
@@ -282,11 +277,9 @@ function Appointment_Booking() {
       if (data && data.meet_link) {
         setMeetLink(data.meet_link)
       }
-    } catch (err) {
+    }).catch((err) => {
       console.error("Background booking dispatch error:", err)
-    } finally {
-      setLoading(false)
-    }
+    })
   }
 
   return (

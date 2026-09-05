@@ -128,28 +128,25 @@ function Contact() {
       return
     }
 
-    setSubmitting(true)
+    // Instantly open the OTP modal so user experiences 0ms UI delay
+    setShowOtpModal(true)
+    setSubmitting(false)
 
-    // Trigger OTP sending first
+    // Trigger OTP sending in parallel
     try {
-      const otpRes = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
+      fetch(`${API_BASE_URL}/api/auth/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: formData.email, purpose: "contact" })
+      }).catch((err) => {
+        console.warn("OTP dispatch notice:", err)
       })
-      const otpData = await otpRes.json()
-      if (!otpRes.ok) {
-        throw new Error(otpData.detail || "Failed to send verification code to your email.")
-      }
-      setShowOtpModal(true)
     } catch (err) {
-      setServerError(err.message || "Failed to initiate email verification.")
-    } finally {
-      setSubmitting(false)
+      console.warn("OTP dispatch exception:", err)
     }
   }
 
-  const executeContactSubmit = async (verificationToken) => {
+  const executeContactSubmit = (verificationToken) => {
     // 1. Immediately close OTP modal and display confirmation screen (zero waiting time)
     setShowOtpModal(false)
     setSubmitted(true)
@@ -167,27 +164,23 @@ function Contact() {
     const whatsappUrl = `https://wa.me/918114292972?text=${encodedText}`
     setCurrentWhatsappUrl(whatsappUrl)
 
-    // 2. Dispatch contact inquiry to server in background
-    try {
-      await fetch(`${API_BASE_URL}/api/contact`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          subject: formData.subject,
-          message: formData.message,
-          verification_token: verificationToken,
-        }),
-      })
-    } catch (err) {
+    // 2. Dispatch contact inquiry to server asynchronously in background
+    fetch(`${API_BASE_URL}/api/contact`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: formData.subject,
+        message: formData.message,
+        verification_token: verificationToken,
+      }),
+    }).catch((err) => {
       console.error("Background contact dispatch error:", err)
-    } finally {
-      setSubmitting(false)
-    }
+    })
   }
 
   const handleCopyText = (text, type) => {

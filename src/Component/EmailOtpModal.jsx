@@ -152,7 +152,7 @@ export default function EmailOtpModal({
       setSuccessMsg("Email verified successfully!")
       setTimeout(() => {
         onVerified(data.verification_token)
-      }, 400)
+      }, 100)
     } catch (err) {
       setError(err.message || "Invalid or expired code. Please try again.")
     } finally {

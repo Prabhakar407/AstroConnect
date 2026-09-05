@@ -569,65 +569,58 @@ export default function Home() {
       return
     }
 
-    setSubmitting(true)
+    // Instantly open the OTP modal so user experiences 0ms UI delay
+    setShowOtpModal(true)
+    setSubmitting(false)
     
     try {
-      const otpRes = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
+      fetch(`${API_BASE_URL}/api/auth/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: formData.email, purpose: "inquiry" })
+      }).catch((err) => {
+        console.warn("OTP background dispatch notice:", err)
       })
-      const otpData = await otpRes.json()
-      if (!otpRes.ok) {
-        throw new Error(otpData.detail || "Failed to send verification code to your email.")
-      }
-      setShowOtpModal(true)
     } catch (err) {
-      setServerError(err.message || "Failed to initiate email verification.")
-    } finally {
-      setSubmitting(false)
+      console.warn("OTP dispatch exception:", err)
     }
   }
 
-  const executeHomeQuerySubmit = async (verificationToken) => {
-    // 1. Immediately close the modal and display success confirmation state
+  const executeHomeQuerySubmit = (verificationToken) => {
+    // 1. Immediately close the modal and display success confirmation state with 0ms waiting
     setShowOtpModal(false)
     setIsSubmitted(true)
     setServerError("")
     
-    // 2. Dispatch the inquiry to backend in the background
-    try {
-      await fetch(`${API_BASE_URL}/api/contact`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: "N/A",
-          dob: formData.dob || "N/A",
-          subject: formData.selectedService,
-          message: formData.comment || "No message comment provided.",
-          verification_token: verificationToken,
-        }),
-      })
-
-      setTimeout(() => {
-        setFormData({
-          name: "",
-          dob: "",
-          email: "",
-          selectedService: "",
-          comment: ""
-        })
-        setIsSubmitted(false)
-      }, 7000)
-    } catch (err) {
+    // 2. Dispatch the inquiry to backend in the background asynchronously
+    fetch(`${API_BASE_URL}/api/contact`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        phone: "N/A",
+        dob: formData.dob || "N/A",
+        subject: formData.selectedService,
+        message: formData.comment || "No message comment provided.",
+        verification_token: verificationToken,
+      }),
+    }).catch((err) => {
       console.error("Background contact dispatch error:", err)
-    } finally {
-      setSubmitting(false)
-    }
+    })
+
+    setTimeout(() => {
+      setFormData({
+        name: "",
+        dob: "",
+        email: "",
+        selectedService: "",
+        comment: ""
+      })
+      setIsSubmitted(false)
+    }, 7000)
   }
 
    return (

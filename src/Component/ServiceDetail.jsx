@@ -1742,54 +1742,48 @@ function PrashnaKundaliDetail({ details, navigate }) {
       return;
     }
 
-    setLoading(true);
+    // Instantly open the OTP modal so user experiences 0ms UI delay
+    setShowOtpModal(true);
+    setLoading(false);
     setServerError("");
 
+    // Trigger OTP sending in parallel
     try {
-      const otpRes = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
+      fetch(`${API_BASE_URL}/api/auth/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: formData.email, purpose: "prashna" })
+      }).catch((err) => {
+        console.warn("OTP dispatch notice:", err);
       });
-      const otpData = await otpRes.json();
-      if (!otpRes.ok) {
-        throw new Error(otpData.detail || "Failed to send verification code to your email.");
-      }
-      setShowOtpModal(true);
     } catch (err) {
-      setServerError(err.message || "Failed to initiate email verification.");
-    } finally {
-      setLoading(false);
+      console.warn("OTP dispatch exception:", err);
     }
   };
 
-  const executePrashnaSubmit = async (verificationToken) => {
+  const executePrashnaSubmit = (verificationToken) => {
     // 1. Immediately close OTP modal and display confirmation screen (zero waiting time)
     setShowOtpModal(false);
     setSubmitted(true);
     setServerError("");
 
-    // 2. Dispatch the Prashna inquiry in the background
-    try {
-      await fetch(`${API_BASE_URL}/api/prashna`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          location: formData.location,
-          question: formData.question,
-          verification_token: verificationToken,
-        }),
-      });
-    } catch (err) {
+    // 2. Dispatch the Prashna inquiry in the background asynchronously
+    fetch(`${API_BASE_URL}/api/prashna`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        location: formData.location,
+        question: formData.question,
+        verification_token: verificationToken,
+      }),
+    }).catch((err) => {
       console.error("Background Prashna dispatch error:", err);
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const pillars = [
