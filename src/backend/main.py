@@ -53,18 +53,53 @@ SCOPES = [
 import tempfile
 
 # ==========================================
-# ⚙️ REDIS & PERSISTENT MULTI-WORKER CACHE
+# ⚙️ UPSTASH SERVERLESS REDIS & CACHE ENGINE
 # ==========================================
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+UPSTASH_REDIS_REST_URL = os.getenv("UPSTASH_REDIS_REST_URL", "https://sound-poodle-83161.upstash.io").rstrip("/")
+UPSTASH_REDIS_REST_TOKEN = os.getenv("UPSTASH_REDIS_REST_TOKEN", "gQAAAAAAAUTZAAIgcDI4NjIwNjBhNzFhZGE0MWNmOTNjMjZlYWJiM2IwZTRkZA")
+REDIS_URL = os.getenv("REDIS_URL", "")
 redis_client = None
 
-if redis:
+if redis and REDIS_URL:
     try:
-        redis_client = redis.from_url(REDIS_URL, decode_responses=True)
+        redis_client = redis.from_url(REDIS_URL, decode_responses=True, socket_timeout=3)
         redis_client.ping()
-        print("✓ Successfully connected to External Redis server.")
+        print("✓ Successfully connected to standard TCP Redis server.")
     except Exception as e:
         redis_client = None
+
+
+def upstash_command(*args):
+    """Executes an arbitrary command via Upstash Serverless REST API."""
+    if not UPSTASH_REDIS_REST_URL or not UPSTASH_REDIS_REST_TOKEN:
+        return None
+    try:
+        import urllib.request, json
+        url = f"{UPSTASH_REDIS_REST_URL}"
+        payload = json.dumps(list(args)).encode('utf-8')
+        req = urllib.request.Request(
+            url,
+            data=payload,
+            headers={
+                "Authorization": f"Bearer {UPSTASH_REDIS_REST_TOKEN}",
+                "Content-Type": "application/json"
+            }
+        )
+        with urllib.request.urlopen(req, timeout=3) as response:
+            res_data = json.loads(response.read().decode('utf-8'))
+            return res_data.get("result")
+    except Exception:
+        return None
+
+
+# Test Upstash connection on initialization
+if UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN:
+    try:
+        ping_res = upstash_command("PING")
+        if ping_res == "PONG":
+            print("✓ Successfully connected to Upstash Serverless Redis (REST).")
+    except Exception:
+        pass
 
 # Shared SQLite Disk Cache in /tmp (guaranteed writable across all cloud workers & restarts)
 DB_CACHE_PATH = os.path.join(tempfile.gettempdir(), "astro_cache.db")
@@ -85,20 +120,23 @@ init_cache_db()
 def set_cache_key(key: str, value: str, ex_seconds: int):
     now = time.time()
     
-    # 1. External Redis
+    # 1. Upstash Serverless REST Redis
+    upstash_command("SET", key, str(value), "EX", ex_seconds)
+
+    # 2. Standard Redis (if configured)
     if redis_client:
         try:
             redis_client.set(key, value, ex=ex_seconds)
         except Exception:
             pass
 
-    # 2. In-Memory Local RAM
+    # 3. In-Memory Local RAM
     in_memory_store[key] = {
         "value": str(value),
         "expires_at": now + ex_seconds
     }
             
-    # 3. Shared Multi-Worker /tmp SQLite Store
+    # 4. Shared Multi-Worker /tmp SQLite Store
     try:
         conn = sqlite3.connect(DB_CACHE_PATH, timeout=10)
         c = conn.cursor()
@@ -112,7 +150,12 @@ def set_cache_key(key: str, value: str, ex_seconds: int):
 def get_cache_key(key: str) -> Optional[str]:
     now = time.time()
     
-    # 1. External Redis
+    # 1. Upstash Serverless REST Redis
+    up_val = upstash_command("GET", key)
+    if up_val is not None:
+        return str(up_val)
+
+    # 2. Standard Redis
     if redis_client:
         try:
             val = redis_client.get(key)
@@ -121,7 +164,7 @@ def get_cache_key(key: str) -> Optional[str]:
         except Exception:
             pass
             
-    # 2. Shared Multi-Worker /tmp SQLite Store
+    # 3. Shared Multi-Worker /tmp SQLite Store
     try:
         conn = sqlite3.connect(DB_CACHE_PATH, timeout=10)
         c = conn.cursor()
@@ -138,7 +181,7 @@ def get_cache_key(key: str) -> Optional[str]:
     except Exception as e:
         print(f"Cache get error: {e}")
 
-    # 3. In-Memory RAM Fallback
+    # 4. In-Memory RAM Fallback
     item = in_memory_store.get(key)
     if item:
         if now <= item.get("expires_at", 0):
@@ -149,11 +192,17 @@ def get_cache_key(key: str) -> Optional[str]:
     return None
 
 def delete_cache_key(key: str):
+    # 1. Upstash Serverless REST Redis
+    upstash_command("DEL", key)
+    
+    # 2. Standard Redis
     if redis_client:
         try:
             redis_client.delete(key)
         except Exception:
             pass
+            
+    # 3. Local RAM & SQLite
     in_memory_store.pop(key, None)
     try:
         conn = sqlite3.connect(DB_CACHE_PATH, timeout=10)
@@ -165,6 +214,14 @@ def delete_cache_key(key: str):
         pass
 
 def incr_rate_limit(key: str, window_seconds: int = 600) -> int:
+    # 1. Upstash Serverless REST Redis
+    up_val = upstash_command("INCR", key)
+    if up_val is not None:
+        if up_val == 1:
+            upstash_command("EXPIRE", key, window_seconds)
+        return int(up_val)
+
+    # 2. Standard Redis
     if redis_client:
         try:
             val = redis_client.incr(key)
@@ -173,6 +230,8 @@ def incr_rate_limit(key: str, window_seconds: int = 600) -> int:
             return val
         except Exception:
             pass
+            
+    # 3. SQLite disk fallback
     try:
         now = time.time()
         conn = sqlite3.connect(DB_CACHE_PATH, timeout=10)
