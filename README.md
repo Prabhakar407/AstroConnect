@@ -1,8 +1,6 @@
 # 🌌 AstroConnect - Astrologer Website & Booking Engine
 
-A modern, full-stack astrology consultation platform that combines an elegant React frontend with a powerful Python backend, designed to manage appointments, customer queries, and video consultations seamlessly.
-
-**Live Demo**: [https://astrologer-website-five.vercel.app](https://astrologer-website-five.vercel.app)
+A modern, full-stack astrology consultation platform that combines an elegant React frontend with a powerful Python backend, designed to manage appointments, customer queries, and video consultations.
 
 ---
 
@@ -115,7 +113,7 @@ The platform bridges the gap between traditional astrology services and modern d
 
 ```
 AstroConnect/
-├─�� src/                              # Frontend React Source Code
+├── src/                              # Frontend React Source Code
 │   ├── assets/                       # Images, logos, planet graphics
 │   ├── components/                   # UI Components
 │   │   ├── Navbar.jsx                # Navigation bar
@@ -441,7 +439,6 @@ When contributing to this project, follow the guidelines in `DEVELOPER_RULES.md`
 
 ## 📞 Support & Contact
 
-- **Website**: [https://astrologer-website-five.vercel.app](https://astrologer-website-five.vercel.app)
 - **Email**: astroadvicebyks@gmail.com
 - **GitHub Issues**: [Report bugs and request features](https://github.com/Prabhakar407/AstroConnect/issues)
 
