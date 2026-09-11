@@ -51,6 +51,7 @@ class HostingTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[3]
         config = json.loads((root / "vercel.json").read_text())
         self.assertEqual(config["framework"], "vite")
+        self.assertEqual(config["buildCommand"], "VITE_API_MODE=same-origin VITE_API_URL= npm run build")
         self.assertEqual(config["regions"], ["sin1"])
         self.assertEqual(config["rewrites"][0], {"source": "/api/:path*", "destination": "/api/index.py"})
         self.assertEqual(config["rewrites"][-1]["destination"], "/index.html")

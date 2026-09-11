@@ -2,13 +2,15 @@
 
 Start here when resuming work after a break or a context reset.
 
+Latest: preview access is public with user approval; Codex independently confirms server/database readiness. Found and fixed missing frontend connection in the source-controlled Vercel build command. Delivery/recovery/webhook secrets are still unconfigured on the preview. See [public-preview inquiry check](evidence/plan-001/2026-09-11-public-preview-inquiry-check.md), which supersedes earlier access/configuration blockers below.
+
 | Number | Plan | Status |
 | --- | --- | --- |
 | 1 | [Reliable Booking, Inquiries and Client Calendar — From Setup to Handover](PLAN-001-booking-inquiries-and-client-calendar.md) | Active; structured booking/quote/receipt/clock foundations tested. Permanent Neon schema and restricted pooled connection verified. Actual Vercel, email/identity, delivery/Meet, payments and release remain open; checkout is not implemented. |
 
 Plan 1 is the current execution checklist. Its **Resume here** section records the next step, known facts, user-only dependencies and proof boundaries. Update that section and its progress log after each meaningful slice of work, before handing back or changing sessions.
 
-Hosted follow-up: the user reports platform NOT_FOUND at both diagnostic endpoints on the successful PR preview. Removed the incompatible cleanUrls option from explicit file rewrites; four hosting tests pass. Publish the correction on the same draft PR and recheck the replacement preview before diagnosing database settings. Production-only settings do not automatically reach Preview. See [hosted readiness evidence](evidence/plan-001/2026-09-11-hosted-readiness-check.md). No merge, protection change or live provider operation.
+Hosted follow-up: user reports storage_ready=true on the correct redeployment, astrologer-website-kundan-singh-kvvgyzm2l-neura-flow1.vercel.app. Database readiness is now user-observed online; stop repeating configuration/casing questions. Next integration boundary: unauthenticated preview requests still redirect to Vercel login, while the apex /api/ready returns platform 404. The fixed-apex inquiry helper and Resend callbacks cannot yet reach the new API. Resolve hosted callback reachability with user authority before helper deployment or real sends. See [hosted readiness evidence](evidence/plan-001/2026-09-11-hosted-readiness-check.md). No merge, protection change or live provider operation.
 
 Latest checkpoint, 2026-09-11: monthly quota recovery, verified delivery observations and private inquiry views pass 165 Python tests and synthetic browser checks at three sizes. The user confirms Resend currently serves only this website; do not repeat that question. See [inquiry observations evidence](evidence/plan-001/2026-09-11-inquiry-observations.md).
 
