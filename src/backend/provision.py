@@ -31,8 +31,10 @@ PRIVILEGES = {
     "email_verifications": "SELECT, INSERT, UPDATE, DELETE",
     "rate_limits": "SELECT, INSERT, UPDATE, DELETE",
     "admin_identity": "SELECT, INSERT",
-    "admin_sessions": "SELECT, INSERT, DELETE",
+    "admin_sessions": "SELECT, INSERT, UPDATE, DELETE",
     "admin_login_challenges": "SELECT, INSERT, DELETE",
+    "google_connection": "SELECT, INSERT, UPDATE",
+    "google_authorizations": "SELECT, INSERT, DELETE",
 }
 
 

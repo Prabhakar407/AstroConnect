@@ -56,6 +56,8 @@ No automatic `.env` discovery occurs. Put secrets in the host's protected config
 | `ASTRO_CLOUDFLARE_QUEUE_ID` | Permanent `astro-advice-inquiries` queue ID; server Config. |
 | `ASTRO_CLOUDFLARE_QUEUE_TOKEN` | Account-scoped Queues publication credential; Vercel Secret only. Not a Global API Key or a frontend setting. |
 | `ASTRO_GOOGLE_CLIENT_ID` | Google web sign-in client ID, bound to the intended website. Not a secret. Must belong to the approved project. |
+| `ASTRO_GOOGLE_CLIENT_SECRET` | Existing Google web client's secret, used only for server-side Calendar permission exchanges. |
+| `ASTRO_GOOGLE_TOKEN_KEY` | Stable Fernet encryption key for the saved Calendar refresh token. Server-only; preserve it across deployments. Replacing it requires re-encryption or client reconnection. Never prefix with VITE_. |
 | `ASTRO_GOOGLE_CLIENT_SECRET` | Preserve the same web client's newly created secret in Vercel's Secret storage for later Calendar authorization. Current identity-only code does not consume it; stored configuration is not Calendar connection proof. |
 | `VITE_API_MODE` | Explicit `same-origin` sends both public/private requests to the website's `/api`; then `VITE_API_URL` must be absent/empty. Default `explicit` requires a separate configured server origin. Blank settings keep design previews disconnected. |
 | `VITE_API_URL` | Only for explicit mode: HTTPS server origin with no path, credentials, query or fragment; loopback HTTP allowed for local tests. Never put a secret in a `VITE_` variable. |

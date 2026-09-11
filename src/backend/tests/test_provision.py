@@ -9,6 +9,11 @@ from src.backend.provision import PRIVILEGES, prepare, read_config
 
 
 class ProvisionTests(unittest.TestCase):
+    def test_google_callback_can_lock_session_and_cannot_delete_saved_connection(self):
+        self.assertIn('UPDATE', PRIVILEGES['admin_sessions'])
+        self.assertEqual(PRIVILEGES['google_authorizations'], 'SELECT, INSERT, DELETE')
+        self.assertNotIn('DELETE', PRIVILEGES['google_connection'])
+
     def test_housekeeping_tables_allow_row_locks_and_bounded_deletion(self):
         for table in ('rate_limits', 'email_challenges', 'email_verifications'):
             with self.subTest(table=table):

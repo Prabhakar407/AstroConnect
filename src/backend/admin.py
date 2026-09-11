@@ -186,4 +186,7 @@ def admin_router(settings, store, identity_verifier=None):
         store.cancel(booking_id, actor)
         return {"success": True, "delivery_status": "pending", "refund_issued": False}
 
+    from .google_connection import add_routes
+    add_routes(router, settings, store, session, verify_identity)
+
     return router

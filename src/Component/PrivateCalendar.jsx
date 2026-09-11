@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import StudioInquiries from './StudioInquiries';
+import StudioGoogleConnection from './StudioGoogleConnection';
 import {
   CalendarDays,
   ChevronLeft,
@@ -263,6 +264,7 @@ export default function PrivateCalendar() {
           {[['calendar', 'Calendar'], ['inquiries', 'Inquiries'], ['attention', 'Needs attention']].map(([key, label]) =>
             <button key={key} aria-pressed={view === key} disabled={busy} onClick={() => { setView(key); setError(''); setNotice(''); }}>{label}</button>)}
         </nav>}
+        {user && view === 'calendar' && <StudioGoogleConnection user={user} onSessionExpired={sessionExpired} />}
         {error && (
           <p className="studio-calendar__error" role="alert">
             {error}

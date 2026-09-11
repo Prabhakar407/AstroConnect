@@ -39,6 +39,8 @@ class Settings:
     cloudflare_queue_id: str = ""
     cloudflare_queue_token: str = field(default="", repr=False)
     google_client_id: str = ""
+    google_client_secret: str = field(default="", repr=False)
+    google_token_key: str = field(default="", repr=False)
     origins: tuple = ("http://localhost:5173", "http://127.0.0.1:5173")
 
     @classmethod
@@ -55,6 +57,8 @@ class Settings:
         return cls(database_url=os.getenv("ASTRO_DATABASE_URL", ""), otp_secret=os.getenv("ASTRO_OTP_SECRET", ""),
                    resend_key=os.getenv("ASTRO_RESEND_API_KEY", ""), sender=os.getenv("ASTRO_EMAIL_FROM", ""), origins=origins,
                    google_client_id=os.getenv("ASTRO_GOOGLE_CLIENT_ID", ""),
+                   google_client_secret=os.getenv("ASTRO_GOOGLE_CLIENT_SECRET", ""),
+                   google_token_key=os.getenv("ASTRO_GOOGLE_TOKEN_KEY", ""),
                    resend_webhook_secret=os.getenv("ASTRO_RESEND_WEBHOOK_SECRET", ""),
                    delivery_secret=os.getenv("ASTRO_DELIVERY_SECRET", ""),
                    recovery_secret=os.getenv("ASTRO_RECOVERY_SECRET", ""),
