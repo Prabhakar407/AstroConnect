@@ -20,6 +20,10 @@ No completed checkout is claimed. Google Calendar/Meet, Razorpay, backups, indep
 
 ## Publication boundaries
 
+Published 2026-09-11: commit aeb98ea57c35d70ac839bf797ca8e13cf7670be8, draft PR https://github.com/Prabhakar407/AstroConnect/pull/1. Verified OPEN/draft, base main unchanged. Vercel automatically attempted preview dpl_6Q414BuMNkqyfHXWw9aavg3PFgvR and reported FAILURE. GitHub exposes only a generic deployment failure; unauthenticated detailed-log request returns 403. No unrelated Vercel credentials used. User must provide the relevant Build Logs error text from the website account before a targeted fix; no speculative configuration changes. This publication-result note is local pending the next reviewed fix commit, avoiding another automatic preview attempt solely for bookkeeping.
+
+Fresh publication checks: build passed in 6.28 seconds, all 23 JavaScript tests passed, lint exited successfully with warnings. Staged common credential-pattern scan: 146 selected files, no matches. Authored source whitespace check passes; vendor font licences retain their original line endings/trailing spaces. No archive/capture was deleted.
+
 Connected account neuraflowindia now has WRITE access, verified 2026-09-11. origin/main matched the original local base before publication. Publish only design/page-by-page and open a draft PR against main; do not force push, merge, alter the production branch or call Vercel deployment commands. Git integration may independently create a branch preview. That is not the production website or proof of backend readiness. Do not submit forms or invoke real providers on any preview without the required configuration/recipient review.
 
 Local archives, credentials, generated screenshots, dependencies and build outputs are excluded from the commit. Existing design metadata and the scoped surface brief are retained. No local artifacts are deleted.
