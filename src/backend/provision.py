@@ -26,7 +26,9 @@ PRIVILEGES = {
     "verification_emails": "SELECT, INSERT",
     "delivery_jobs": "SELECT, INSERT, UPDATE",
     "email_challenges": "SELECT, INSERT, UPDATE, DELETE",
-    "email_verifications": "SELECT, INSERT, DELETE",
+    # PostgreSQL requires UPDATE privilege for housekeeping's FOR UPDATE lock,
+    # even though the final operation only deletes expired verification grants.
+    "email_verifications": "SELECT, INSERT, UPDATE, DELETE",
     "rate_limits": "SELECT, INSERT, UPDATE, DELETE",
     "admin_identity": "SELECT, INSERT",
     "admin_sessions": "SELECT, INSERT, DELETE",

@@ -5,10 +5,19 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from src.backend.provision import prepare, read_config
+from src.backend.provision import PRIVILEGES, prepare, read_config
 
 
 class ProvisionTests(unittest.TestCase):
+    def test_housekeeping_tables_allow_row_locks_and_bounded_deletion(self):
+        for table in ('rate_limits', 'email_challenges', 'email_verifications'):
+            with self.subTest(table=table):
+                permissions = set(PRIVILEGES[table].split(', '))
+                self.assertTrue({'SELECT', 'UPDATE', 'DELETE'} <= permissions)
+        # Housekeeping must not acquire deletion rights over business history.
+        for table in ('bookings', 'inquiries', 'payments', 'delivery_jobs'):
+            self.assertNotIn('DELETE', PRIVILEGES[table])
+
     def test_private_operator_file_preserves_connection_equals(self):
         with tempfile.TemporaryDirectory() as folder:
             filename = Path(folder) / 'operator.env'
