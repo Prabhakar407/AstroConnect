@@ -1,0 +1,134 @@
+/* About refinements are landscape-only. Keep the global root size, shared chrome
+   and the original Outfit hero title intact; the other homepage fonts are local assets. */
+.about-page .about-expertise-focus { display: none; }
+@media (min-width: 1024px) and (orientation: landscape) {
+  .about-page {
+    --font-sans: "Source Sans 3", "Segoe UI", sans-serif;
+    --font-serif: "Source Serif 4", Georgia, serif;
+    --about-body: clamp(17px, 8px + 0.625vw, 24px);
+    --about-small: clamp(16px, 9.6px + 0.5vw, 22px);
+    --about-heading: clamp(30px, 21.6px + 1.2vw, 52px);
+    --about-card-title: clamp(20px, 13px + 0.5vw, 26px);
+    --about-gap: clamp(16px, 1.5vw, 32px);
+    --about-gutter: clamp(24px, 4vw, 72px);
+    --about-header-height: 85px;
+    --about-viewport: calc(100svh - var(--about-header-height));
+    --about-proof-half: 50px;
+    font-family: var(--font-sans);
+    font-size: var(--about-body);
+    line-height: 1.55;
+    overflow-x: clip;
+  }
+
+  .about-page .about-container { width: 100%; max-width: 2400px; margin-inline: auto; padding-inline: var(--about-gutter); }
+  .about-page .about-hero-title { font-family: "Outfit", sans-serif; }
+  .about-page p { font-size: var(--about-body); line-height: 1.55; font-weight: 400; letter-spacing: 0; }
+  .about-page :is(a, button):focus-visible { outline: 3px solid #b3822e; outline-offset: 4px; }
+  .about-page :is(.about-hero, .about-expertise-card) :is(a, button):focus-visible { outline-color: #f0ce78; }
+
+  /* A complete introductory scene, with the proof tray half over the next section. */
+  .about-page .about-hero { min-height: calc(var(--about-viewport) - var(--about-proof-half)); }
+  .about-page .about-hero-shell { flex: 1; }
+  .about-page .about-hero-section { flex: 1; padding-block: 40px calc(var(--about-proof-half) + 40px); }
+  .about-page .about-hero-layout { gap: clamp(32px, 4vw, 80px); }
+  .about-page .about-hero-copy { gap: var(--about-gap); min-width: 0; }
+  .about-page .about-hero-heading { gap: 12px; }
+  .about-page .about-hero-heading > * { margin-block: 0; }
+  .about-page .about-hero-label { font-size: var(--about-small); line-height: 1.4; letter-spacing: 0.06em; padding: 4px 12px; }
+  .about-page .about-hero-description { max-width: 70ch; padding: 2px 0 2px 16px; }
+  .about-page .about-bio-points { padding: clamp(16px, 1.5vw, 28px); gap: 16px 24px; }
+  .about-page .about-bio-points > div { gap: 12px; min-width: 0; }
+  .about-page .about-bio-points > div > span { font-size: 14px; margin-top: 4px; }
+  .about-page .about-bio-points > div > div > span { font-family: var(--font-sans); font-size: var(--about-small); line-height: 1.4; }
+  .about-page .about-bio-points > div > div > span:first-child { font-weight: 600; margin-bottom: 2px; }
+  .about-page .about-quote { font-size: var(--about-body); line-height: 1.5; padding: clamp(16px, 1.5vw, 28px); }
+  .about-page .about-hero-actions { gap: 12px; padding-top: 0; }
+  .about-page .about-hero-actions a { min-height: 48px; padding: 12px 20px; font: 600 var(--about-body)/1.35 var(--font-sans); border-radius: 8px; }
+
+  .about-page .about-proof-band { height: 0; }
+  .about-page .about-proof {
+    position: absolute; top: 0; left: 50%;
+    width: calc(100% - 2 * var(--about-gutter)); max-width: clamp(736px, 48vw, 1056px);
+    margin: 0; padding: 0;
+    translate: none; transform: translate(-50%, -50%);
+  }
+  .about-page .about-proof-grid { background: #d9ccaa; border-color: #bca777; border-radius: 24px; padding: clamp(8px, 0.8vw, 14px); gap: clamp(8px, 1vw, 16px); }
+  .about-page .about-proof-grid > div:not(.absolute) { padding: 12px; gap: 12px; border-radius: 12px; }
+  .about-page .about-proof-grid > div:not(.absolute) > div:first-child { width: 36px; height: 36px; }
+  .about-page .about-proof-grid span { font-family: var(--font-sans); white-space: normal; letter-spacing: 0; text-transform: none; }
+  .about-page .about-proof-grid span:first-child { font-size: var(--about-small); font-weight: 600; line-height: 1.4; }
+  .about-page .about-proof-grid span:last-child { font-size: clamp(18px, 1.2vw, 30px); font-weight: 600; line-height: 1.3; margin-top: 4px; }
+
+  /* Six short landscape cards: image beside the title and actions, not a tall stack. */
+  .about-page .about-expertise { min-height: var(--about-viewport); margin-top: 0; padding: 0; justify-content: center; }
+  .about-page .about-expertise-shell { overflow: visible; }
+  .about-page .about-expertise-content { padding-block: calc(var(--about-proof-half) + 32px) 40px; }
+  .about-page .about-section-heading { max-width: none; width: 100%; padding: 0; margin: 0 0 clamp(24px, 2.5vw, 48px); }
+  .about-page .about-section-label { font: 600 var(--about-small)/1.4 var(--font-sans); color: #866039; letter-spacing: 0.08em; margin-bottom: 12px; }
+  .about-page .about-section-title { font: 500 var(--about-heading)/1.15 var(--font-serif); letter-spacing: -0.02em; margin: 0; white-space: normal; text-wrap: balance; }
+  .about-page .about-section-heading > div { margin-block: 12px; }
+  .about-page .about-section-heading p { margin: 0; color: #574c59; }
+  .about-page .about-expertise-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: none; gap: var(--about-gap); padding: 0; }
+  .about-page .about-expertise-item { width: 100%; max-width: none; min-width: 0; }
+  .about-page .about-expertise-card {
+    display: grid; grid-template-columns: clamp(104px, 9vw, 224px) minmax(0, 1fr); grid-template-rows: auto 1fr auto;
+    align-items: center; gap: 12px 16px; height: 100%; padding: clamp(16px, 1.4vw, 28px); border-radius: 16px;
+    box-shadow: 0 14px 28px -16px rgb(24 17 34 / 35%);
+    transition: border-color 240ms ease, box-shadow 240ms ease;
+  }
+  .about-page .about-expertise-card h3 { grid-column: 2; grid-row: 1; align-self: start; margin: 0; font: 600 var(--about-card-title)/1.3 var(--font-sans); letter-spacing: 0; text-transform: none; text-align: left; }
+  .about-page .about-expertise-focus { display: flex; flex-direction: column; justify-content: center; gap: 6px; grid-column: 2; grid-row: 2; margin: 0; padding: 0; list-style: none; color: #d8cfdb; font: 400 var(--about-small)/1.35 var(--font-sans); }
+  .about-page .about-expertise-focus li { display: flex; align-items: center; gap: 8px; }
+  .about-page .about-expertise-focus svg { width: 18px; height: 18px; flex-shrink: 0; color: #d3af54; }
+  .about-page .about-expertise-image { grid-column: 1; grid-row: 1 / 4; aspect-ratio: 1; margin: 0; border-radius: 10px; }
+  .about-page .about-expertise-image img { object-fit: contain; }
+  .about-page .about-expertise-actions { grid-column: 2; grid-row: 3; align-self: end; margin: 0; gap: 8px; }
+  .about-page .about-expertise-actions a { flex: 1; min-width: 0; min-height: 44px; padding: 8px; font: 600 var(--about-small)/1.3 var(--font-sans); white-space: nowrap; border-radius: 8px; }
+
+  /* Keep the existing certificate slide viewer, scaled as a centered viewport scene. */
+  .about-page .about-certificates { min-height: var(--about-viewport); margin-top: 0; padding-block: clamp(32px, 4vh, 64px); align-items: center; }
+  .about-page .about-certificates-viewer { max-width: clamp(760px, 55vw, 1200px); padding: 0; }
+  .about-page .about-certificate-slot { min-height: 0; }
+  .about-page .about-certificate-card { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr); padding: clamp(24px, 2vw, 40px); gap: clamp(24px, 2.5vw, 48px); border-radius: 24px; }
+  .about-page .about-certificate-image { width: 100%; height: clamp(280px, 23vw, 460px); border-radius: 12px; }
+  .about-page .about-certificate-image > span:last-child { font: 500 var(--about-small)/1.4 var(--font-sans); color: #d8cfeb; letter-spacing: 0.05em; }
+  .about-page .about-certificate-copy { min-width: 0; max-width: none; padding: 0; }
+  .about-page .about-certificate-copy > span { font: 600 clamp(14px, 8px + 0.5vw, 20px)/1.4 var(--font-sans); letter-spacing: 0.04em; padding: 6px 12px; margin-bottom: 16px; }
+  .about-page .about-certificate-copy h3 { font: 500 clamp(24px, 16px + 0.65vw, 34px)/1.25 var(--font-serif); letter-spacing: -0.015em; margin-bottom: 16px; }
+  .about-page .about-certificate-copy p { max-width: 45ch; }
+  .about-page .about-certificate-dots { margin-top: 20px; gap: 4px; }
+  .about-page .about-certificate-dots button { width: 44px; height: 44px; scale: 1; box-shadow: none; background: transparent; display: grid; place-items: center; }
+  .about-page .about-certificate-dots button::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #cabb8f; }
+  .about-page .about-certificate-dots button[aria-pressed="true"]::before { background: #a67c25; }
+}
+
+@media (min-width: 1024px) and (max-height: 900px) and (orientation: landscape) {
+  .about-page .about-hero-section { padding-block: 20px calc(var(--about-proof-half) + 20px); }
+  .about-page .about-hero-copy { gap: 12px; }
+  .about-page .about-hero-heading { gap: 8px; }
+  .about-page .about-bio-points { padding: 12px; gap: 12px 24px; }
+  .about-page .about-quote { padding: 8px 12px; }
+}
+
+/* Laptop hero only: 0.5pt less supporting prose, 1.5pt less secondary copy.
+   Do not change shared type tokens: the protected title, actions, proof tray,
+   desktop and portrait/mobile layouts must keep their existing sizes. */
+@media (min-width: 1024px) and (max-width: 1599px) and (orientation: landscape) {
+  .about-page .about-hero-description { font-size: calc(var(--about-body) - 0.5pt); }
+  .about-page .about-hero-label,
+  .about-page .about-bio-points > div > div > span { font-size: calc(var(--about-small) - 1.5pt); }
+  .about-page .about-quote { font-size: calc(var(--about-body) - 1.5pt); }
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) and (orientation: landscape) {
+  .about-page .about-expertise-card { grid-template-columns: 88px minmax(0, 1fr); grid-template-rows: auto 1fr auto; gap: 12px; }
+  .about-page .about-expertise-card h3 { align-self: start; }
+  .about-page .about-expertise-image { grid-row: 1 / 3; }
+  .about-page .about-expertise-actions { grid-column: 1 / -1; }
+}
+
+/* Preserve the incumbent portrait-tablet tray offset without the legacy utility
+   that would otherwise add a second translation to the landscape positioning. */
+@media (min-width: 1024px) and (orientation: portrait) {
+  .about-page .about-proof { translate: 0 -50%; }
+}

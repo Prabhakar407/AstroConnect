@@ -1,0 +1,65 @@
+/* Shared footer refinements requested during the homepage review. */
+.site-footer {
+  --footer-body: clamp(1rem, 0.65rem + 0.35vw, 1.25rem);
+  font-size: var(--footer-body);
+  line-height: 1.6;
+}
+
+.site-footer .footer-container {
+  width: 100%;
+  max-width: 2400px;
+  margin-inline: auto;
+  padding-inline: clamp(1.5rem, 4vw, 4.5rem);
+}
+
+.site-footer .footer-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+}
+
+.site-footer .footer-grid > * { min-width: 0; }
+.site-footer .footer-grid :is(p, li, a, h4) { font-size: var(--footer-body); line-height: 1.6; }
+.site-footer .footer-brand p { max-width: 30ch; }
+.site-footer .footer-brand-eyebrow { font-size: 0.75rem; }
+.site-footer .footer-email { overflow-wrap: anywhere; }
+.site-footer .footer-contact-icon { width: 24px; height: 24px; flex: 0 0 24px; }
+.site-footer .footer-schedule { display: grid; gap: 0.25rem; }
+.site-footer .footer-schedule > span { white-space: nowrap; }
+.site-footer .footer-whatsapp-icon { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.site-footer .footer-whatsapp-icon img { width: 34px; height: 34px; max-width: none; flex: 0 0 34px; object-fit: contain; }
+.site-footer .footer-bottom,
+.site-footer .footer-bottom button { font-size: 0.875rem; line-height: 1.5; }
+.site-footer .footer-bottom,
+.site-footer .footer-bottom button {
+  color: #e4c478;
+  text-shadow: 0 0 8px rgb(211 175 84 / 24%);
+}
+.site-footer .footer-bottom button:is(:hover, :focus-visible) {
+  color: #ffe6a2;
+  text-shadow: 0 0 10px rgb(211 175 84 / 40%);
+}
+.site-footer :is(a, button):focus-visible { outline: 2px solid #f0ce78; outline-offset: 4px; }
+
+@media (min-width: 640px) {
+  .site-footer .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 768px) {
+  .site-footer .footer-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1200px) {
+  .site-footer .footer-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.7fr) minmax(0, 1fr) minmax(14rem, 1.25fr) minmax(10.5rem, 1fr) minmax(0, 0.55fr);
+    gap: clamp(1.25rem, 2vw, 3rem);
+  }
+  .site-footer .footer-art > div { width: min(100%, 8rem); height: auto; aspect-ratio: 1; }
+}
+
+@media (min-width: 1200px) and (max-width: 1599px) {
+  .site-footer .footer-brand > div > img { width: 64px; height: 64px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-footer [class*="animate-"] { animation: none !important; }
+}

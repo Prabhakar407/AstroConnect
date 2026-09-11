@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, ArrowRight, Home, Sofa, Bed, Utensils, Bath, Briefcase, Heart, RefreshCw, Globe, User, BookOpen, Compass, Send, Phone, MapPin, MessageSquare, Mail } from 'lucide-react'
 import EmailOtpModal from './EmailOtpModal'
+import NameChangeService from './NameChangeService'
+import { publicServiceById } from '../data/publicServices'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com"
+import { sendVerification, submitInquiry } from '../lib/formApi'
 
 import sunIcon from '../assets/planets/sun.webp'
 import moonIcon from '../assets/planets/moon.webp'
@@ -57,13 +59,12 @@ const serviceDetails = {
     title: 'Vedic Astrology (Janam Kundli)',
     subtitle: 'Celestial Map of Your Life\'s Journey',
     image: vedicAstrologyImg,
-    price: '₹2,100',
-    duration: '30 min',
+    price: publicServiceById['vedic-astrology'].price,
     desc: 'Vedic Astrology is an ancient science that maps the exact positions of stars and planets at the time of your birth to read your life\'s blueprint. Through rigorous mathematics and classical scriptures, this reading decodes your natural strengths, karmic challenges, and the optimal timing for critical life choices.',
     process: [
       'Submit exact birth details (date, time, and city of birth).',
       'Calculations of planetary positions, Dasha cycles, and divisional charts.',
-      'A 60-minute interactive live video/audio consultation session.',
+      'An interactive live video/audio consultation session.',
       'Final customized remedial report detailing Mantras, Vratas, and Gemstone suggestions.'
     ],
     benefits: [
@@ -87,11 +88,10 @@ const serviceDetails = {
     }
   },
   'numerology': {
-    title: 'Numerology Reading',
+    title: 'General Numerology',
     subtitle: 'Aligning Your Personal Vibrations',
     image: numerologyImg,
-    price: '₹1,100',
-    duration: '30 min',
+    price: publicServiceById.numerology.price,
     desc: 'Numbers are the fundamental frequencies of the universe. Numerology decodes the vibration of your date of birth and name spelling. By aligning these numbers, you can open doors to wealth, improve relationships, and remove hidden blockages from your daily path.',
     process: [
       'Provide current full name, signature details, and birth date.',
@@ -123,8 +123,7 @@ const serviceDetails = {
     title: 'Vastu Consultation',
     subtitle: 'Harmonizing Elements in Your Living Space',
     image: vastuConsultationImg,
-    price: '₹5,100',
-    duration: '30 min',
+    price: publicServiceById.vastu.price,
     desc: 'Vastu Shastra is the ancient Indian science of architecture and spatial harmony. Every building has energy fields. By aligning rooms, entrances, and colors with elemental forces (Water, Fire, Earth, Space, Air), Vastu attracts positive energy, prosperity, and mental peace.',
     process: [
       'Provide layout blueprint or digital floor plan of the residential/commercial property.',
@@ -156,8 +155,7 @@ const serviceDetails = {
     title: 'Laal Kitaab Remedies',
     subtitle: 'Simple & Practical Karmic Antidotes',
     image: laalKitaabImg,
-    price: '₹1,100',
-    duration: '30 min',
+    price: publicServiceById['laal-kitaab'].price,
     desc: 'Laal Kitaab is a unique branch of Vedic astrology famous for its simple, practical, and highly direct remedial measures. Instead of costly rituals or complex pujas, Laal Kitaab focuses on daily habit adjustments, food charity, and metal placements to ease planetary debts.',
     process: [
       'Chart analysis specifically focused on planetary debts (Rin).',
@@ -189,8 +187,7 @@ const serviceDetails = {
     title: 'Prashna Kundali (Horary Astrology)',
     subtitle: 'Real-time Answers to Stagnant Questions',
     image: prashnaKundliImg,
-    price: '₹1,100',
-    duration: '30 min',
+    price: publicServiceById['prashna-kundali'].price + ' per question',
     desc: 'Horary astrology is used when exact birth details are unavailable, or when a quick answer is needed for a single, pressing question. The chart is cast for the exact second you ask the question, giving incredibly precise outcomes.',
     process: [
       'Formulate a single, sincere, and direct question in mind.',
@@ -251,6 +248,8 @@ export default function ServiceDetail() {
     }
   }, [serviceId]);
 
+  if (serviceId === 'name-change') return <NameChangeService />
+
   if (!details) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#FDFCF5] px-6 text-[#181122]">
@@ -300,11 +299,12 @@ export default function ServiceDetail() {
               
               <div className="space-y-1 text-left">
                 <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#D3AF54] uppercase font-sans block">
-                  ✦ VEDIC NUMEROLOGY ✦
+                  ✦ GENERAL NUMEROLOGY ✦
                 </span>
                 <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans font-medium text-left">
                   Unlock the hidden meanings in numbers. Discover how the vibrations of numbers influence your personality, destiny, and life path.
                 </p>
+                <p className="text-[#D3AF54] font-semibold text-base">{details.price}</p>
               </div>
 
               <div className="pt-1 text-left">
@@ -1521,10 +1521,6 @@ export default function ServiceDetail() {
 
           <div className="flex flex-wrap items-center gap-4 border-y border-white/5 py-4">
             <div className="flex items-center gap-2">
-              <Clock size={16} className="text-[#D3AF54]" />
-              <span className="text-xs text-[#D8CFEB] font-semibold">{details.duration} Duration</span>
-            </div>
-            <div className="flex items-center gap-2">
               <Gem size={16} className="text-[#D3AF54]" />
               <span className="text-xs font-bold text-[#D3AF54] bg-white/5 border border-[#D3AF54]/25 px-3 py-1 rounded-full">
                 {details.price}
@@ -1663,6 +1659,7 @@ export default function ServiceDetail() {
 
 
 function PrashnaKundaliDetail({ details, navigate }) {
+  const inquiryRequest = useRef(null);
   const [hoveredIdx, setHoveredIdx] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -1742,48 +1739,44 @@ function PrashnaKundaliDetail({ details, navigate }) {
       return;
     }
 
-    // Instantly open the OTP modal so user experiences 0ms UI delay
-    setShowOtpModal(true);
-    setLoading(false);
+    // Only show verification after the code request is accepted.
+    if (loading) return;
+    setLoading(true);
     setServerError("");
 
-    // Trigger OTP sending in parallel
+    // Surface delivery failures without clearing the visitor's details.
     try {
-      fetch(`${API_BASE_URL}/api/auth/send-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email, purpose: "prashna" })
-      }).catch((err) => {
-        console.warn("OTP dispatch notice:", err);
-      });
+      await sendVerification(formData.email, 'prashna');
+      setShowOtpModal(true);
     } catch (err) {
-      console.warn("OTP dispatch exception:", err);
+      setServerError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const executePrashnaSubmit = (verificationToken) => {
-    // 1. Immediately close OTP modal and display confirmation screen (zero waiting time)
+  const executePrashnaSubmit = async (verificationToken) => {
+    // Wait for accepted storage, not merely successful email verification.
     setShowOtpModal(false);
-    setSubmitted(true);
+    setLoading(true);
     setServerError("");
 
-    // 2. Dispatch the Prashna inquiry in the background asynchronously
-    fetch(`${API_BASE_URL}/api/prashna`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    // Failed submissions remain visible and can be retried safely.
+    try {
+      await submitInquiry('/api/prashna', {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
         location: formData.location,
         question: formData.question,
         verification_token: verificationToken,
-      }),
-    }).catch((err) => {
-      console.error("Background Prashna dispatch error:", err);
-    });
+      }, inquiryRequest);
+      setSubmitted(true);
+    } catch (err) {
+      setServerError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const pillars = [
@@ -1903,6 +1896,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
 
           {/* Scroll Button */}
           <div className="pt-2">
+            <p className="text-[#76561d] font-semibold text-base mb-4">{details.price}</p>
             <button 
               onClick={() => document.getElementById('questionForm')?.scrollIntoView({ behavior: 'smooth' })}
               className="inline-flex items-center gap-2.5 bg-[#F1E4C3] hover:bg-[#EAD18D] text-[#181122] font-bold px-8 py-3.5 rounded-xl border border-[#D3AF54]/30 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-xs sm:text-sm uppercase tracking-wider cursor-pointer font-sans"
@@ -2029,12 +2023,12 @@ function PrashnaKundaliDetail({ details, navigate }) {
               </div>
               <h3 className="font-serif font-bold text-xl text-[#FDFCF5]">Question Submitted Successfully!</h3>
               <p className="text-xs text-[#D8CFEB] max-w-md mx-auto leading-relaxed">
-                Thank you, {formData.name}. Your Prashna chart has been cast for this exact location and time. We will reach out to you within 24 hours with your horary reading.
+                Thank you, {formData.name}. Your question has been saved for review. This inquiry does not book or pay for a consultation. For anything urgent, please call +91 85277 90801.
               </p>
               <button 
                 onClick={() => {
                   setSubmitted(false);
-                  setFormData({ name: '', phone: '', location: '', question: '' });
+                  setFormData({ name: '', email: '', phone: '', location: '', question: '' });
                   setAttemptedSubmit(false);
                   setServerError("");
                 }}
@@ -2057,7 +2051,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
+                  <label htmlFor="prashna-name" className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
                     Full Name <span className="text-[#D3AF54]">*</span>
                   </label>
                   <div className="relative">
@@ -2066,6 +2060,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
                       type="text" 
                       required
                       placeholder="e.g. John Doe"
+                      id="prashna-name" name="name" autoComplete="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full bg-[#241B33] text-[#FDFCF5] border border-white/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition placeholder-white/40 font-sans"
@@ -2074,7 +2069,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
+                  <label htmlFor="prashna-email" className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
                     Email Address <span className="text-[#D3AF54]">*</span>
                   </label>
                   <div className="relative">
@@ -2083,6 +2078,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
                       type="email" 
                       required
                       placeholder="e.g. john@example.com"
+                      id="prashna-email" name="email" autoComplete="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full bg-[#241B33] text-[#FDFCF5] border border-white/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition placeholder-white/40 font-sans"
@@ -2091,7 +2087,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
+                  <label htmlFor="prashna-phone" className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
                     Mobile Number <span className="text-[#D3AF54]">*</span>
                   </label>
                   <div className="relative">
@@ -2100,6 +2096,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
                       type="tel" 
                       required
                       placeholder="Mobile Number (e.g. 9876543210)"
+                      id="prashna-phone" name="phone" autoComplete="tel"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       className="w-full bg-[#241B33] text-[#FDFCF5] border border-white/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition placeholder-white/40 font-sans"
@@ -2108,7 +2105,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
+                  <label htmlFor="prashna-location" className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
                     Current Location (City, Country) <span className="text-[#D3AF54]">*</span>
                   </label>
                   <div className="relative">
@@ -2117,6 +2114,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
                       type="text" 
                       required
                       placeholder="e.g. New Delhi, India"
+                      id="prashna-location" name="location"
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                       className="w-full bg-[#241B33] text-[#FDFCF5] border border-white/10 rounded-xl pl-9 pr-3.5 py-2.5 text-xs sm:text-sm focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition placeholder-white/40 font-sans"
@@ -2126,12 +2124,13 @@ function PrashnaKundaliDetail({ details, navigate }) {
               </div>
 
               <div className="space-y-1">
-                <label className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
+                <label htmlFor="prashna-question" className="block text-[11px] font-bold text-[#D3AF54] uppercase tracking-wider">
                   Your Specific Question <span className="text-[#D3AF54]">*</span>
                 </label>
                 <textarea 
                   required
                   placeholder="e.g. Will my visa application be approved this month?"
+                  id="prashna-question" name="question"
                   rows={3}
                   value={formData.question}
                   onChange={(e) => setFormData({ ...formData, question: e.target.value })}

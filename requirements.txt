@@ -1,0 +1,3 @@
+# Native Python function build. Never install test/legacy tooling into the runtime.
+-c src/backend/requirements-tested.lock
+-r src/backend/requirements.txt

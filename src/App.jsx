@@ -9,6 +9,7 @@ import Service from './Component/Service'
 import Testimonial from './Component/Testimonial'
 import Contact from './Component/Contact'
 import Appointment_Booking from './Component/Appointment_Booking'
+import PrivateCalendar from './Component/PrivateCalendar'
 import Footer from './Component/Footer'
 import './App.css'
 
@@ -31,12 +32,6 @@ function ScrollToTop() {
  * Root component that defines the routing layout and links components.
  */
 function App() {
-  // Pre-warm backend container on mount so there is zero cold-start delay for forms
-  useEffect(() => {
-    const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com";
-    fetch(`${API_BASE_URL}/`, { method: "GET", mode: "cors" }).catch(() => {});
-  }, []);
-
   return (
     <Router>
       <ScrollToTop />
@@ -56,6 +51,7 @@ function App() {
             <Route path="/testimonials" element={<Testimonial />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/booking" element={<Appointment_Booking />} />
+            <Route path="/studio/calendar" element={<PrivateCalendar />} />
           </Routes>
         </main>
 

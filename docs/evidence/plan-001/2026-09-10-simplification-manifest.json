@@ -1,0 +1,100 @@
+{
+  "date": "2026-09-10",
+  "scope": "Local redundant-switch removal; no hosted/provider acceptance",
+  "pythonTests": {
+    "passed": 79,
+    "skipped": 0
+  },
+  "browser": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "passed": true,
+      "applicationErrors": 0,
+      "sameOrigin": true,
+      "checkoutDisabled": true
+    },
+    {
+      "viewport": {
+        "width": 2560,
+        "height": 1440
+      },
+      "passed": true,
+      "applicationErrors": 0,
+      "sameOrigin": true,
+      "checkoutDisabled": true
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "passed": true,
+      "applicationErrors": 0,
+      "sameOrigin": true,
+      "checkoutDisabled": true
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 650
+      },
+      "passed": true,
+      "applicationErrors": 0,
+      "sameOrigin": true,
+      "checkoutDisabled": true
+    }
+  ],
+  "source": [
+    {
+      "path": "src/backend/application.py",
+      "bytes": 9716,
+      "sha256": "c755352abb32ba3344135abf7ee205c323616a078f159bfed5c3082558de159f"
+    },
+    {
+      "path": "src/backend/admin.py",
+      "bytes": 8321,
+      "sha256": "291658fb48ac33f19e5d95c458873fcdaf5e5c1b3a86d15a7ef7043da1ea5798"
+    },
+    {
+      "path": "src/backend/tests/test_admin.py",
+      "bytes": 7697,
+      "sha256": "e3c1a7f70aac0abd77f97c46731058cbd5f84caa05263cdf79949579069c28c3"
+    },
+    {
+      "path": "src/backend/tests/test_preparation.py",
+      "bytes": 12002,
+      "sha256": "7861b78ad877fd8d077711715deb7ef33598a2964535ca883466fa2f92bd2f71"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".impeccable/plan-001-simplification-2026-09-10/same-origin-booking-1366.png",
+      "bytes": 310517,
+      "sha256": "2a632898606ac46f149619fcf4a63283fcf6cf8d4eaa5a725e0aab859452f981"
+    },
+    {
+      "path": ".impeccable/plan-001-simplification-2026-09-10/same-origin-booking-2560.png",
+      "bytes": 602669,
+      "sha256": "100564d8309c51802290902ea35719923b3673f59368c761083a1950d074155f"
+    },
+    {
+      "path": ".impeccable/plan-001-simplification-2026-09-10/same-origin-private-390.png",
+      "bytes": 160151,
+      "sha256": "f21b11c1a83c30b1ec618efa615704d8885402fa5bd09727c7d477f3a667a6a3"
+    },
+    {
+      "path": ".impeccable/plan-001-simplification-2026-09-10/hosting-browser-results.json",
+      "bytes": 706,
+      "sha256": "c7119b12389ce19fb9f099a1013c5736a433cb1075c803414fa360dea2abb5c1"
+    }
+  ],
+  "onlyChangedSourceSinceEarlierManifest": [
+    "src/backend/admin.py",
+    "src/backend/application.py",
+    "src/backend/tests/test_admin.py",
+    "src/backend/tests/test_preparation.py"
+  ]
+}

@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShieldCheck, Mail, RefreshCw, X, ArrowRight } from 'lucide-react'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com"
+import { requestJson, sendVerification } from '../lib/formApi'
 
 /**
  * EmailOtpModal Component
- * Luxury celestial modal for 6-digit Email OTP Verification powered by Resend & Redis.
+ * Six-digit, purpose-bound email verification. Success depends on the server response.
  */
 export default function EmailOtpModal({
   isOpen,
@@ -23,9 +23,31 @@ export default function EmailOtpModal({
   const [error, setError] = useState("")
   const [successMsg, setSuccessMsg] = useState("")
   const inputRefs = useRef([])
+  const verifyingRef = useRef(false)
+  const generation = useRef(0)
+  const dialogRef = useRef(null)
+
+  useEffect(() => {
+    if (!isOpen) return
+    const previousFocus = document.activeElement
+    const handleDialogKey = event => {
+      if (event.key === 'Escape') { event.preventDefault(); onClose(); return }
+      if (event.key !== 'Tab') return
+      const controls = Array.from(dialogRef.current?.querySelectorAll('button:not(:disabled), input:not(:disabled)') || [])
+      const first = controls[0], last = controls[controls.length - 1]
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus() }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus() }
+    }
+    document.addEventListener('keydown', handleDialogKey)
+    return () => { document.removeEventListener('keydown', handleDialogKey); if (previousFocus?.isConnected) previousFocus.focus() }
+  }, [isOpen, onClose])
 
   // Reset & start countdown when modal opens
   useEffect(() => {
+    generation.current += 1
+    verifyingRef.current = false
+    setVerifying(false)
+    setLoading(false)
     if (isOpen) {
       setOtp(["", "", "", "", "", ""])
       setError("")
@@ -34,11 +56,12 @@ export default function EmailOtpModal({
       setCanResend(false)
       
       // Auto-focus first input after animation
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         inputRefs.current[0]?.focus()
       }, 200)
+      return () => { clearTimeout(timer); generation.current += 1 }
     }
-  }, [isOpen, email])
+  }, [isOpen, email, purpose])
 
   // Countdown timer
   useEffect(() => {
@@ -90,22 +113,15 @@ export default function EmailOtpModal({
   }
 
   const handleResendOtp = async () => {
-    if (!canResend || loading) return
+    if (!canResend || loading || verifying) return
+    const requestGeneration = generation.current
     setLoading(true)
     setError("")
     setSuccessMsg("")
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/send-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, purpose })
-      })
-
-      const data = await response.json()
-      if (!response.ok) {
-        throw new Error(data.detail || "Failed to resend code.")
-      }
+      await sendVerification(email, purpose)
+      if (requestGeneration !== generation.current) return
 
       setSuccessMsg("A new verification code has been dispatched to your email.")
       setCountdown(60)
@@ -113,13 +129,11 @@ export default function EmailOtpModal({
       setOtp(["", "", "", "", "", ""])
       inputRefs.current[0]?.focus()
     } catch (err) {
-      setError(err.message || "Failed to resend code. Please try again.")
+      if (requestGeneration === generation.current) setError(err.message || "Failed to resend code. Please try again.")
     } finally {
-      setLoading(false)
+      if (requestGeneration === generation.current) setLoading(false)
     }
   }
-
-  const verifyingRef = useRef(false)
 
   const handleVerify = async (codeToVerify = null) => {
     if (verifyingRef.current) return
@@ -130,41 +144,37 @@ export default function EmailOtpModal({
     }
 
     verifyingRef.current = true
+    const requestGeneration = generation.current
     setVerifying(true)
     setError("")
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const data = await requestJson('/api/auth/verify-otp', {
           email: (email || "").trim().toLowerCase(),
           otp: (fullCode || "").trim(),
           purpose: (purpose || "verification").trim().toLowerCase()
-        })
       })
-
-      const data = await response.json()
-      if (!response.ok) {
-        throw new Error(data.detail || "Invalid or expired verification code.")
+      if (requestGeneration !== generation.current) return
+      if (data.success !== true || typeof data.verification_token !== 'string' || data.verification_token.length < 30) {
+        throw new Error('Email verification could not be confirmed. Please request a new code.')
       }
 
       setSuccessMsg("Email verified successfully!")
-      setTimeout(() => {
-        onVerified(data.verification_token)
-      }, 100)
+      await onVerified(data.verification_token)
     } catch (err) {
-      setError(err.message || "Invalid or expired code. Please try again.")
+      if (requestGeneration === generation.current) setError(err.message || "Invalid or expired code. Please try again.")
     } finally {
-      verifyingRef.current = false
-      setVerifying(false)
+      if (requestGeneration === generation.current) {
+        verifyingRef.current = false
+        setVerifying(false)
+      }
     }
   }
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Verify your email" className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -188,6 +198,8 @@ export default function EmailOtpModal({
 
             {/* Close Button */}
             <button
+              type="button"
+              aria-label="Close email verification"
               onClick={onClose}
               className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors p-1.5 rounded-full hover:bg-white/10 cursor-pointer"
             >
@@ -204,7 +216,7 @@ export default function EmailOtpModal({
               Verify Your Email
             </h3>
             <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed mb-1">
-              We sent a 6-digit cosmic verification code to:
+              We sent a 6-digit verification code to:
             </p>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-white mb-6">
               <Mail size={12} className="text-[#D3AF54]" />
@@ -219,6 +231,7 @@ export default function EmailOtpModal({
                   ref={(el) => (inputRefs.current[idx] = el)}
                   type="text"
                   inputMode="numeric"
+                  aria-label={`Verification digit ${idx + 1}`}
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleOtpChange(idx, e.target.value)}
@@ -236,6 +249,7 @@ export default function EmailOtpModal({
             {/* Error or Success Alert */}
             {error && (
               <motion.div
+                role="alert"
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-4 p-2.5 bg-red-950/60 border border-red-500/40 rounded-xl text-red-200 text-xs text-center leading-tight font-sans"
@@ -285,7 +299,7 @@ export default function EmailOtpModal({
                 <button
                   type="button"
                   onClick={handleResendOtp}
-                  disabled={loading}
+                  disabled={loading || verifying}
                   className="text-[#D3AF54] hover:underline font-bold transition-colors cursor-pointer flex items-center gap-1"
                 >
                   <RefreshCw size={11} className={loading ? "animate-spin" : ""} />

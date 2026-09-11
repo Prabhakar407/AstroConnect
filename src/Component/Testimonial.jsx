@@ -1,306 +1,200 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
-import { Star, ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
-import people1 from '../assets/images/people1.webp'
-import people2 from '../assets/images/people2.webp'
-import people3 from '../assets/images/people3.webp'
-import people4 from '../assets/images/people4.webp'
-import people5 from '../assets/images/people5.webp'
+import { useReducedMotion } from 'framer-motion'
+import { Star, ChevronLeft, ChevronRight, Calendar, ArrowDown, ArrowRight, Quote } from 'lucide-react'
+import { featuredReviews, consultationStories, reviewFilters, sampleReviews } from '../data/testimonialContent'
+import careerArt from '../assets/images/testimonial-career.webp'
+import homeArt from '../assets/images/testimonial-home.webp'
+import nameArt from '../assets/images/testimonial-name.webp'
+import closingLandscape from '../assets/images/testimonial-closing-landscape.webp'
+import './Testimonial.css'
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut"
-    }
-  }
-};
+const storyArtwork = { career: careerArt, home: homeArt, name: nameArt }
+const directionContract = [
+  'THESIS: Keep the familiar rotating voice, then add context and self-paced reading rather than an endless wall of praise.',
+  'OWN-WORLD: Existing navy, gold and beige; Source Serif 4 headings and quotation, Source Sans 3 reading text, restrained engraved illustrations and square section seams.',
+  'STORY: Read a featured voice, understand three illustrative consultations, browse concise reviews, choose a service or book. Sample content is explicit throughout.',
+  'FIRST VIEWPORT: Light, centred viewport-minus-header scene; readable heading and sample notice, one stable review, arrows and dots, booking and story links.',
+  'FORM: User-approved four-part extension; editorial comp’s wide feature and two companions. Preserve incumbent light hero and shared chrome; no seed for a pinned structure.',
+  'FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md',
+].join('\n')
 
 /**
  * Testimonial Component
  * Premium luxury astrology website Testimonial Section.
- * Implements an open, spacious editorial layout with smooth 3-second automatic cycling,
- * pagination dot controls, and minimal circular navigation buttons.
- * Restored to original design with buttery-smooth natural scrolling.
+ * Original open editorial carousel, pagination dots and circular navigation are
+ * retained. The approved extension adds illustrated sample stories and a filterable
+ * collection. Automatic cycling is slower and stops for reading or interaction.
  */
 function Testimonial() {
-  const { scrollY } = useScroll()
-  const yZodiac = useTransform(scrollY, [0, 1000], [0, -60])
-  const rZodiac = useTransform(scrollY, [0, 1000], [0, 30])
-
-  const reviews = [
-    {
-      name: "Anu",
-      rating: 5,
-      date: "December 2021",
-      service: "Kundli Consultation",
-      text: "Very knowledgeable and professional astrologer. The consultation was detailed and the guidance provided was extremely helpful. I would highly recommend their services to anyone seeking clarity and direction in life.",
-      image: people3
-    },
-    {
-      name: "Rohan Sharma",
-      rating: 5,
-      date: "July 2024",
-      service: "Kundli Analysis",
-      text: "The guidance I received brought clarity and confidence to my life. The remedies were practical and the predictions were remarkably accurate.",
-      image: people1
-    },
-    {
-      name: "Amit Patel",
-      rating: 5,
-      date: "September 2024",
-      service: "Career Guidance",
-      text: "Understanding my transits and Saturn cycle through Kundan's counseling helped me navigate my career transition successfully.",
-      image: people2
-    },
-    {
-      name: "Priya Kapoor",
-      rating: 5,
-      date: "October 2024",
-      service: "Vastu Consultation",
-      text: "Amazing Vastu advice! Making small changes at our entrance brought positive vibes and progress within weeks.",
-      image: people3
-    },
-    {
-      name: "Dr. Aarav Mehta",
-      rating: 5,
-      date: "November 2024",
-      service: "Gemstone Advice",
-      text: "Wearing the recommended Yellow Sapphire has brought immense mental clarity and improved my focus in my clinical work.",
-      image: people4
-    },
-    {
-      name: "Neha Gupta",
-      rating: 5,
-      date: "January 2025",
-      service: "Love & Marriage",
-      text: "The compatibility reading was spot on. Kundan suggested simple mantra remedies that helped ease the relationship friction.",
-      image: people5
-    }
-  ]
-
+  const pageRef = useRef(null)
+  const heroRef = useRef(null)
+  const storiesRef = useRef(null)
+  const reducedMotion = useReducedMotion()
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [hovered, setHovered] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const [manuallySelected, setManuallySelected] = useState(false)
+  const [heroVisible, setHeroVisible] = useState(true)
+  const [pageVisible, setPageVisible] = useState(true)
+  const [filter, setFilter] = useState('all')
+  const autoPlaying = !reducedMotion && !hovered && !focused && !manuallySelected && heroVisible && pageVisible
+  const visibleReviews = filter === 'all' ? sampleReviews : sampleReviews.filter(review => review.serviceId === filter)
+  const filterLabel = reviewFilters.find(item => item.id === filter).label
 
-  // Auto transition every 3 seconds
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % reviews.length)
-    }, 3000)
+    const root = pageRef.current
+    const comment = document.createComment(directionContract)
+    root.prepend(comment)
+    const header = document.querySelector('header')
+    const measure = () => root.style.setProperty('--testimonials-header', (header?.getBoundingClientRect().height || 85) + 'px')
+    const resize = new ResizeObserver(measure)
+    if (header) resize.observe(header)
+    measure()
+    const heroObserver = new IntersectionObserver(([entry]) => setHeroVisible(entry.isIntersecting), { threshold: .3 })
+    heroObserver.observe(heroRef.current)
+    // Readable at rest; the observer adds only a once-only assembly flourish.
+    const storyObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.dataset.revealed = 'true'
+        storyObserver.unobserve(entry.target)
+      }
+    }), { threshold: .12 })
+    root.querySelectorAll('.testimonials-story').forEach(story => storyObserver.observe(story))
+    const handleVisibility = () => setPageVisible(!document.hidden)
+    handleVisibility()
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => { comment.remove(); resize.disconnect(); heroObserver.disconnect(); storyObserver.disconnect(); document.removeEventListener('visibilitychange', handleVisibility) }
+  }, [])
+
+  // Auto transition: twelve seconds per review; no timer while offscreen or reading.
+  // Manual selection stops autoplay for this visit, without adding another control.
+  useEffect(() => {
+    if (!autoPlaying) return
+    const timer = setInterval(() => setCurrentIndex(index => (index + 1) % featuredReviews.length), 12000)
     return () => clearInterval(timer)
-  }, [reviews.length])
+  }, [autoPlaying])
 
-  // Manual navigation handlers
-  const handlePrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + reviews.length) % reviews.length)
+  // Manual navigation handlers preserve the original previous/next/dot behavior.
+  const selectReview = index => {
+    setManuallySelected(true)
+    setCurrentIndex((index + featuredReviews.length) % featuredReviews.length)
   }
-
-  const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % reviews.length)
+  const exploreStories = event => {
+    event.preventDefault()
+    storiesRef.current.focus({ preventScroll: true })
+    storiesRef.current.scrollIntoView({ behavior: reducedMotion ? 'instant' : 'smooth', block: 'start' })
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center justify-start pt-12 sm:pt-20 md:pt-24 pb-16 px-6 font-sans text-[#181122]">
-      
-      {/* ========================================================= */}
-      {/* DECORATIVE BACKGROUND ELEMENTS                            */}
-      {/* ========================================================= */}
-      
-      {/* Subtle mandala patterns in corners */}
-      <div className="absolute -top-20 -left-20 w-80 h-80 text-[#AB7A57]/8 pointer-events-none select-none opacity-30">
-        <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.5">
-          <circle cx="50" cy="50" r="40" strokeDasharray="1,1" />
-          <circle cx="50" cy="50" r="30" />
-          <circle cx="50" cy="50" r="20" strokeDasharray="2,2" />
-          <line x1="50" y1="0" x2="50" y2="100" />
-          <line x1="0" y1="50" x2="100" y2="50" />
-        </svg>
-      </div>
-
-      <div className="absolute -bottom-20 -right-20 w-80 h-80 text-[#AB7A57]/8 pointer-events-none select-none opacity-30">
-        <svg className="w-full h-full" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.5">
-          <circle cx="50" cy="50" r="40" strokeDasharray="1,1" />
-          <circle cx="50" cy="50" r="30" />
-          <circle cx="50" cy="50" r="20" strokeDasharray="2,2" />
-          <line x1="50" y1="0" x2="50" y2="100" />
-          <line x1="0" y1="50" x2="100" y2="50" />
-        </svg>
-      </div>
-
-      {/* Faint gold decorative glow in the center */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.04),transparent_70%)] rounded-full pointer-events-none -z-10"></div>
-
-      {/* Rotating Background Zodiac Motif */}
-      <motion.div 
-        style={{ y: yZodiac, rotate: rZodiac }}
-        className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.02] flex justify-center items-center"
-      >
-        <svg className="w-[550px] h-[550px] text-[#AB7A57] animate-[spin_260s_linear_infinite]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.4">
-          <circle cx="100" cy="100" r="95" strokeDasharray="3 3" />
-          <circle cx="100" cy="100" r="75" />
-          <circle cx="100" cy="100" r="55" strokeDasharray="2 2" />
-          <line x1="100" y1="5" x2="100" y2="195" />
-          <line x1="5" y1="100" x2="195" y2="100" />
-        </svg>
-      </motion.div>
-
-      {/* ========================================================= */}
-      {/* SECTION HEADER                                            */}
-      {/* ========================================================= */}
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        className="w-full max-w-4xl relative z-10 flex flex-col items-center"
-      >
-        <motion.div variants={itemVariants} className="text-center max-w-2xl mb-4 relative z-10 flex flex-col items-center">
-          {/* Large Heading */}
-          <h1 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif text-[#181122] font-bold tracking-wide leading-tight">
-            Client Testimonials
-          </h1>
-
-          {/* Small decorative divider */}
-          <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-2 mb-2 rounded-full"></div>
-
-          {/* Rating Summary */}
-          <div className="flex items-center justify-center gap-1.5 mt-1 bg-[#181122] px-3.5 py-1.5 rounded-full border border-[#D3AF54]/30 shadow-md">
-            <Star size={12} className="fill-[#D3AF54] text-[#D3AF54]" />
-            <span className="font-sans text-[11px] sm:text-xs font-semibold text-[#D3AF54] tracking-wide">
-              4.9 Rating from 150+ Reviews
-            </span>
-          </div>
-        </motion.div>
-      </motion.div>
-
-      {/* ========================================================= */}
-      {/* TESTIMONIAL DISPLAY STAGE (No borders, open & spacious)    */}
-      {/* ========================================================= */}
-      <motion.div variants={itemVariants} className="w-full max-w-4xl relative z-10 min-h-[220px] flex items-center justify-center px-4">
-        
-        {/* Decorative Quote Icon behind/beside the quote */}
-        <span className="absolute top-2 left-4 text-[#D3AF54]/10 text-[10rem] font-serif leading-none select-none pointer-events-none">
-          “
-        </span>
-
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentIndex}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-            className="w-full flex flex-col items-center text-center px-2 py-2 sm:px-12 relative"
-          >
-            {/* Client Image Placeholder */}
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border border-dashed border-[#AB7A57]/45 bg-white flex items-center justify-center shadow-inner mb-3 overflow-hidden relative shrink-0">
-              {reviews[currentIndex].image ? (
-                <img src={reviews[currentIndex].image} alt={reviews[currentIndex].name} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-xl sm:text-2xl">👤</span>
-              )}
-            </div>
-
-            {/* Rating Stars */}
-            <div className="flex items-center gap-1 mb-3.5">
-              {[...Array(reviews[currentIndex].rating)].map((_, i) => (
-                <Star key={i} size={15} className="fill-[#D3AF54] text-[#D3AF54]" />
-              ))}
-            </div>
-
-            {/* Review Text */}
-            <blockquote className="max-w-3xl">
-              <p className="font-sans italic text-[#181122]/90 text-base md:text-lg lg:text-xl leading-relaxed tracking-wide mb-5 font-medium">
-                "{reviews[currentIndex].text}"
-              </p>
-            </blockquote>
-
-            {/* Client Information */}
-            <div className="mt-1 flex flex-col items-center">
-              <span className="font-sans font-bold tracking-widest text-[#181122] text-sm md:text-base block">
-                {reviews[currentIndex].name}
-              </span>
-              <span className="text-[10px] sm:text-[11px] text-[#AB7A57] font-sans font-semibold tracking-widest block mt-1">
-                {reviews[currentIndex].date} • {reviews[currentIndex].service}
-              </span>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-
-      </motion.div>
-
-      {/* ========================================================= */}
-      {/* INTERACTIVE CONTROLS & NAVIGATION                         */}
-      {/* ========================================================= */}
-      <motion.div variants={itemVariants} className="flex items-center gap-6 mt-6 relative z-10">
-        
-        {/* Previous Button */}
-        <motion.button 
-          onClick={handlePrev}
-          whileHover={{ scale: 1.1, borderColor: "#D3AF54", boxShadow: "0 0 10px rgba(211, 175, 84, 0.3)" }}
-          whileTap={{ scale: 0.95 }}
-          className="w-9 h-9 rounded-full border border-[#AB7A57]/30 bg-white flex items-center justify-center text-[#181122] hover:bg-[#D3AF54] hover:text-[#181122] hover:border-[#D3AF54] transition-all duration-300 cursor-pointer shadow-sm shrink-0"
-          aria-label="Previous Testimonial"
-        >
-          <ChevronLeft size={16} />
-        </motion.button>
-
-        {/* Bullet Dot Indicators */}
-        <div className="flex items-center gap-2">
-          {reviews.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentIndex(idx)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                idx === currentIndex 
-                  ? 'bg-[#D3AF54] scale-110 shadow-[0_0_6px_rgba(211,175,84,0.5)]' 
-                  : 'bg-[#AB7A57]/25 hover:bg-[#AB7A57]/60'
-              }`}
-              aria-label={`Go to testimonial ${idx + 1}`}
-            ></button>
-          ))}
+    <div className="testimonials-page" ref={pageRef}>
+      <section className="testimonials-hero" ref={heroRef} aria-labelledby="testimonials-title">
+        {/* DECORATIVE BACKGROUND ELEMENTS — the incumbent zodiac motif. */}
+        <div className="testimonials-orbit" aria-hidden="true">
+          <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth=".3">
+            <circle cx="100" cy="100" r="95" strokeDasharray="3 3" />
+            <circle cx="100" cy="100" r="75" />
+            <circle cx="100" cy="100" r="55" strokeDasharray="2 2" />
+            <path d="M100 5v190M5 100h190" />
+          </svg>
         </div>
+        <div className="testimonials-container testimonials-hero-inner">
+          {/* SECTION HEADER — sample status stays next to the unverified summary. */}
+          <div className="testimonials-heading">
+            <h1 id="testimonials-title">Client Testimonials</h1>
+            <p className="testimonials-preview-note">Sample content — awaiting client approval.</p>
+            <p className="testimonials-rating"><Star aria-hidden="true" />4.9 from 150+ reviews <span>· Sample rating</span></p>
+          </div>
 
-        {/* Next Button */}
-        <motion.button 
-          onClick={handleNext}
-          whileHover={{ scale: 1.1, borderColor: "#D3AF54", boxShadow: "0 0 10px rgba(211, 175, 84, 0.3)" }}
-          whileTap={{ scale: 0.95 }}
-          className="w-9 h-9 rounded-full border border-[#AB7A57]/30 bg-white flex items-center justify-center text-[#181122] hover:bg-[#D3AF54] hover:text-[#181122] hover:border-[#D3AF54] transition-all duration-300 cursor-pointer shadow-sm shrink-0"
-          aria-label="Next Testimonial"
-        >
-          <ChevronRight size={16} />
-        </motion.button>
-      </motion.div>
+          {/* TESTIMONIAL DISPLAY STAGE — no enclosing card; open and spacious. */}
+          <div className="testimonials-carousel" role="region" aria-roledescription="carousel" aria-label="Featured sample testimonials"
+            onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+            onFocusCapture={() => setFocused(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false) }}
+            onTouchStart={() => setManuallySelected(true)}>
+            <div className="testimonials-stage" aria-live={autoPlaying ? 'off' : 'polite'} aria-atomic="true">
+              {featuredReviews.map((review, index) => <figure key={review.id}
+                className={'testimonials-slide ' + (index === currentIndex ? 'is-active' : '')}
+                role="group" aria-roledescription="slide" aria-label={(index + 1) + ' of ' + featuredReviews.length}
+                aria-hidden={index !== currentIndex}>
+                {/* Client image placeholder: neutral initials, not an invented portrait. */}
+                <div className="testimonials-avatar" aria-hidden="true">{review.initials}</div>
+                {/* Rating stars are sample data, not verified review evidence. */}
+                <div className="testimonials-stars" role="img" aria-label={review.rating + ' out of 5 stars, sample rating'}>
+                  {Array.from({ length: review.rating }, (_, i) => <Star key={i} aria-hidden="true" />)}
+                </div>
+                {/* Review text and client information retained from the original carousel. */}
+                <blockquote><p>“{review.text}”</p></blockquote>
+                <figcaption><strong>{review.name} <span>· Sample review</span></strong><span>{review.date} · {review.service}</span></figcaption>
+              </figure>)}
+            </div>
 
-      {/* ========================================================= */}
-      {/* CALL TO ACTION BUTTON                                     */}
-      {/* ========================================================= */}
-      <motion.div 
-        variants={itemVariants} 
-        className="mt-10 relative z-10 flex flex-col items-center"
-      >
-        <Link 
-          to="/booking"
-          className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-semibold px-6 py-3 rounded-xl transition duration-300 shadow-md shadow-[#D3AF54]/10 hover:scale-[1.02] active:scale-[0.98] cursor-pointer text-xs uppercase tracking-wider flex items-center gap-2"
-        >
-          <Calendar size={14} />
-          <span>Book Appointment</span>
-        </Link>
-      </motion.div>
- 
+            {/* INTERACTIVE CONTROLS & NAVIGATION — large targets around small dots. */}
+            <div className="testimonials-controls">
+              <button type="button" className="testimonials-arrow" onClick={() => selectReview(currentIndex - 1)} aria-label="Previous Testimonial"><ChevronLeft aria-hidden="true" /></button>
+              <div className="testimonials-dots">
+                {featuredReviews.map((review, index) => <button type="button" key={review.id} onClick={() => selectReview(index)} aria-label={'Go to testimonial ' + (index + 1)} aria-pressed={index === currentIndex} />)}
+              </div>
+              <button type="button" className="testimonials-arrow" onClick={() => selectReview(currentIndex + 1)} aria-label="Next Testimonial"><ChevronRight aria-hidden="true" /></button>
+            </div>
+          </div>
+
+          {/* CALL TO ACTION BUTTON — incumbent booking route plus a reading path. */}
+          <div className="testimonials-actions">
+            <Link to="/booking" className="testimonials-button"><Calendar aria-hidden="true" />Book Appointment</Link>
+            <a href="#consultation-stories" onClick={exploreStories} className="testimonials-text-link">Explore the stories <ArrowDown aria-hidden="true" /></a>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. BEHIND THE CONSULTATION — illustrative context, never outcome guarantees. */}
+      <section className="testimonials-stories" id="consultation-stories" ref={storiesRef} tabIndex={-1} aria-labelledby="stories-title">
+        <div className="testimonials-container">
+          <div className="testimonials-section-heading">
+            <div><h2 id="stories-title">Behind the consultation</h2><p>Different questions. A closer look at the conversation.</p></div>
+            <p className="testimonials-preview-note">Illustrative stories, not verified client accounts.</p>
+          </div>
+          <div className="testimonials-story-grid">
+            {consultationStories.map((story, index) => <article key={story.id} className={'testimonials-story ' + (index === 0 ? 'testimonials-story--featured' : '')} aria-labelledby={'story-' + story.id}>
+              <img src={storyArtwork[story.id]} className="testimonials-story-art" alt="" loading="lazy" width="1445" height="1088" />
+              <div className="testimonials-story-copy">
+                <h3 id={'story-' + story.id}>{story.title}</h3>
+                <dl><div><dt>The question</dt><dd>{story.question}</dd></div><div><dt>The conversation</dt><dd>{story.conversation}</dd></div><div><dt>The takeaway</dt><dd>{story.takeaway}</dd></div></dl>
+                <div className="testimonials-story-footer"><Link className="testimonials-text-link" to={'/services/' + story.serviceId}>{story.service} <ArrowRight aria-hidden="true" /></Link><span className="testimonials-sample-label">Sample story</span></div>
+              </div>
+            </article>)}
+          </div>
+        </div>
+      </section>
+
+      {/* 3. REVIEW COLLECTION — stable reading and only populated service filters. */}
+      <section className={'testimonials-reviews ' + (filter !== 'all' ? 'is-filtered' : '')} aria-labelledby="more-voices-title">
+        <div className="testimonials-container">
+          <div className="testimonials-section-heading">
+            <div><h2 id="more-voices-title">More voices, at your pace</h2><p>Browse by consultation, or take your time with the whole collection.</p></div>
+            <p className="testimonials-preview-note">Sample reviews — to be replaced with approved feedback.</p>
+          </div>
+          <div className="testimonials-filters" role="group" aria-label="Filter sample reviews by consultation">
+            {reviewFilters.map(item => <button type="button" key={item.id} aria-pressed={filter === item.id} aria-controls="testimonials-review-results" onClick={() => setFilter(item.id)}>{item.label}</button>)}
+          </div>
+          <p className="testimonials-sr-only" role="status">Showing {visibleReviews.length} sample {visibleReviews.length === 1 ? 'review' : 'reviews'}: {filterLabel}.</p>
+          <div id="testimonials-review-results" className={'testimonials-reviews-grid ' + (filter !== 'all' ? 'is-filtered' : '')}>
+            {visibleReviews.map(review => <figure className="testimonials-review-card" key={review.id}>
+              <div className="testimonials-review-top"><Quote aria-hidden="true" /><span className="testimonials-sample-label">Sample review</span></div>
+              <blockquote><p>“{review.text}”</p></blockquote>
+              <figcaption><span className="testimonials-avatar" aria-hidden="true">{review.initials}</span><div><strong>{review.name}</strong><span>{review.service}</span></div></figcaption>
+            </figure>)}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. A BRIEF INVITATION — existing destinations; no new booking workflow. */}
+      <section className="testimonials-close" aria-labelledby="testimonials-close-title">
+        <img className="testimonials-close-landscape" src={closingLandscape} alt="" loading="lazy" width="2120" height="742" />
+        <div className="testimonials-container testimonials-close-inner">
+          <div><h2 id="testimonials-close-title">What would you like to explore?</h2><p>Find a consultation for the questions on your mind.</p></div>
+          <div className="testimonials-actions"><Link to="/services" className="testimonials-button testimonials-button--outline">Explore Services <ArrowRight aria-hidden="true" /></Link><Link to="/booking" className="testimonials-button"><Calendar aria-hidden="true" />Book Consultation</Link></div>
+        </div>
+      </section>
     </div>
   )
 }

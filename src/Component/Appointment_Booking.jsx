@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Calendar, Clock, Sparkles, Send, MapPin, User, Mail, Phone, ChevronLeft, ChevronRight } from 'lucide-react'
 import EmailOtpModal from './EmailOtpModal'
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com"
+import { useSearchParams } from 'react-router-dom'
+import catalogue from '../data/consultationCatalogue.json'
+import { requestJson, sendVerification } from '../lib/formApi'
+import { dateInPolicy, todayInIndia, slotTimes, slotLabel, formatFee } from '../lib/bookingPolicy'
+import useBookingSchedule from '../lib/useBookingSchedule'
+import { createReceipt, rememberReceipt } from '../lib/requestReceipt'
 
 /**
  * CelestialDivider Component
@@ -50,6 +54,7 @@ const itemVariants = {
  * and detailed birth chart details fields.
  */
 function Appointment_Booking() {
+  const [searchParams] = useSearchParams()
   const { scrollY } = useScroll()
   const yZodiac = useTransform(scrollY, [0, 1000], [0, -80])
   const rZodiac = useTransform(scrollY, [0, 1000], [0, 35])
@@ -62,30 +67,59 @@ function Appointment_Booking() {
     birthDate: "",
     birthTime: "",
     birthPlace: "",
-    readingType: "Vedic Astrology",
+    readingType: catalogue.some(service => service.id === searchParams.get('service')) ? searchParams.get('service') : 'vedic-astrology',
+    questionCount: 1,
     bookingDate: "",
-    bookingSlot: "10:00",
+    bookingSlot: "",
     notes: ""
   })
 
-  const [slotAvailability, setSlotAvailability] = useState({
-    "10:00": true,
-    "11:00": true,
-    "15:00": true,
-    "16:00": true,
-    "17:00": true
-  })
+  const { policy, slots: slotAvailability, error: availabilityError, loading: availabilityLoading, retry } = useBookingSchedule(formData.bookingDate)
+  const bookingEnabled = policy?.booking_enabled === true
+  const today = policy?.first_date || todayInIndia()
+  const [serverQuote, setServerQuote] = useState(null)
+  const [quoteError, setQuoteError] = useState('')
+  const [quoteRetry, setQuoteRetry] = useState(0)
+  const verifiedDraft = useRef(null)
+  const receipt = useRef(null)
+  const selectedService = catalogue.find(service => service.id === formData.readingType) || catalogue[0]
+  const currentQuote = serverQuote?.service_id === formData.readingType && serverQuote?.question_count === formData.questionCount ? serverQuote : null
+  const totalFee = currentQuote?.amount_paise ?? selectedService.amount_paise * (selectedService.per_question ? formData.questionCount : 1)
   
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
-  const [eventLink, setEventLink] = useState("")
-  const [meetLink, setMeetLink] = useState("")
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
   const [showOtpModal, setShowOtpModal] = useState(false)
+  const bookingBlocked = loading || !bookingEnabled || !currentQuote || Boolean(quoteError) || availabilityLoading || Boolean(availabilityError) || slotAvailability[formData.bookingSlot] !== true
 
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear())
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
+  const [currentYear, setCurrentYear] = useState(Number(today.slice(0, 4)))
+  const [currentMonth, setCurrentMonth] = useState(Number(today.slice(5, 7)) - 1)
+
+  useEffect(() => {
+    let active = true
+    setQuoteError('')
+    setServerQuote(null)
+    requestJson(`/api/quote?service_id=${formData.readingType}&question_count=${formData.questionCount}`)
+      .then(data => {
+        if (data.service_id !== formData.readingType || data.question_count !== formData.questionCount ||
+            !Number.isSafeInteger(data.amount_paise) || data.amount_paise <= 0 || data.currency !== 'INR' ||
+            data.duration_minutes !== 30 || !/^[a-f0-9]{64}$/.test(data.quote_version)) throw new Error('We could not confirm the fee. Please try again.')
+        if (active) setServerQuote(data)
+      }).catch(error => { if (active) { setServerQuote(null); setQuoteError(error.message) } })
+    return () => { active = false }
+  }, [formData.readingType, formData.questionCount, quoteRetry])
+
+  useEffect(() => {
+    if (!policy) return
+    const month = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`
+    if (month < policy.first_date.slice(0, 7) || month > policy.last_date.slice(0, 7)) {
+      setCurrentYear(Number(policy.first_date.slice(0, 4)))
+      setCurrentMonth(Number(policy.first_date.slice(5, 7)) - 1)
+    }
+    setFormData(previous => previous.bookingDate && !dateInPolicy(previous.bookingDate, policy)
+      ? { ...previous, bookingDate: '', bookingSlot: '' } : previous)
+  }, [policy, currentYear, currentMonth])
 
   const monthNames = [
     "January", "February", "March", "April", "May", "June",
@@ -98,6 +132,7 @@ function Appointment_Booking() {
   const getFirstDayOfMonth = (y, m) => new Date(y, m, 1).getDay()
 
   const handlePrevMonth = () => {
+    if (!policy || `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}` <= policy.first_date.slice(0, 7)) return
     if (currentMonth === 0) {
       setCurrentMonth(11)
       setCurrentYear(prev => prev - 1)
@@ -107,6 +142,7 @@ function Appointment_Booking() {
   }
 
   const handleNextMonth = () => {
+    if (!policy || `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}` >= policy.last_date.slice(0, 7)) return
     if (currentMonth === 11) {
       setCurrentMonth(0)
       setCurrentYear(prev => prev + 1)
@@ -121,31 +157,13 @@ function Appointment_Booking() {
     const dateStr = `${currentYear}-${formattedMonth}-${formattedDay}`
     setFormData(prev => ({
       ...prev,
-      bookingDate: dateStr
+      bookingDate: dateStr,
+      bookingSlot: ''
     }))
   }
 
-  useEffect(() => {
-    if (!formData.bookingDate) return;
-    
-    const fetchAvailability = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/availability?date=${formData.bookingDate}`)
-        if (response.ok) {
-          const data = await response.json()
-          setSlotAvailability(data)
-        }
-      } catch (err) {
-        console.warn("Failed to fetch slot availability, using fallback:", err)
-      }
-    }
-    
-    fetchAvailability()
-  }, [formData.bookingDate])
-
   const isToday = (day) => {
-    const today = new Date()
-    return today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear
+    return today === `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
   }
 
   const isDateSelected = (day) => {
@@ -156,15 +174,13 @@ function Appointment_Booking() {
   }
 
   const isPastDay = (day) => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const cellDate = new Date(currentYear, currentMonth, day)
-    return cellDate < today
+    const date = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+    return availabilityLoading || Boolean(availabilityError) || !dateInPolicy(date, policy)
   }
 
   const validateForm = () => {
-    if (!formData.name.trim()) {
-      return "Please enter your Full Name.";
+    if (formData.name.trim().length < 2 || formData.name.trim().length > 100) {
+      return "Please enter your full name, between 2 and 100 characters.";
     }
     if (!formData.email.trim()) {
       return "Please enter your Email Address.";
@@ -176,19 +192,21 @@ function Appointment_Booking() {
     if (!formData.phone.trim()) {
       return "Please enter your Mobile Number.";
     }
-    const cleanPhone = formData.phone.trim().replace(/[\s\-\(\)]/g, '')
+    const cleanPhone = formData.phone.trim().replace(/[\s().-]/g, '')
     const phoneRegex = /^\+?[0-9]{7,15}$/;
     if (!phoneRegex.test(cleanPhone)) {
       return "Please enter a valid mobile number (e.g. 9876543210).";
     }
-    const digits = cleanPhone.replace('+', '')
-    if (/^(\d)\1{6,}$/.test(digits)) {
-      return "Mobile number cannot consist of only repeating identical digits.";
+    if (!formData.birthDate || formData.birthDate > today) {
+      return "Please enter a birth date that is not in the future.";
     }
-    if (!formData.bookingDate) {
+    if (formData.birthPlace.trim().length > 200 || formData.notes.trim().length > 4000) {
+      return "Please keep the birth place under 200 characters and notes under 4,000 characters.";
+    }
+    if (!dateInPolicy(formData.bookingDate, policy)) {
       return "Please select a date from the calendar grid.";
     }
-    if (!formData.bookingSlot) {
+    if (!formData.bookingSlot || slotAvailability[formData.bookingSlot] !== true) {
       return "Please select a time slot.";
     }
     return null;
@@ -202,10 +220,12 @@ function Appointment_Booking() {
   }, [formData, attemptedSubmit])
 
   const handleInputChange = (e) => {
+    if (loading || showOtpModal) return
     const { name, value } = e.target
     setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: name === 'questionCount' ? Number(value) : value,
+      ...(name === 'readingType' ? { questionCount: 1 } : {})
     }))
   }
 
@@ -223,63 +243,66 @@ function Appointment_Booking() {
       return
     }
 
-    // Instantly open the OTP modal so user experiences 0ms UI delay
-    setShowOtpModal(true)
-    setLoading(false)
+    // Payment readiness and accepted email dispatch both precede verification.
+    if (bookingBlocked) return
+    setLoading(true)
     setErrorMsg("")
 
-    // Trigger OTP sending in parallel
+    // A rejected email request must remain an error, never a success state.
     try {
-      fetch(`${API_BASE_URL}/api/auth/send-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email, purpose: "booking" })
-      }).catch((err) => {
-        console.warn("OTP dispatch notice:", err)
-      })
+      const freshQuote = await requestJson(`/api/quote?service_id=${formData.readingType}&question_count=${formData.questionCount}`)
+      if (freshQuote.quote_version !== currentQuote.quote_version) {
+        setServerQuote(null)
+        setQuoteError('The fee has changed. Please reselect your consultation and review the updated total.')
+        return
+      }
+      verifiedDraft.current = { ...formData, quoteVersion: currentQuote.quote_version }
+      await sendVerification(verifiedDraft.current.email, 'booking')
+      setShowOtpModal(true)
     } catch (err) {
-      console.warn("OTP dispatch exception:", err)
+      setErrorMsg(err.message)
+    } finally {
+      setLoading(false)
     }
   }
 
-  const executeBooking = (verificationToken) => {
-    // 1. Immediately close OTP modal and display confirmation screen (zero waiting time)
+  const executeBooking = async (verificationToken) => {
+    // Email verification alone is not a booking confirmation.
     setShowOtpModal(false)
-    setSubmitted(true)
+    setLoading(true)
     setErrorMsg("")
 
-    const timeSlot = formData.bookingSlot || "10:00"
-    let duration = 30
-    const birthDetails = `Phone: ${formData.phone}\nBirth Date: ${formData.birthDate}\nBirth Time: ${formData.birthTime || 'Not Provided'}\nBirth Place: ${formData.birthPlace || 'Not Provided'}\nClient Notes: ${formData.notes || 'None'}`
+    const draft = verifiedDraft.current
+    if (!draft) { setLoading(false); return }
+    if (!receipt.current) receipt.current = createReceipt()
+    rememberReceipt('booking', receipt.current)
 
-    // 2. Dispatch booking to Google Calendar, Sheets & Resend asynchronously in the background
-    fetch(`${API_BASE_URL}/api/book-appointment`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        full_name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        service_name: formData.readingType,
-        date: formData.bookingDate,
-        time_slot: timeSlot,
-        duration_minutes: duration,
-        birth_details: birthDetails,
+    // The server keeps this action closed until verified payment is integrated.
+    try {
+      const data = await requestJson('/api/book-appointment', {
+        request_id: receipt.current.id,
+        full_name: draft.name,
+        email: draft.email,
+        phone: draft.phone,
+        service_id: draft.readingType,
+        question_count: draft.questionCount,
+        date: draft.bookingDate,
+        time_slot: draft.bookingSlot,
+        duration_minutes: 30,
+        birth_date: draft.birthDate,
+        birth_time: draft.birthTime,
+        birth_place: draft.birthPlace,
+        notes: draft.notes,
+        quote_version: draft.quoteVersion,
         verification_token: verificationToken,
-      }),
-    }).then(async (response) => {
-      const data = await response.json()
-      if (data && data.event_link) {
-        setEventLink(data.event_link)
-      }
-      if (data && data.meet_link) {
-        setMeetLink(data.meet_link)
-      }
-    }).catch((err) => {
-      console.error("Background booking dispatch error:", err)
-    })
+      }, 'POST', { headers: { 'X-Astro-Receipt': receipt.current.secret } })
+      if (data.status !== 'confirmed' || !data.booking_id) throw new Error('Your appointment is not confirmed yet. Please contact the studio.')
+      setSubmitted(true)
+    } catch (err) {
+      setErrorMsg(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -344,13 +367,12 @@ function Appointment_Booking() {
               </div>
               <h4 className="font-serif text-white font-bold text-xl md:text-2xl">Booking Request Received!</h4>
               <p className="text-xs md:text-sm text-[#D8CFEB] max-w-md font-sans leading-relaxed">
-                Thank you. Astrologer Kundan Singh will review your credentials and confirm your selected slot. An email and WhatsApp confirmation will be sent shortly.
+                Your appointment is confirmed. If your meeting details have not arrived, please contact the studio on +91 85277 90801.
               </p>
               <CelestialDivider />
               <button 
                 onClick={() => {
                   setSubmitted(false)
-                  setMeetLink("")
                   setFormData({
                     name: "",
                     phone: "",
@@ -358,9 +380,10 @@ function Appointment_Booking() {
                     birthDate: "",
                     birthTime: "",
                     birthPlace: "",
-                    readingType: "Natal Chart Reading (60 min)",
+                    readingType: "vedic-astrology",
                     bookingDate: "",
-                    bookingSlot: "Morning (10:00 AM - 12:00 PM)",
+                    bookingSlot: "",
+                    questionCount: 1,
                     notes: ""
                   })
                 }}
@@ -379,9 +402,13 @@ function Appointment_Booking() {
               viewport={{ once: true, margin: "-100px" }}
               className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start scroll-mt-20 w-full"
             >
+              {!bookingEnabled && <p role="status" className="col-span-1 lg:col-span-2 rounded-xl border border-[#D3AF54]/30 bg-[#D3AF54]/10 px-4 py-3 text-sm leading-relaxed text-[#F4E6BE]">
+                Online booking is being configured. To arrange an appointment, please call <a href="tel:+918527790801" className="font-semibold underline">+91 85277 90801</a>.
+              </p>}
               {/* Error Message Display (Real-time Validation Alert) */}
-              {errorMsg && (
+              {errorMsg && !availabilityError && (
                 <motion.div 
+                  role="alert"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="col-span-1 lg:col-span-2 p-3 bg-red-950/70 border border-red-500/40 rounded-xl text-red-200 text-xs md:text-sm text-center font-sans tracking-wide leading-relaxed shadow-[0_0_15px_rgba(239,68,68,0.15)]"
@@ -459,7 +486,7 @@ function Appointment_Booking() {
               {/* Step 2: Cosmic Birth Credentials Card */}
               <motion.div variants={itemVariants} className="space-y-3 text-left bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 shadow-lg h-full flex flex-col justify-start">
                 <h3 className="font-serif text-sm sm:text-base font-bold !text-[#D3AF54] border-b border-[#AB7A57]/20 pb-1.5">
-                  2. Cosmic Birth Credentials
+                  2. Birth Details
                 </h3>
                     
                 <div className="flex flex-col gap-3">
@@ -471,6 +498,7 @@ function Appointment_Booking() {
                       type="date" 
                       id="birthDate"
                       name="birthDate"
+                      max={today}
                       required
                       value={formData.birthDate}
                       onChange={handleInputChange}
@@ -513,10 +541,12 @@ function Appointment_Booking() {
               </motion.div>
 
               {/* Step 3: Date Selection Calendar Card */}
-              <motion.div variants={itemVariants} className="space-y-3 text-left bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 shadow-lg h-full flex flex-col justify-start">
+              <motion.div variants={itemVariants} className="space-y-3 text-left bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 shadow-lg flex flex-col justify-start">
                 <h3 className="font-serif text-sm sm:text-base font-bold !text-[#D3AF54] border-b border-[#AB7A57]/20 pb-1.5">
                   3. Select Date
                 </h3>
+                <p className="text-sm leading-relaxed text-white/80">All times are in India Standard Time. Book up to 10 days ahead, Monday–Saturday.</p>
+                {policy && <p className="text-xs leading-relaxed text-white/70">{new Date(`${policy.first_date}T00:00:00+05:30`).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })} – {new Date(`${policy.last_date}T00:00:00+05:30`).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}</p>}
                 
                 <div className="flex flex-col gap-2">
                   
@@ -532,14 +562,18 @@ function Appointment_Booking() {
                           <button 
                             type="button"
                             onClick={handlePrevMonth}
-                            className="w-7 h-7 rounded-lg border border-white/10 flex items-center justify-center text-[#D3AF54] hover:bg-white/5 cursor-pointer active:scale-95 transition-all"
+                            aria-label="Previous month"
+                            disabled={!policy || `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}` <= policy.first_date.slice(0, 7)}
+                            className="w-11 h-11 rounded-lg border border-white/10 flex items-center justify-center text-[#D3AF54] hover:bg-white/5 cursor-pointer active:scale-95 transition-all"
                           >
                             <ChevronLeft size={14} />
                           </button>
                           <button 
                             type="button"
                             onClick={handleNextMonth}
-                            className="w-7 h-7 rounded-lg border border-white/10 flex items-center justify-center text-[#D3AF54] hover:bg-white/5 cursor-pointer active:scale-95 transition-all"
+                            aria-label="Next month"
+                            disabled={!policy || `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}` >= policy.last_date.slice(0, 7)}
+                            className="w-11 h-11 rounded-lg border border-white/10 flex items-center justify-center text-[#D3AF54] hover:bg-white/5 cursor-pointer active:scale-95 transition-all"
                           >
                             <ChevronRight size={14} />
                           </button>
@@ -547,7 +581,7 @@ function Appointment_Booking() {
                       </div>
 
                       {/* Days of Week Header */}
-                      <div className="grid grid-cols-7 gap-1 text-center text-[9px] sm:text-[10px] font-bold text-[#D3AF54] uppercase tracking-wider py-0.5">
+                      <div className="grid grid-cols-7 gap-1 text-center text-[11px] sm:text-xs font-bold text-[#D3AF54] uppercase py-0.5">
                         {daysOfWeek.map((day, idx) => (
                           <div key={idx} className="py-0.5">{day}</div>
                         ))}
@@ -573,7 +607,7 @@ function Appointment_Booking() {
                               type="button"
                               disabled={isPast}
                               onClick={() => selectDate(day)}
-                              className={`aspect-square rounded-lg flex items-center justify-center text-[11px] font-medium transition-all cursor-pointer relative ${
+                              className={`aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all cursor-pointer relative ${
                                 isPast
                                   ? "text-white/20 bg-transparent cursor-not-allowed"
                                   : isSelected
@@ -616,34 +650,36 @@ function Appointment_Booking() {
                       onChange={handleInputChange}
                       className="w-full bg-[#181122] border border-white/10 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition-all duration-300 cursor-pointer"
                     >
-                      <option value="Vedic Astrology">Vedic Astrology (₹2,100)</option>
-                      <option value="Numerology Reading">Numerology Reading (₹1,100)</option>
-                      <option value="Vastu Consultation">Vastu Consultation (₹5,100)</option>
-                      <option value="Laal Kitaab Remedies">Laal Kitaab Remedies (₹1,100)</option>
-                      <option value="Prashna Kundali (Horary)">Prashna Kundali (Horary) (₹1,100)</option>
+                      {catalogue.map(service => <option key={service.id} value={service.id}>{service.title} ({formatFee(service.amount_paise)}{service.per_question ? ' per question' : ''})</option>)}
                     </select>
                   </div>
+
+                  {selectedService.per_question && <div className="space-y-2">
+                    <label htmlFor="questionCount" className="block text-sm font-semibold text-[#D3AF54]">Number of questions</label>
+                    <select id="questionCount" name="questionCount" value={formData.questionCount} onChange={handleInputChange} className="w-full rounded-xl border border-white/20 bg-[#181122] px-3 py-2 text-sm text-white">
+                      {Array.from({ length: 10 }, (_, index) => index + 1).map(count => <option key={count} value={count}>{count} {count === 1 ? 'question' : 'questions'}</option>)}
+                    </select>
+                    <p className="text-sm leading-relaxed text-white/80">Additional questions during the consultation are charged at ₹1,100 each, payable at that time. The session remains 30 minutes, regardless of question count.</p>
+                  </div>}
+                  <p aria-live="polite" className="text-sm font-semibold text-[#D3AF54]">Total: {formatFee(totalFee)} <span className="font-normal text-white/80">· 30-minute session</span></p>
+                  {quoteError && !availabilityError && <p role="alert" className="text-sm text-amber-200">{quoteError} <button type="button" className="underline underline-offset-4" onClick={() => setQuoteRetry(value => value + 1)}>Check fee again</button></p>}
 
                   {/* Choose Time Slot Button Grid */}
                   <div className="space-y-1.5 text-left">
                     <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#D3AF54]/95">
-                      Choose Time Slot
+                      Choose Time Slot · Indian time (IST)
                     </label>
                     
+                    {availabilityError && <div role="alert" className="text-sm leading-relaxed text-amber-200"><p>{availabilityError}</p><button type="button" onClick={retry} className="mt-2 min-h-11 underline underline-offset-4">Try again</button></div>}
+                    {availabilityLoading && <p role="status" className="text-sm text-white/80">Checking available times…</p>}
                     {!formData.bookingDate ? (
                       <div className="text-[11px] text-white/50 italic border border-white/5 bg-white/5 rounded-xl p-2.5 text-center">
                         ✦ Please select a date on the calendar first to view slot availability.
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {[
-                          { value: "10:00", label: "10:00 AM - 11:00 AM", period: "Morning" },
-                          { value: "11:00", label: "11:00 AM - 12:00 PM", period: "Morning" },
-                          { value: "15:00", label: "03:00 PM - 04:00 PM", period: "Evening" },
-                          { value: "16:00", label: "04:00 PM - 05:00 PM", period: "Evening" },
-                          { value: "17:00", label: "05:00 PM - 06:00 PM", period: "Evening" },
-                        ].map((slot) => {
-                          const isAvailable = slotAvailability[slot.value] !== false;
+                        {slotTimes.map(value => ({ value, label: slotLabel(value), period: Number(value.slice(0, 2)) < 12 ? 'Morning' : 'Evening' })).map((slot) => {
+                          const isAvailable = slotAvailability[slot.value] === true && !availabilityLoading;
                           const isSelected = formData.bookingSlot === slot.value;
                           
                           return (
@@ -651,21 +687,17 @@ function Appointment_Booking() {
                               key={slot.value}
                               type="button"
                               disabled={!isAvailable}
+                              aria-label={`${slot.label}, ${isAvailable ? 'open' : 'unavailable'}`}
                               onClick={() => setFormData(prev => ({ ...prev, bookingSlot: slot.value }))}
-                              className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl border text-left transition-all duration-300 ${
+                              className={`flex min-h-11 items-center justify-between gap-2 px-2.5 py-2 rounded-xl border text-left transition-all duration-300 ${
                                 !isAvailable
-                                  ? "bg-red-950/20 border-red-900/30 text-red-400/40 cursor-not-allowed opacity-50"
+                                  ? "bg-white/5 border-white/10 text-white/60 cursor-not-allowed"
                                   : isSelected
                                     ? "bg-[#D3AF54] border-[#D3AF54] text-[#181122] shadow-[0_0_12px_rgba(211,175,84,0.3)] font-bold scale-[1.02]"
                                     : "bg-white/5 border-white/10 hover:border-[#D3AF54] text-white cursor-pointer hover:bg-white/10"
                               }`}
                             >
-                              <div className="flex flex-col">
-                                <span className="text-[10px] sm:text-[11px] font-semibold tracking-wide">{slot.label}</span>
-                                <span className={`text-[8px] uppercase tracking-wider ${
-                                  isSelected ? "text-[#181122]/70" : "text-[#D8CFEB]/60"
-                                }`}>{slot.period}</span>
-                              </div>
+                              <span className="text-sm font-semibold whitespace-nowrap">{slot.label.split(' – ')[0]}</span>
                               
                               <div className="flex items-center gap-1">
                                 <span className={`w-1.5 h-1.5 rounded-full ${
@@ -673,8 +705,8 @@ function Appointment_Booking() {
                                     ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" 
                                     : "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]"
                                 }`} />
-                                <span className="text-[8px] uppercase font-bold tracking-wider">
-                                  {isAvailable ? "Open" : "Full"}
+                                <span className="text-[10px] font-semibold">
+                                  {isAvailable ? "Open" : "Unavailable"}
                                 </span>
                               </div>
                             </button>
@@ -706,11 +738,11 @@ function Appointment_Booking() {
               <motion.div variants={itemVariants} className="col-span-1 lg:col-span-2 flex justify-center pt-2">
                 <motion.button 
                   type="submit"
-                  disabled={loading}
-                  whileHover={loading ? {} : { scale: 1.02, y: -1, boxShadow: "0 8px 18px rgba(211, 175, 84, 0.15), 0 0 15px rgba(211, 175, 84, 0.3)" }}
-                  whileTap={loading ? {} : { scale: 0.98 }}
+                  disabled={bookingBlocked}
+                  whileHover={bookingBlocked ? {} : { scale: 1.02, y: -1, boxShadow: "0 8px 18px rgba(211, 175, 84, 0.15), 0 0 15px rgba(211, 175, 84, 0.3)" }}
+                  whileTap={bookingBlocked ? {} : { scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                  className={`w-auto px-8 sm:px-10 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] border border-[#D3AF54] font-semibold py-3 rounded-xl transition duration-300 shadow-md cursor-pointer inline-flex items-center justify-center gap-2 text-xs sm:text-sm ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className={`w-auto px-8 sm:px-10 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] border border-[#D3AF54] font-semibold py-3 rounded-xl transition duration-300 shadow-md cursor-pointer inline-flex items-center justify-center gap-2 text-xs sm:text-sm ${bookingBlocked ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
                   {loading ? (
                     <>
@@ -742,7 +774,7 @@ function Appointment_Booking() {
               </svg>
             </span>
             <p className="text-xs text-slate-600 font-sans text-center leading-relaxed whitespace-normal sm:whitespace-nowrap">
-              <strong>Need to cancel or reschedule your session?</strong> Please contact us directly at <a href="tel:+918796191327" className="text-[#AB7A57] hover:underline font-bold">+91 8796191327</a>.
+              <strong>Need to cancel your session?</strong> Please call <a href="tel:+918527790801" className="text-[#AB7A57] hover:underline font-bold">+91 85277 90801</a>.
             </p>
           </div>
         </div>
@@ -753,7 +785,7 @@ function Appointment_Booking() {
       <EmailOtpModal
         isOpen={showOtpModal}
         onClose={() => setShowOtpModal(false)}
-        email={formData.email}
+        email={verifiedDraft.current?.email || formData.email}
         purpose="booking"
         onVerified={executeBooking}
       />

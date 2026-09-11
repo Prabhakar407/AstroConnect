@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-08T13:39:32Z",
+  "title": "AstroAdvice Services and Name Change local presentation; Design.md is authoritative",
+  "extensions": {
+    "shadows": [
+      {
+        "name": "services-artwork-rest",
+        "value": "8px 12px 24px -12px rgb(24 17 34 / 38%)",
+        "purpose": "Services and Name Change square illustration at rest."
+      },
+      {
+        "name": "services-artwork-landscape-hover",
+        "value": "10px 20px 30px -14px rgb(24 17 34 / 42%)",
+        "purpose": "Services chapter artwork hover at landscape widths of at least 1024px."
+      },
+      {
+        "name": "name-change-preparation",
+        "value": "0 16px 30px -18px rgb(24 17 34 / 40%)",
+        "purpose": "Name Change preparation panel only."
+      },
+      {
+        "name": "about-expertise-landscape",
+        "value": "0 14px 28px -16px rgb(24 17 34 / 35%)",
+        "purpose": "Existing compact About expertise cards within their landscape override."
+      }
+    ],
+    "motion": [
+      {
+        "name": "services-artwork-assembly",
+        "value": "700ms cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "Once-only chapter artwork assembly from translate -28px 10px, in landscape at least 1024px when reduced motion is not requested."
+      },
+      {
+        "name": "services-copy-assembly",
+        "value": "760ms cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "Once-only chapter copy assembly from translate 28px 10px under the same landscape and motion conditions."
+      },
+      {
+        "name": "services-seam-assembly",
+        "value": "900ms cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "Once-only chapter seam scales from .7 1 under the same landscape and motion conditions."
+      },
+      {
+        "name": "services-action-transition",
+        "value": "200ms ease",
+        "purpose": "Background, transform and shadow response; hover rises 2px."
+      },
+      {
+        "name": "services-artwork-transition",
+        "value": "300ms ease",
+        "purpose": "Artwork transform and shadow response; landscape hover rises 5px."
+      },
+      {
+        "name": "services-reduced-motion",
+        "value": "none",
+        "purpose": "Services and Name Change remove animation, transition and hover translation under prefers-reduced-motion: reduce; chapter navigation scrolls immediately. This does not claim inherited About motion is changed."
+      }
+    ],
+    "breakpoints": [
+      { "name": "services-mobile-max-width", "value": "767px" },
+      { "name": "services-about-landscape-min-width", "value": "1024px" },
+      { "name": "services-action-stack-max-width", "value": "1199px" },
+      { "name": "services-six-column-index-landscape-min-width", "value": "2200px" },
+      { "name": "about-hero-supporting-type-laptop-max-width", "value": "1599px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Services gold action",
+      "kind": "button",
+      "refersTo": "service-button-gold",
+      "description": "Visible primary action. Existing services book; Name Change uses Enquire Now and the contact route.",
+      "html": "<a class=\"ds-service-gold\" href=\"/booking\"><svg aria-hidden=\"true\" width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 2v4M16 2v4\"/><rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M3 10h18\"/></svg>Book Now</a>",
+      "css": ".ds-service-gold{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px;padding:11px 20px;border:1px solid transparent;border-radius:8px;background:#d3af54;color:#181122;font:600 clamp(16px,10px + .45vw,21px)/1.35 'Source Sans 3',sans-serif;text-decoration:none;box-shadow:0 6px 14px -10px rgb(77 55 15 / 50%);transition:background 200ms ease,transform 200ms ease,box-shadow 200ms ease}.ds-service-gold:hover{background:#e1be65;box-shadow:0 8px 18px -10px rgb(77 55 15 / 50%);transform:translateY(-2px)}.ds-service-gold:focus-visible{outline:3px solid #8b651e;outline-offset:5px}@media(prefers-reduced-motion:reduce){.ds-service-gold{transition:none}.ds-service-gold:hover{transform:none}}"
+    },
+    {
+      "name": "Services outline action",
+      "kind": "button",
+      "description": "Read More keeps the service information route visible beside the primary action.",
+      "html": "<a class=\"ds-service-outline\" href=\"/services/numerology\">Read More<svg aria-hidden=\"true\" width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14m-7-7 7 7-7 7\"/></svg></a>",
+      "css": ".ds-service-outline{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px;padding:11px 20px;border:1px solid #aa8b48;border-radius:8px;color:#493621;font:600 clamp(16px,10px + .45vw,21px)/1.35 'Source Sans 3',sans-serif;text-decoration:none;transition:background 200ms ease,transform 200ms ease,box-shadow 200ms ease}.ds-service-outline:hover{background:#e1d6b8;transform:translateY(-2px)}.ds-service-outline:focus-visible{outline:3px solid #8b651e;outline-offset:5px}@media(prefers-reduced-motion:reduce){.ds-service-outline{transition:none}.ds-service-outline:hover{transform:none}}"
+    },
+    {
+      "name": "Services jump-link item",
+      "kind": "nav",
+      "description": "One of six consultation links: contrasting plum band on landscape, three columns below 2200px and six above. The incumbent light two-column portrait/mobile index is unchanged.",
+      "html": "<nav class=\"ds-services-index\" aria-label=\"Consultation preview\"><a href=\"/services?focus=numerology\"><svg aria-hidden=\"true\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"><path d=\"M4 9h16M3 15h16M10 3 8 21M16 3l-2 18\"/></svg><span>General Numerology</span></a></nav>",
+      "css": ".ds-services-index{background:#181122;border:0;padding:8px;border-radius:8px;box-shadow:0 12px 24px -18px rgb(24 17 34 / 45%)}.ds-services-index a{display:flex;align-items:center;gap:12px;min-height:56px;padding:12px 16px;border-radius:4px;color:#f4efdf;font:600 clamp(16px,10px + .45vw,21px)/1.55 'Source Sans 3','Segoe UI',sans-serif;text-decoration:none;transition:background 200ms ease,color 200ms ease}.ds-services-index svg{flex:0 0 22px;color:#d3af54}.ds-services-index a:hover{background:#30263c;color:#f2d386}.ds-services-index a:focus-visible{outline:3px solid #e4c478;outline-offset:-3px;background:#30263c}@media(prefers-reduced-motion:reduce){.ds-services-index a{transition:none}}"
+    },
+    {
+      "name": "Services focus topics",
+      "kind": "custom",
+      "description": "Two noninteractive focus labels; these describe the consultation without promising outcomes.",
+      "html": "<ul class=\"ds-service-focus\" aria-label=\"General Numerology focus areas\"><li><svg aria-hidden=\"true\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"><path d=\"M4 9h16M3 15h16M10 3 8 21M16 3l-2 18\"/></svg><span>Core numbers</span></li><li><svg aria-hidden=\"true\" width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"6\" cy=\"17\" r=\"3\"/><path d=\"M9 17h8a4 4 0 0 0 0-8H7a4 4 0 0 1 0-8h8\"/><circle cx=\"18\" cy=\"3\" r=\"3\"/></svg><span>Life path</span></li></ul>",
+      "css": ".ds-service-focus{display:flex;flex-wrap:wrap;list-style:none;gap:12px 28px;margin:0;padding:0;color:#4b3f36;font:500 clamp(16px,10px + .45vw,21px)/1.55 'Source Sans 3','Segoe UI',sans-serif}.ds-service-focus li{display:flex;align-items:center;gap:10px}.ds-service-focus svg{flex-shrink:0;color:#8c671e}"
+    },
+    {
+      "name": "Services price and unit",
+      "kind": "custom",
+      "description": "Price remains visible; the optional unit belongs beside it. Name Change instead displays Contact for pricing.",
+      "html": "<p class=\"ds-service-price\"><span>₹1,100</span><span class=\"ds-service-price-unit\">per question</span></p>",
+      "css": ".ds-service-price{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;margin:0;color:#181122;font:600 clamp(22px,15px + .6vw,31px)/1.3 'Source Sans 3',sans-serif}.ds-service-price-unit{font-size:clamp(16px,10px + .45vw,21px);font-weight:400}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Incumbent navy, gold and beige",
+    "overview": "The completed Services presentation continues the established celestial identity through illustrated chapters, readable typography and visible actions. The image gives each consultation its own character; concise copy, two focus topics and the price support comparison. Name Change uses the same local presentation in its new information page.",
+    "keyCharacteristics": [
+      "Existing navy, gold and beige identity with Source Serif 4 headings and Source Sans 3 reading text on the scoped surfaces.",
+      "Six illustrated Services chapters with readable content and actions at rest.",
+      "Separate Services portrait/mobile layout; compact About expertise changes confined to landscape."
+    ],
+    "rules": [],
+    "dos": [
+      "Do preserve the approved Home/About identity and use the Services tokens only within their declared scope.",
+      "Do keep all six consultations, their illustrations, two focus topics and visible actions easy to compare.",
+      "Do allow short landscape screens and long text to grow without clipping, and inspect mobile independently.",
+      "Do keep the protected About Outfit hero title, shared header/main-footer sizing and booking behavior intact."
+    ],
+    "donts": [
+      "Don't apply the historical generic Cinzel/Playfair/Inter suggestions or older palette table to the approved refined surfaces.",
+      "Don't turn the Services chapter pattern or its square artwork into a universal rule for unrelated pages.",
+      "Don't invent a Name Change price, consultation duration, outcome guarantee or supporting credential.",
+      "Don't treat inherited certificate placeholders, promotional claims or generated composition text as validated evidence."
+    ]
+  }
+}

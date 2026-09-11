@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, Calendar, Phone } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Menu, X, ChevronDown, Calendar, Phone, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import logoImg from "../assets/logos/Nav-Logo.webp";
+import { publicServices } from "../data/publicServices";
+import "./Navbar.css";
 
 const MotionLink = motion.create ? motion.create(Link) : motion(Link);
 
@@ -13,13 +15,59 @@ const MotionLink = motion.create ? motion.create(Link) : motion(Link);
  */
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [servicesOpen, setServicesOpen] = useState(false);
+  const [servicesMode, setServicesMode] = useState(null);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  const servicesOpen = servicesMode !== null;
   const [hoveredIdx, setHoveredIdx] = useState(null);
+  const menuButtonRef = useRef(null);
+  const servicesRef = useRef(null);
+  const servicesButtonRef = useRef(null);
 
   const location = useLocation();
 
-  const toggleMenu = () => setIsOpen(!isOpen);
-  const toggleServices = () => setServicesOpen(!servicesOpen);
+  const closeNavigation = () => {
+    setIsOpen(false);
+    setServicesMode(null);
+    setMobileServicesOpen(false);
+    setHoveredIdx(null);
+  };
+  const toggleMenu = () => {
+    setIsOpen(open => !open);
+    setMobileServicesOpen(false);
+  };
+
+  // Route changes and outside interactions dismiss the disclosure. A focused
+  // trigger no longer forces the list to stay visible after navigation.
+  useEffect(() => {
+    setServicesMode(null);
+    setMobileServicesOpen(false);
+    setIsOpen(false);
+    setHoveredIdx(null);
+  }, [location.key]);
+
+  useEffect(() => {
+    const dismissOutside = event => {
+      if (!servicesRef.current?.contains(event.target)) setServicesMode(null);
+    };
+    document.addEventListener("pointerdown", dismissOutside);
+    return () => document.removeEventListener("pointerdown", dismissOutside);
+  }, []);
+
+  // Desktop and mobile share one six-service list and a separate index action.
+  const serviceLinks = () => <>
+    <Link to="/services" className="site-service-link site-service-link--all" onClick={closeNavigation}
+      aria-current={location.pathname === "/services" ? "page" : undefined}>
+      All Services <ArrowRight size={18} aria-hidden="true" />
+    </Link>
+    <ul>
+      {publicServices.map(service => <li key={service.id}>
+        <Link to={`/services/${service.id}`} className="site-service-link" onClick={closeNavigation}
+          aria-current={location.pathname === `/services/${service.id}` ? "page" : undefined}>
+          {service.title}
+        </Link>
+      </li>)}
+    </ul>
+  </>;
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -52,20 +100,36 @@ export default function Navbar() {
   };
 
   return (
-    <header 
+    <header
+      onKeyDown={(event) => {
+        if (event.key !== "Escape") return;
+        if (servicesOpen) {
+          event.preventDefault();
+          setServicesMode(null);
+          servicesButtonRef.current?.focus();
+        } else if (mobileServicesOpen) {
+          event.preventDefault();
+          setMobileServicesOpen(false);
+          document.getElementById("mobile-services-trigger")?.focus();
+        } else if (isOpen) {
+          event.preventDefault();
+          closeNavigation();
+          menuButtonRef.current?.focus();
+        }
+      }}
       style={{
         background: "var(--nav-bg)",
         borderColor: "var(--nav-border)",
         backdropFilter: "blur(12px)",
         ...navStyles
       }}
-      className="w-full text-white border-b sticky top-0 z-50 shadow-[0_4px_30px_rgba(211,175,84,0.06)] transition-all duration-300"
+      className="site-header w-full text-white border-b sticky top-0 z-50 shadow-[0_4px_30px_rgba(211,175,84,0.06)] transition-all duration-300"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-21">
+        <div className="site-header-row flex items-center justify-between h-21">
 
           {/* Logo Section */}
-          <Link to="/" className="flex items-center gap-1 pt-3 cursor-pointer group">
+          <Link to="/" className="site-header-brand flex items-center gap-1 pt-3 cursor-pointer group">
             <img
               src={logoImg}
               alt="Kundan Singh Logo"
@@ -74,92 +138,44 @@ export default function Navbar() {
 
             {/* Vertical Alignment: Astroadvice by (above), Kundan Singh (below) */}
             <div className="flex flex-col justify-center text-left">
-              <span className="text-[10px] text-[#D8CFEB] tracking-widest uppercase font-medium leading-none transition-colors group-hover:text-white">
+              <span className="site-header-brand-intro text-[10px] text-[#D8CFEB] tracking-widest uppercase font-medium leading-none transition-colors group-hover:text-white">
                 Astroadvice by
               </span>
-              <span className="text-lg md:text-xl font-bold text-[#D3AF54] font-serif tracking-wide mt-1 leading-none block transition-colors group-hover:text-gold-aura">
+              <span className="site-header-brand-name text-lg md:text-xl font-bold text-[#D3AF54] font-serif tracking-wide mt-1 leading-none block transition-colors group-hover:text-gold-aura">
                 Kundan Singh
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Menu (Horizontal Neon sliding pill indicator) */}
-          <nav className="hidden lg:flex items-center gap-1.5 translate-y-1 relative">
+          <nav className="site-header-nav hidden lg:flex items-center gap-1.5 translate-y-1 relative">
             {navItems.map((item, idx) => {
               const isIndicatorActive = currentIndicatorIdx === idx;
               
               if (item.isDropdown) {
                 return (
-                  <div
-                    key={idx}
-                    className="relative group"
-                    onMouseEnter={() => setHoveredIdx(idx)}
-                    onMouseLeave={() => setHoveredIdx(null)}
-                  >
-                    {/* Parent Dropdown Link node */}
-                    <Link
-                      to="/services"
-                      className="relative z-10 px-4 py-2 block text-sm font-medium transition-colors text-slate-300 hover:text-white cursor-pointer focus:outline-none"
-                    >
-                      {item.name}
-                    </Link>
-                    
-                    {/* Submenu Dropdown Panel */}
-                    <div className="absolute top-full left-0 mt-2 w-56 bg-[#181122]/95 border border-[#AB7A57]/20 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 backdrop-blur-md">
-                      <div className="py-2.5">
-                        <Link
-                          to="/services/vedic-astrology"
-                          className={`block px-5 py-2 text-sm transition-colors ${
-                            location.pathname === "/services/vedic-astrology"
-                              ? "text-[#D3AF54] font-semibold bg-white/5"
-                              : "text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5"
-                          }`}
-                        >
-                          Vedic Astrology
-                        </Link>
-                        <Link
-                          to="/services/numerology"
-                          className={`block px-5 py-2 text-sm transition-colors ${
-                            location.pathname === "/services/numerology"
-                              ? "text-[#D3AF54] font-semibold bg-white/5"
-                              : "text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5"
-                          }`}
-                        >
-                          Numerology
-                        </Link>
-                        <Link
-                          to="/services/vastu"
-                          className={`block px-5 py-2 text-sm transition-colors ${
-                            location.pathname === "/services/vastu"
-                              ? "text-[#D3AF54] font-semibold bg-white/5"
-                              : "text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5"
-                          }`}
-                        >
-                          Vastu Consultation
-                        </Link>
-                        <Link
-                          to="/services/laal-kitaab"
-                          className={`block px-5 py-2 text-sm transition-colors ${
-                            location.pathname === "/services/laal-kitaab"
-                              ? "text-[#D3AF54] font-semibold bg-white/5"
-                              : "text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5"
-                          }`}
-                        >
-                          Laal Kitaab Remedies
-                        </Link>
-                        <Link
-                          to="/services/prashna-kundali"
-                          className={`block px-5 py-2 text-sm transition-colors ${
-                            location.pathname === "/services/prashna-kundali"
-                              ? "text-[#D3AF54] font-semibold bg-white/5"
-                              : "text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5"
-                          }`}
-                        >
-                          Prashna Kundali
-                        </Link>
-
-                      </div>
-                    </div>
+                  <div key={idx} ref={servicesRef} className="relative"
+                    onMouseEnter={() => { setHoveredIdx(idx); setServicesMode(mode => mode || "hover"); }}
+                    onMouseLeave={() => { setHoveredIdx(null); setServicesMode(null); }}
+                    onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setServicesMode(null); }}>
+                    {/* Parent Dropdown Link node — now a disclosure button, not a destination. */}
+                    <button ref={servicesButtonRef} type="button" id="desktop-services-trigger"
+                      className="site-services-trigger relative z-10 px-4 py-2 text-sm font-medium transition-colors text-slate-300 hover:text-white cursor-pointer"
+                      aria-expanded={servicesOpen} aria-controls="desktop-service-links" data-active={activeIdx === idx}
+                      onClick={() => setServicesMode(mode => mode === "press" ? null : "press")}
+                      onKeyDown={event => {
+                        if (event.key === "ArrowDown") {
+                          event.preventDefault();
+                          setServicesMode("press");
+                          requestAnimationFrame(() => document.querySelector("#desktop-service-links a")?.focus());
+                        }
+                      }}>
+                      {item.name}<ChevronDown size={14} aria-hidden="true" className={servicesOpen ? "rotate-180" : ""} />
+                    </button>
+                    {/* Submenu Dropdown Panel — the padded bridge keeps pointer travel continuous. */}
+                    {servicesOpen && <div id="desktop-service-links" className="site-services-dropdown" aria-labelledby="desktop-services-trigger">
+                      <div className="site-services-panel">{serviceLinks()}</div>
+                    </div>}
                   </div>
                 );
               }
@@ -196,13 +212,13 @@ export default function Navbar() {
           </nav>
 
           {/* Desktop Right Action Panel */}
-          <div className="hidden lg:flex flex-col items-end gap-1 relative group">
+          <div className="site-header-actions hidden lg:flex flex-col items-end gap-1 relative group">
             {/* Contact Phone */}
-            <div className="flex items-center gap-2 text-[#D3AF54] text-xs font-semibold">
-              <div className="w-5 h-5 rounded-full bg-[#D3AF54] text-[#181122] flex items-center justify-center shadow-[0_0_8px_rgba(211,175,84,0.35)] shrink-0">
+            <div className="site-header-contact flex items-center gap-2 text-[#D3AF54] text-xs font-semibold">
+              <div className="site-header-phone-icon w-5 h-5 rounded-full bg-[#D3AF54] text-[#181122] flex items-center justify-center shadow-[0_0_8px_rgba(211,175,84,0.35)] shrink-0">
                 <Phone size={10} className="fill-[#181122] text-[#181122]" />
               </div>
-              <span className="tracking-wide">+91 8130808758 | +91 8527790801</span>
+              <span className="site-header-phones tracking-wide"><span>+91 8130808758</span><span className="site-header-phone-separator"> | </span><span>+91 8527790801</span></span>
             </div>
 
             <div className="relative">
@@ -211,7 +227,7 @@ export default function Navbar() {
                 to="/booking"
                 whileHover={{ scale: 1.05, y: -1, boxShadow: "0 0 15px rgba(211, 175, 84, 0.45)" }}
                 whileTap={{ scale: 0.98 }}
-                className="bg-[#D3AF54] text-[#181122] font-semibold px-4 py-1.5 rounded-lg flex items-center gap-2 transition text-xs cursor-pointer shadow-[0_0_15px_rgba(211, 175, 84, 0.25)]"
+                className="site-header-booking bg-[#D3AF54] text-[#181122] font-semibold px-4 py-1.5 rounded-lg flex items-center gap-2 transition text-xs cursor-pointer shadow-[0_0_15px_rgba(211, 175, 84, 0.25)]"
               >
                 <Calendar size={14} />
                 Book Appointment
@@ -239,8 +255,13 @@ export default function Navbar() {
 
           {/* Responsive Hamburger Toggle for Mobile/Tablet */}
           <button 
-            onClick={toggleMenu} 
-            className="lg:hidden text-[#D3AF54] hover:text-[#D3AF54]/80 focus:outline-none p-1 cursor-pointer"
+            ref={menuButtonRef}
+            type="button"
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isOpen}
+            aria-controls="mobile-navigation"
+            onClick={toggleMenu}
+            className="lg:hidden text-[#D3AF54] hover:text-[#D3AF54]/80 focus-visible:outline-2 focus-visible:outline-offset-2 min-w-11 min-h-11 flex items-center justify-center cursor-pointer"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -250,108 +271,23 @@ export default function Navbar() {
 
       {/* Mobile Drawer Panel (Slide down overlay) */}
       {isOpen && (
-        <div className="lg:hidden bg-[#181122]/95 border-t border-white/10 py-4 px-6 space-y-4 shadow-inner backdrop-blur-md">
+        <div id="mobile-navigation" style={{ maxHeight: "calc(100dvh - var(--header-unit) * 5.25 - 1px)" }} className="lg:hidden overflow-y-auto overscroll-contain bg-[#181122]/95 border-t border-white/10 py-4 px-6 space-y-4 shadow-inner backdrop-blur-md">
           <div className="flex flex-col gap-2 relative">
             {navItems.map((item, idx) => {
               const isIndicatorActive = currentIndicatorIdx === idx;
 
               if (item.isDropdown) {
                 return (
-                  <div
-                    key={idx}
-                    className="relative w-full"
-                    onMouseEnter={() => setHoveredIdx(idx)}
-                    onMouseLeave={() => setHoveredIdx(null)}
-                  >
-                    {isIndicatorActive && (
-                      <motion.div
-                        layoutId="active-pill-mobile"
-                        style={{
-                          background: "linear-gradient(135deg, var(--pill-bg-start), var(--pill-bg-end))",
-                          borderColor: "var(--pill-border)",
-                          boxShadow: "0 0 20px var(--pill-glow)",
-                        }}
-                        className="absolute inset-0 border rounded-xl pointer-events-none"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                    
-                    <div className="relative z-10 w-full px-4 py-2.5 flex justify-between items-center text-sm font-medium transition-colors text-slate-300 hover:text-white">
-                      <Link 
-                        to="/services" 
-                        onClick={() => setIsOpen(false)}
-                        className="flex-grow cursor-pointer text-left"
-                      >
-                        Services
-                      </Link>
-                      <button 
-                        onClick={toggleServices}
-                        className="p-1 cursor-pointer focus:outline-none"
-                      >
-                        <ChevronDown size={16} className={`transform transition-transform duration-200 ${servicesOpen ? "rotate-180" : ""}`} />
-                      </button>
-                    </div>
-                    
-                    {servicesOpen && (
-                      <div className="pl-6 mt-1 border-l border-white/10 space-y-2 py-1 relative z-10">
-                        <Link
-                          to="/services/vedic-astrology"
-                          onClick={() => setIsOpen(false)}
-                          className={`block text-xs py-1.5 transition-colors ${
-                            location.pathname === "/services/vedic-astrology"
-                              ? "text-[#D3AF54] font-semibold"
-                              : "text-slate-400 hover:text-white"
-                          }`}
-                        >
-                          Vedic Astrology
-                        </Link>
-                        <Link
-                          to="/services/numerology"
-                          onClick={() => setIsOpen(false)}
-                          className={`block text-xs py-1.5 transition-colors ${
-                            location.pathname === "/services/numerology"
-                              ? "text-[#D3AF54] font-semibold"
-                              : "text-slate-400 hover:text-white"
-                          }`}
-                        >
-                          Numerology
-                        </Link>
-                        <Link
-                          to="/services/vastu"
-                          onClick={() => setIsOpen(false)}
-                          className={`block text-xs py-1.5 transition-colors ${
-                            location.pathname === "/services/vastu"
-                              ? "text-[#D3AF54] font-semibold"
-                              : "text-slate-400 hover:text-white"
-                          }`}
-                        >
-                          Vastu Consultation
-                        </Link>
-                        <Link
-                          to="/services/laal-kitaab"
-                          onClick={() => setIsOpen(false)}
-                          className={`block text-xs py-1.5 transition-colors ${
-                            location.pathname === "/services/laal-kitaab"
-                              ? "text-[#D3AF54] font-semibold"
-                              : "text-slate-400 hover:text-white"
-                          }`}
-                        >
-                          Laal Kitaab Remedies
-                        </Link>
-                        <Link
-                          to="/services/prashna-kundali"
-                          onClick={() => setIsOpen(false)}
-                          className={`block text-xs py-1.5 transition-colors ${
-                            location.pathname === "/services/prashna-kundali"
-                              ? "text-[#D3AF54] font-semibold"
-                              : "text-slate-400 hover:text-white"
-                          }`}
-                        >
-                          Expertise in Prashna Kundli
-                        </Link>
-
-                      </div>
-                    )}
+                  <div key={idx} className="relative w-full">
+                    <button type="button" id="mobile-services-trigger"
+                      className="site-services-trigger relative z-10 w-full px-4 py-2.5 min-h-11 justify-between text-sm font-medium text-slate-300 cursor-pointer"
+                      aria-expanded={mobileServicesOpen} aria-controls="mobile-service-links" data-active={activeIdx === idx}
+                      onClick={() => setMobileServicesOpen(open => !open)}>
+                      Services <ChevronDown size={16} aria-hidden="true" className={mobileServicesOpen ? "rotate-180" : ""} />
+                    </button>
+                    {mobileServicesOpen && <div id="mobile-service-links" className="site-services-mobile" aria-labelledby="mobile-services-trigger">
+                      {serviceLinks()}
+                    </div>}
                   </div>
                 );
               }
@@ -377,7 +313,7 @@ export default function Navbar() {
                   )}
                   <Link
                     to={item.path}
-                    onClick={() => setIsOpen(false)}
+                    onClick={closeNavigation}
                     className="relative z-10 px-4 py-2.5 block text-sm font-medium transition-colors text-slate-300 hover:text-white"
                   >
                     {item.name}
@@ -400,7 +336,7 @@ export default function Navbar() {
             {/* CTA Button */}
             <Link 
               to="/booking"
-              onClick={() => setIsOpen(false)}
+              onClick={closeNavigation}
               className="bg-[#D3AF54] hover:bg-[#D3AF54]/90 text-[#181122] font-semibold px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition text-sm w-full shadow-[0_0_15px_rgba(211, 175, 84, 0.25)]"
             >
               <Calendar size={16} />

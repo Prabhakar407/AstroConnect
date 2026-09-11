@@ -4,7 +4,7 @@ import {
   Phone, 
   Mail, 
   MapPin, 
-  Clock, 
+  CalendarClock,
   Send, 
   User, 
   Check, 
@@ -14,12 +14,12 @@ import {
   HelpCircle
 } from 'lucide-react'
 import EmailOtpModal from './EmailOtpModal'
-import callLogo from "../assets/logos/Call.webp"
+import './Contact.css'
 import gmailLogo from "../assets/logos/gmail.webp"
 import mapsLogo from "../assets/logos/google-maps.webp"
 import waLogo from "../assets/logos/whatsapp.webp"
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com"
+import { sendVerification, submitInquiry } from '../lib/formApi'
 
 const faqs = [
   {
@@ -31,13 +31,14 @@ const faqs = [
     a: "Both! Online sessions are held via Zoom or Google Meet. In-person consultations are available at Vasant Kunj, Delhi by prior appointment only."
   },
   {
-    q: "How long does a session last?",
-    a: "Standard readings last 30 minutes, which includes chart details analysis and a dedicated Q&A session."
+    q: "What does a consultation include?",
+    a: "A consultation includes an analysis relevant to your chosen service and an opportunity to discuss your questions."
   }
 ];
 
 function Contact() {
   const helpFormRef = useRef(null)
+  const inquiryRequest = useRef(null)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -128,31 +129,26 @@ function Contact() {
       return
     }
 
-    // Instantly open the OTP modal so user experiences 0ms UI delay
-    setShowOtpModal(true)
-    setSubmitting(false)
-
-    // Trigger OTP sending in parallel
+    // Open verification only after the email provider accepts the code request.
+    if (submitting) return
+    setSubmitting(true)
     try {
-      fetch(`${API_BASE_URL}/api/auth/send-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email, purpose: "contact" })
-      }).catch((err) => {
-        console.warn("OTP dispatch notice:", err)
-      })
+      await sendVerification(formData.email, 'contact')
+      setShowOtpModal(true)
     } catch (err) {
-      console.warn("OTP dispatch exception:", err)
+      setServerError(err.message)
+    } finally {
+      setSubmitting(false)
     }
   }
 
-  const executeContactSubmit = (verificationToken) => {
-    // 1. Immediately close OTP modal and display confirmation screen (zero waiting time)
+  const executeContactSubmit = async (verificationToken) => {
+    // Close the verification modal; keep the form visible until storage succeeds.
     setShowOtpModal(false)
-    setSubmitted(true)
+    setSubmitting(true)
     setServerError("")
 
-    // Build fallback WhatsApp url immediately
+    // This is a separate, customer-initiated WhatsApp action, not an automatic send.
     const messageText = `✦ New Inquiry from Astrology Website ✦\n\n` +
       `👤 Name: ${formData.name.trim()}\n` +
       `📧 Email: ${formData.email.trim()}\n` +
@@ -161,26 +157,25 @@ function Contact() {
       `💬 Message: ${formData.message.trim()}`
 
     const encodedText = encodeURIComponent(messageText)
-    const whatsappUrl = `https://wa.me/918114292972?text=${encodedText}`
+    const whatsappUrl = `https://wa.me/918527790801?text=${encodedText}`
     setCurrentWhatsappUrl(whatsappUrl)
 
-    // 2. Dispatch contact inquiry to server asynchronously in background
-    fetch(`${API_BASE_URL}/api/contact`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    // A confirmation means the server has durably accepted this inquiry.
+    try {
+      await submitInquiry('/api/contact', {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
         subject: formData.subject,
-        message: formData.message,
+        message: formData.message || 'Please contact me about this inquiry.',
         verification_token: verificationToken,
-      }),
-    }).catch((err) => {
-      console.error("Background contact dispatch error:", err)
-    })
+      }, inquiryRequest)
+      setSubmitted(true)
+    } catch (err) {
+      setServerError(err.message)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const handleCopyText = (text, type) => {
@@ -256,54 +251,25 @@ function Contact() {
                   </div>
                 </a>
 
-                {/* Call Rows */}
-                <div className="flex flex-col gap-2.5 p-3 rounded-2xl bg-white/[0.02] border border-white/5 w-full">
-                  <div className="flex items-center justify-between group">
-                    <a href="tel:+918130808758" className="flex items-center gap-3 hover:text-[#D3AF54] transition-colors">
-                      <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                        <img src={callLogo} alt="Call" className="w-4.5 h-4.5 object-contain" />
-                      </div>
-                      <div>
-                        <div className="text-xs uppercase font-serif font-bold tracking-wider leading-none" style={{ color: '#AB7A57' }}>
-                          Call Helpline 1
-                        </div>
-                        <p className="text-sm font-semibold text-[#D8CFEB] mt-1">+91 8130808758</p>
-                      </div>
-                    </a>
-                    <button 
-                      type="button"
-                      onClick={() => handleCopyText("+918130808758", "phone")}
-                      className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer relative shrink-0"
-                    >
-                      {copiedType === "phone" ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-                      {copiedType === "phone" && (
-                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded shadow">Copied</span>
-                      )}
-                    </button>
+                {/* One shared phone icon, with both direct-call and copy actions. */}
+                <div className="contact-phone-group flex items-start gap-3 w-full">
+                  <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-[#D3AF54]">
+                    <Phone size={20} strokeWidth={1.7} aria-hidden="true" />
                   </div>
-
-                  <div className="flex items-center justify-between group border-t border-white/5 pt-2.5">
-                    <a href="tel:+918527790801" className="flex items-center gap-3 hover:text-[#D3AF54] transition-colors">
-                      <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
-                        <img src={callLogo} alt="Call" className="w-4.5 h-4.5 object-contain" />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs uppercase font-serif font-bold tracking-wider leading-none text-[#AB7A57]">Call Us</div>
+                    {[
+                      { number: '+918130808758', label: '+91 8130808758', key: 'phone' },
+                      { number: '+918527790801', label: '+91 8527790801', key: 'phone2' },
+                    ].map(({ number, label, key }) => (
+                      <div key={key} className="flex items-center justify-between gap-2">
+                        <a href={`tel:${number}`} className="contact-phone-number text-sm font-semibold text-[#D8CFEB] hover:text-[#D3AF54] transition-colors">{label}</a>
+                        <button type="button" onClick={() => handleCopyText(number, key)} aria-label={`Copy ${label}`} className="contact-copy-phone rounded-lg text-[#D8CFEB] hover:text-[#D3AF54] hover:bg-white/5 transition cursor-pointer relative shrink-0">
+                          {copiedType === key ? <Check size={15} className="text-emerald-400" /> : <Copy size={15} />}
+                          {copiedType === key && <span role="status" className="absolute -top-8 right-0 bg-black text-white text-xs px-2 py-1 rounded shadow">Copied</span>}
+                        </button>
                       </div>
-                      <div>
-                        <div className="text-xs uppercase font-serif font-bold tracking-wider leading-none" style={{ color: '#AB7A57' }}>
-                          Call Helpline 2
-                        </div>
-                        <p className="text-sm font-semibold text-[#D8CFEB] mt-1">+91 8527790801</p>
-                      </div>
-                    </a>
-                    <button 
-                      type="button"
-                      onClick={() => handleCopyText("+918527790801", "phone2")}
-                      className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer relative shrink-0"
-                    >
-                      {copiedType === "phone2" ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-                      {copiedType === "phone2" && (
-                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded shadow">Copied</span>
-                      )}
-                    </button>
+                    ))}
                   </div>
                 </div>
 
@@ -350,11 +316,15 @@ function Contact() {
             </div>
 
             {/* Operational Hours / Map Button */}
-            <div className="pt-4 border-t border-white/10 mt-auto relative z-10 text-left space-y-2.5">
-              <p className="text-xs text-slate-300 flex items-center gap-1.5">
-                <Clock size={13} />
-                <span>Mon - Sat: 10:00 AM - 12:00 PM & 3:00 PM - 6:00 PM</span>
-              </p>
+            <div className="pt-4 border-t border-white/10 mt-5 relative z-10 text-left space-y-2.5">
+              <div className="contact-office-hours text-xs text-slate-300 flex items-start gap-3">
+                <CalendarClock size={22} strokeWidth={1.7} className="shrink-0 text-[#D3AF54]" aria-hidden="true" />
+                <div className="grid gap-1">
+                  <span className="font-semibold text-[#F4EFDF]">Monday–Saturday</span>
+                  <span>10 am–12 pm</span>
+                  <span>3 pm–6 pm</span>
+                </div>
+              </div>
               <div className="w-full rounded-xl overflow-hidden border border-white/10 shadow-md">
                 <iframe 
                   title="Astrologer Kundan Singh Location Map"
@@ -386,7 +356,7 @@ function Contact() {
                 </div>
                 <h4 className="font-serif font-bold text-[#181122] text-lg tracking-wide">Message Submitted!</h4>
                 <p className="text-[11px] text-slate-500 font-sans max-w-xs mx-auto leading-relaxed">
-                  Thank you. Your inquiry has been received by our server and saved locally in `local_contacts.json`. If SMS credentials are set, it has been sent directly to +91 8114292972.
+                  Thank you. Your inquiry has been saved. For anything urgent, please call +91 85277 90801 or contact us on WhatsApp below.
                 </p>
                 
                 <div className="max-w-xs mx-auto pt-2 flex flex-col gap-2.5">
@@ -400,7 +370,7 @@ function Contact() {
                     <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path d="M17.472 14.382c-.022-.079-.186-.208-.432-.332-.246-.125-1.453-.717-1.677-.799-.224-.083-.388-.124-.552.124-.164.248-.636.799-.78 1.002-.144.202-.288.227-.534.103-.247-.124-.967-.356-1.842-1.139-.68-.606-1.138-1.353-1.272-1.584-.134-.23-.014-.354.11-.478.11-.112.247-.29.37-.435.124-.144.164-.247.247-.413.082-.164.041-.309-.02-.433-.062-.124-.552-1.332-.756-1.823-.198-.477-.399-.413-.55-.413-.142-.002-.306-.002-.471-.002-.165 0-.435.062-.662.309-.227.247-.866.845-.866 2.062 0 1.218.887 2.395.986 2.548.099.15 1.745 2.664 4.228 3.733.59.255 1.05.408 1.408.522.593.189 1.133.162 1.558.1.474-.071 1.453-.593 1.657-1.137.204-.544.204-1.01.144-1.107L17.472 14.382zM12 2C6.478 2 2 6.478 2 12c0 1.91.536 3.693 1.464 5.228L2 22l4.908-1.294C8.36 21.572 10.106 22 12 22c5.522 0 10-4.478 10-10S17.522 2 12 2zm0 18c-1.634 0-3.15-.472-4.436-1.282l-.318-.202-2.923.77.784-2.85-.22-.352C3.968 14.86 3.5 13.5 3.5 12c0-4.687 3.813-8.5 8.5-8.5s8.5 3.813 8.5 8.5-3.813 8.5-8.5 8.5z"/>
                     </svg>
-                    <span>Chat on WhatsApp (Backup)</span>
+                    <span>Continue on WhatsApp</span>
                   </a>
                 </div>
                 
@@ -418,9 +388,9 @@ function Contact() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleContactSubmit} className="space-y-3.5 text-left flex flex-col justify-between h-full">
+              <form onSubmit={handleContactSubmit} className="contact-message-form text-left flex flex-col justify-between h-full">
                 {serverError && (
-                  <div className="p-3 bg-red-950/60 border border-red-500/40 rounded-xl text-red-200 text-xs text-center font-sans tracking-wide">
+                  <div role="alert" className="p-3 bg-red-50 border border-red-300 rounded-xl text-red-900 text-sm text-center font-sans leading-relaxed">
                     ⚠️ {serverError}
                   </div>
                 )}
@@ -490,7 +460,7 @@ function Contact() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        placeholder="Mobile Number (e.g. 9876543210)"
+                        placeholder="e.g. 9876543210"
                         className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#181122] focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition font-sans"
                       />
                     </div>
@@ -540,7 +510,7 @@ function Contact() {
                   />
                 </div>
 
-                <div className="pt-2 mt-auto">
+                <div className="pt-2">
                   <button 
                     type="submit"
                     className="w-full bg-[#181122] hover:bg-[#D3AF54] text-white hover:text-[#181122] font-semibold py-3 rounded-xl transition duration-300 flex items-center justify-center gap-1.5 text-xs sm:text-sm uppercase tracking-wider cursor-pointer shadow"

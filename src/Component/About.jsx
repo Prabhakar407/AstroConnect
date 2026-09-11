@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import aboutImg from '../assets/images/About.webp'
-import vedicAstrologyImg from '../assets/images/Vedic Astrology.webp'
-import numerologyImg from '../assets/images/Numerology.webp'
-import vastuConsultationImg from '../assets/images/Vastu Consultation.webp'
-import laalKitaabImg from '../assets/images/Laal Kitaab Remedies.webp'
-import prashnaKundliImg from '../assets/images/Prashna Kundli.webp'
+import './About.css'
+import { publicServices } from '../data/publicServices'
+import { ServiceFocus } from './ServicePresentation'
 
 import { 
   Award, 
@@ -51,6 +49,24 @@ function CelestialDivider() {
  * Premium luxury About page for Astrologer Kundan Singh.
  */
 function About() {
+  const pageRef = useRef(null)
+
+  // Measure the existing header and overlapping tray without changing shared chrome sizing.
+  useEffect(() => {
+    const header = document.querySelector('header')
+    const proof = pageRef.current?.querySelector('.about-proof')
+    if (!header || !proof) return
+    const updateSceneSize = () => {
+      pageRef.current?.style.setProperty('--about-header-height', `${header.getBoundingClientRect().height}px`)
+      pageRef.current?.style.setProperty('--about-proof-half', `${proof.getBoundingClientRect().height / 2}px`)
+    }
+    const observer = new ResizeObserver(updateSceneSize)
+    observer.observe(header)
+    observer.observe(proof)
+    updateSceneSize()
+    return () => observer.disconnect()
+  }, [])
+
   const { scrollY } = useScroll()
   const yLeft = useTransform(scrollY, [0, 1000], [0, -30])
   const yRight = useTransform(scrollY, [0, 1000], [0, -70])
@@ -60,29 +76,7 @@ function About() {
   const rCertZodiac = useTransform(scrollY, [300, 1500], [0, 30])
 
   // Expertise Section Grid Data (6 premium cards)
-  const expertiseData = [
-    {
-      title: "Vedic Astrology",
-      image: vedicAstrologyImg
-    },
-    {
-      title: "Numerology",
-      image: numerologyImg
-    },
-    {
-      title: "Vastu Consultation",
-      image: vastuConsultationImg
-    },
-    {
-      title: "Laal Kitaab Remedies",
-      image: laalKitaabImg
-    },
-    {
-      title: "Prashna Kundli",
-      image: prashnaKundliImg
-    },
-
-  ]
+  const expertiseData = publicServices
 
 
 
@@ -106,12 +100,12 @@ function About() {
   }, [certificatesData.length]);
 
   return (
-    <div className="w-full bg-[#FDFCF5] relative flex flex-col items-center font-sans">
+    <div ref={pageRef} className="about-page w-full bg-[#FDFCF5] relative flex flex-col items-center font-sans">
       
       {/* ========================================================= */}
       {/* 1. INTRO / BIOGRAPHY DEEP SPACE BAND SECTION (Navy: #06091B) */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#06091B] relative overflow-hidden flex flex-col items-center border-b border-[#AB7A57]/20 text-white z-10">
+      <div className="about-hero w-full bg-[#06091B] relative overflow-hidden flex flex-col items-center border-b border-[#AB7A57]/20 text-white z-10">
         
         {/* Glow & Luxury SVG Decor Background */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.1),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
@@ -126,26 +120,26 @@ function About() {
         </motion.div>
 
         {/* Capped layout wrapper inside band */}
-        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] flex flex-col items-center">
+        <div className="about-container about-hero-shell w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] flex flex-col items-center">
           
-          <section className="w-full min-h-0 py-10 md:py-16 flex items-center relative z-10">
+          <section className="about-hero-section w-full min-h-0 py-10 md:py-16 flex items-center relative z-10">
             {/* Main Asymmetric Board */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center w-full">
+            <div className="about-hero-layout grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center w-full">
             
             {/* Left Column: Bio Content cards (reversing typical positions) */}
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
-              className="lg:col-span-7 lg:order-1 order-2 flex flex-col text-left justify-start gap-5"
+              className="about-hero-copy lg:col-span-7 lg:order-1 order-2 flex flex-col text-left justify-start gap-5"
             >
               {/* Hero Header Title and Subtitle */}
-              <div className="space-y-3.5 flex flex-col items-start text-left">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#D3AF54]/40 bg-[#D3AF54]/10 text-[#D3AF54] text-[10px] sm:text-xs font-semibold uppercase tracking-widest font-sans w-fit shadow-[0_0_15px_rgba(211,175,84,0.15)]">
+              <div className="about-hero-heading space-y-3.5 flex flex-col items-start text-left">
+                <div className="about-hero-label inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#D3AF54]/40 bg-[#D3AF54]/10 text-[#D3AF54] text-[10px] sm:text-xs font-semibold uppercase tracking-widest font-sans w-fit shadow-[0_0_15px_rgba(211,175,84,0.15)]">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#D3AF54] animate-pulse"></span>
                   <span>Meet The Astrologer</span>
                 </div>
-                <h1 className="font-serif font-bold leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] flex flex-wrap items-baseline gap-x-3 text-left">
+                <h1 className="about-hero-title font-serif font-bold leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] flex flex-wrap items-baseline gap-x-3 text-left">
                   <span 
                     style={{
                       background: 'linear-gradient(135deg, #FFFDEE 0%, #D3AF54 50%, #AB7A57 100%)',
@@ -169,12 +163,12 @@ function About() {
                     Kundan Singh
                   </span>
                 </h1>
-                <p className="text-[#EBDCD4] text-xs sm:text-sm leading-relaxed max-w-xl font-sans font-light border-l-2 border-[#D3AF54]/40 pl-4 py-0.5">
+                <p className="about-hero-description text-[#EBDCD4] text-xs sm:text-sm leading-relaxed max-w-xl font-sans font-light border-l-2 border-[#D3AF54]/40 pl-4 py-0.5">
                   Bridging ancient Vedic wisdom with modern practical insights to light your path to clarity, purpose, and alignment.
                 </p>
               </div>
               {/* Redesigned compact bullet points wrapper block */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 w-full bg-white/[0.02] border border-white/10 rounded-2xl p-5 shadow-inner">
+              <div className="about-bio-points grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 w-full bg-white/[0.02] border border-white/10 rounded-2xl p-5 shadow-inner">
                 <div className="flex gap-3 items-start">
                   <span className="text-[#D3AF54] text-xs mt-1 shrink-0">✦</span>
                   <div className="flex flex-col text-left">
@@ -206,12 +200,12 @@ function About() {
               </div>
 
               {/* Quote Block or callout */}
-              <div className="bg-white/5 border-l-2 border-[#D3AF54] rounded-r-2xl p-5 text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans italic bg-gradient-to-r from-white/5 to-transparent">
+              <div className="about-quote bg-white/5 border-l-2 border-[#D3AF54] rounded-r-2xl p-5 text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans italic bg-gradient-to-r from-white/5 to-transparent">
                 "Our readings are not just predictions; they are strategic pathways designed to empower you with choices that align with your ultimate strengths."
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap gap-4 pt-2">
+              <div className="about-hero-actions flex flex-wrap gap-4 pt-2">
                 <MotionLink 
                   to="/booking" 
                   whileHover={{ scale: 1.03, y: -2, boxShadow: "0 10px 25px rgba(211, 175, 84, 0.25)" }}
@@ -244,10 +238,10 @@ function About() {
               initial={{ opacity: 0, scale: 0.95, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="lg:col-span-5 lg:order-2 order-1 flex justify-center relative w-full pt-2 lg:pt-4 lg:-translate-y-8 lg:scale-105"
+              className="about-hero-portrait lg:col-span-5 lg:order-2 order-1 flex justify-center relative w-full pt-2 lg:pt-4 lg:-translate-y-8 lg:scale-105"
             >
               {/* Elegant Archway/Temple Portal Frame */}
-              <div className="relative w-[clamp(15rem,24vw,22rem)] aspect-[3/4] rounded-t-full border-2 border-[#D3AF54] bg-[#181122] shadow-[0_20px_50px_rgba(211,175,84,0.25)] overflow-hidden flex items-center justify-center group z-10">
+              <div className="about-portrait-frame relative w-[clamp(15rem,24vw,22rem)] aspect-[3/4] rounded-t-full border-2 border-[#D3AF54] bg-[#181122] shadow-[0_20px_50px_rgba(211,175,84,0.25)] overflow-hidden flex items-center justify-center group z-10">
                 <img 
                   src={aboutImg} 
                   alt="Astrologer Kundan Singh" 
@@ -276,15 +270,15 @@ function About() {
       {/* ========================================================= */}
       {/* 2. EXPERTISE SECTION (White background: bg-white)         */}
       {/* ========================================================= */}
-      <div className="w-full bg-white flex flex-col items-center relative z-30">
+      <div className="about-proof-band w-full bg-white flex flex-col items-center relative z-30">
         
         {/* Floating Glassmorphic Stat bar sitting exactly at the boundary (Responsive spacing to prevent overlap) */}
-        <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 relative z-30 mt-10 lg:mt-0 -translate-y-0 lg:-translate-y-1/2">
+        <div className="about-proof w-full max-w-2xl mx-auto px-4 sm:px-6 relative z-30 mt-10 lg:mt-0">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-3xl p-1.5 py-2 sm:p-3 sm:py-3 shadow-2xl relative overflow-hidden grid grid-cols-3 gap-1.5 sm:gap-4 text-center z-30"
+            className="about-proof-grid w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-3xl p-1.5 py-2 sm:p-3 sm:py-3 shadow-2xl relative overflow-hidden grid grid-cols-3 gap-1.5 sm:gap-4 text-center z-30"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.04),transparent_70%)] pointer-events-none"></div>
             
@@ -329,10 +323,10 @@ function About() {
       {/* ========================================================= */}
       {/* 2.1 AREAS OF EXPERTISE CONTENT                           */}
       {/* ========================================================= */}
-      <div className="w-full bg-white border-b border-[#AB7A57]/10 flex flex-col items-center relative py-12 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
+      <div className="about-expertise w-full bg-white border-b border-[#AB7A57]/10 flex flex-col items-center relative py-12 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
         
         {/* Inner container to capture absolute radial leakages safely */}
-        <div className="w-full relative overflow-hidden flex flex-col items-center">
+        <div className="about-expertise-shell w-full relative overflow-hidden flex flex-col items-center">
           <div className="absolute top-1/3 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.04),transparent_70%)] rounded-full pointer-events-none animate-pulse"></div>
           
           <motion.div 
@@ -340,15 +334,15 @@ function About() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full max-w-[2400px] px-6 lg:px-8 flex flex-col items-center pt-8 sm:pt-10 pb-8 sm:pb-12"
+            className="about-container about-expertise-content w-full max-w-[2400px] px-6 lg:px-8 flex flex-col items-center pt-8 sm:pt-10 pb-8 sm:pb-12"
           >
             
             {/* Section Header */}
-            <div className="text-center max-w-3xl mb-6 md:mb-8 relative z-10">
-              <span className="text-[#AB7A57] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
+            <div className="about-section-heading text-center max-w-3xl mb-6 md:mb-8 relative z-10">
+              <span className="about-section-label text-[#AB7A57] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
                 ✦ AREAS OF EXPERTISE ✦
               </span>
-              <h2 className="text-[clamp(1.3rem,2.2vw,2.2rem)] lg:text-3xl font-serif text-[#181122] font-bold mb-3 tracking-wide leading-tight lg:whitespace-nowrap">
+              <h2 className="about-section-title text-[clamp(1.3rem,2.2vw,2.2rem)] lg:text-3xl font-serif text-[#181122] font-bold mb-3 tracking-wide leading-tight lg:whitespace-nowrap">
                 Divine Methods of Guidance
               </h2>
               <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-3 mb-3"></div>
@@ -357,10 +351,10 @@ function About() {
               </p>
             </div>
 
-            {/* 3 + 2 Centered Layout on desktop */}
-            <div className="w-full max-w-5xl z-10 flex flex-wrap justify-center gap-6 px-4">
-              {expertiseData.map((item, idx) => (
-                <div key={idx} className="w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-[320px]">
+            {/* The original centered layout is retained on mobile; landscape uses a compact 3 × 2 grid. */}
+            <div className="about-expertise-grid w-full max-w-5xl z-10 flex flex-wrap justify-center gap-6 px-4">
+              {expertiseData.map((item) => (
+                <div key={item.title} className="about-expertise-item w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] max-w-[320px]">
                   <FeatureCard feature={item} />
                 </div>
               ))}
@@ -375,7 +369,7 @@ function About() {
       {/* ========================================================= */}
       {/* 4. PROFESSIONAL CERTIFICATES (Warm Sand background: #EDE9D7)*/}
       {/* ========================================================= */}
-      <div className="w-full bg-[#EDE9D7] flex justify-center py-16 overflow-hidden relative border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
+      <div className="about-certificates w-full bg-[#EDE9D7] flex justify-center py-16 overflow-hidden relative border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
         
         {/* Parallax Background Zodiac Wheel outline */}
         <motion.div style={{ y: yCertZodiac, rotate: rCertZodiac, willChange: 'transform' }} className="absolute right-4 top-10 w-96 h-96 text-[#AB7A57]/5 pointer-events-none -z-10 select-none opacity-40">
@@ -390,22 +384,22 @@ function About() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="w-full max-w-[2400px]"
+          className="about-container about-certificates-content w-full max-w-[2400px]"
         >
           
-          <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 mb-10 text-center">
-            <span className="text-[#AB7A57] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
+          <div className="about-section-heading w-full max-w-7xl mx-auto px-6 lg:px-8 mb-10 text-center">
+            <span className="about-section-label text-[#AB7A57] text-xs tracking-[0.25em] uppercase font-bold block mb-3 font-sans">
               QUALIFICATIONS & ACCREDITATIONS
             </span>
-            <h2 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif text-[#181122] font-bold">
+            <h2 className="about-section-title text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif text-[#181122] font-bold">
               Certificates
             </h2>
             <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-3"></div>
           </div>
 
           {/* Single-Card Slide Viewer */}
-          <div className="w-full max-w-[620px] mx-auto px-6 relative z-10 flex flex-col items-center">
-            <div className="w-full min-h-[385px] flex items-center justify-center">
+          <div className="about-certificates-viewer w-full max-w-[620px] mx-auto px-6 relative z-10 flex flex-col items-center">
+            <div className="about-certificate-slot w-full min-h-[385px] flex items-center justify-center">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={certIndex}
@@ -413,10 +407,10 @@ function About() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="w-full bg-[#181122] border border-[#D3AF54]/30 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6 sm:gap-8 shadow-2xl relative justify-center"
+                  className="about-certificate-card w-full bg-[#181122] border border-[#D3AF54]/30 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6 sm:gap-8 shadow-2xl relative justify-center"
                 >
                   {/* Left Column: Big Image Frame Placeholder (Narrower & Taller) */}
-                  <div className="w-full md:w-[220px] h-[280px] bg-white/5 border border-white/10 rounded-2xl flex flex-col justify-center items-center relative overflow-hidden shrink-0 group hover:border-[#D3AF54]/40 transition-colors duration-300">
+                  <div className="about-certificate-image w-full md:w-[220px] h-[280px] bg-white/5 border border-white/10 rounded-2xl flex flex-col justify-center items-center relative overflow-hidden shrink-0 group hover:border-[#D3AF54]/40 transition-colors duration-300">
                     {/* Celestial corner frames inside image placeholder */}
                     <div className="absolute top-2 left-2 w-4 h-4 border-t border-l border-[#D3AF54]/30"></div>
                     <div className="absolute top-2 right-2 w-4 h-4 border-t border-r border-[#D3AF54]/30"></div>
@@ -428,7 +422,7 @@ function About() {
                   </div>
 
                   {/* Right Column: Details (Narrower) */}
-                  <div className="flex-grow text-left flex flex-col justify-center py-2 max-w-md w-full">
+                  <div className="about-certificate-copy flex-grow text-left flex flex-col justify-center py-2 max-w-md w-full">
                     <span className="text-[9px] tracking-widest text-[#D3AF54] font-sans font-bold uppercase block mb-3 border border-[#D3AF54]/30 bg-white/5 px-3 py-1 rounded-full w-fit">
                       VERIFIED ACCREDITATION
                     </span>
@@ -444,11 +438,12 @@ function About() {
             </div>
 
             {/* Slider Dots Navigation */}
-            <div className="flex gap-2.5 mt-8 justify-center items-center">
+            <div className="about-certificate-dots flex gap-2.5 mt-8 justify-center items-center">
               {certificatesData.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCertIndex(idx)}
+                  aria-pressed={certIndex === idx}
                   className={`w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
                     certIndex === idx 
                       ? "bg-[#D3AF54] scale-125 shadow-[0_0_8px_rgba(211,175,84,0.8)]" 
@@ -513,26 +508,10 @@ function genRandomPattern(length) {
 function FeatureCard({ feature, className, ...props }) {
   const p = genRandomPattern();
 
-  const getServicePath = (title) => {
-    switch (title.toLowerCase()) {
-      case "vedic astrology":
-        return "/services/vedic-astrology";
-      case "numerology":
-        return "/services/numerology";
-      case "vastu consultation":
-        return "/services/vastu";
-      case "laal kitaab remedies":
-        return "/services/laal-kitaab";
-      case "prashna kundli":
-        return "/services/prashna-kundali";
 
-      default:
-        return "/services";
-    }
-  }
 
   return (
-    <div className={cn('relative overflow-hidden p-5 bg-[#181122] border border-[#AB7A57]/30 rounded-3xl shadow-xl flex flex-col justify-between group hover:border-[#D3AF54]/50 transition-all duration-300 w-full text-white', className)} {...props}>
+    <div className={cn('about-expertise-card relative overflow-hidden p-5 bg-[#181122] border border-[#AB7A57]/30 rounded-3xl shadow-xl flex flex-col justify-between group hover:border-[#D3AF54]/50 transition-all duration-300 w-full text-white', className)} {...props}>
       {/* Decorative GridPattern overlay */}
       <div className="pointer-events-none absolute inset-0 z-0 opacity-20 group-hover:opacity-40 transition-opacity duration-300">
         <GridPattern
@@ -552,8 +531,10 @@ function FeatureCard({ feature, className, ...props }) {
         {feature.title}
       </h3>
 
+      <ServiceFocus service={feature} className="about-expertise-focus relative z-10" />
+
       {/* 2. Image (middle) */}
-      <div className="w-full aspect-[16/10] bg-white/5 border border-[#AB7A57]/20 rounded-2xl overflow-hidden mb-5 relative group z-10">
+      <div className="about-expertise-image w-full aspect-[16/10] bg-white/5 border border-[#AB7A57]/20 rounded-2xl overflow-hidden mb-5 relative group z-10">
         <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/10 z-10 pointer-events-none"></div>
         <img 
           src={feature.image} 
@@ -563,15 +544,15 @@ function FeatureCard({ feature, className, ...props }) {
       </div>
 
       {/* 3. Action Buttons (bottom) */}
-      <div className="flex gap-2.5 w-full mt-1 relative z-10">
+      <div className="about-expertise-actions flex gap-2.5 w-full mt-1 relative z-10">
         <Link 
-          to={getServicePath(feature.title)}
+          to={`/services/${feature.id}`}
           className="flex-grow border border-[#AB7A57]/60 hover:border-[#D3AF54] text-white hover:text-[#D3AF54] font-bold text-xs py-2 px-3 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 shadow-sm bg-white/[0.02]"
         >
           Read More
         </Link>
         <Link 
-          to="/booking"
+          to={feature.id === "name-change" ? "/booking?service=name-change" : "/booking"}
           className="flex-grow bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold text-xs py-2 px-3 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-[#D3AF54]/10"
         >
           Book Now
