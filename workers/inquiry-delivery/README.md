@@ -1,6 +1,6 @@
 # Inquiry delivery helper
 
-Permanent intended names: Worker `astro-advice-inquiry-delivery`, Queue `astro-advice-inquiries`. This folder is the helper, not another website. No public HTTP endpoint, domain migration, database connection, Resend key, Google key, payment key or customer data belongs here. It is excluded from the Vercel upload; deploy this folder to the approved Cloudflare account separately when authorized.
+Permanent names: Worker `astro-advice-inquiry-delivery`, existing Queue `astroadvice-by-kundan-snigh-inquiries` (provider spelling retained). This folder is the helper, not another website. No public HTTP endpoint, domain migration, database connection, Resend key, Google key, payment key or customer data belongs here. It is excluded from the Vercel upload; deploy this folder to the approved Cloudflare account separately when authorized.
 
 ## Behaviour
 
@@ -13,9 +13,11 @@ Permanent intended names: Worker `astro-advice-inquiry-delivery`, Queue `astro-a
 
 ## Configuration and account sequence
 
-1. Reuse the queue the user reported on 2026-09-11: `56cea51fb5b14ba1b133cf9b2d4f9a09`, account ID `162c1ab1ba0619c1c78d9495f3260f18`, accessed through `neuraflowindia@gmail.com`; intended name `astro-advice-inquiries`. Do not recreate it or require another login email. Actual account association/ownership/permissions/Free plan remain unverified. No card, paid trial, DNS/zone change or sample Worker. Keep free retention/zero delay; no second dead-letter store is needed because SQL retains unfinished work.
+Current prelaunch destination: `wrangler.jsonc` pins the approved account and sets `ASTRO_API_ORIGIN` to the now-public stable design/page-by-page preview. Both delivery and scheduled recovery use it. The helper accepts only that exact origin or the final apex; task messages cannot select a destination. At authorized live-domain release, set this one variable to `https://astroadvicebykundansingh.com` and redeploy the same Worker. No duplicate helper or database is required. Source configuration overrides dashboard-only changes, so keep this value in sync with the release record. Existing references to the fixed apex below describe final release behavior, not the current prelaunch target.
+
+1. Reuse queue `56cea51fb5b14ba1b133cf9b2d4f9a09`, account ID `162c1ab1ba0619c1c78d9495f3260f18`, accessed through `neuraflowindia@gmail.com`. Authenticated inspection on 2026-09-11 confirms its actual name is `astroadvice-by-kundan-snigh-inquiries`, with zero consumers/producers, 86,400-second retention and zero delay. Source now matches this existing queue; do not create or rename one to match the old proposed name. Scoped operator OAuth login is verified. Account settings expose `default_usage_model=standard`, which alone does not prove a Free subscription. No card, paid trial, DNS/zone change or sample Worker. No second dead-letter store is needed because SQL retains unfinished work.
 2. When that target is known, create a scoped Cloudflare API token for that account's Queues write access (dashboard terminology may be **Account → Queues → Edit**). Do not use a Global API Key, all-account access, DNS edits or Workers script administration for runtime publication. This permission may cover other queues in the selected account; do not describe it as a per-queue restriction unless the actual provider supports/enforces one.
-3. Save these only in the website's intended Vercel **Production** settings:
+3. Save these in the website's Vercel **Preview and Production** settings, using the same permanent resources for this approved prelaunch branch and eventual release:
 
    | Name | Type | Purpose |
    | --- | --- | --- |
@@ -26,7 +28,7 @@ Permanent intended names: Worker `astro-advice-inquiry-delivery`, Queue `astro-a
    | `ASTRO_RECOVERY_SECRET` | Secret | A different independently generated random server credential, at least 32 characters. |
 
 4. The last two identical named values go into the helper's Cloudflare **Secrets**, never its plain variables or source. Generate/store privately in the named account workflow, not chat, logs or screenshots. No manual email-enable or booking-enable toggle. Settings being saved is not proof of deployed delivery.
-5. Deploy the reviewed Vercel source and helper only with named publication authority and complete inquiry read/attention access, mail budgets and online acceptance plan. Verify the fixed apex website URL reaches the JSON handlers directly, not a www redirect or preview-login page. Do not broadly bypass Vercel protection. The exact source `wrangler.jsonc` supplies the permanent worker/queue names, no public routes, consumer concurrency one, batch size one and the schedule. No template Worker that is later replaced.
+5. After the matching Vercel secrets are saved and the design/page-by-page Preview is redeployed, verify the configured preview reaches both authenticated handlers. Deploy reviewed helper code and both secrets together using `wrangler deploy --config workers/inquiry-delivery/wrangler.jsonc --secrets-file <private-operator-file>`; never include the database operator file, which contains unrelated credentials. This avoids an empty placeholder Worker or an active consumer with missing secrets. The source supplies no public routes, consumer concurrency one, batch size one and the schedule. At separately authorized live release, update the source destination to the apex and verify again. Do not merge main or change the domain as part of helper setup.
 
 Rotation: replace the server value in Vercel and the matching helper Secret as a coordinated change, verify both directions, then retire only the superseded value. A short mismatch produces retryable authorization failure, not data loss or fallback access. Rotate the queue token by replacing the Vercel Secret and verifying actual publication before revoking the old scoped token. Never rotate unrelated resources.
 

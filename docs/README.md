@@ -2,6 +2,12 @@
 
 Start here when resuming work after a break or a context reset.
 
+**Current handoff, 2026-09-11:** Cloudflare login is verified for the correct agency account. Its existing queue has the provider name `astroadvice-by-kundan-snigh-inquiries`; source now matches it without recreating anything. Real agency email and signed sent/delivered callbacks are verified. Two distinct helper keys are stored privately outside Git and copied together to Windows clipboard for Vercel Preview/Production. Next user action is saving them. Then redeploy the current design/page-by-page Preview, verify authenticated helper calls, and deploy the same permanent helper with its matching secrets. No consumer has been attached yet; main/domain are unchanged. See [current evidence](evidence/plan-001/2026-09-11-public-preview-inquiry-check.md).
+
+The checkpoints below are historical; the current handoff above supersedes their setup blockers.
+
+Current: one approved real verification email to the agency address was accepted through the deployed website (HTTP 200). OTP configuration and sending path now work; inbox arrival/code verification remain unconfirmed. Next user-only batch is Resend webhook registration/signing-secret entry, then same-commit Preview redeployment. Do not ask for repeated send approval within the established agency-verification scope. See [public-preview evidence](evidence/plan-001/2026-09-11-public-preview-inquiry-check.md).
+
 Latest: preview access is public with user approval; Codex independently confirms server/database readiness. Found and fixed missing frontend connection in the source-controlled Vercel build command. Delivery/recovery/webhook secrets are still unconfigured on the preview. See [public-preview inquiry check](evidence/plan-001/2026-09-11-public-preview-inquiry-check.md), which supersedes earlier access/configuration blockers below.
 
 | Number | Plan | Status |

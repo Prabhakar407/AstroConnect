@@ -1,17 +1,22 @@
 // No database, email, payment or Google credentials belong in this helper.
 const ORIGIN = 'https://astroadvicebykundansingh.com';
+const PREVIEW_ORIGIN = 'https://astrologer-website-kundan-singh-git-design-p-8bfe8c-neura-flow1.vercel.app';
 const APPLICATION = 'astro-advice-booking';
 const ENVIRONMENT = 'production';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const identity = value => object(value) && value.application === APPLICATION && value.environment === ENVIRONMENT;
 
-async function call(path, secret, body, fetcher) {
+async function call(path, secret, body, fetcher, configuredOrigin) {
+  // The deployment selects the destination, never a queue message. Permit
+  // only this site's two reviewed origins so a typo cannot leak credentials.
+  const origin = configuredOrigin === undefined ? ORIGIN : configuredOrigin;
+  if (origin !== ORIGIN && origin !== PREVIEW_ORIGIN) throw new Error('helper_configuration');
   if (typeof secret !== 'string' || secret.length < 32 || /[\r\n]/.test(secret)) throw new Error('helper_configuration');
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 25000);
   try {
-    const response = await fetcher(ORIGIN + path, {
+    const response = await fetcher(origin + path, {
       method: 'POST', redirect: 'error', signal: controller.signal,
       headers: { Authorization: `Bearer ${secret}`, 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify(body),
@@ -57,7 +62,7 @@ export function createWorker(fetcher = (...args) => fetch(...args)) {
               body.kind !== 'inquiry_received' || body.environment !== ENVIRONMENT ||
               typeof body.job_id !== 'string' || !UUID.test(body.job_id)) throw new Error('invalid_queue_message');
           const { status, data } = await call('/api/internal/delivery/inquiry', env.ASTRO_DELIVERY_SECRET,
-            { job_id: body.job_id }, fetcher);
+            { job_id: body.job_id }, fetcher, env.ASTRO_API_ORIGIN);
           if (!identity(data) || data.job_id !== body.job_id) throw new Error('handler_mismatch');
           if (status === 200 && data.terminal === true && ['sent', 'failed'].includes(data.state)) {
             // Failed is a retained SQL result needing attention, never success mail.
@@ -83,7 +88,7 @@ export function createWorker(fetcher = (...args) => fetch(...args)) {
       const run_id = crypto.randomUUID();
       try {
         const { status, data } = await call('/api/internal/recovery/inquiries', env.ASTRO_RECOVERY_SECRET,
-          { run_id }, fetcher);
+          { run_id }, fetcher, env.ASTRO_API_ORIGIN);
         if (status !== 200 || !identity(data) || data.run_id !== run_id ||
             !Number.isInteger(data.selected) || data.selected < 0 || data.selected > 25 ||
             data.published !== data.selected) throw new Error('recovery_unconfirmed');

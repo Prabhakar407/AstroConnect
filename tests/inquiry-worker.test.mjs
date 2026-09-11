@@ -33,6 +33,37 @@ test('failed durable job is acknowledged as retained attention work', async () =
   assert.equal(msg.acks, 1);
 });
 
+test('delivery and recovery use the explicitly configured official branch origin', async () => {
+  const origin = 'https://astrologer-website-kundan-singh-git-design-p-8bfe8c-neura-flow1.vercel.app';
+  const msg = message();
+  const urls = [];
+  const worker = createWorker(async (url, options) => {
+    urls.push(url);
+    const body = JSON.parse(options.body);
+    return reply(body.job_id ? result(msg) : { ...identity, run_id: body.run_id, selected: 0, published: 0 });
+  });
+  await worker.queue({ messages: [msg] }, { ...env, ASTRO_API_ORIGIN: origin });
+  await worker.scheduled({}, { ...env, ASTRO_API_ORIGIN: origin });
+  assert.equal(msg.acks, 1);
+  assert.deepEqual(urls, [origin + '/api/internal/delivery/inquiry', origin + '/api/internal/recovery/inquiries']);
+});
+
+test('invalid configured destinations never receive either helper credential', async () => {
+  for (const origin of ['', null, 'http://astroadvicebykundansingh.com', 'https://evil.invalid',
+    'https://astroadvicebykundansingh.com/', 'https://astroadvicebykundansingh.com@evil.invalid',
+    'https://astroadvicebykundansingh.com/api', 'https://astroadvicebykundansingh.com?x=1']) {
+    let calls = 0;
+    const worker = createWorker(async () => { calls++; });
+    const settings = { ...env, ASTRO_API_ORIGIN: origin };
+    const msg = message();
+    await worker.queue({ messages: [msg] }, settings);
+    await assert.rejects(worker.scheduled({}, settings), /inquiry_recovery_failed/);
+    assert.equal(calls, 0);
+    assert.equal(msg.acks, 0);
+    assert.equal(msg.retries.length, 1);
+  }
+});
+
 test('pending and active leases wait rather than acknowledge completion', async () => {
   for (const state of ['pending', 'processing']) {
     const msg = message();
@@ -163,10 +194,12 @@ test('scheduled failures are reported, not silently marked healthy', async () =>
 test('permanent helper config keeps work bounded without a public HTTP endpoint', () => {
   const config = JSON.parse(readFileSync(new URL('../workers/inquiry-delivery/wrangler.jsonc', import.meta.url), 'utf8'));
   assert.equal(config.name, 'astro-advice-inquiry-delivery');
+  assert.equal(config.account_id, '162c1ab1ba0619c1c78d9495f3260f18');
+  assert.equal(config.vars.ASTRO_API_ORIGIN, 'https://astrologer-website-kundan-singh-git-design-p-8bfe8c-neura-flow1.vercel.app');
   assert.equal(config.workers_dev, false);
   assert.equal(config.preview_urls, false);
   assert.deepEqual(config.triggers.crons, ['*/15 * * * *']);
-  assert.equal(config.queues.consumers[0].queue, 'astro-advice-inquiries');
+  assert.equal(config.queues.consumers[0].queue, 'astroadvice-by-kundan-snigh-inquiries');
   assert.equal(config.queues.consumers[0].max_batch_size, 1);
   assert.equal(config.queues.consumers[0].max_concurrency, 1);
   assert.equal(config.queues.consumers[0].max_retries, 5);
