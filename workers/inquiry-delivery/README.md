@@ -34,6 +34,10 @@ Rotation: replace the server value in Vercel and the matching helper Secret as a
 
 ## Local proof and remaining online checks
 
+Runtime correction (2026-09-11): workerd rejects `redirect: 'error'` even though Node accepts it. Both helper paths use `manual` and reject every non-200/202 response, including redirects, without forwarding credentials. Safe retry logs expose only an allowlisted reason/error class. Run `tests/inquiry-worker-runtime.mjs` using Node 22 and Miniflare from the pinned Wrangler 4.131.0 tool installation; set `ASTRO_MINIFLARE_MODULE` to its `miniflare/dist/src/index.js` if it is not installed locally. The regression uses workerd's real fetch with a synthetic upstream, covering delivery, scheduled recovery and redirect refusal. This closes the gap left by Node-only mocks; do not replace it with a build-only check.
+
+Online inquiry proof: user's one Contact inquiry was saved at 21:08 UTC. After correcting the runtime issue, its existing customer/client jobs each sent once at 21:19 UTC and received signed email.delivered events. Queue consumption and delivery are verified; real scheduled invocation remains unobserved. Do not ask the user to resubmit that inquiry. Private login currently rejects the stable preview origin; next configure the existing explicit approved-origin setting and Google web-client origin before client sign-in. SPF/DKIM are present; DMARC is absent at sender and parent domains, with no DNS mutation performed.
+
 Run `node tests/inquiry-worker.test.mjs` from the repository root. Python coverage is in `src/backend/tests/test_inquiry_dispatch.py`; integration tests refuse any database except the named isolated local fixture. Never aim those destructive fixtures at Neon.
 
 Cloudflare build tool: **Wrangler 4.131.0**, Node **22.23.2** used for this slice (local tools only, no website dependency change). From repo root:

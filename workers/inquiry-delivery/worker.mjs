@@ -6,6 +6,10 @@ const ENVIRONMENT = 'production';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const identity = value => object(value) && value.application === APPLICATION && value.environment === ENVIRONMENT;
+const failureReason = error => ['invalid_queue_message', 'helper_configuration', 'handler_mismatch',
+  'handler_unconfirmed', 'handler_response_limit', 'invalid_retry_time']
+  .includes(error?.message) ? error.message :
+  ['TypeError', 'ReferenceError', 'SyntaxError', 'AbortError'].includes(error?.name) ? error.name : 'request_failed';
 
 async function call(path, secret, body, fetcher, configuredOrigin) {
   // The deployment selects the destination, never a queue message. Permit
@@ -17,7 +21,9 @@ async function call(path, secret, body, fetcher, configuredOrigin) {
   const timeout = setTimeout(() => controller.abort(), 25000);
   try {
     const response = await fetcher(origin + path, {
-      method: 'POST', redirect: 'error', signal: controller.signal,
+      // workerd rejects redirect:'error'. Manual mode never forwards our
+      // credential; the status check below rejects every redirect response.
+      method: 'POST', redirect: 'manual', signal: controller.signal,
       headers: { Authorization: `Bearer ${secret}`, 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify(body),
     });
@@ -75,9 +81,9 @@ export function createWorker(fetcher = (...args) => fetch(...args)) {
           }
           if (typeof data.retry_at !== 'string' || !Number.isFinite(Date.parse(data.retry_at))) throw new Error('invalid_retry_time');
           retry = Math.max(60, Math.min(86400, Math.ceil((Date.parse(data.retry_at) - Date.now()) / 1000)));
-        } catch {
+        } catch (error) {
           // Do not log task bodies, tokens, upstream response text or URLs.
-          console.warn('inquiry_delivery_retry');
+          console.warn('inquiry_delivery_retry', failureReason(error));
         }
         message.retry({ delaySeconds: retry });
       }

@@ -16,7 +16,7 @@ test('acknowledges matching durable success and uses only fixed destination', as
   const msg = message();
   const worker = createWorker(async (url, options) => {
     assert.equal(url, 'https://astroadvicebykundansingh.com/api/internal/delivery/inquiry');
-    assert.equal(options.redirect, 'error');
+    assert.equal(options.redirect, 'manual');
     assert.equal(options.headers.Authorization, `Bearer ${env.ASTRO_DELIVERY_SECRET}`);
     assert.deepEqual(JSON.parse(options.body), { job_id: msg.body.job_id });
     assert.ok(options.signal instanceof AbortSignal);
@@ -31,6 +31,19 @@ test('failed durable job is acknowledged as retained attention work', async () =
   const msg = message();
   await createWorker(async () => reply({ ...result(msg), state: 'failed', error_code: 'retry_limit' })).queue({ messages: [msg] }, env);
   assert.equal(msg.acks, 1);
+});
+
+test('runtime diagnostics never log arbitrary provider error messages', async () => {
+  const warnings = [];
+  const original = console.warn;
+  console.warn = (...args) => warnings.push(args);
+  try {
+    const msg = message();
+    await createWorker(async () => { throw new TypeError('private upstream text must not be logged'); })
+      .queue({ messages: [msg] }, env);
+    assert.deepEqual(warnings, [['inquiry_delivery_retry', 'TypeError']]);
+    assert.equal(msg.retries.length, 1);
+  } finally { console.warn = original; }
 });
 
 test('delivery and recovery use the explicitly configured official branch origin', async () => {
@@ -170,7 +183,7 @@ test('scheduled recovery runs without visitors or queued messages and uses separ
     calls++;
     assert.equal(url, 'https://astroadvicebykundansingh.com/api/internal/recovery/inquiries');
     assert.equal(options.headers.Authorization, `Bearer ${env.ASTRO_RECOVERY_SECRET}`);
-    assert.equal(options.redirect, 'error');
+    assert.equal(options.redirect, 'manual');
     const { run_id } = JSON.parse(options.body);
     assert.match(run_id, /^[a-f0-9-]{36}$/);
     return reply({ ...identity, run_id, selected: 0, published: 0 });
