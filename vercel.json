@@ -10,7 +10,6 @@
       "excludeFiles": "{.archive/**,.impeccable/**,docs/**,tests/**,scripts/**,src/assets/**,src/Component/**,public/**,dist/**,node_modules/**,**/__pycache__/**,**/.env*,src/backend/tests/**}"
     }
   },
-  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/api/:path*",

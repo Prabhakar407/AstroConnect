@@ -54,6 +54,9 @@ class HostingTests(unittest.TestCase):
         self.assertEqual(config["regions"], ["sin1"])
         self.assertEqual(config["rewrites"][0], {"source": "/api/:path*", "destination": "/api/index.py"})
         self.assertEqual(config["rewrites"][-1]["destination"], "/index.html")
+        # Explicit file destinations must not be combined with cleanUrls:
+        # Vercel can build successfully but return its own NOT_FOUND page.
+        self.assertFalse(config.get("cleanUrls", False))
         self.assertEqual(config["functions"]["api/index.py"]["maxDuration"], 30)
         self.assertNotIn("crons", config)
         self.assertNotIn("services", config)

@@ -11,3 +11,5 @@ The same parser now succeeds and recognizes .python-version as 3.12. The failed 
 Four focused hosting tests pass, including a regression requiring flat exact pins aligned with direct backend dependencies and the tested lock. Offline pip dry-run confirms requirements are satisfied in the local runtime environment. Whitespace check passes. Earlier full backend and screenshot evidence remains historical; no UI changed.
 
 Publish only on the existing draft PR branch and observe its automatic preview check. Do not merge main or infer real login/email/payment/meeting acceptance from a green build.
+
+Hosted result: correction commit 90dc96161297cae60e49e5b0d7be4dd823ad668e pushed to the existing branch. GitHub reports Vercel SUCCESS for preview HUVsLh59RvQQN4dkjaiT3AVVZt5S at 2026-09-11 12:52:23 UTC. PR #1 remains draft; main independently remains 3f09f6b91a272419ba13afba2fa1731c13bc996d. No manual deployment or merge. This result note is retained locally for the next work commit rather than triggering another build only to record a successful build.

@@ -8,6 +8,8 @@ Start here when resuming work after a break or a context reset.
 
 Plan 1 is the current execution checklist. Its **Resume here** section records the next step, known facts, user-only dependencies and proof boundaries. Update that section and its progress log after each meaningful slice of work, before handing back or changing sessions.
 
+Hosted follow-up: the user reports platform NOT_FOUND at both diagnostic endpoints on the successful PR preview. Removed the incompatible cleanUrls option from explicit file rewrites; four hosting tests pass. Publish the correction on the same draft PR and recheck the replacement preview before diagnosing database settings. Production-only settings do not automatically reach Preview. See [hosted readiness evidence](evidence/plan-001/2026-09-11-hosted-readiness-check.md). No merge, protection change or live provider operation.
+
 Latest checkpoint, 2026-09-11: monthly quota recovery, verified delivery observations and private inquiry views pass 165 Python tests and synthetic browser checks at three sizes. The user confirms Resend currently serves only this website; do not repeat that question. See [inquiry observations evidence](evidence/plan-001/2026-09-11-inquiry-observations.md).
 
 Vercel remains user-operated in the website's separate account. Permanent Neon migrations 001–007 and restricted pooled access are verified. Inquiry publication/helper/recovery and observations are not deployed. Next coordinate reviewed-source publication, helper secrets/deployment and Resend notification connection. Preserve source publication boundaries; no secret/screenshot request, card or domain move.
