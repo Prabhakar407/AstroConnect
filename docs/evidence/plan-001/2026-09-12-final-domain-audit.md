@@ -15,6 +15,7 @@ This is **not yet a fully launched appointment system**. Checkout remains unfini
 - Google production status and final callback setup were previously user-confirmed. The complete current dashboard origin/redirect list and any required verification status remain account-side checks. Keep the working encryption secret unchanged.
 - The official email callback is reachable, and its dashboard destination change was previously user-confirmed. Full enabled-event, sender and callback-list settings cannot be inferred from an unsigned endpoint probe.
 - Payment notification registration and the later matching Live Mode credentials are still required. Verify the complete journey with fake-money transactions before switching to real payments. Keep the same permanent website and resources.
+- Fresh public DNS checks find email-signing and sender-permission records, but no DMARC record at either sending or parent domain. Review domain-wide email use before proposing a compatible policy; no DNS change made and no claim that this alone explains spam placement.
 - No active Render or Supabase integration was found in the runtime code/configuration inspected. This does not prove that no unused provider account exists.
 
 ## Remaining work to finish the website
