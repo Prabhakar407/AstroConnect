@@ -61,8 +61,8 @@ test('runtime diagnostics never log arbitrary provider error messages', async ()
   } finally { console.warn = original; }
 });
 
-test('delivery and recovery use the explicitly configured official branch origin', async () => {
-  const origin = 'https://astrologer-website-kundan-singh-git-design-p-8bfe8c-neura-flow1.vercel.app';
+test('delivery and recovery use the explicitly configured official domain', async () => {
+  const origin = 'https://astroadvicebykundansingh.com';
   const msg = message();
   const urls = [];
   const worker = createWorker(async (url, options) => {
@@ -78,6 +78,7 @@ test('delivery and recovery use the explicitly configured official branch origin
 
 test('invalid configured destinations never receive either helper credential', async () => {
   for (const origin of ['', null, 'http://astroadvicebykundansingh.com', 'https://evil.invalid',
+    'https://astrologer-website-kundan-singh-git-design-p-8bfe8c-neura-flow1.vercel.app',
     'https://astroadvicebykundansingh.com/', 'https://astroadvicebykundansingh.com@evil.invalid',
     'https://astroadvicebykundansingh.com/api', 'https://astroadvicebykundansingh.com?x=1']) {
     let calls = 0;
