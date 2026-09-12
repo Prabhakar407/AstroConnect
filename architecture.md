@@ -2,6 +2,28 @@
 
 This document provides a simple, comprehensive overview of the technical architecture, directory structure, data flow, and security configurations of the **AstroAdvice** web platform.
 
+## Current booking architecture — provider plan updated 2026-09-10
+
+The approved foundation replaces the inherited backend described later in this document. The website remains React/Vite with FastAPI. [Plan 1](docs/PLAN-001-booking-inquiries-and-client-calendar.md) owns execution status, acceptance gates and the resume checkpoint; [BOOKING_ROADMAP.md](BOOKING_ROADMAP.md) retains requirements/history; [BOOKING_FOUNDATION_REVIEW.md](BOOKING_FOUNDATION_REVIEW.md) records dated local evidence; [src/backend/README.md](src/backend/README.md) is the current technical setup reference.
+
+- `src/data/consultationCatalogue.json` supplies the six names, prices and per-question rule to the public catalogue, booking display and Python price calculation. The server calculates the charge; no submitted browser amount is trusted.
+- `domain.py` contains the IST dates, ten-day horizon, office hours, half-hour starts and quantity rules. `storage.py` uses PostgreSQL transactions; a shared occupancy table plus a transaction lock coordinates bookings, expiring holds and client closures. No JSON/SQLite/Redis/spreadsheet fallback exists in the active backend.
+- `application.py` exposes explicit public routes and fails closed when storage/email is missing. `/api/book-appointment` remains disabled: there is no working public payment flow yet. `main.py` only creates the app; import/startup does not contact providers or create local databases. Migrations are an explicit operator action.
+- `verification.py` uses expiring, purpose-bound, one-use email verification and durable request/attempt limits. Codes and tokens are stored as digests. `resend_email.py` sends codes through the fixed Resend endpoint using saved-challenge idempotency, bounded response checks and the client's Gmail reply-to. It needs the actual sender/key/verification/storage settings, not an extra enable flag. Its transport/layout are locally checked; real delivery and shared account quota handling remain unproved/unfinished.
+- `admin.py` and `PrivateCalendar.jsx` implement the client-only `/#/studio/calendar` route. Official Google identity verification, a one-use browser-bound nonce, secure HttpOnly sessions, exact-origin checks and CSRF protection guard the data and actions. The verified client Gmail account is pinned to Google's stable account identifier on first authorized login. Google setup and HTTPS same-site hosting still need verification. Google sign-in does not itself authorize Calendar access.
+- Bookings, payments, cancellations, inquiries and delivery intent are durable SQL records. Migrations 005/006 separate per-recipient email processing from queue publication. `inquiry_delivery.py` handles frozen payloads/stable send keys; `inquiry_dispatch.py` publishes after commit and recovers due rows. The small Cloudflare queue/Cron helper invokes fixed authenticated Python routes with separate secrets; it has no database/provider credentials or public endpoint. Local checks pass, but hosted delivery, signed provider observations, mail budgets, private inquiry/attention views, Calendar/Meet and Razorpay remain open. Resend acceptance is not inbox delivery; inquiry processing excludes booking jobs.
+- Public forms now wait for actual accepted responses, keep details on errors and do not default to the old hosted backend. Existing customer records were not inspected, copied, migrated or removed. The redacted legacy source is kept as non-executable history in `.archive/booking-backend-before-roadmap.txt`; exposed credentials still require provider-side rotation.
+
+**Provider alignment — 2026-09-10:** booking must be Pro-independent, not Vercel-independent. Recommend existing React/Vite/FastAPI on Hobby-compatible Vercel hosting, Neon Free records and Resend Free, plus a small Cloudflare Free queue/Cron helper invoking protected Python handlers. Google identity/Calendar stay unbilled; proposed retained encrypted backups require consent and restore proof. No mandatory upgrade, paid-only feature, duplicate frontend or main Python-to-Workers port. See the [alignment review](docs/PLAN-001-no-card-hosting-review.md). This is a plan, not a completed deployment.
+
+**Existing hosting clarification:** preserve the domain and approved design. A Vite/native `api/index.py` candidate now routes `/api` before the page fallback, with explicit same-origin helpers and uncached replies. An allowlisted temporary source package builds locally and the Python app imports without network side effects. Actual Vercel build/bundle, route/cookie forwarding, project/source mapping and Hobby execution remain unverified; see the [local checkpoint](docs/evidence/plan-001/2026-09-10-local-preparation.md). No beta Services or paid-only setting. Function/database/email quota failures remain possible while static pages load; no unconditional uptime/free-overage promise.
+
+**Deployment boundary:** this is intermediate, locally tested implementation, not a live paid-booking service. The site is pre-handover and all existing records are confirmed dummy; no live-customer migration is needed. Remaining integrations, authorized notifications/payments, clean production data and backup/restore checks must be completed before release.
+
+## Historical inherited architecture — not current operating instructions
+
+Everything below is preserved for reference. Its JSON, SMTP, spreadsheet, Jitsi, availability, calendar-sharing and security claims do not describe the new active backend and are not verified production guarantees.
+
 ---
 
 ## 🌌 Tech Stack Overview

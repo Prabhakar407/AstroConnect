@@ -1,5 +1,7 @@
 # 🌌 AstroConnect - Astrologer Website & Booking Engine
 
+> **Start here — Plan 1, updated 2026-09-10:** [Reliable Booking, Inquiries and Client Calendar: From Setup to Handover](docs/PLAN-001-booking-inquiries-and-client-calendar.md) is the current execution checklist. Read its **Resume here** section after any context reset. The website is `astroadvicebykundansingh.com`; the user confirms access to its Vercel hosting account. The booking foundation/private calendar are implemented and previously tested locally, but live checkout remains disabled. All existing records are confirmed dummy. Supporting references are [the requirement/history record](BOOKING_ROADMAP.md), [backend runbook](src/backend/README.md) and [previous verification](BOOKING_FOUNDATION_REVIEW.md). The inherited overview and setup instructions below are historical, not the active backend; do not use their legacy SMTP, JSON, Jitsi or service-account instructions for new setup.
+
 A modern, full-stack astrology consultation platform that combines an elegant React frontend with a powerful Python backend, designed to manage appointments, customer queries, and video consultations.
 
 ---

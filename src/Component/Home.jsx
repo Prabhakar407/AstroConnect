@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send, Mail, MapPin, HelpCircle, Loader2 } from "lucide-react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { Calendar, Phone, Award, Users, Globe, Star, Shield, Sparkles, FileText, Briefcase, Heart, Home as HomeIcon, Hash, Gem, Moon, ChevronLeft, ChevronRight, ChevronDown, BookOpen, ShieldCheck, LineChart, Flower2, UserCheck, Send, Mail, MapPin, HelpCircle, Loader2, Pause, Play } from "lucide-react";
+import { motion, AnimatePresence, MotionConfig, useInView, useReducedMotion } from "framer-motion";
+import "./Home.css";
+import { publicServiceById } from "../data/publicServices";
 import EmailOtpModal from './EmailOtpModal';
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://astrologer-kundan-singh.onrender.com"
+import { sendVerification, submitInquiry } from '../lib/formApi'
 
 import logoImg from "../assets/logos/Nav-Logo.webp";
 import featureBg from "../assets/images/Feature.webp";
@@ -51,41 +53,52 @@ function CelestialDivider() {
 const allServices = [
   { 
     id: 1, 
-    title: 'VEDIC ASTROLOGY', 
-    price: '₹2,100',
-    duration: '30 min',
+    title: 'VEDIC ASTROLOGY',
+    label: 'Birth chart guidance',
+    displayTitle: 'Vedic Astrology',
+    artworkLabel: 'Jyotish',
+    price: publicServiceById['vedic-astrology'].price,
     text: 'Comprehensive evaluation of planetary positions, houses, and transits (Janam Kundli) to clarify your destiny, strengths, weaknesses, and future timelines.', 
     iconKey: 'file' 
   },
   { 
     id: 2, 
-    title: 'NUMEROLOGY', 
-    price: '₹1,100',
-    duration: '30 min',
+    title: 'NUMEROLOGY',
+    label: 'Numbers & life patterns',
+    displayTitle: 'General Numerology',
+    artworkLabel: 'General Numerology',
+    price: publicServiceById.numerology.price,
     text: 'Uncover the hidden patterns of your life path, destiny, and name frequencies. Align your personal vibrations to unlock career opportunities and wealth luck.', 
     iconKey: 'hash' 
   },
   { 
     id: 3, 
-    title: 'VASTU CONSULTANT', 
-    price: '₹5,100',
-    duration: '30 min',
+    title: 'VASTU CONSULTANT',
+    label: 'Harmony in your space',
+    displayTitle: 'Vastu Consultant',
+    artworkLabel: 'Vastu Shastra',
+    price: publicServiceById.vastu.price,
     text: 'Optimize the flow of energy at home or work. Align rooms, elements, and layouts to clear blocking influences and invite growth, harmony, and prosperity.', 
     iconKey: 'home' 
   },
   { 
     id: 4, 
-    title: 'LAAL KITAAB REMEDIES', 
-    price: '₹1,100',
-    duration: '30 min',
+    title: 'LAAL KITAAB REMEDIES',
+    label: 'Practical planetary remedies',
+    displayTitle: 'Laal Kitaab Remedies',
+    artworkLabel: 'Lal Kitab Remedies',
+    price: publicServiceById['laal-kitaab'].price,
     text: 'Simple, practical, and highly effective remedial measures for planetary afflictions, debts, obstacles in career/marriage, and negative influences without complex rituals.', 
     iconKey: 'book' 
   },
   { 
     id: 5, 
-    title: 'EXPERTISE IN PRASHNA KUNDALI', 
-    price: '₹1,100',
-    duration: '30 min',
+    title: 'EXPERTISE IN PRASHNA KUNDALI',
+    label: 'Answers to your specific question',
+    displayTitle: 'Expertise in Prashna Kundali',
+    artworkLabel: 'Prashna Kundali',
+    price: publicServiceById['prashna-kundali'].price,
+    priceUnit: publicServiceById['prashna-kundali'].priceUnit,
     text: 'Get instant, precise answers to specific questions (concerning career, finance, marriage, missing items, etc.) based on the exact moment the question is asked.', 
     iconKey: 'help' 
   }
@@ -351,88 +364,90 @@ const ServiceSlider = () => {
  * and custom gold dividers.
  */
 export default function Home() {
-  const timelineRef = useRef(null);
-  const imageVariants = {
-    initial: { opacity: 0, scale: 0.95 },
-    animate: { 
-      opacity: 0.95, 
-      scale: 1,
-      transition: { duration: 1.0, ease: "easeInOut", delay: 0.3 }
-    },
-    hover: { 
-      scale: 1.05,
-      transition: { duration: 0.7, ease: "easeOut" }
-    }
-  };
-  const [dotStep, setDotStep] = useState(0);
-  const [visibleCardsCount, setVisibleCardsCount] = useState(0);
-  const [isTimelineStarted, setIsTimelineStarted] = useState(false);
+  const pageRef = useRef(null);
+  const heroRef = useRef(null);
+  const servicesRef = useRef(null);
+  const reviewsRef = useRef(null);
+  const reduceMotion = useReducedMotion();
+  const heroInView = useInView(heroRef);
+  const servicesInView = useInView(servicesRef, { amount: 0.15 });
+  const reviewsInView = useInView(reviewsRef, { amount: 0.15 });
   const [activeServiceTab, setActiveServiceTab] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [serviceActionFocused, setServiceActionFocused] = useState(false);
+  const [reviewsPaused, setReviewsPaused] = useState(false);
+  const [landscapeLayout, setLandscapeLayout] = useState(() => window.matchMedia('(min-width: 1024px) and (orientation: landscape)').matches);
+  const [pageVisible, setPageVisible] = useState(!document.hidden);
 
+  // Keep the landscape hero and review treatment separate from the existing mobile presentation.
   useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveServiceTab((prev) => (prev + 1) % allServices.length);
-    }, 3000);
-    return () => clearInterval(timer);
+    const query = window.matchMedia('(min-width: 1024px) and (orientation: landscape)');
+    const updateLayout = () => setLandscapeLayout(query.matches);
+    query.addEventListener('change', updateLayout);
+    return () => query.removeEventListener('change', updateLayout);
   }, []);
 
-  const startTimelineSequence = () => {
-    if (isTimelineStarted) return;
-    setIsTimelineStarted(true);
-    setDotStep(0);
-    setVisibleCardsCount(1);
-    
-    setTimeout(() => {
-      setDotStep(1);
-      setVisibleCardsCount(2);
-    }, 400);
+  // Size each landscape scene against the actual sticky navigation height.
+  useEffect(() => {
+    const header = document.querySelector('header');
+    if (!header) return;
+    const proof = pageRef.current?.querySelector('.home-proof');
+    const invitation = pageRef.current?.querySelector('.home-invitation');
+    const observer = new ResizeObserver(() => {
+      pageRef.current?.style.setProperty('--home-header-height', `${header.getBoundingClientRect().height}px`);
+      if (proof) pageRef.current?.style.setProperty('--home-proof-half', `${proof.getBoundingClientRect().height / 2}px`);
+      if (invitation) pageRef.current?.style.setProperty('--home-invitation-half', `${invitation.getBoundingClientRect().height / 2}px`);
+    });
+    [header, proof, invitation].filter(Boolean).forEach(element => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
 
-    setTimeout(() => {
-      setDotStep(2);
-      setVisibleCardsCount(3);
-    }, 800);
+  // Background tabs and off-screen content do not keep rotating.
+  useEffect(() => {
+    const handleVisibility = () => setPageVisible(!document.hidden);
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, []);
 
-    setTimeout(() => {
-      setDotStep(3);
-      setVisibleCardsCount(4);
-    }, 1200);
+  const canRotate = !reduceMotion && !serviceActionFocused && pageVisible && servicesInView;
+  useEffect(() => {
+    if (!canRotate) return;
+    const timer = setTimeout(() => {
+      setActiveServiceTab((previous) => (previous + 1) % allServices.length);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [activeServiceTab, canRotate]);
+
+  const selectService = (index) => {
+    setActiveServiceTab(index);
   };
 
-  const getDotXPosition = () => {
-    if (dotStep === 0) return "0%";
-    if (dotStep === 1) return "33.33%";
-    if (dotStep === 2) return "66.66%";
-    return "100%";
+  const imageVariants = {
+    initial: { opacity: 1, scale: reduceMotion ? 1 : 0.95 },
+    animate: { opacity: 1, scale: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+    hover: { scale: reduceMotion ? 1 : 1.025, transition: { duration: 0.4 } }
   };
 
-  const getDotYPosition = () => {
-    if (dotStep === 0) return "0%";
-    if (dotStep === 1) return "33.33%";
-    if (dotStep === 2) return "66.66%";
-    return "100%";
-  };
- 
   // Features Data (Luxury Vedic dark-purple section specs - Option 2 layout)
   const featuresData = [
     {
-      title: "TRUSTED & CONFIDENTIAL",
-      desc: "Your birth charts and consultation details are kept completely private.",
+      title: "Trusted & Confidential",
+      desc: "Private, confidential consultations.",
       icon: <VscWorkspaceTrusted size={22} className="text-[#D3AF54]" />
     },
     {
-      title: "ACCURATE PREDICTIONS",
-      desc: "High precision mathematics calculating planetary alignment and transits.",
+      title: "Accurate Predictions",
+      desc: "Insights from your birth chart.",
       icon: <BsBullseye size={22} className="text-[#D3AF54]" />
     },
     {
-      title: "PERSONALIZED SOLUTIONS",
-      desc: "Tailored remedial measures including gemstone advice, mantras, and pujas.",
+      title: "Personalized Solutions",
+      desc: "Remedies tailored to you.",
       icon: <BsFillPersonFill size={22} className="text-[#D3AF54]" />
     },
     {
-      title: "POSITIVE TRANSFORMATION",
-      desc: "Bring focus, wealth, wellness, and alignment back into your personal life.",
+      title: "Positive Transformation",
+      desc: "Clarity for your next step.",
       icon: <PiFlowerLotusLight size={22} className="text-[#D3AF54]" />
     }
   ]
@@ -487,37 +502,33 @@ export default function Home() {
   const services = [
     {
       title: 'Vedic Astrology',
-      price: '₹2,100',
-      duration: '30 min',
-      desc: 'Comprehensive evaluation of planetary positions, houses, and transits (Janam Kundli) to clarify your destiny, strengths, weaknesses, and future timelines.',
+      price: publicServiceById['vedic-astrology'].price,
+        desc: 'Comprehensive evaluation of planetary positions, houses, and transits (Janam Kundli) to clarify your destiny, strengths, weaknesses, and future timelines.',
       icon: <FileText size={20} className="text-[#fcb900]" />
     },
     {
-      title: 'Numerology',
-      price: '₹1,100',
-      duration: '30 min',
-      desc: 'Uncover the hidden patterns of your life path, destiny, and name frequencies. Align your personal vibrations to unlock career opportunities and wealth luck.',
+      title: 'General Numerology',
+      price: publicServiceById.numerology.price,
+        desc: 'Uncover the hidden patterns of your life path, destiny, and name frequencies. Align your personal vibrations to unlock career opportunities and wealth luck.',
       icon: <Hash size={20} className="text-[#fcb900]" />
     },
     {
       title: 'Vastu Consultant',
-      price: '₹5,100',
-      duration: '30 min',
-      desc: 'Optimize the flow of energy at home or work. Align rooms, elements, and layouts to clear blocking influences and invite growth, harmony, and prosperity.',
+      price: publicServiceById.vastu.price,
+        desc: 'Optimize the flow of energy at home or work. Align rooms, elements, and layouts to clear blocking influences and invite growth, harmony, and prosperity.',
       icon: <HomeIcon size={20} className="text-[#fcb900]" />
     },
     {
       title: 'Laal Kitaab Remedies',
-      price: '₹1,100',
-      duration: '30 min',
-      desc: 'Simple, practical, and highly effective remedial measures for planetary afflictions, debts, obstacles in career/marriage, and negative influences without complex rituals.',
+      price: publicServiceById['laal-kitaab'].price,
+        desc: 'Simple, practical, and highly effective remedial measures for planetary afflictions, debts, obstacles in career/marriage, and negative influences without complex rituals.',
       icon: <BookOpen size={20} className="text-[#fcb900]" />
     },
     {
       title: 'Expertise in Prashna Kundali',
-      price: '₹1,100',
-      duration: '30 min',
-      desc: 'Get instant, precise answers to specific questions (concerning career, finance, marriage, missing items, etc.) based on the exact moment the question is asked.',
+      price: publicServiceById['prashna-kundali'].price,
+      priceUnit: publicServiceById['prashna-kundali'].priceUnit,
+        desc: 'Get instant, precise answers to specific questions (concerning career, finance, marriage, missing items, etc.) based on the exact moment the question is asked.',
       icon: <HelpCircle size={20} className="text-[#fcb900]" />
     }
   ]
@@ -531,6 +542,7 @@ export default function Home() {
     comment: ""
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const inquiryRequest = useRef(null)
   const [serverError, setServerError] = useState("")
   const [showOtpModal, setShowOtpModal] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -569,36 +581,30 @@ export default function Home() {
       return
     }
 
-    // Instantly open the OTP modal so user experiences 0ms UI delay
-    setShowOtpModal(true)
-    setSubmitting(false)
+    // Wait for accepted email delivery before inviting the visitor to enter a code.
+    if (submitting) return
+    setSubmitting(true)
     
     try {
-      fetch(`${API_BASE_URL}/api/auth/send-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email, purpose: "inquiry" })
-      }).catch((err) => {
-        console.warn("OTP background dispatch notice:", err)
-      })
+      await sendVerification(formData.email, 'contact')
+      setShowOtpModal(true)
     } catch (err) {
-      console.warn("OTP dispatch exception:", err)
+      setServerError(err.message)
+    } finally {
+      setSubmitting(false)
     }
   }
 
-  const executeHomeQuerySubmit = (verificationToken) => {
-    // 1. Immediately close the modal and display success confirmation state with 0ms waiting
+  const executeHomeQuerySubmit = async (verificationToken) => {
+    // Keep the visitor's details until the server confirms durable storage.
     setShowOtpModal(false)
-    setIsSubmitted(true)
+    setSubmitting(true)
     setServerError("")
     
-    // 2. Dispatch the inquiry to backend in the background asynchronously
-    fetch(`${API_BASE_URL}/api/contact`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    // A failed or uncertain response must not become a success screen.
+    try {
+      await submitInquiry('/api/contact', {
+        source: 'home',
         name: formData.name,
         email: formData.email,
         phone: "N/A",
@@ -606,12 +612,8 @@ export default function Home() {
         subject: formData.selectedService,
         message: formData.comment || "No message comment provided.",
         verification_token: verificationToken,
-      }),
-    }).catch((err) => {
-      console.error("Background contact dispatch error:", err)
-    })
-
-    setTimeout(() => {
+      }, inquiryRequest)
+      setIsSubmitted(true)
       setFormData({
         name: "",
         dob: "",
@@ -619,12 +621,16 @@ export default function Home() {
         selectedService: "",
         comment: ""
       })
-      setIsSubmitted(false)
-    }, 7000)
+    } catch (err) {
+      setServerError(err.message)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
    return (
-    <div className="w-full bg-[#FDFCF5] relative flex flex-col items-center">
+    <MotionConfig reducedMotion="user">
+    <div ref={pageRef} className="home-page w-full bg-[#FDFCF5] relative flex flex-col items-center">
       
       {/* Global Custom SVG Clip Paths */}
       <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
@@ -638,48 +644,61 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 2. HERO DEEP SPACE BAND SECTION (Navy: #06091B)            */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#06091B] relative overflow-hidden flex flex-col items-center border-b border-[#AB7A57]/20 text-white">
+      <div ref={heroRef} data-scene="hero" data-motion-active={heroInView && pageVisible && !reduceMotion} className="home-hero w-full bg-[#06091B] relative flex flex-col items-center border-b border-[#AB7A57]/20 text-white">
         
         {/* Background decors for Hero */}
         <div className="absolute top-10 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.1),transparent_70%)] rounded-full -z-10 animate-pulse"></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.06),transparent_70%)] rounded-full -z-10"></div>
         
         {/* Capped layout wrapper inside band */}
-        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] flex flex-col items-center">
+        <div className="home-container home-hero-shell w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] flex flex-col items-center">
           
-          <section className="w-full flex flex-col lg:flex-row items-center justify-between min-h-[600px] pt-4 pb-20 lg:pt-6 lg:pb-28 gap-[clamp(2rem,4vw,4rem)] bg-transparent">
+          <section className="home-hero-layout w-full flex flex-col lg:flex-row items-center justify-between min-h-[600px] pt-4 pb-20 lg:pt-6 lg:pb-28 gap-[clamp(2rem,4vw,4rem)] bg-transparent">
             
             {/* Left Side Content Column (Slides in from the left) */}
             <motion.div 
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className="flex-1 space-y-6 text-left z-10"
+              className="home-hero-copy flex-1 space-y-6 text-left z-10"
             >
               {/* Top Pill Badge */}
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-[#D3AF54]/30 rounded-full">
-                <span className="w-1.5 h-1.5 bg-[#D3AF54] rounded-full animate-pulse"></span>
-                <span className="text-[10px] tracking-[0.2em] font-semibold text-[#D3AF54] uppercase font-sans">
-                  GUIDANCE • CLARITY • POSITIVITY
-                </span>
+              <div className="home-hero-intro inline-flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-[#D3AF54]/30 rounded-full">
+                {landscapeLayout ? (
+                  <>
+                    <span className="home-hero-intro-item"><Star aria-hidden="true" />Guidance</span>{' '}
+                    <span className="home-hero-intro-item"><Sparkles aria-hidden="true" />Clarity</span>{' '}
+                    <span className="home-hero-intro-item"><Flower2 aria-hidden="true" />Positivity</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="w-1.5 h-1.5 bg-[#D3AF54] rounded-full animate-pulse" aria-hidden="true"></span>
+                    <span className="home-hero-intro-mobile-copy text-[10px] tracking-[0.2em] font-semibold text-[#D3AF54] uppercase font-sans">
+                      GUIDANCE • CLARITY • POSITIVITY
+                    </span>
+                  </>
+                )}
               </div>
 
               {/* Large Headline */}
-              <h1 className="text-[clamp(2.25rem,4.8vw,5.5rem)] font-serif !text-[#FDFCF5] leading-tight font-normal tracking-wide">
+              <h1 className="home-display text-[clamp(2.25rem,4.8vw,5.5rem)] font-serif !text-[#FDFCF5] leading-tight font-normal tracking-wide">
                 Discover Your{" "}
-                <span className="bg-gradient-to-r from-[#D3AF54] via-[#AB7A57] to-[#D3AF54] bg-clip-text text-transparent drop-shadow-sm whitespace-nowrap">
+                <span className="home-display-accent">
                   True Destiny
                 </span>{" "}
-                <span className="sm:whitespace-nowrap">with Expert Guidance</span>
+                <span className="home-display-closing">with Expert Guidance</span>
               </h1>
 
               {/* Subheading */}
-              <p className="text-[clamp(0.85rem,1.1vw,1.1rem)] tracking-[0.15em] font-semibold text-[#D3AF54]/90 uppercase font-sans">
-                KUNDLI • VEDIC ASTROLOGY • NUMEROLOGY • VASTU
+              <p className="home-hero-subtitle text-[clamp(0.85rem,1.1vw,1.1rem)] tracking-[0.15em] font-semibold text-[#D3AF54]/90 uppercase font-sans">
+                <span>Kundli</span>
+                <span>Vedic Astrology</span>
+                <span>General Numerology</span>
+                <span>Vastu</span>
               </p>
 
               {/* Action Buttons Row */}
-              <div className="flex flex-wrap gap-4 pt-2">
+              <div className="home-actions flex flex-wrap gap-4 pt-2">
                 <Link 
                   to="/booking"
                   className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-8 py-3.5 rounded-xl flex items-center gap-2 hover:scale-[1.03] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-300 shadow-md hover:shadow-[0_0_15px_rgba(211,175,84,0.3)] cursor-pointer text-sm tracking-wide"
@@ -701,17 +720,17 @@ export default function Home() {
 
             {/* Right Side Portrait Image Column */}
             <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={reduceMotion ? false : { opacity: 0, x: 48, y: 24, rotate: 3 }}
+              animate={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
               transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-              className="flex-1 flex justify-center items-center relative w-full min-h-[400px]"
+              className="home-hero-portrait flex-1 flex justify-center items-center relative w-full min-h-[400px]"
             >
               <div className="absolute w-[clamp(16rem,22vw,24rem)] h-[clamp(16rem,22vw,24rem)] bg-[#D3AF54]/10 rounded-full blur-3xl -z-10 animate-pulse"></div>
 
               <Sparkles className="absolute top-10 right-10 text-[#D3AF54]/60 animate-bounce" size={24} />
               <Sparkles className="absolute bottom-20 left-10 text-[#AB7A57]/40" size={18} />
 
-              <div className="relative w-[clamp(18rem,25vw,26rem)] h-[clamp(18rem,25vw,26rem)] rounded-full border-2 border-dashed border-[#D3AF54]/50 flex items-center justify-center animate-[spin_100s_linear_infinite] overflow-hidden">
+              <div className="home-zodiac relative w-[clamp(18rem,25vw,26rem)] h-[clamp(18rem,25vw,26rem)] rounded-full border-2 border-dashed border-[#D3AF54]/50 flex items-center justify-center animate-[spin_100s_linear_infinite] overflow-hidden">
                 <img 
                   src={zodiacWheel} 
                   alt="Zodiac Wheel Layout" 
@@ -728,7 +747,7 @@ export default function Home() {
               {/* Original Circle Container with 3D pop-out Hero1 image */}
               <motion.div 
                 whileHover="hover"
-                className="absolute w-[clamp(15rem,21vw,22rem)] h-[clamp(15rem,21vw,22rem)] flex items-end justify-center group"
+                className="home-portrait-frame absolute w-[clamp(15rem,21vw,22rem)] h-[clamp(15rem,21vw,22rem)] flex items-end justify-center group"
               >
                 
                 {/* Layer 1: Background Circle & Full Border (overflow-hidden to clip bottom image to circle curve) */}
@@ -746,7 +765,7 @@ export default function Home() {
                 {/* Layer 2: Top-half overlay image (crosses top border, bottom is clipped at 50%) */}
                 <motion.img 
                   src={hero1} 
-                  alt="Astrologer Kundan Singh pop-out" 
+                  alt="" aria-hidden="true"
                   variants={imageVariants}
                   initial="initial"
                   animate="animate"
@@ -767,21 +786,21 @@ export default function Home() {
 
           </section>
         </div>
+
       </div>
 
       {/* ========================================================= */}
       {/* 3. LUXURY FEATURE STRIP SECTION                           */}
       {/* ========================================================= */}
-      <div ref={timelineRef} className="w-full bg-[#FDFCF5] flex flex-col items-center border-b border-[#AB7A57]/10 relative">
-        
+      <div className="home-offerings" data-scene="offerings">
+      <div className="home-features w-full bg-[#EDE9D7] flex flex-col items-center border-b border-[#AB7A57]/10 relative">
         {/* Floating Glassmorphic Stat bar sitting exactly at the boundary */}
-        {/* Floating Glassmorphic Stat bar sitting exactly at the boundary */}
-        <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
+        <div className="home-proof w-full max-w-2xl mx-auto px-4 sm:px-6 relative z-30">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-            className="w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-3xl p-1.5 py-2 sm:p-3 sm:py-3 shadow-2xl relative overflow-hidden grid grid-cols-3 gap-1.5 sm:gap-4 text-center z-30"
+            className="home-proof-grid w-full bg-[#FDFCF5] border border-[#AB7A57]/30 rounded-3xl p-1.5 py-2 sm:p-3 sm:py-3 shadow-2xl relative overflow-hidden grid grid-cols-3 gap-1.5 sm:gap-4 text-center z-30"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.04),transparent_70%)] pointer-events-none"></div>
             
@@ -820,18 +839,18 @@ export default function Home() {
           </motion.div>
         </div>
 
-        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pt-8 sm:pt-12">
+
+        <div className="home-container w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)] pt-8 sm:pt-12">
           
           <motion.section 
-            onViewportEnter={startTimelineSequence}
             viewport={{ once: true, margin: "-100px" }}
-            className="w-full pb-[clamp(3.5rem,6vw,7.5rem)] relative overflow-hidden z-10 flex flex-col items-center"
+            className="home-features-section w-full pb-[clamp(3.5rem,6vw,7.5rem)] relative overflow-hidden z-10 flex flex-col items-center"
           >
             {/* Section Header */}
-            <div className="text-center mb-10 space-y-2">
-              <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#AB7A57] uppercase font-sans flex items-center justify-center gap-1.5">
+            <div className="home-features-heading text-center mb-10 space-y-2">
+              <h2 className="home-features-title">
                 ✦ Our Features ✦
-              </span>
+              </h2>
             </div>
             
             {/* Desktop View (Large Screens: lg breakpoint) */}
@@ -842,13 +861,11 @@ export default function Home() {
                 {featuresData.map((item, index) => (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ 
-                      opacity: visibleCardsCount > index ? 1 : 0, 
-                      y: visibleCardsCount > index ? 0 : 30 
-                    }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="bg-[#181122] border border-[#AB7A57]/20 hover:border-[#D3AF54] rounded-2xl p-6 flex flex-col items-start text-left gap-4 transition-all duration-300 shadow-lg hover:shadow-[0_15px_30px_rgba(211,175,84,0.15)] group cursor-pointer hover:scale-[1.02]"
+                    initial={reduceMotion ? false : { opacity: 0, x: index < 2 ? -32 : 32, y: index % 2 ? 16 : -16 }}
+                    whileInView={{ opacity: 1, x: 0, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 0.6, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
+                    className="home-feature-card home-lift bg-[#181122] border border-[#AB7A57]/20 hover:border-[#D3AF54] rounded-2xl p-6 flex flex-col items-start text-left gap-4 transition-all duration-300 shadow-lg hover:shadow-[0_15px_30px_rgba(211,175,84,0.15)] group cursor-pointer hover:scale-[1.02]"
                   >
                     <div className="flex items-center gap-3 w-full">
                       {/* Gold Circular Outlined Icon Container */}
@@ -878,13 +895,11 @@ export default function Home() {
                 {featuresData.map((item, index) => (
                   <div key={index} className="w-full min-h-[140px] flex items-center relative">
                     <motion.div 
-                      initial={{ opacity: 0, x: 30 }}
-                      animate={{ 
-                        opacity: visibleCardsCount > index ? 1 : 0, 
-                        x: visibleCardsCount > index ? 0 : 30 
-                      }}
+                      initial={reduceMotion ? false : { opacity: 0, x: index % 2 ? 24 : -24 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, amount: 0.15 }}
                       transition={{ duration: 0.8, ease: "easeOut" }}
-                      className="bg-[#181122] border border-[#AB7A57]/20 hover:border-[#D3AF54] rounded-2xl p-5 shadow-lg max-w-2xl w-full flex flex-col items-start gap-3 group cursor-pointer hover:scale-[1.02] transition-transform duration-300"
+                      className="home-feature-card home-lift bg-[#181122] border border-[#AB7A57]/20 hover:border-[#D3AF54] rounded-2xl p-5 shadow-lg max-w-2xl w-full flex flex-col items-start gap-3 group cursor-pointer hover:scale-[1.02] transition-transform duration-300"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full border border-[#BDBDBD] flex items-center justify-center text-[#D3AF54] bg-[#FFFDEE] shrink-0 group-hover:scale-115 transition-transform duration-300">
@@ -907,32 +922,34 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 4. PREMIUM ASTROLOGY SERVICES GRID                        */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#EDE9D7] flex justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
-        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
+      <div className="home-services w-full bg-[#EDE9D7] flex justify-center z-10">
+        <div className="home-container w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
-          <motion.section 
+          <motion.section
+            ref={servicesRef}
+            id="home-services"
+            onFocusCapture={(event) => setServiceActionFocused(Boolean(event.target.closest(".home-service-action")))}
+            onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setServiceActionFocused(false); }}
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full bg-transparent py-[clamp(2.5rem,5vw,6rem)] relative overflow-hidden flex flex-col items-center"
+            className="home-services-section w-full bg-transparent py-[clamp(2.5rem,5vw,6rem)] relative overflow-hidden flex flex-col items-center"
           >
             <div className="absolute top-2 left-2 w-64 h-64 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.04),transparent_60%)] rounded-full -z-10 animate-pulse"></div>
 
             <div className="w-full">
               
               {/* Section Header */}
-              <div className="text-center mb-10 space-y-2">
-                <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#AB7A57] uppercase font-sans flex items-center justify-center gap-1.5">
-                  ✦ Our Services ✦
-                </span>
-                <h3 className="text-[clamp(1.4rem,2.2vw,2.4rem)] font-serif font-bold text-[#181122] tracking-wide mt-1">
+              <div className="home-section-heading home-services-heading text-center mb-10 space-y-2">
+                <span className="home-section-label">✦ OUR SERVICES ✦</span>
+                <h2 className="home-title text-[clamp(1.4rem,2.2vw,2.4rem)] font-serif font-bold text-[#181122] tracking-wide mt-1">
                   Guidance for Every Aspect of Life
-                </h3>
+                </h2>
               </div>
 
               {/* Mobile & Tablet Services Grid (3 rows, 2 columns - Text only, updates active tab) */}
-              <div className="grid lg:hidden grid-cols-2 gap-3 sm:gap-4 mt-6 text-[#181122] max-w-2xl mx-auto w-full">
+              <div className="home-service-tabs-mobile grid lg:hidden grid-cols-2 gap-3 sm:gap-4 mt-6 text-[#181122] max-w-2xl mx-auto w-full">
                 {allServices.map((item, idx) => {
                   const isActive = activeServiceTab === idx;
                   const isLastItem = idx === 4;
@@ -940,8 +957,10 @@ export default function Home() {
                     <button
                       key={item.id}
                       type="button"
-                      onClick={() => setActiveServiceTab(idx)}
-                      className={`border rounded-2xl p-3 sm:p-4 flex items-center justify-center text-center transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] cursor-pointer min-h-[52px] h-full ${
+                      aria-pressed={isActive}
+                      aria-controls="home-service-panel-mobile"
+                      onClick={() => selectService(idx)}
+                      className={`home-service-tab border rounded-2xl p-3 sm:p-4 flex items-center justify-center text-center transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02] cursor-pointer min-h-[52px] h-full ${
                         isLastItem ? "col-span-2 max-w-[65%] sm:max-w-[55%] justify-self-center mx-auto w-full" : ""
                       } ${
                         isActive 
@@ -950,7 +969,7 @@ export default function Home() {
                       }`}
                     >
                       <span className="font-serif font-bold text-[10px] sm:text-xs tracking-wide leading-tight">
-                        {item.title}
+                        {item.displayTitle}
                       </span>
                     </button>
                   );
@@ -958,22 +977,22 @@ export default function Home() {
               </div>
 
               {/* Mobile & Tablet Service Details Card */}
-              <div className="block lg:hidden mt-6 w-full text-white max-w-2xl mx-auto">
-                <AnimatePresence mode="wait">
+              <div id="home-service-panel-mobile" className="home-service-mobile block lg:hidden mt-6 w-full text-white max-w-2xl mx-auto">
+                <AnimatePresence initial={false}>
                   <motion.div
                     key={activeServiceTab}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -15 }}
+                    exit={{ opacity: 0, position: "absolute", pointerEvents: "none" }}
                     transition={{ duration: 0.25 }}
-                    className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-5 sm:p-6 flex flex-col justify-between shadow-2xl relative overflow-hidden text-white text-left"
+                    className="home-service-card home-lift bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-5 sm:p-6 flex flex-col justify-between shadow-2xl relative overflow-hidden text-white text-left"
                   >
                     <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.3),transparent_70%)] pointer-events-none" />
                     <div className="absolute top-0 right-0 w-32 h-32 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
 
-                    <div className="space-y-4">
+                    <div className="home-service-main space-y-4">
                       {/* Service Image banner */}
-                      <div className="w-full h-40 sm:h-48 rounded-xl overflow-hidden border border-white/10 relative">
+                      <div className="home-service-image w-full h-40 sm:h-48 rounded-xl overflow-hidden border border-white/10 relative">
                         <img 
                           src={
                             activeServiceTab === 0 ? vedicAstrologyImg :
@@ -982,26 +1001,26 @@ export default function Home() {
                             activeServiceTab === 3 ? laalKitaabImg :
                             prashnaKundliImg
                           }
-                          alt={allServices[activeServiceTab].title}
+                          alt={allServices[activeServiceTab].displayTitle}
                           className="w-full h-full object-cover opacity-100"
                         />
                       </div>
 
-                      <div className="space-y-2 text-left">
+                      <div className="home-service-copy space-y-2 text-left">
                         <span className="text-[9px] tracking-[0.2em] font-bold text-[#D3AF54] uppercase font-sans block">
-                          ✦ CELESTIAL ALIGNMENT ✦
+                          {allServices[activeServiceTab].label}
                         </span>
-                        <div className="flex items-center justify-between gap-4">
+                        <div className="home-service-title-row flex items-center justify-between gap-4">
                           <h3 className="text-base sm:text-lg font-serif font-bold text-white tracking-wide">
-                            {allServices[activeServiceTab].title}
+                            {allServices[activeServiceTab].displayTitle}
                           </h3>
-                          <div className="text-right">
+                          <div className="home-service-price text-right">
                             <span className="text-sm font-bold text-[#D3AF54] font-sans block whitespace-nowrap">
                               {allServices[activeServiceTab].price}
                             </span>
                             <span className="text-[10px] text-[#D8CFEB] font-sans block whitespace-nowrap">
-                              {allServices[activeServiceTab].duration}
-                            </span>
+                              {allServices[activeServiceTab].priceUnit}
+                              </span>
                           </div>
                         </div>
                         <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans">
@@ -1010,7 +1029,7 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="mt-5 flex justify-start w-full">
+                    <div className="home-service-action mt-5 flex justify-start w-full">
                       <Link 
                         to="/booking"
                         className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-semibold px-5 py-2 rounded-xl transition duration-300 shadow-md shadow-[#D3AF54]/10 cursor-pointer text-xs uppercase tracking-wider flex items-center gap-2"
@@ -1024,7 +1043,7 @@ export default function Home() {
               </div>
 
               {/* Desktop Showcase Dashboard (lg screens only) */}
-              <div className="hidden lg:grid lg:grid-cols-10 gap-12 lg:gap-14 items-stretch mt-6 text-[#181122] max-w-4xl mx-auto">
+              <div className="home-service-showcase hidden lg:grid lg:grid-cols-10 gap-12 lg:gap-14 items-stretch mt-6 text-[#181122] max-w-4xl mx-auto">
                 {/* Left Column - Service tabs list */}
                 <div className="lg:col-span-4 flex flex-col h-full">
                   {/* Desktop Vertical Tab List */}
@@ -1035,17 +1054,19 @@ export default function Home() {
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => setActiveServiceTab(idx)}
-                          className={`flex items-center gap-4 py-4 px-4 rounded-2xl border text-left transition-all duration-300 w-full cursor-pointer relative overflow-hidden group flex-1 ${
+                          aria-pressed={isActive}
+                          aria-controls="home-service-panel"
+                          onClick={() => selectService(idx)}
+                          className={`home-service-tab flex items-center gap-4 py-4 px-4 rounded-2xl border text-left transition-all duration-300 w-full cursor-pointer relative overflow-hidden group flex-1 ${
                             isActive 
                               ? "bg-[#FFFDEE] border-[#D3AF54] text-[#181122] shadow-xl hover:border-[#D3AF54]" 
                               : "bg-white border-[#AB7A57]/15 text-[#181122]/70 hover:bg-[#181122]/5 hover:border-[#AB7A57]/30"
                           }`}
                         >
                           {isActive && (
-                            <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#D3AF54]" />
+                            <div className="home-service-tab-indicator absolute left-0 top-0 bottom-0 w-[4px] bg-[#D3AF54]" />
                           )}
-                          <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 shadow-inner transition-transform group-hover:scale-105 ${
+                          <div className={`home-service-tab-icon w-11 h-11 rounded-xl flex items-center justify-center shrink-0 shadow-inner transition-transform group-hover:scale-105 ${
                             isActive 
                               ? "bg-[#181122] border border-[#D3AF54] text-white" 
                               : "bg-[#FFFDEE] border border-[#AB7A57]/20 text-[#181122]"
@@ -1056,7 +1077,7 @@ export default function Home() {
                             <h4 className={`font-serif text-sm font-bold tracking-wide transition-colors ${
                               isActive ? "text-[#181122]" : "text-[#181122]/80 group-hover:text-[#AB7A57]"
                             }`}>
-                              {item.title}
+                              {item.displayTitle}
                             </h4>
                           </div>
                         </button>
@@ -1066,22 +1087,23 @@ export default function Home() {
                 </div>
 
                 {/* Right Column - Service Details Panel */}
-                <div className="lg:col-span-6">
-                  <AnimatePresence mode="wait">
+                <div className="home-service-panel-slot lg:col-span-6" id="home-service-panel">
+                  <AnimatePresence initial={false}>
                      <motion.div
                        key={activeServiceTab}
                        initial={{ opacity: 0, x: 20 }}
                        animate={{ opacity: 1, x: 0 }}
-                       exit={{ opacity: 0, x: -20 }}
+                       exit={{ opacity: 0, position: "absolute", pointerEvents: "none" }}
                        transition={{ duration: 0.3 }}
-                       className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-6 lg:p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden text-white min-h-[440px] h-full text-left"
+                       className="home-service-card home-lift bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-6 lg:p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden text-white min-h-[440px] h-full text-left"
                      >
                        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.3),transparent_70%)] pointer-events-none" />
                        <div className="absolute top-0 right-0 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
 
-                       <div className="space-y-6">
+                       <div className="home-service-main space-y-6">
                          {/* Service Image banner */}
-                         <div className="w-full h-44 sm:h-52 rounded-2xl overflow-hidden border border-white/10 relative group">
+                         <div data-artwork={activeServiceTab} className="home-service-image w-full h-44 sm:h-52 rounded-2xl overflow-hidden border border-white/10 relative group">
+                           <span className="home-service-art-label" aria-hidden="true">{allServices[activeServiceTab].artworkLabel}</span>
                            <img 
                              src={
                                activeServiceTab === 0 ? vedicAstrologyImg :
@@ -1090,26 +1112,26 @@ export default function Home() {
                                activeServiceTab === 3 ? laalKitaabImg :
                                prashnaKundliImg
                              }
-                             alt={allServices[activeServiceTab].title}
+                             alt={allServices[activeServiceTab].displayTitle}
                              className="w-full h-full object-cover opacity-100 group-hover:scale-102 transition-all duration-500"
                            />
                          </div>
 
-                         <div className="space-y-3 text-left">
+                         <div className="home-service-copy space-y-3 text-left">
                            <span className="text-[10px] tracking-[0.25em] font-bold text-[#D3AF54] uppercase font-sans block">
-                             ✦ CELESTIAL ALIGNMENT ✦
+                             {allServices[activeServiceTab].label}
                            </span>
-                           <div className="flex items-center justify-between gap-4">
+                           <div className="home-service-title-row flex items-center justify-between gap-4">
                               <h3 className="text-lg sm:text-xl font-serif font-bold text-white tracking-wide">
-                                {allServices[activeServiceTab].title}
+                                {allServices[activeServiceTab].displayTitle}
                               </h3>
-                              <div className="text-right">
+                              <div className="home-service-price text-right">
                                 <span className="text-base font-bold text-[#D3AF54] font-sans block whitespace-nowrap">
                                   {allServices[activeServiceTab].price}
                                 </span>
                                 <span className="text-xs text-[#D8CFEB] font-sans block whitespace-nowrap">
-                                  {allServices[activeServiceTab].duration}
-                                </span>
+                                  {allServices[activeServiceTab].priceUnit}
+                                  </span>
                               </div>
                             </div>
                            <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans">
@@ -1118,7 +1140,7 @@ export default function Home() {
                          </div>
                        </div>
 
-                       <div className="mt-6 flex justify-start w-full">
+                       <div className="home-service-action mt-6 flex justify-start w-full">
                          <Link 
                            to="/booking"
                            className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-semibold px-5 py-2.5 rounded-xl transition duration-300 shadow-md shadow-[#D3AF54]/10 hover:scale-[1.02] active:scale-[0.98] cursor-pointer text-xs uppercase tracking-wider flex items-center gap-2"
@@ -1133,23 +1155,27 @@ export default function Home() {
               </div>
 
             </div>
+
           </motion.section>
 
         </div>
       </div>
 
+      </div>
+
       {/* ========================================================= */}
       {/* 5. INFINITE SLIDING MARQUEE TESTIMONIALS SECTION          */}
       {/* ========================================================= */}
-      <div className="w-full bg-white flex justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] mt-0 lg:-mt-10 py-8 lg:py-0 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
-        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
+      {/* Preserve the original continuous marquee; mobile keeps explicit pause, landscape pauses on hover/focus, and both support reduced motion. */}
+      <div ref={reviewsRef} data-scene="testimonials" data-marquee-active={reviewsInView && pageVisible && (landscapeLayout || !reviewsPaused) && !reduceMotion} className="home-testimonials w-full bg-white flex justify-center border-b border-[#AB7A57]/10 mt-0 lg:-mt-10 py-8 lg:py-0 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] z-10">
+        <div className="home-container w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
           <motion.section 
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full bg-transparent pt-[clamp(2.5rem,5vw,6rem)] pb-28 sm:pb-36 lg:pb-44 relative overflow-hidden flex flex-col items-center"
+            className="home-testimonials-section w-full bg-transparent pt-[clamp(2.5rem,5vw,6rem)] pb-28 sm:pb-36 lg:pb-44 relative overflow-hidden flex flex-col items-center"
           >
             <div className="absolute top-10 left-10 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-2xl -z-10"></div>
             <div className="absolute top-12 right-12 text-[#D3AF54]/50 animate-pulse">✦</div>
@@ -1157,34 +1183,29 @@ export default function Home() {
             <div className="w-full flex flex-col items-center">
               
               {/* Header */}
-              <div className="text-center mb-10 space-y-2">
-                <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#AB7A57] font-sans block">
-                  ✦ WHAT OUR CLIENTS SAY ✦
-                </span>
-                <h3 className="text-[clamp(1.4rem,2.2vw,2.4rem)] font-serif font-bold text-[#181122] tracking-wide mt-1">
+              <div className="home-section-heading home-testimonials-heading text-center mb-10 space-y-2">
+                <span className="home-section-label">✦ WHAT OUR CLIENTS SAY ✦</span>
+                <h2 className="home-title text-[clamp(1.4rem,2.2vw,2.4rem)] font-serif font-bold text-[#181122] tracking-wide mt-1">
                   Trusted By Thousands
-                </h3>
+                </h2>
+                {!reduceMotion && !landscapeLayout && (
+                  <button type="button" className="home-rotation-control" aria-pressed={reviewsPaused} onClick={() => setReviewsPaused(previous => !previous)}>
+                    {reviewsPaused ? <Play size={15} /> : <Pause size={15} />}
+                    {reviewsPaused ? "Resume moving reviews" : "Pause moving reviews"}
+                  </button>
+                )}
               </div>
 
               {/* Sliding Marquee Track */}
-              <div className="w-full overflow-hidden flex relative py-4">
-                {/* Left & Right fading overlays */}
-                <div className="absolute inset-y-0 left-0 w-12 md:w-32 bg-gradient-to-r from-white to-transparent z-20 pointer-events-none"></div>
-                <div className="absolute inset-y-0 right-0 w-12 md:w-32 bg-gradient-to-l from-white to-transparent z-20 pointer-events-none"></div>
+              <div className="home-reviews-window w-full flex relative py-4" tabIndex={landscapeLayout || reduceMotion || reviewsPaused ? 0 : undefined} aria-label="Client testimonials">
+                {/* Left & Right fading overlays are replaced by a narrow CSS edge mask. */}
                 
-                <motion.div
-                  className="flex gap-6 shrink-0"
-                  animate={{ x: ["0%", "-50%"] }}
-                  transition={{
-                    ease: "linear",
-                    duration: 25,
-                    repeat: Infinity
-                  }}
-                >
+                <div className="home-reviews-track flex gap-6 shrink-0">
                   {[...testimonials, ...testimonials].map((item, index) => (
-                    <div 
-                      key={index} 
-                      className="bg-[#181122] border border-[#AB7A57]/20 hover:border-[#D3AF54] rounded-2xl p-6 md:p-8 flex flex-col justify-between shadow-lg hover:shadow-[0_12px_24px_rgba(211,175,84,0.1)] transition-all duration-300 relative select-none w-[clamp(17rem,24vw,32rem)] shrink-0 gap-4"
+                    <div
+                      key={`${item.name}-${index}`}
+                      aria-hidden={index >= testimonials.length ? true : undefined}
+                      className="home-review-card home-lift bg-[#181122] border border-[#AB7A57]/20 hover:border-[#D3AF54] rounded-2xl p-6 md:p-8 flex flex-col justify-between shadow-lg hover:shadow-[0_12px_24px_rgba(211,175,84,0.1)] transition-all duration-300 relative select-none w-[clamp(17rem,24vw,32rem)] shrink-0 gap-4"
                     >
                       <div>
                         {/* Stars row */}
@@ -1221,28 +1242,28 @@ export default function Home() {
                       </div>
                     </div>
                   ))}
-                </motion.div>
+                </div>
               </div>
 
             </div>
           </motion.section>
 
         </div>
+
       </div>
 
       {/* ========================================================= */}
       {/* 6. SECTION 2 — ABOUT THE ASTROLOGER                       */}
       {/* ========================================================= */}
-      <div className="w-full bg-[#EDE9D7] flex flex-col items-center justify-center border-b border-[#AB7A57]/10 rounded-t-[2.5rem] -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] relative z-20">
-        
+      <div data-scene="about" className="home-about w-full bg-[#EDE9D7] flex flex-col items-center justify-center border-b border-[#AB7A57]/10 -mt-10 shadow-[0_-20px_40px_-15px_rgba(24,17,34,0.12)] relative z-20">
         {/* Floating CTA Banner sitting at the boundary between Testimonials and About Me */}
-        <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 relative z-30 -translate-y-1/2">
+        <div className="home-invitation w-full max-w-4xl mx-auto px-4 sm:px-6 relative z-30">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full bg-[#181122] border border-[#D3AF54]/30 rounded-3xl p-4 sm:p-5 md:p-6 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 text-center md:text-left z-30"
+            className="home-invitation-card home-lift w-full bg-[#181122] border border-[#D3AF54]/30 rounded-3xl p-4 sm:p-5 md:p-6 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 text-center md:text-left z-30"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#D3AF54]/5 rounded-full blur-2xl pointer-events-none"></div>
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
@@ -1274,23 +1295,24 @@ export default function Home() {
           </motion.div>
         </div>
 
-        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
-          <section className="w-full bg-transparent pt-2 pb-[clamp(3rem,6vw,7rem)] relative overflow-hidden flex flex-col items-center">
+        <div className="home-container w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
+
+          <section className="home-about-section w-full bg-transparent pt-2 pb-[clamp(3rem,6vw,7rem)] relative overflow-hidden flex flex-col items-center">
             
             <div className="absolute bottom-4 left-4 w-80 h-80 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.03),transparent_70%)] rounded-full -z-10 animate-pulse"></div>
 
-            <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <div className="home-about-layout w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               
               {/* Left Column Astrologer Portrait (Slides in from the bottom - Desktop only) */}
               <motion.div 
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={reduceMotion ? false : { opacity: 0, x: -48, y: 24, rotate: -2 }}
+                whileInView={{ opacity: 1, x: 0, y: 0, rotate: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="hidden lg:flex lg:col-span-5 justify-center items-center relative w-full min-h-[400px]"
+                className="home-about-portrait hidden lg:flex lg:col-span-5 justify-center items-center relative w-full min-h-[400px]"
               >
-                <div className="w-full max-w-[clamp(18rem,26vw,28rem)] aspect-[4/5] rounded-3xl overflow-hidden border-4 border-[#D3AF54] bg-[#181122] shadow-xl hover:shadow-[0_20px_45px_rgba(211,175,84,0.25)] flex items-center justify-center relative group hover:scale-[1.03] transition-all duration-500">
+                <div className="home-about-frame home-lift w-full max-w-[clamp(18rem,26vw,28rem)] aspect-[4/5] rounded-3xl overflow-hidden border-4 border-[#D3AF54] bg-[#181122] shadow-xl hover:shadow-[0_20px_45px_rgba(211,175,84,0.25)] flex items-center justify-center relative group hover:scale-[1.03] transition-all duration-500">
                   <img 
                     src={about1} 
                     alt="Astrologer Kundan Singh at work" 
@@ -1301,22 +1323,20 @@ export default function Home() {
  
               {/* Right Column Profile Details (Slides in from the bottom) */}
               <motion.div 
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={reduceMotion ? false : { opacity: 0, x: 40, y: 16 }}
+                whileInView={{ opacity: 1, x: 0, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="lg:col-span-7 space-y-6 text-left"
+                className="home-about-copy lg:col-span-7 space-y-6 text-left"
               >
-                <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#AB7A57] uppercase font-sans text-left block">
-                  ✦ ABOUT ME ✦
-                </span>
-                
-                <h3 className="text-[clamp(1.4rem,2.2vw,2.4rem)] font-serif font-bold text-[#181122] tracking-wide mt-1 text-left">
+                <span className="home-section-label">✦ ABOUT ME ✦</span>
+
+                <h2 className="home-title text-[clamp(1.4rem,2.2vw,2.4rem)] font-serif font-bold text-[#181122] tracking-wide mt-1 text-left">
                   Your Guide to a Brighter Future
-                </h3>
+                </h2>
  
                 {/* Mobile/Tablet Image - visible only on screens smaller than lg */}
-                <div className="block lg:hidden w-full my-4 flex justify-center items-center relative min-h-[260px] z-10">
+                <div className="home-about-mobile block lg:hidden w-full my-4 flex justify-center items-center relative min-h-[260px] z-10">
                   <div className="w-full max-w-[14rem] aspect-[4/5] rounded-3xl overflow-hidden border-4 border-[#D3AF54] bg-[#181122] shadow-lg flex items-center justify-center relative">
                     <img 
                       src={about1} 
@@ -1326,38 +1346,38 @@ export default function Home() {
                   </div>
                 </div>
  
-                <div className="relative p-5 rounded-2xl bg-white/40 border border-[#AB7A57]/15 shadow-sm text-left backdrop-blur-xs">
+                <div className="home-about-introduction relative p-5 rounded-2xl bg-white/40 border border-[#AB7A57]/15 shadow-sm text-left backdrop-blur-xs">
                   <div className="absolute top-0 left-0 w-2 h-full bg-[#D3AF54] rounded-l-2xl" />
                   <p className="text-xs sm:text-sm text-[#181122]/90 leading-relaxed font-sans pl-2">
-                    As a qualified Vedic astrologer with over 15 years of experience, I specialize in Kundli analysis, Vastu Shastra, and Numerology. Educated at Bharatiya Vidya Bhavan, I combine traditional planetary wisdom with practical remedies to guide your career, relationships, and finance.
+                    As a <strong>qualified Vedic astrologer</strong> with <strong>over 15 years of experience</strong>, I specialize in Kundli analysis, Vastu Shastra, and Numerology. Educated at <strong>Bharatiya Vidya Bhavan</strong>, I combine traditional planetary wisdom with <strong>practical remedies</strong> to guide your career, relationships, and finance.
                   </p>
                 </div>
 
                 {/* Achievement Cards Grid */}
-                <div className="grid grid-cols-2 gap-4 pt-4 text-left max-w-md md:max-w-lg">
+                <div className="home-achievements grid grid-cols-2 gap-4 pt-4 text-left w-full">
                   
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 shadow-md cursor-default group">
+                  <div className="home-achievement home-lift flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 shadow-md cursor-default group">
                     <div className="w-9 h-9 rounded-full border border-[#AB7A57]/30 flex items-center justify-center bg-[#FFFDEE] shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                       <img src={experienceLogo} alt="Experience" className="w-5 h-5 object-contain" />
                     </div>
                     <h4 className="font-serif text-[#181122] font-bold text-xs sm:text-sm tracking-wide">15+ Years of Experience</h4>
                   </div>
 
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 shadow-md cursor-default group">
+                  <div className="home-achievement home-lift flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 shadow-md cursor-default group">
                     <div className="w-9 h-9 rounded-full border border-[#AB7A57]/30 flex items-center justify-center bg-[#FFFDEE] shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                       <img src={clientsLogo} alt="Clients" className="w-5 h-5 object-contain" />
                     </div>
                     <h4 className="font-serif text-[#181122] font-bold text-xs sm:text-sm tracking-wide">Satisfied Clients</h4>
                   </div>
 
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 shadow-md cursor-default group">
+                  <div className="home-achievement home-lift flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 shadow-md cursor-default group">
                     <div className="w-9 h-9 rounded-full border border-[#AB7A57]/30 flex items-center justify-center bg-[#FFFDEE] shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                       <img src={expertiseLogo} alt="Expertise" className="w-5 h-5 object-contain" />
                     </div>
                     <h4 className="font-serif text-[#181122] font-bold text-xs sm:text-sm tracking-wide">Vedic Expertise</h4>
                   </div>
 
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 shadow-md cursor-default group">
+                  <div className="home-achievement home-lift flex items-center gap-3 p-3 rounded-xl bg-white/50 border border-[#AB7A57]/10 hover:border-[#D3AF54] hover:bg-white hover:scale-[1.03] hover:-translate-y-1 transition-all duration-300 shadow-md cursor-default group">
                     <div className="w-9 h-9 rounded-full border border-[#AB7A57]/30 flex items-center justify-center bg-[#FFFDEE] shrink-0 group-hover:scale-110 transition-transform overflow-hidden">
                       <img src={guidanceLogo} alt="Guidance" className="w-5 h-5 object-contain" />
                     </div>
@@ -1376,16 +1396,17 @@ export default function Home() {
       {/* ========================================================= */}
       {/* 8. DYNAMIC COSMIC CONTACT / DEEP SPACE BAND SECTION        */}
       {/* ========================================================= */}
-      <div id="quick-connect" className="w-full bg-[#06091B] flex justify-center border-t border-[#AB7A57]/20 text-white">
-        <div className="w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
+      <div id="quick-connect" data-scene="inquiry" className="home-inquiry w-full bg-[#06091B] flex justify-center border-t border-[#AB7A57]/20 text-white">
+        <div className="home-container w-full max-w-[2400px] mx-auto px-[clamp(1.5rem,4vw,4.5rem)]">
 
           <motion.section 
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full bg-transparent py-[clamp(2.5rem,5vw,6rem)] relative overflow-hidden flex flex-col items-center"
+            className="home-inquiry-section w-full bg-transparent py-[clamp(2.5rem,5vw,6rem)] relative overflow-hidden flex flex-col items-center"
           >
+            <h2 className="home-title">Request a consultation</h2>
             {/* Nebula Overlays */}
             <div className="absolute top-0 right-0 w-[80%] h-[80%] bg-[radial-gradient(circle_at_top_right,rgba(171,122,87,0.12)_0%,transparent_70%)] rounded-full blur-3xl pointer-events-none -z-10" />
             <div className="absolute bottom-0 left-0 w-[80%] h-[80%] bg-[radial-gradient(circle_at_bottom_left,rgba(211,175,84,0.06)_0%,transparent_70%)] rounded-full blur-3xl pointer-events-none -z-10" />
@@ -1404,11 +1425,11 @@ export default function Home() {
               </svg>
             </div>
 
-            <div className="w-full max-w-5xl mx-auto px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-[clamp(2rem,4vw,5rem)] items-stretch relative z-10">
+            <div className="home-inquiry-grid w-full max-w-5xl mx-auto px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-[clamp(2rem,4vw,5rem)] items-stretch relative z-10">
               
               {/* Left Panel: Services Selection Section */}
               <div
-                className="hidden lg:flex flex-col justify-between bg-[#181122] border border-[#AB7A57]/20 rounded-2xl p-5 lg:p-6 text-left shadow-lg hover:border-[#D3AF54] transition-all duration-300 relative group overflow-hidden"
+                className="home-inquiry-options hidden lg:flex flex-col justify-between bg-[#181122] border border-[#AB7A57]/20 rounded-2xl p-5 lg:p-6 text-left shadow-lg hover:border-[#D3AF54] transition-all duration-300 relative group overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.01] to-transparent pointer-events-none" />
 
@@ -1432,7 +1453,7 @@ export default function Home() {
                   </div>
 
                   {/* Services Selector Grid */}
-                  <div className="grid grid-cols-2 gap-2 py-1">
+                  <div className="home-inquiry-choices grid grid-cols-2 gap-2 py-1">
                     {services.map((item, idx) => {
                       const isSelected = formData.selectedService === item.title;
                       const isFifthItem = idx === 4;
@@ -1515,7 +1536,7 @@ export default function Home() {
 
               {/* Right Panel: Contact Form */}
               <div
-                className="flex flex-col justify-start bg-[#181122] border border-[#AB7A57]/20 rounded-2xl pt-5 px-5 pb-6 lg:pt-6 lg:px-6 lg:pb-7 text-left shadow-lg hover:border-[#D3AF54] transition-all duration-300 relative overflow-hidden"
+                className="home-inquiry-form flex flex-col justify-start bg-[#181122] border border-[#AB7A57]/20 rounded-2xl pt-5 px-5 pb-6 lg:pt-6 lg:px-6 lg:pb-7 text-left shadow-lg hover:border-[#D3AF54] transition-all duration-300 relative overflow-hidden"
               >
                 {/* Orbiting Planetary Decor */}
                 <div className="absolute top-3 right-3 w-20 h-20 pointer-events-none select-none opacity-40 z-0">
@@ -1523,14 +1544,7 @@ export default function Home() {
                     <circle cx="50" cy="50" r="7" className="fill-[#D3AF54] animate-pulse" />
                     <circle cx="50" cy="50" r="20" className="stroke-white/10 stroke-[0.5] fill-none" />
                     <circle cx="50" cy="50" r="35" className="stroke-white/10 stroke-[0.5] fill-none" strokeDasharray="3,3" />
-                    <motion.circle 
-                      cx="50" cy="50" r="2" className="fill-[#D8CFEB]"
-                      animate={{
-                        cx: [50 + 20 * Math.cos(0), 50 + 20 * Math.cos(2*Math.PI)],
-                        cy: [50 + 20 * Math.sin(0), 50 + 20 * Math.sin(2*Math.PI)],
-                      }}
-                      transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-                    />
+                    <circle cx="70" cy="50" r="2" className="fill-[#D8CFEB]" />
                   </svg>
                 </div>
 
@@ -1543,18 +1557,13 @@ export default function Home() {
                     <div className="w-12 h-12 rounded-full bg-[#D3AF54]/10 border-2 border-[#D3AF54] flex items-center justify-center text-[#D3AF54] text-xl shadow-[0_0_12px_rgba(211,175,84,0.3)] animate-pulse">
                       ✓
                     </div>
-                    <h4 className="font-serif text-white font-bold text-xl">Request Dispatched</h4>
+                    <h4 className="font-serif text-white font-bold text-xl">Inquiry received</h4>
                     <p className="text-xs sm:text-sm text-white max-w-xs leading-relaxed font-sans">
-                      Your cosmic chart request has been sent successfully. Astrologer Kundan Singh will analyze your alignments and contact you soon.
+                      Your inquiry has been saved. For anything urgent, please call +91 85277 90801. This inquiry does not book an appointment.
                     </p>
                   </motion.div>
                 ) : (
                   <form onSubmit={handleFormSubmit} className="space-y-4 z-10 relative">
-                    {serverError && (
-                      <div className="p-3 bg-red-950/60 border border-red-500/40 rounded-xl text-red-200 text-xs text-center font-sans tracking-wide">
-                        ⚠️ {serverError}
-                      </div>
-                    )}
                     {/* Header info */}
                     <div className="space-y-1">
                       <span className="text-[11px] sm:text-xs tracking-[0.2em] font-bold text-[#D3AF54]/85 uppercase font-sans block">
@@ -1568,7 +1577,7 @@ export default function Home() {
                       </p>
                     </div>
 
-                    <div className="space-y-4 pt-1">
+                    <div className="home-form-fields space-y-4 pt-1">
                       {/* Name field */}
                       <div className="space-y-1.5 text-left">
                         <label htmlFor="form-name" className="block text-xs sm:text-sm font-semibold text-[#D3AF54] uppercase tracking-wide">
@@ -1620,13 +1629,17 @@ export default function Home() {
                       </div>
 
                       {/* Custom In-Screen Dropdown Selector visible only on mobile/tablets */}
-                      <div className="block lg:hidden space-y-1.5 text-left relative z-30">
-                        <label className="block text-xs sm:text-sm font-semibold text-[#D3AF54] uppercase tracking-wider">
+                      <div className="home-mobile-service-select block lg:hidden space-y-1.5 text-left relative z-30">
+                        <label id="home-inquiry-service-label" className="block text-xs sm:text-sm font-semibold text-[#D3AF54] uppercase tracking-wider">
                           Select Service of Interest (Required)*
                         </label>
                         <div className="relative">
                           <button
                             type="button"
+                            aria-labelledby="home-inquiry-service-label"
+                            aria-expanded={isDropdownOpen}
+                            aria-controls="home-inquiry-service-options"
+                            onKeyDown={(event) => { if (event.key === "Escape") setIsDropdownOpen(false); }}
                             onClick={() => setIsDropdownOpen(prev => !prev)}
                             className="w-full bg-[#181122] border border-white/10 rounded-xl px-3.5 py-3 text-xs sm:text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-4 focus:ring-[#D3AF54]/15 transition-all duration-300 cursor-pointer flex justify-between items-center text-left"
                           >
@@ -1635,7 +1648,7 @@ export default function Home() {
                           </button>
 
                           {isDropdownOpen && (
-                            <div className="absolute left-0 right-0 mt-1 bg-[#181122] border border-[#D3AF54]/40 rounded-xl shadow-2xl overflow-y-auto max-h-56 z-50 flex flex-col py-1 touch-pan-y divide-y divide-white/5">
+                            <div id="home-inquiry-service-options" className="absolute left-0 right-0 mt-1 bg-[#181122] border border-[#D3AF54]/40 rounded-xl shadow-2xl overflow-y-auto max-h-56 z-50 flex flex-col py-1 touch-pan-y divide-y divide-white/5">
                               {services.map((item, idx) => (
                                 <button
                                   key={idx}
@@ -1666,7 +1679,7 @@ export default function Home() {
                         <textarea 
                           id="form-comment"
                           name="comment"
-                          rows="2.5"
+                          rows={3}
                           value={formData.comment}
                           onChange={handleInputChange}
                           placeholder="Describe your query, focus area, or gemstones interest details..."
@@ -1676,7 +1689,7 @@ export default function Home() {
                     </div>
 
                     {serverError && (
-                      <div className="p-3 bg-red-950/80 border border-red-500/60 rounded-xl text-red-200 text-xs text-center font-sans tracking-wide">
+                      <div role="alert" className="p-3 bg-red-950/80 border border-red-500/60 rounded-xl text-red-100 text-sm text-center font-sans leading-relaxed">
                         ⚠️ {serverError}
                       </div>
                     )}
@@ -1690,12 +1703,12 @@ export default function Home() {
                       {submitting ? (
                         <>
                           <Loader2 size={15} className="animate-spin text-[#181122]" />
-                          <span>Sending Verification Code...</span>
+                          <span>Please wait…</span>
                         </>
                       ) : (
                         <>
                           <Send size={12} />
-                          <span>Send Vedic Inquiry Request</span>
+                      <span>Send Vedic Inquiry Request</span>
                         </>
                       )}
                     </button>
@@ -1703,6 +1716,13 @@ export default function Home() {
                 )}
               </div>
 
+            </div>
+            {/* Alternative contact paths remain outside the inquiry form. */}
+            <div className="home-followup-actions">
+              <Link to="/booking" className="home-followup-button"><Calendar size={20} aria-hidden="true" />Book an Appointment</Link>
+              <a href="https://wa.me/918527790801" target="_blank" rel="noopener noreferrer" className="home-followup-button home-followup-button--outline">
+                <img src={waLogo} alt="" width="24" height="24" />Get in Touch on WhatsApp
+              </a>
             </div>
           </motion.section>
         </div>
@@ -1713,10 +1733,11 @@ export default function Home() {
         isOpen={showOtpModal}
         onClose={() => setShowOtpModal(false)}
         email={formData.email}
-        purpose="inquiry"
+        purpose="contact"
         onVerified={executeHomeQuerySubmit}
       />
 
     </div>
+    </MotionConfig>
   )
 }

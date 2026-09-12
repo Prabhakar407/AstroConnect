@@ -1,0 +1,11 @@
+/* Only the studio contact details and message form; shared chrome is untouched. */
+.contact-phone-number { display: flex; align-items: center; min-height: 44px; white-space: nowrap; }
+.contact-copy-phone { display: grid; place-items: center; width: 44px; height: 44px; }
+.contact-office-hours { line-height: 1.45; }
+.contact-message-form { gap: clamp(18px, 1.5vw, 28px); }
+.contact-message-form label { font-size: clamp(12px, 0.65vw, 16px); }
+.contact-message-form :is(input, select) { min-height: 44px; }
+.contact-message-form :is(input, select) + svg { pointer-events: none; }
+@media (max-width: 767px) {
+  .contact-message-form { height: auto; gap: 22px; justify-content: flex-start; }
+}

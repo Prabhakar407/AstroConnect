@@ -1,0 +1,23 @@
+{
+  "name": "astro-advice-inquiry-delivery",
+  "account_id": "162c1ab1ba0619c1c78d9495f3260f18",
+  "vars": {
+    "ASTRO_API_ORIGIN": "https://astrologer-website-kundan-singh-git-design-p-8bfe8c-neura-flow1.vercel.app"
+  },
+  "main": "worker.mjs",
+  "compatibility_date": "2026-09-11",
+  "workers_dev": false,
+  "preview_urls": false,
+  "triggers": { "crons": ["*/15 * * * *"] },
+  "queues": {
+    "consumers": [{
+      "queue": "astroadvice-by-kundan-snigh-inquiries",
+      "max_batch_size": 1,
+      "max_batch_timeout": 1,
+      "max_retries": 5,
+      "retry_delay": 60,
+      "max_concurrency": 1
+    }]
+  },
+  "observability": { "enabled": true }
+}

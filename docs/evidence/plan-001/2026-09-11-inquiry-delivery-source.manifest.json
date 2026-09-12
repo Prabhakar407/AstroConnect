@@ -1,0 +1,662 @@
+[
+  {
+    "path": ".gitignore",
+    "bytes": 645,
+    "sha256": "919bbc188fc395c77a3d4ebc415590f7e7f43ac95b719d6496996b79cf15dbe7"
+  },
+  {
+    "path": ".oxlintrc.json",
+    "bytes": 231,
+    "sha256": "1be899e45c49b2a2edc715bc3bfb31d8ed8e866ed7ebab2065ff6e55e88c2396"
+  },
+  {
+    "path": ".python-version",
+    "bytes": 5,
+    "sha256": "7b55f8e67b5623c4bef3fa691288da9437d79d3aba156de48d481db32ac7d16d"
+  },
+  {
+    "path": ".vercelignore",
+    "bytes": 377,
+    "sha256": "7bf9374e03963fea8e25feb665bbe4c2997cb89506fc28b09652a73cc7c2c0d1"
+  },
+  {
+    "path": "api/index.py",
+    "bytes": 133,
+    "sha256": "4a5a46371815e0d43f2bbdfcf7555f3c061dc90b612ae3caeaca1d4e08efff2e"
+  },
+  {
+    "path": "index.html",
+    "bytes": 2975,
+    "sha256": "f1f0de3b51b0f82b87bb066948dcf977758f0fa84f556e02feb609577d6fb127"
+  },
+  {
+    "path": "package-lock.json",
+    "bytes": 68350,
+    "sha256": "2dce4ab60876d0c128154e2f48fd112881c65f365bfa3ea848ea9ca18aac0307"
+  },
+  {
+    "path": "package.json",
+    "bytes": 661,
+    "sha256": "a4aef25a825e4ff9b506d5cbbce42e3466934db5144ae522982a436dd9165e79"
+  },
+  {
+    "path": "public/Sample.png",
+    "bytes": 421978,
+    "sha256": "17524b73c18c85941265b1c58db057987587277b59ac782981b9d19311a27fed"
+  },
+  {
+    "path": "public/favicon.svg",
+    "bytes": 9522,
+    "sha256": "61bc9a161de58248288e6905425d7180f0624c2865007b97d763fdac12043a66"
+  },
+  {
+    "path": "public/fonts/Source-Sans-3-OFL.txt",
+    "bytes": 4579,
+    "sha256": "09746787287a289323b0ec3cff4d1a4a801331b82b7207c1e186f5d26619a392"
+  },
+  {
+    "path": "public/fonts/Source-Serif-4-OFL.txt",
+    "bytes": 4400,
+    "sha256": "5f94c3fd3a23131a417ab5a0c8452de57e70c3cfb9f604d88241f7065ebf9fd9"
+  },
+  {
+    "path": "public/fonts/source-sans-3-latin.woff2",
+    "bytes": 28740,
+    "sha256": "7a19a7027e125257d310c6dbd78ae3a30b5ea1e3794d60b12bb28227a003bfda"
+  },
+  {
+    "path": "public/fonts/source-serif-4-latin.woff2",
+    "bytes": 122360,
+    "sha256": "f2ea9c12d2fe9bd3a9589b02ad2c0909da88f30938c91adc838c4f4098f9f9e0"
+  },
+  {
+    "path": "public/icons.svg",
+    "bytes": 5031,
+    "sha256": "b45fa506195cfcdef406ba9f0c77b36ddc1a7c224040926ec70abc2fdea7b93a"
+  },
+  {
+    "path": "public/robots.txt",
+    "bytes": 82,
+    "sha256": "36fc653acffa56827501aa6acd6fe90225c36d2ec9e7e84a08bcf11077daf62e"
+  },
+  {
+    "path": "public/sitemap.xml",
+    "bytes": 634,
+    "sha256": "1b7a637d9844aa142d99f9d6704318d03c1ad164edc051d192c27964e15b81f9"
+  },
+  {
+    "path": "requirements.txt",
+    "bytes": 156,
+    "sha256": "a7a0fd32c357a647c728ed46f28ce3b6466aee15c8c130ab4e970506c1de7adf"
+  },
+  {
+    "path": "src/App.css",
+    "bytes": 84,
+    "sha256": "b3bfc19b60b6e7ebc24cd0e38bdc8ebe653304058edd7f9ccfc3332e195b038c"
+  },
+  {
+    "path": "src/App.jsx",
+    "bytes": 2094,
+    "sha256": "6771366a82374603e6b2f03ab7f5643090f7c789b642f837cb63bfa0a1d12ea2"
+  },
+  {
+    "path": "src/Component/About.css",
+    "bytes": 10354,
+    "sha256": "95c6420a39158f3fa5c461a780014612ef7c05fa45e350120d89df8d11a7e6b7"
+  },
+  {
+    "path": "src/Component/About.jsx",
+    "bytes": 31009,
+    "sha256": "dc2a371d9b60c14e53d06fb6ef6a8046c3e25e86bc63b4d837532f4e13a0d2a1"
+  },
+  {
+    "path": "src/Component/Appointment_Booking.jsx",
+    "bytes": 42060,
+    "sha256": "c6da35798e80c8a846ba943075430e3a38d5f95f22e2685ed61ec1b3ccbe689b"
+  },
+  {
+    "path": "src/Component/Contact.css",
+    "bytes": 692,
+    "sha256": "721f4cef34b8acdf5d125751148b7dc5f5eaaa4ceefba1516edfc8f4f629802e"
+  },
+  {
+    "path": "src/Component/Contact.jsx",
+    "bytes": 28797,
+    "sha256": "786e6ac4f61a1455ce6b1761c653bcee6cc9d10103f24b537bc8c85b2c592ac2"
+  },
+  {
+    "path": "src/Component/EmailOtpModal.jsx",
+    "bytes": 12467,
+    "sha256": "fd8664db70408e515c5f7557233bfc8082885b7539ad3f20f78db06e2ce51eac"
+  },
+  {
+    "path": "src/Component/Footer.css",
+    "bytes": 2445,
+    "sha256": "a774aab7d76c3f5d599e63e3e402ff81924157cce96275f87e96bc4df8a3c7a5"
+  },
+  {
+    "path": "src/Component/Footer.jsx",
+    "bytes": 10791,
+    "sha256": "026bc3ddd536d7d0f4a5b9594a4bba1e0c7dd561f7b12b8de8ca2006f5924cc7"
+  },
+  {
+    "path": "src/Component/Home.css",
+    "bytes": 30271,
+    "sha256": "5dd844c678a432c2dd8826d7cf31efb363fcf9f4d39572c755498da7b2ad6544"
+  },
+  {
+    "path": "src/Component/Home.jsx",
+    "bytes": 95133,
+    "sha256": "0616a8893e28b1e04ae83fc1e9f1eb5450e00c4dfcc15f41c9ab4dcf2df1a990"
+  },
+  {
+    "path": "src/Component/LegalModal.jsx",
+    "bytes": 17777,
+    "sha256": "d375ae05b42303525593c08bb2e1cdd0fadf196f688619bd62156e17b35aaff3"
+  },
+  {
+    "path": "src/Component/NameChangeService.jsx",
+    "bytes": 2939,
+    "sha256": "a5e10cce5e0b763726b8dc5e4afba78f1bb19f561c5c8abc330d68790cd38ee5"
+  },
+  {
+    "path": "src/Component/Navbar.css",
+    "bytes": 2657,
+    "sha256": "1fb8d4d775ca96f25324be01c0a04b84859be33d13d068077ab8b7ca5de221c8"
+  },
+  {
+    "path": "src/Component/Navbar.jsx",
+    "bytes": 16106,
+    "sha256": "22299af1541c297ca726e0cd19f183a4e582e2bb1c11af93d3d89aa69bd02716"
+  },
+  {
+    "path": "src/Component/PrivateCalendar.css",
+    "bytes": 8281,
+    "sha256": "61bdb44f89bbd9882bbaf0756a2bb56ea5ddf9627472a7112fb942a76240355e"
+  },
+  {
+    "path": "src/Component/PrivateCalendar.jsx",
+    "bytes": 19250,
+    "sha256": "f030e990f69412146cbced81f0512e5d1ce66b9c310bd9a709907161f9dbf040"
+  },
+  {
+    "path": "src/Component/Service.css",
+    "bytes": 12871,
+    "sha256": "aeb76b83ee707530ce0e85e158a55b4de1026938b16aeaaefbed59590fed1772"
+  },
+  {
+    "path": "src/Component/Service.jsx",
+    "bytes": 6117,
+    "sha256": "f065ba349ba60a593dc21ae9a73546c910984825f8b34dcd81a623af4ac9ba89"
+  },
+  {
+    "path": "src/Component/ServiceDetail.jsx",
+    "bytes": 112422,
+    "sha256": "45a8d8c18ce4818ade4bea7958d66d485b801108924daad31edcde526885ba33"
+  },
+  {
+    "path": "src/Component/ServicePresentation.jsx",
+    "bytes": 1303,
+    "sha256": "f4221d2997a35ea60edf51709367024fc5d8e25e0ea00ef2fc1e5eaa15bfbc9f"
+  },
+  {
+    "path": "src/Component/Testimonial.css",
+    "bytes": 16696,
+    "sha256": "41c6e8f28663be4918a1498473f1188797c8f179e8e3a1c954d35776208d1ece"
+  },
+  {
+    "path": "src/Component/Testimonial.jsx",
+    "bytes": 13897,
+    "sha256": "f5d5d2c9b839d630c9dcd3f78714f5eecebd23f0291d8997665bde06b399ee2b"
+  },
+  {
+    "path": "src/assets/elements/air.webp",
+    "bytes": 4080,
+    "sha256": "7070f33bffb852a23aa3c36e9790e071f3c51dd79c72aa9d45b0d747d4ee69e0"
+  },
+  {
+    "path": "src/assets/elements/earth.webp",
+    "bytes": 5574,
+    "sha256": "84332323318054d17a4763778a5b0e886939ba7d978b5fa94d7c847546785ad9"
+  },
+  {
+    "path": "src/assets/elements/fire.webp",
+    "bytes": 3922,
+    "sha256": "34097711bc27604fedb81ff282542de583c1540cebe7035526c7f17ab4645ebb"
+  },
+  {
+    "path": "src/assets/elements/space.webp",
+    "bytes": 5770,
+    "sha256": "b6328e2d8da078b859c956b3707f2279bd71b7ad8c85c51c93cabcc0920147ac"
+  },
+  {
+    "path": "src/assets/elements/water.webp",
+    "bytes": 2496,
+    "sha256": "ff6cb4d9557718565311fa555a1eea44f4aeea3771dcac82bd5dcff8cb7ca631"
+  },
+  {
+    "path": "src/assets/images/About.webp",
+    "bytes": 153752,
+    "sha256": "d1074a60b4c9a9f12ba15c26bd04414f1fa6c7760a9dd95dd6fc673ee7ea6ee6"
+  },
+  {
+    "path": "src/assets/images/About1.webp",
+    "bytes": 138214,
+    "sha256": "55801020424b2fd976a49ec838215503585c7d1a62d42d8c1c9d1564ccbfdf28"
+  },
+  {
+    "path": "src/assets/images/Feature.webp",
+    "bytes": 377878,
+    "sha256": "99e512d2f9a2e837982df87400f6e9372239d03daafa5840e6eccd2eb7f1d3fd"
+  },
+  {
+    "path": "src/assets/images/Hero1.webp",
+    "bytes": 346272,
+    "sha256": "5eb8d9f1e8c68b7987355ca681ee469121bbf61f28430241ad4757fb574c411e"
+  },
+  {
+    "path": "src/assets/images/Laal Kitaab Remedies.webp",
+    "bytes": 9536,
+    "sha256": "6d81b8889e012b9cc6c92bcc53f33c3ad0c2428d953eef319fa3daf732db1866"
+  },
+  {
+    "path": "src/assets/images/Name-Change.png",
+    "bytes": 1196413,
+    "sha256": "f4a8edb02cd5d3ddc2529627fc63066da67f78a5c39115244f645bfe3b4df683"
+  },
+  {
+    "path": "src/assets/images/Numerology.webp",
+    "bytes": 24488,
+    "sha256": "63b14e63c2a0b1fdc95a61dfa8f790b32fccc233018733117ea316e8a5fef4a3"
+  },
+  {
+    "path": "src/assets/images/Prashna Kundli.webp",
+    "bytes": 22102,
+    "sha256": "69b3bfb924b05f41f33744bbc6ac95b8d62e9a5e941fb69e4976f0f0b8cc93ee"
+  },
+  {
+    "path": "src/assets/images/Vastu Consultation.webp",
+    "bytes": 14884,
+    "sha256": "37eec7a4f6be3089be1089f435d8a42a331277a06c42e8c818859438d89778cd"
+  },
+  {
+    "path": "src/assets/images/Vedic Astrology.webp",
+    "bytes": 36184,
+    "sha256": "0186cd76d63913fd55687972974482e25a91147b3d9fe9358b36f363e926d111"
+  },
+  {
+    "path": "src/assets/images/astrologer_portrait.webp",
+    "bytes": 316428,
+    "sha256": "7d78d937920f2a6bd5292f5cca1a0957a951faff20180d7fd1f27a14ede74d6d"
+  },
+  {
+    "path": "src/assets/images/people1.webp",
+    "bytes": 3248,
+    "sha256": "4c066316107abcb37d3d89f08adde45009219d32ca0dbf074c32d11f00e34d68"
+  },
+  {
+    "path": "src/assets/images/people2.webp",
+    "bytes": 4136,
+    "sha256": "e2dce6ab64ffa68531d0c9fd5ce13a926b01c45391429e68c46b8f18a09ffa82"
+  },
+  {
+    "path": "src/assets/images/people3.webp",
+    "bytes": 6928,
+    "sha256": "cfbf39c5e2f7af3ed915b7bf71645c5ac8d45dafd5cfb5a53e233c5d1d827814"
+  },
+  {
+    "path": "src/assets/images/people4.webp",
+    "bytes": 1840,
+    "sha256": "00493e0e68ff2c4be7a8cc1a436055b2edee3b2f5e7410e7093f248f3b6c61e2"
+  },
+  {
+    "path": "src/assets/images/people5.webp",
+    "bytes": 10022,
+    "sha256": "9b2356a529f4c837e00121f1c45f83f6362745411ce34ab7bd23242441d9f5b5"
+  },
+  {
+    "path": "src/assets/images/people6.webp",
+    "bytes": 7222,
+    "sha256": "ee7698f95a3790c9b86beec0b53ea73a69642bb9008f3c25da383dc60ffdbc22"
+  },
+  {
+    "path": "src/assets/images/testimonial-career.png",
+    "bytes": 1790153,
+    "sha256": "eeabfb6573f428ead4b312387807b879b3cf7a0f841b2175a3ecda843f651874"
+  },
+  {
+    "path": "src/assets/images/testimonial-career.webp",
+    "bytes": 202834,
+    "sha256": "1897fba35da20b145f4a3a4f9aeaa5e61b7e5b450ac708587245edda2e01f5cb"
+  },
+  {
+    "path": "src/assets/images/testimonial-closing-landscape.png",
+    "bytes": 939097,
+    "sha256": "161f4a6a69530e79a1fca208fcff327983a671031fdf4cd2a3361d9d2d7816c1"
+  },
+  {
+    "path": "src/assets/images/testimonial-closing-landscape.webp",
+    "bytes": 31800,
+    "sha256": "8547b5f8d7ab0780edd6c3febbc29fb558651d4c5d8515a1dfe7f233b18db808"
+  },
+  {
+    "path": "src/assets/images/testimonial-home.png",
+    "bytes": 1682917,
+    "sha256": "56bc94a55020b3f0bebdac696aa276ae013c6cfffc2a52a114238e8db6da8b96"
+  },
+  {
+    "path": "src/assets/images/testimonial-home.webp",
+    "bytes": 158560,
+    "sha256": "298214e33205c40e8fa785b7ff0aa8df27dd4d945dd256856d9d5a1708a4ca4a"
+  },
+  {
+    "path": "src/assets/images/testimonial-name.png",
+    "bytes": 1708220,
+    "sha256": "53534b1b514fbd4c1620f21389abbde2f08e983f1aabdb35409063a2e927afff"
+  },
+  {
+    "path": "src/assets/images/testimonial-name.webp",
+    "bytes": 152422,
+    "sha256": "d80dccf8bad479c94cf49536bcf05e44f8aedd6d33b2e84b9b5c9c9a371cb432"
+  },
+  {
+    "path": "src/assets/images/zodiac_wheel.webp",
+    "bytes": 258340,
+    "sha256": "f80ce43e580715b49c4991171ef41a8923d70d7bd9d67c9f89c8229a30e16d38"
+  },
+  {
+    "path": "src/assets/logos/Call.webp",
+    "bytes": 21866,
+    "sha256": "5dd224671c70116b31e1a285ba68001019bf5d9b4f74ed08e0dc610beaa623fa"
+  },
+  {
+    "path": "src/assets/logos/Instagram.webp",
+    "bytes": 32906,
+    "sha256": "db492efdccf80cf0b5cfec67846891df4c094640fa88ec21476369c7377d0522"
+  },
+  {
+    "path": "src/assets/logos/Nav-Logo.webp",
+    "bytes": 230490,
+    "sha256": "d565eda070d534666181a3b1b447db788b5896472088d484c2e0ec0444b34880"
+  },
+  {
+    "path": "src/assets/logos/Youtube.webp",
+    "bytes": 11766,
+    "sha256": "0a8d7e8f3f284f3e27ebd67ef309cf8284315e38a5aa3d66eb5d5b872901e160"
+  },
+  {
+    "path": "src/assets/logos/accuracy.webp",
+    "bytes": 11862,
+    "sha256": "8c6b2e011261a28816392e617669737001673e764fbddde041f472fe37f40a80"
+  },
+  {
+    "path": "src/assets/logos/clients.webp",
+    "bytes": 16946,
+    "sha256": "fb3ecf1acd368e9ebc138879223e5a669070b187b145d4e6623677ece008e8be"
+  },
+  {
+    "path": "src/assets/logos/clock.webp",
+    "bytes": 8024,
+    "sha256": "439a457d6e8e7632c016e3f4c8eb4d52cfeaf7cae098843bb45a501983843d43"
+  },
+  {
+    "path": "src/assets/logos/confidentiality.webp",
+    "bytes": 8406,
+    "sha256": "ae49eb2433bdc86622579e30de657bbbe66dc1fb9ba869819f58e116a3ee2c0a"
+  },
+  {
+    "path": "src/assets/logos/experience.webp",
+    "bytes": 10718,
+    "sha256": "6b5023ceb9691299d5b3402f2bdf90ae3a95dc26df84c009793cfa040f6111db"
+  },
+  {
+    "path": "src/assets/logos/expertise.webp",
+    "bytes": 17558,
+    "sha256": "01a95e8244b31beeceb8ca469d00edf8e9d64aed1c3a078dd271a0c1bf53751f"
+  },
+  {
+    "path": "src/assets/logos/facebook.webp",
+    "bytes": 7680,
+    "sha256": "143d4b2a487dfb7058a2540cd2b57a0034d8d1c3238ba467b0e3bebe9329d4d5"
+  },
+  {
+    "path": "src/assets/logos/gmail.webp",
+    "bytes": 6780,
+    "sha256": "84ab452c8536cb2e72fc4c26743b211f0fcce1ece995db7ab9c110a77d1bf5fa"
+  },
+  {
+    "path": "src/assets/logos/google-maps.webp",
+    "bytes": 12132,
+    "sha256": "b7a2f8aeab28439c425b03e06d3679ec73b831067d2abfe12a3c658538861c7f"
+  },
+  {
+    "path": "src/assets/logos/guidance.webp",
+    "bytes": 12226,
+    "sha256": "eec16b6bb84f65cf55c2492d6f23ec9e4c97dd0666067d82bcf19ae0ffed2bee"
+  },
+  {
+    "path": "src/assets/logos/logo2.webp",
+    "bytes": 147322,
+    "sha256": "022b7549766d24e8208f04cc17311b2ab04c27acd32893207a86ac3d9dbc4cd0"
+  },
+  {
+    "path": "src/assets/logos/solutions.webp",
+    "bytes": 7482,
+    "sha256": "da03fba459360be65699f82b30db70a9e66e9a96b9d6f5bebf722e760618cc9b"
+  },
+  {
+    "path": "src/assets/logos/transformation.webp",
+    "bytes": 15044,
+    "sha256": "aebca9bae38329b0e90d3cbcdf3e25d348609ebfe2fc6f4946dd9b33b7db3044"
+  },
+  {
+    "path": "src/assets/logos/whatsapp.webp",
+    "bytes": 8094,
+    "sha256": "a12c171ba5249e9099dfcdc9ec93e9cfc518e337b9b1948fc02d2e7d20d77d64"
+  },
+  {
+    "path": "src/assets/planets/jupiter.webp",
+    "bytes": 132206,
+    "sha256": "fd4ed752fc6075441491ec9e9c8f8e7b6f760f3e117fb04b548b3e9af51dc3c5"
+  },
+  {
+    "path": "src/assets/planets/ketu.webp",
+    "bytes": 212110,
+    "sha256": "ce5a3c7656318117eb74cfc2a5c02b54c205221ab3817e8904163c4d51c11028"
+  },
+  {
+    "path": "src/assets/planets/mars.webp",
+    "bytes": 129066,
+    "sha256": "8ec07e5635049de89aedda69ffdf205fc50b8266984f9f035cf5aff3b7d25d79"
+  },
+  {
+    "path": "src/assets/planets/mercury.webp",
+    "bytes": 185162,
+    "sha256": "9de262dcb0dd31236e39716bf2f8c0d91a8aaf2701240f8f6a336f575cc96e6f"
+  },
+  {
+    "path": "src/assets/planets/moon.webp",
+    "bytes": 262706,
+    "sha256": "fd3bb6b416adfd1f5602c5b30ae742e3b044297b8e679479d5fcbd7292b56ce4"
+  },
+  {
+    "path": "src/assets/planets/rahu.webp",
+    "bytes": 157406,
+    "sha256": "1349ed0d3dcb0f88dcc45388a32f30ef8a171be5e306f117cf40c8013e50c954"
+  },
+  {
+    "path": "src/assets/planets/saturn.webp",
+    "bytes": 136576,
+    "sha256": "7092f4e3a7bbde9b12cda8ebee677791eab199f1e0121e290fca6f3130f55833"
+  },
+  {
+    "path": "src/assets/planets/sun.webp",
+    "bytes": 211934,
+    "sha256": "db139042c4f94ce23b5fc5082a6596016b1e0684387c6da4556fbe1367f180b8"
+  },
+  {
+    "path": "src/assets/planets/venus.webp",
+    "bytes": 140946,
+    "sha256": "3207421c129267eebf023bfbcdc9d460c89e212f7a5d188ad63bb4111a94eb8a"
+  },
+  {
+    "path": "src/backend/__init__.py",
+    "bytes": 85,
+    "sha256": "ddf5d78f62c99d6a5aba847d0f952c9b9b89e12b3e5d0cc502512ca09a56b812"
+  },
+  {
+    "path": "src/backend/admin.py",
+    "bytes": 8321,
+    "sha256": "291658fb48ac33f19e5d95c458873fcdaf5e5c1b3a86d15a7ef7043da1ea5798"
+  },
+  {
+    "path": "src/backend/application.py",
+    "bytes": 11195,
+    "sha256": "d4c329ebe42115705a29012be48a49a089495abc7be527e83a4d2cb5b273ab31"
+  },
+  {
+    "path": "src/backend/domain.py",
+    "bytes": 4834,
+    "sha256": "76a2792d4d37fa8e195f3c72cfd07f9e562cf06168d2b672e28e0425a6b7c92c"
+  },
+  {
+    "path": "src/backend/inquiry_delivery.py",
+    "bytes": 9147,
+    "sha256": "7981d81c814a8cb386d9c874a24c0ed064f381c7bcaa76d3fcd6719db884b824"
+  },
+  {
+    "path": "src/backend/main.py",
+    "bytes": 399,
+    "sha256": "182f0101cd70099a22cf1af2e4a89b9e7955de2fe311543baa465bf247e3d082"
+  },
+  {
+    "path": "src/backend/migrate.py",
+    "bytes": 963,
+    "sha256": "1ae2743357a4b975436cdf02309731c90731b6c7d3fd93731e6bfcc9c4a64bc5"
+  },
+  {
+    "path": "src/backend/migrations/001_booking_foundation.sql",
+    "bytes": 4403,
+    "sha256": "e1d60dbd567c8611450dc0be02ce2e86af61566bdf8d644d48424c9a35f9c278"
+  },
+  {
+    "path": "src/backend/migrations/002_private_calendar.sql",
+    "bytes": 526,
+    "sha256": "0d0342c5b55982e52c5f7f293e69ba755742335981b88eb43b8916c8b6c187f1"
+  },
+  {
+    "path": "src/backend/migrations/003_booking_contracts.sql",
+    "bytes": 1028,
+    "sha256": "ffdaa615ccff242101afb39fbd2fb2d8c6c43c5a63ce15828e246416de416464"
+  },
+  {
+    "path": "src/backend/migrations/004_active_checkout_lookup.sql",
+    "bytes": 76,
+    "sha256": "616b98d313f0b38b78b6296d1ed3df9d4b6cba9a4892a63c3d8bb622658cd496"
+  },
+  {
+    "path": "src/backend/migrations/005_inquiry_delivery.sql",
+    "bytes": 2216,
+    "sha256": "a9d810e3004e8f5e12bc3ea0c8bfe29b95f8b295d40208b7be9f6f793aea463a"
+  },
+  {
+    "path": "src/backend/models.py",
+    "bytes": 2715,
+    "sha256": "027a6b84cf170f132dcbef9a7865cf5e220ef6b3616f60d16f7d293973e707eb"
+  },
+  {
+    "path": "src/backend/provision.py",
+    "bytes": 5967,
+    "sha256": "c16db61a6b613aaf14ed4d75a547b1e354b45b14217d0ba0c5fb4cc184e9c9f5"
+  },
+  {
+    "path": "src/backend/requirements-tested.lock",
+    "bytes": 1092,
+    "sha256": "9b16d1f5e73dd45eaa0dff6fe1fb190e49838ec38cfa1f614c108e854e518729"
+  },
+  {
+    "path": "src/backend/requirements.txt",
+    "bytes": 126,
+    "sha256": "16b53abd56ea19fc93609874bd50a9d0fdbef04805eb9b94a9ab206aa78824e2"
+  },
+  {
+    "path": "src/backend/resend_email.py",
+    "bytes": 6236,
+    "sha256": "703a3af147de6c2f80ad83243cd351e814538d6494a876ec82d9129a5bd08792"
+  },
+  {
+    "path": "src/backend/storage.py",
+    "bytes": 22147,
+    "sha256": "781f6fa4ca97fa9784f5762a771820e93d483ba558eb67984247a865fa28c35d"
+  },
+  {
+    "path": "src/backend/verification.py",
+    "bytes": 5690,
+    "sha256": "3ff2a587e18c6bca7ca8f9e28fc3073bd2fdb264fea90ce7ad15b20f9c2208b2"
+  },
+  {
+    "path": "src/data/consultationCatalogue.json",
+    "bytes": 581,
+    "sha256": "eaa164fd27b2e94e9c24f97878877a1523ec898036b9e162543e531bfc3ad953"
+  },
+  {
+    "path": "src/data/publicServices.js",
+    "bytes": 2999,
+    "sha256": "7c4652d3b47a393a3c275eeb713296988af764010880712c15c42d2586176d6a"
+  },
+  {
+    "path": "src/data/testimonialContent.js",
+    "bytes": 5013,
+    "sha256": "8a4b349b456d2fed8df2b7a16afab109277e6c1f05630cc703284c107da0590c"
+  },
+  {
+    "path": "src/index.css",
+    "bytes": 3022,
+    "sha256": "5bf34d8db1d59230590e13863ed754e246052ee51a70eb0b8ee6b222c9945c2e"
+  },
+  {
+    "path": "src/lib/adminApi.js",
+    "bytes": 2429,
+    "sha256": "ed4208da40c20eb19f50b7dc168f326d8246b65585b193e310db72de8359873d"
+  },
+  {
+    "path": "src/lib/apiConfig.js",
+    "bytes": 1242,
+    "sha256": "e505f1dfa68ed5256b57728460115dd6db477ce00f0f0cd0a051c6d3c711b411"
+  },
+  {
+    "path": "src/lib/bookingPolicy.js",
+    "bytes": 2166,
+    "sha256": "8abf0a540fbd055c4fc33e715e4761eee6af8f837194675d464c936c15954754"
+  },
+  {
+    "path": "src/lib/formApi.js",
+    "bytes": 3932,
+    "sha256": "a9c6a451bde33c6eaf82a0bec4f3e8db2383078c061d3dad422230c6495a3d80"
+  },
+  {
+    "path": "src/lib/requestReceipt.js",
+    "bytes": 1303,
+    "sha256": "2ec3e028f962721f5a348ac31f260a3e1eeee46db955f72b3710af7266d4e575"
+  },
+  {
+    "path": "src/lib/useBookingSchedule.js",
+    "bytes": 2411,
+    "sha256": "e38b79ce9f28ddb437a54dd5782fa641cf03dd3e64ab1e01d8a78fa4a732f51f"
+  },
+  {
+    "path": "src/main.jsx",
+    "bytes": 229,
+    "sha256": "4b4b864dbe45253425d0c925337180ec07e204295179f80f59551216f466f618"
+  },
+  {
+    "path": "vercel.json",
+    "bytes": 847,
+    "sha256": "2e5bb1f4c8789ce15989a2c91e441ba6cf5e8fb50b34b297a075594fff3ea13d"
+  },
+  {
+    "path": "vite.config.js",
+    "bytes": 220,
+    "sha256": "0c03207436c9eb3f2f35ec9ff13d17c6ae7e4c8d46ad394a556578cf12c80d74"
+  }
+]
