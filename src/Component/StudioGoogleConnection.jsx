@@ -24,7 +24,7 @@ export default function StudioGoogleConnection({ user, onSessionExpired }) {
   useEffect(() => {
     const outcome = new URLSearchParams(location.search).get('google');
     if (!outcome) return;
-    if (outcome === 'connected') setMessage('Google permission saved. Check the connection to confirm Calendar and Meet access.');
+    if (outcome === 'connected') setMessage('Calendar connected. Choose “Check connection” to verify.');
     else setError(outcome === 'denied' ? 'Google permission was not granted. You can connect whenever you are ready.' :
       'Google could not be connected. Please try again with the studio account and allow the requested permissions.');
     navigate('/studio/calendar', { replace: true });
@@ -40,7 +40,7 @@ export default function StudioGoogleConnection({ user, onSessionExpired }) {
         window.location.assign(url.href);
       } else {
         setMessage(data.calendar_access && data.meet_supported ?
-          'Calendar access works, and this calendar supports Google Meet.' :
+          'Calendar and Google Meet are ready.' :
           'Calendar access works, but Google Meet is not available on this calendar. Please contact the website maintainer.');
       }
     } catch (err) {
@@ -50,21 +50,13 @@ export default function StudioGoogleConnection({ user, onSessionExpired }) {
   }
 
   return <aside className="studio-calendar__connection" aria-label="Google Calendar connection">
-    <div>
-      <h2>Google Calendar &amp; Meet</h2>
-      <p>{connection?.connected ? 'Connected to the studio account. Website availability is still managed here.' :
-        'Connect the studio account to add booked consultations and create their meeting links.'}</p>
-      <details><summary>Which calendar does this use?</summary>
-        <p>Consultations go into astroadvicebyks@gmail.com. Google requests permission to manage events on calendars this account owns; this website uses the studio calendar only. Personal appointments are not imported, and editing an event in Google does not change website availability.</p>
-      </details>
-      {message && <p role="status">{message}</p>}
-      {error && <p className="studio-calendar__error" role="alert">{error}</p>}
-    </div>
     <div className="studio-calendar__connection-actions">
       <button className="studio-calendar__primary" disabled={busy || !connection} onClick={() => run(true)}>
         {busy ? 'Please wait…' : connection?.connected ? 'Reconnect Google Calendar' : 'Connect Google Calendar'}
       </button>
       {connection?.connected && <button className="studio-calendar__quiet" disabled={busy} onClick={() => run(false)}>Check connection</button>}
     </div>
+    {message && <p role="status">{message}</p>}
+    {error && <p className="studio-calendar__error" role="alert">{error}</p>}
   </aside>;
 }

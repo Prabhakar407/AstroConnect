@@ -20,6 +20,14 @@ On 2026-09-12 the user explicitly requested moving existing footer popovers to r
 - Screenshots captured and inspected outside Git at /tmp/astro-policy-pages. Footer scroll animation must be revealed before full-page captures.
 - Source and hosted evidence are separate; publication outcome recorded below after verification.
 
-## Remaining integration work
+## Publication checkpoint
+
+- Source commit 13f27d67c8577bb77f18e1feb17465ad4020486f pushed to the existing branch; Vercel preview 4jMhEbhhA5hi9RMHC2hE3eXEANzQ succeeded. Actual preview privacy page title/content loaded, readiness returned storage_ready=true and booking_enabled=false.
+- Fresh full regressions: 199 Python tests and 26 JavaScript tests passed, zero skipped.
+- PR 1 marked ready and merged with exact-head comparison after checks passed. Merge commit fa982f1fc71652ae4324cc55dfb0b71044dfec6e, 2026-09-12 06:20:26 UTC. Branch retained for existing helper dependencies. Production build/domain verification follows; first probe before build completion still served old 404 API response.
+- Production Vercel deployment 6FVP6URv5cR3UMcn4uAjQCobtUAP succeeded (GitHub production deployment 6406711487). Actual apex browser harness passed all three policies at all three viewport sizes, including reload, footer/history, old hash links and unavailable checkout. Live screenshots captured and inspected at /tmp/astro-policy-pages-live. Apex readiness 200/storage_ready=true/booking_enabled=false; Google status 401 without session; callback 400 without state, as intended. No real login, email or payment triggered.
+- Production logs are unavailable through the connected Vercel account (it is not the website account); no claim of a provider log audit. Browser application exception count was zero in the exercised flows.
+
+## Remaining integration work after publication
 
 After official release verify apex /api/ready, private authentication boundaries, policy routes and actual rendered content. Existing Cloudflare helper and Resend webhook still point to the stable branch deployment; keep that deployment/branch intact until both permanent targets are moved and checked. Google Branding needs final public URLs and final callback registration; Calendar authorization/capability check, durable booking meetings and Razorpay remain unfinished.

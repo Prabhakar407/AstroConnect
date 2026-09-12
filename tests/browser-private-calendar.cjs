@@ -91,6 +91,8 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
             email: "astroadvicebyks@gmail.com",
             csrf_token: "synthetic-session-csrf",
           };
+        } else if (path.endsWith("/google/status")) {
+          data = { connected: true };
         } else if (path.endsWith("/day")) {
           if (failDay) {
             status = 503;
@@ -196,7 +198,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
           fullPage: true,
         });
       };
-      await page.goto("http://127.0.0.1:5185/#/studio/calendar");
+      await page.goto((process.env.ASTRO_BROWSER_BASE || "http://127.0.0.1:5185") + "/#/studio/calendar");
       await page.getByRole("button", { name: "Connect with Google" }).waitFor();
       await shot("locked");
       assert.equal(
