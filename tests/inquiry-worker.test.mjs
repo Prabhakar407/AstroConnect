@@ -12,6 +12,21 @@ function message(body = { job_id: randomUUID(), kind: 'inquiry_received', enviro
 }
 const result = msg => ({ ...identity, job_id: msg.body.job_id, state: 'sent', terminal: true, error_code: null, retry_at: null });
 
+test('payment jobs use their fixed handler and acknowledge only matching durable results', async () => {
+  const msg = message({ job_id: randomUUID(), kind: 'payment_event', environment: 'production' });
+  await createWorker(async (url, options) => {
+    assert.equal(url, 'https://astroadvicebykundansingh.com/api/internal/delivery/payment');
+    assert.deepEqual(JSON.parse(options.body), { job_id: msg.body.job_id });
+    return reply(result(msg));
+  }).queue({ messages: [msg] }, env);
+  assert.equal(msg.acks, 1);
+  const waiting = message({ ...msg.body });
+  await createWorker(async () => reply({ ...result(waiting), terminal: false, state: 'pending',
+    retry_at: new Date(Date.now() + 60000).toISOString() }, 202)).queue({ messages: [waiting] }, env);
+  assert.equal(waiting.acks, 0);
+  assert.equal(waiting.retries.length, 1);
+});
+
 test('acknowledges matching durable success and uses only fixed destination', async () => {
   const msg = message();
   const worker = createWorker(async (url, options) => {

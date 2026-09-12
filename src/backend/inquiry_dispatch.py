@@ -28,14 +28,16 @@ def queue_configured(settings):
             bool(re.fullmatch(r'[A-Za-z0-9_-]{20,256}', settings.cloudflare_queue_token or '')))
 
 
-def publish_jobs(settings, job_ids):
+def publish_jobs(settings, job_ids, *, kind='inquiry_received'):
     """One fixed Cloudflare HTTP request; acceptance is not email delivery."""
     if not queue_configured(settings):
         raise StorageUnavailable('The inquiry queue connection is not configured.')
     if not isinstance(job_ids, list) or not 1 <= len(job_ids) <= BATCH_SIZE:
         raise ValueError('Invalid inquiry publication batch.')
     ids = [str(UUID(str(value))) for value in job_ids]
-    body = {'messages': [{'body': {'job_id': value, 'kind': 'inquiry_received',
+    if kind not in ('inquiry_received', 'payment_event'):
+        raise ValueError('Invalid publication kind.')
+    body = {'messages': [{'body': {'job_id': value, 'kind': kind,
                                   'environment': ENVIRONMENT}, 'content_type': 'json'} for value in ids]}
     url = (f'https://api.cloudflare.com/client/v4/accounts/{settings.cloudflare_account_id}'
            f'/queues/{settings.cloudflare_queue_id}/messages/batch')
@@ -61,20 +63,23 @@ def publish_jobs(settings, job_ids):
 
 
 class InquiryDispatch:
-    def __init__(self, store, settings, *, publisher=None):
+    def __init__(self, store, settings, *, publisher=None, kind='inquiry_received'):
         self.store, self.settings = store, settings
-        self.publisher = publisher or (lambda ids: publish_jobs(settings, ids))
+        if kind not in ('inquiry_received', 'payment_event'):
+            raise ValueError('Invalid publication kind.')
+        self.kind = kind
+        self.publisher = publisher or (lambda ids: publish_jobs(settings, ids, kind=kind))
         self.injected_publisher = publisher is not None
 
     def _claim(self, inquiry_id=None):
         with self.store.transaction() as conn:
             now, token = self.store.now(conn), uuid4()
             condition, args = (' AND record_id=%s', [UUID(str(inquiry_id))]) if inquiry_id else ('', [])
-            rows = conn.execute("""SELECT id FROM delivery_jobs WHERE kind='inquiry_received'
+            rows = conn.execute("""SELECT id FROM delivery_jobs WHERE kind=%s
                 AND dispatch_after<=%s AND ((state='pending' AND next_attempt_at<=%s)
                 OR (state='processing' AND lease_until<=%s))""" + condition + """
                 ORDER BY dispatch_after,id LIMIT %s FOR UPDATE SKIP LOCKED""",
-                [now, now, now, *args, BATCH_SIZE]).fetchall()
+                [self.kind, now, now, now, *args, BATCH_SIZE]).fetchall()
             ids = [row['id'] for row in rows]
             if ids:
                 conn.execute("""UPDATE delivery_jobs SET dispatch_after=%s,dispatch_token=%s,

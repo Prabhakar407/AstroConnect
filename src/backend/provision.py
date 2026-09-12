@@ -34,6 +34,9 @@ PRIVILEGES = {
     "admin_sessions": "SELECT, INSERT, UPDATE, DELETE",
     "admin_login_challenges": "SELECT, INSERT, DELETE",
     "google_connection": "SELECT, INSERT, UPDATE",
+    "payment_orders": "SELECT, INSERT, UPDATE",
+    "payment_observations": "SELECT, INSERT, UPDATE",
+    "payment_events": "SELECT, INSERT, UPDATE",
     "google_authorizations": "SELECT, INSERT, DELETE",
 }
 

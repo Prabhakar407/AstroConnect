@@ -4,7 +4,7 @@ import hashlib
 import hmac
 import json
 import re
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from datetime import timedelta
 from pathlib import Path
 from uuid import uuid4
@@ -178,7 +178,7 @@ class Store:
                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT (dedupe_key) DO NOTHING""",
                 (uuid4(), key, kind, record_id, now, now, role, now))
 
-    def hold(self, payload, request_id, token_digest, receipt_secret):
+    def hold(self, payload, request_id, token_digest, receipt_secret, *, payment_key_id=None):
         """Internal checkout primitive. A hold is not a confirmed/paid booking."""
         try:
             payload = BookingDetails(**payload).model_dump()
@@ -220,9 +220,18 @@ class Store:
                  payload["birth_date"], payload["birth_time"] or None, payload["birth_place"], payload["notes"], price["quote_version"],
                  digest, start + timedelta(minutes=DURATION_MINUTES, hours=24), min(now + timedelta(minutes=10), start), now)).fetchone()
             conn.execute("INSERT INTO slot_claims (starts_at,booking_id) VALUES (%s,%s)", (start, booking_id))
+            if payment_key_id is not None:
+                from .razorpay import order_receipt
+                if not re.fullmatch(r'rzp_(test|live)_[A-Za-z0-9]+', payment_key_id):
+                    raise RuleViolation('Payment configuration is unavailable.', 503)
+                mode = payment_key_id.split('_')[1]
+                conn.execute("""INSERT INTO payment_orders
+                    (booking_id,key_id,mode,receipt,amount_paise,created_at)
+                    VALUES (%s,%s,%s,%s,%s,%s)""",
+                    (booking_id, payment_key_id, mode, order_receipt(booking_id, mode), row['amount_paise'], now))
             return row
 
-    def confirm_paid(self, booking_id, payment_id, amount_paise, currency):
+    def confirm_paid(self, booking_id, payment_id, amount_paise, currency, *, _conn=None):
         """Internal only: the future Razorpay adapter must verify capture first.
 
         No public endpoint accepts these arguments as proof of payment.
@@ -232,7 +241,9 @@ class Store:
             raise RuleViolation("Invalid payment reference.")
         if type(amount_paise) is not int or amount_paise <= 0 or currency != "INR":
             raise RuleViolation("Invalid payment amount or currency.")
-        with self.transaction(schedule=True) as conn:
+        # A payment finalizer can share its already schedule-locked transaction,
+        # making observation, booking, claim and delivery intent one commit.
+        with (nullcontext(_conn) if _conn is not None else self.transaction(schedule=True)) as conn:
             now = self.now(conn)
             self.expire_holds(conn, now)
             booking = conn.execute("SELECT * FROM bookings WHERE id=%s FOR UPDATE", (booking_id,)).fetchone()
@@ -342,6 +353,8 @@ class Store:
                 FROM bookings WHERE request_id=%s""", (request_id,)).fetchone()
             check_receipt(row, digest, now)
             payments = [record['disposition'] for record in conn.execute("SELECT disposition FROM payments WHERE booking_id=%s", (row['id'],))]
+            payments += [record['disposition'] for record in conn.execute(
+                'SELECT disposition FROM payment_observations WHERE booking_id=%s', (row['id'],))]
             return {"booking_id": str(row["id"]), "service_id": row["service_id"], "service_name": row["service_name"],
                     "question_count": row["question_count"], "amount_paise": row["amount_paise"], "currency": row["currency"],
                     "duration_minutes": row["duration_minutes"], "starts_at": row["starts_at"].isoformat(),
