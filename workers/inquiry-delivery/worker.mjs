@@ -1,6 +1,5 @@
 // No database, email, payment or Google credentials belong in this helper.
 const ORIGIN = 'https://astroadvicebykundansingh.com';
-const PREVIEW_ORIGIN = 'https://astrologer-website-kundan-singh-git-design-p-8bfe8c-neura-flow1.vercel.app';
 const APPLICATION = 'astro-advice-booking';
 const ENVIRONMENT = 'production';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -13,9 +12,9 @@ const failureReason = error => ['invalid_queue_message', 'helper_configuration',
 
 async function call(path, secret, body, fetcher, configuredOrigin) {
   // The deployment selects the destination, never a queue message. Permit
-  // only this site's two reviewed origins so a typo cannot leak credentials.
+  // only this site's official origin so a typo cannot leak credentials.
   const origin = configuredOrigin === undefined ? ORIGIN : configuredOrigin;
-  if (origin !== ORIGIN && origin !== PREVIEW_ORIGIN) throw new Error('helper_configuration');
+  if (origin !== ORIGIN) throw new Error('helper_configuration');
   if (typeof secret !== 'string' || secret.length < 32 || /[\r\n]/.test(secret)) throw new Error('helper_configuration');
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 25000);

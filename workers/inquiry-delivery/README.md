@@ -1,4 +1,6 @@
-# Inquiry delivery helper
+# Inquiry and payment delivery helper
+
+**Current, 2026-09-12:** the helper is deployed against the official website only; old preview destinations are rejected. Payment jobs now have their own fixed authenticated handler alongside inquiry delivery. The same existing queue, schedule and credentials remain. Sixteen unit tests and local runtime checks pass. See the [final-domain audit](../../docs/evidence/plan-001/2026-09-12-final-domain-audit.md) for current account-only actions and remaining work. The setup and prelaunch notes below are historical and must not be used to reintroduce preview destinations or repeat secret setup.
 
 Permanent names: Worker `astro-advice-inquiry-delivery`, existing Queue `astroadvice-by-kundan-snigh-inquiries` (provider spelling retained). This folder is the helper, not another website. No public HTTP endpoint, domain migration, database connection, Resend key, Google key, payment key or customer data belongs here. It is excluded from the Vercel upload; deploy this folder to the approved Cloudflare account separately when authorized.
 
