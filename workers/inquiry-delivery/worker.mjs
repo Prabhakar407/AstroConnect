@@ -65,9 +65,10 @@ export function createWorker(fetcher = (...args) => fetch(...args)) {
         try {
           const body = message.body;
           if (!object(body) || Object.keys(body).sort().join(',') !== 'environment,job_id,kind' ||
-              body.kind !== 'inquiry_received' || body.environment !== ENVIRONMENT ||
+              !['inquiry_received', 'payment_event'].includes(body.kind) || body.environment !== ENVIRONMENT ||
               typeof body.job_id !== 'string' || !UUID.test(body.job_id)) throw new Error('invalid_queue_message');
-          const { status, data } = await call('/api/internal/delivery/inquiry', env.ASTRO_DELIVERY_SECRET,
+          const path = body.kind === 'payment_event' ? '/api/internal/delivery/payment' : '/api/internal/delivery/inquiry';
+          const { status, data } = await call(path, env.ASTRO_DELIVERY_SECRET,
             { job_id: body.job_id }, fetcher, env.ASTRO_API_ORIGIN);
           if (!identity(data) || data.job_id !== body.job_id) throw new Error('handler_mismatch');
           if (status === 200 && data.terminal === true && ['sent', 'failed'].includes(data.state)) {

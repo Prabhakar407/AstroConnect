@@ -41,6 +41,10 @@ class Settings:
     google_client_id: str = ""
     google_client_secret: str = field(default="", repr=False)
     google_token_key: str = field(default="", repr=False)
+    razorpay_key_id: str = field(default="", repr=False)
+    razorpay_key_secret: str = field(default="", repr=False)
+    razorpay_webhook_secret: str = field(default="", repr=False)
+    razorpay_account_id: str = ""
     origins: tuple = ("http://localhost:5173", "http://127.0.0.1:5173")
 
     @classmethod
@@ -59,6 +63,10 @@ class Settings:
                    google_client_id=os.getenv("ASTRO_GOOGLE_CLIENT_ID", ""),
                    google_client_secret=os.getenv("ASTRO_GOOGLE_CLIENT_SECRET", ""),
                    google_token_key=os.getenv("ASTRO_GOOGLE_TOKEN_KEY", ""),
+                   razorpay_key_id=os.getenv("ASTRO_RAZORPAY_KEY_ID", ""),
+                   razorpay_key_secret=os.getenv("ASTRO_RAZORPAY_KEY_SECRET", ""),
+                   razorpay_webhook_secret=os.getenv("ASTRO_RAZORPAY_WEBHOOK_SECRET", ""),
+                   razorpay_account_id=os.getenv("ASTRO_RAZORPAY_ACCOUNT_ID", ""),
                    resend_webhook_secret=os.getenv("ASTRO_RESEND_WEBHOOK_SECRET", ""),
                    delivery_secret=os.getenv("ASTRO_DELIVERY_SECRET", ""),
                    recovery_secret=os.getenv("ASTRO_RECOVERY_SECRET", ""),
@@ -210,8 +218,15 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
     @app.post("/api/internal/recovery/inquiries")
     def recover_inquiries(payload: RecoveryInput, request: Request):
         require_internal(request, settings.recovery_secret)
-        result = dispatch.run()
-        store.cleanup_ephemeral()
+        try:
+            result = dispatch.run()
+            store.cleanup_ephemeral()
+        finally:
+            # A failed inquiry publication must not prevent payment recovery.
+            # Reuse this scheduled request with one bounded provider fetch.
+            if (settings.razorpay_key_id and settings.razorpay_key_secret and
+                    settings.razorpay_webhook_secret and settings.razorpay_account_id):
+                payment_events_service().process_one()
         return {'application': APPLICATION, 'environment': ENVIRONMENT,
                 'run_id': str(payload.run_id), **result}
 
@@ -250,5 +265,36 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
     def booking_not_enabled():
         # There is intentionally no public direct call to Store.hold/confirm_paid.
         raise StorageUnavailable("Online payment and booking are not available yet. Please call +91 85277 90801 for an appointment.")
+
+    def payment_events_service():
+        from .razorpay import Razorpay, RazorpayFailure
+        from .payment_checkout import PaymentCheckout
+        from .payment_events import PaymentEvents
+        try:
+            provider = Razorpay(settings.razorpay_key_id, settings.razorpay_key_secret)
+        except RazorpayFailure:
+            raise StorageUnavailable('Payment notifications are not configured.') from None
+        return PaymentEvents(store, PaymentCheckout(store, provider),
+                             settings.razorpay_webhook_secret, settings.razorpay_account_id)
+
+    @app.post('/api/webhooks/razorpay')
+    async def razorpay_webhook(request: Request):
+        from starlette.concurrency import run_in_threadpool
+        events = payment_events_service()
+        from .payment_dispatch import dispatch_event
+        # Commit the event and job together, then briefly publish to the queue.
+        # Provider verification runs in the authenticated consumer, not this ACK.
+        event_id = await run_in_threadpool(events.receive, await request.body(), request.headers)
+        if event_id:
+            record_id = await run_in_threadpool(events.record_id, event_id)
+            await dispatch_event(store, settings, record_id)
+        return {'received': True}
+
+    @app.post('/api/internal/delivery/payment')
+    def deliver_payment(payload: DeliveryInput, request: Request):
+        require_internal(request, settings.delivery_secret)
+        result = payment_events_service().deliver(payload.job_id)
+        return JSONResponse({'application': APPLICATION, 'environment': ENVIRONMENT, **result},
+                            status_code=200 if result['terminal'] else 202)
 
     return app
