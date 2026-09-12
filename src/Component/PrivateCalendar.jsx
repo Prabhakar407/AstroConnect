@@ -260,11 +260,12 @@ export default function PrivateCalendar() {
             </button>
           )}
         </header>
-        {user && <nav className="studio-calendar__tabs" aria-label="Studio views">
+        {user && <div className="studio-calendar__toolbar"><nav className="studio-calendar__tabs" aria-label="Studio views">
           {[['calendar', 'Calendar'], ['inquiries', 'Inquiries'], ['attention', 'Needs attention']].map(([key, label]) =>
             <button key={key} aria-pressed={view === key} disabled={busy} onClick={() => { setView(key); setError(''); setNotice(''); }}>{label}</button>)}
-        </nav>}
-        {user && view === 'calendar' && <StudioGoogleConnection user={user} onSessionExpired={sessionExpired} />}
+        </nav>
+        {view === 'calendar' && <StudioGoogleConnection user={user} onSessionExpired={sessionExpired} />}
+        </div>}
         {error && (
           <p className="studio-calendar__error" role="alert">
             {error}

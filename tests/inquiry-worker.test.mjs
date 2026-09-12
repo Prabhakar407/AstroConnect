@@ -208,7 +208,7 @@ test('permanent helper config keeps work bounded without a public HTTP endpoint'
   const config = JSON.parse(readFileSync(new URL('../workers/inquiry-delivery/wrangler.jsonc', import.meta.url), 'utf8'));
   assert.equal(config.name, 'astro-advice-inquiry-delivery');
   assert.equal(config.account_id, '162c1ab1ba0619c1c78d9495f3260f18');
-  assert.equal(config.vars.ASTRO_API_ORIGIN, 'https://astrologer-website-kundan-singh-git-design-p-8bfe8c-neura-flow1.vercel.app');
+  assert.equal(config.vars.ASTRO_API_ORIGIN, 'https://astroadvicebykundansingh.com');
   assert.equal(config.workers_dev, false);
   assert.equal(config.preview_urls, false);
   assert.deepEqual(config.triggers.crons, ['*/15 * * * *']);

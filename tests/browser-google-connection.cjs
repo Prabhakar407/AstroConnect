@@ -19,7 +19,7 @@ mkdirSync(output, { recursive: true });
         const path = new URL(route.request().url()).pathname;
         let status = 200, data;
         if (path.endsWith('/session')) data = {email:'synthetic@example.invalid', csrf_token:'synthetic-csrf'};
-        else if (path.endsWith('/day')) data = {slots:[], closures:[]};
+        else if (path.endsWith('/day')) data = {slots:['10:00','10:30','11:00','11:30','15:00','15:30','16:00','16:30','17:00','17:30'].map(time => ({time, state:'open'})), closures:[]};
         else if (path.endsWith('/google/status')) data = {connected, calendar_id:connected ? 'synthetic@example.invalid' : null};
         else if (path.endsWith('/google/start')) {
           assert.equal(route.request().headers()['x-astro-csrf'], 'synthetic-csrf');
@@ -40,9 +40,18 @@ mkdirSync(output, { recursive: true });
       await page.goto(base + '/#/studio/calendar?google=connected');
       await page.reload();
       await page.getByRole('button', {name:'Check connection',exact:true}).click();
-      await page.getByText(/Calendar access works, and this calendar supports Google Meet/).waitFor();
-      await page.getByText('Which calendar does this use?', {exact:true}).waitFor();
-      assert.equal(await page.locator('.studio-calendar__connection details').getAttribute('open'), null);
+      await page.getByText('Calendar and Google Meet are ready.', {exact:true}).waitFor();
+      assert.equal(await page.getByText('Which calendar does this use?', {exact:true}).count(), 0);
+      assert.equal(await page.getByText(/Website availability is still managed here/).count(), 0);
+      assert.equal(await page.locator('.studio-calendar__toolbar .studio-calendar__connection-actions').count(), 1);
+      assert.equal(await page.locator('.studio-calendar__slots > div').count(), 10);
+      if (width > 760) {
+        const tabs = await page.locator('.studio-calendar__tabs').boundingBox();
+        const actions = await page.locator('.studio-calendar__connection-actions').boundingBox();
+        assert.ok(Math.abs(tabs.y - actions.y) < 2, 'Connection controls share the tabs row');
+        const size = await page.locator('.studio-calendar').evaluate(el => parseFloat(getComputedStyle(el).fontSize));
+        assert.ok(Math.abs(size - (width >= 1920 ? 18.7 : 15.3)) < .1);
+      }
       await page.evaluate(async () => { await document.fonts.ready; window.scrollTo(0,0); });
       await page.waitForTimeout(400);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false);
