@@ -91,6 +91,8 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
             email: "astroadvicebyks@gmail.com",
             csrf_token: "synthetic-session-csrf",
           };
+        } else if (path.endsWith("/google/status")) {
+          data = { connected: true };
         } else if (path.endsWith("/day")) {
           if (failDay) {
             status = 503;
