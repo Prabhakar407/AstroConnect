@@ -1,6 +1,6 @@
 // AstroAdvice Client Routing Engine
 import { useEffect } from 'react'
-import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './Component/Navbar'
 import Home from './Component/Home'
 import About from './Component/About'
@@ -11,6 +11,7 @@ import Contact from './Component/Contact'
 import Appointment_Booking from './Component/Appointment_Booking'
 import PrivateCalendar from './Component/PrivateCalendar'
 import Footer from './Component/Footer'
+import LegalPage from './Component/LegalPage'
 import './App.css'
 
 /**
@@ -52,6 +53,9 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/booking" element={<Appointment_Booking />} />
             <Route path="/studio/calendar" element={<PrivateCalendar />} />
+            <Route path="/privacy-policy" element={<LegalPage policy="privacy" />} />
+            <Route path="/terms-and-conditions" element={<LegalPage policy="terms" />} />
+            <Route path="/refund-policy" element={<LegalPage policy="refund" />} />
           </Routes>
         </main>
 

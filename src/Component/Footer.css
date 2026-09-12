@@ -28,13 +28,13 @@
 .site-footer .footer-whatsapp-icon { display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .site-footer .footer-whatsapp-icon img { width: 34px; height: 34px; max-width: none; flex: 0 0 34px; object-fit: contain; }
 .site-footer .footer-bottom,
-.site-footer .footer-bottom button { font-size: 0.875rem; line-height: 1.5; }
+.site-footer .footer-bottom :is(a, button) { font-size: 0.875rem; line-height: 1.5; }
 .site-footer .footer-bottom,
-.site-footer .footer-bottom button {
+.site-footer .footer-bottom :is(a, button) {
   color: #e4c478;
   text-shadow: 0 0 8px rgb(211 175 84 / 24%);
 }
-.site-footer .footer-bottom button:is(:hover, :focus-visible) {
+.site-footer .footer-bottom :is(a, button):is(:hover, :focus-visible) {
   color: #ffe6a2;
   text-shadow: 0 0 10px rgb(211 175 84 / 40%);
 }

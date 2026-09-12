@@ -25,6 +25,8 @@ User confirms Google private-calendar sign-in succeeded after registering the pr
 
 ## Account handoff and next execution
 
+**Publication complete:** commit `fe22e74`, existing branch `design/page-by-page`, Vercel deployment `HeAnYqs3zCs9LJA5jQ6A66dUYXJP` reports success. Stable preview live checks: readiness 200 with storage_ready=true/booking_enabled=false; Google status 401 without authenticated client; callback 400 without valid state. These prove deployed routes and database readiness, not real authorization or the saved encryption/client secret values. No production-domain promotion. Next Google-account batch: API enablement, exact authorized redirect URI, and Audience publishing status. Previous local-only wording describes pre-publication verification.
+
 User confirms encryption secret and existing Google client secret environment coverage saved. Migration 008 and manifest permissions have now been applied to the validated existing direct Neon endpoint using the existing operator file. Provision verification passed: migrations, restricted runtime role, encrypted pooled access and transaction lock. No business records or credentials were replaced. The 37 focused provider/connection/provision tests passed again before publication. Google callback registration, API enablement, Audience status and real Calendar consent remain user-account steps.
 
 1. Vercel server secret `ASTRO_GOOGLE_TOKEN_KEY` must be saved for Preview and Production; operator retains the same generated key privately outside Git. Existing ASTRO_GOOGLE_CLIENT_SECRET must also cover Preview, not just Production. No key values in docs/chat.

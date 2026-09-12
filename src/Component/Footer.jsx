@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { Phone, CalendarClock } from "lucide-react";
 import { motion } from 'framer-motion'
-import LegalModal from './LegalModal'
 import logoImg from "../assets/logos/Nav-Logo.webp";
 import fbLogo from "../assets/logos/facebook.webp";
 import instaLogo from "../assets/logos/Instagram.webp";
@@ -20,13 +19,6 @@ import './Footer.css';
  * Displays brand info, social channels, routing shortcuts, contact links, and decorative art.
  */
 export default function Footer() {
-  const [legalModalOpen, setLegalModalOpen] = useState(false)
-  const [activeLegalTab, setActiveLegalTab] = useState('privacy')
-
-  const openLegalModal = (tab) => {
-    setActiveLegalTab(tab)
-    setLegalModalOpen(true)
-  }
   return (
     <motion.footer 
       initial={{ opacity: 0 }}
@@ -178,39 +170,29 @@ export default function Footer() {
           <span>© 2026 Astroadvice. All Rights Reserved.</span>
         </div>
         
-        {/* Policies Popup Modal Triggers */}
+        {/* Permanent policy pages */}
         <div className="flex flex-wrap justify-center gap-6">
-          <button 
-            type="button" 
-            onClick={() => openLegalModal('privacy')} 
+          <Link
+            to="/privacy-policy"
             className="text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer text-xs focus:outline-none"
           >
             Privacy Policy
-          </button>
-          <button 
-            type="button" 
-            onClick={() => openLegalModal('terms')} 
+          </Link>
+          <Link
+            to="/terms-and-conditions"
             className="text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer text-xs focus:outline-none"
           >
             Terms & Conditions
-          </button>
-          <button 
-            type="button" 
-            onClick={() => openLegalModal('refund')} 
+          </Link>
+          <Link
+            to="/refund-policy"
             className="text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer text-xs focus:outline-none"
           >
             Refund Policy
-          </button>
+          </Link>
         </div>
       </div>
 
-      {/* Global Interactive Legal Modal */}
-      <LegalModal
-        isOpen={legalModalOpen}
-        onClose={() => setLegalModalOpen(false)}
-        activeTab={activeLegalTab}
-        onTabChange={setActiveLegalTab}
-      />
 
     </motion.footer>
   )

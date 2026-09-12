@@ -1,137 +1,37 @@
-import React, { useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  X, 
-  ShieldCheck, 
-  FileText, 
-  RotateCcw, 
-  Lock, 
-  Eye, 
-  Database, 
-  AlertCircle, 
-  Calendar, 
-  CheckCircle2, 
-  Scale, 
-  Mail, 
-  Phone, 
-  MapPin,
-  Clock
-} from 'lucide-react'
+import { useEffect } from 'react'
+import { NavLink } from 'react-router-dom'
+import { Lock, Eye, Database, AlertCircle, CheckCircle2, Scale, Clock } from 'lucide-react'
+import './LegalPage.css'
 
-/**
- * LegalModal Component
- * Professional popup modal for Privacy Policy, Terms & Conditions, and Refund Policy.
- * Matches modern enterprise & luxury website modal standards with tab switching,
- * smooth animations, and scrollable content.
- */
-export default function LegalModal({ isOpen, onClose, activeTab = 'privacy', onTabChange }) {
-  // Close on Escape key press & prevent background scroll
+const policies = [
+  { id: 'privacy', path: '/privacy-policy', title: 'Privacy Policy' },
+  { id: 'terms', path: '/terms-and-conditions', title: 'Terms & Conditions' },
+  { id: 'refund', path: '/refund-policy', title: 'Refund & Cancellation Policy' },
+]
+
+export default function LegalPage({ policy }) {
+  const current = policies.find(item => item.id === policy)
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose()
-    }
-
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-      window.addEventListener('keydown', handleKeyDown)
-    } else {
-      document.body.style.overflow = 'unset'
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset'
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [isOpen, onClose])
-
-  if (!isOpen) return null
-
-  const getPolicyInfo = () => {
-    switch (activeTab) {
-      case 'terms':
-        return {
-          title: 'Terms & Conditions',
-          subtitle: '✦ ASTROADVICE LEGAL AGREEMENT ✦',
-          icon: FileText
-        }
-      case 'refund':
-        return {
-          title: 'Refund & Cancellation Policy',
-          subtitle: '✦ TRANSPARENT BILLING & RESCHEDULING ✦',
-          icon: RotateCcw
-        }
-      case 'privacy':
-      default:
-        return {
-          title: 'Privacy Policy',
-          subtitle: '✦ ASTROADVICE PRIVACY & CONFIDENTIALITY ✦',
-          icon: ShieldCheck
-        }
-    }
-  }
-
-  const currentPolicy = getPolicyInfo()
-  const HeaderIcon = currentPolicy.icon
+    const previous = document.title
+    document.title = current.title + ' | Astro Advice by Kundan Singh'
+    return () => { document.title = previous }
+  }, [current.title])
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6">
-        
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
-        />
-
-        {/* Modal Container */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-          className="relative w-full max-w-3xl max-h-[88vh] bg-[#181122] border border-[#D3AF54]/35 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] text-[#D8CFEB] flex flex-col z-10 overflow-hidden font-sans"
-        >
-          {/* Subtle Ambient Golden Glow */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#D3AF54]/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#AB7A57]/10 rounded-full blur-3xl pointer-events-none" />
-
-          {/* Modal Header */}
-          <div className="p-5 sm:p-6 border-b border-[#AB7A57]/20 flex items-center justify-between shrink-0 bg-[#140e1d]/95 relative z-10">
-            <div className="flex items-center gap-3 text-left">
-              <div className="w-10 h-10 rounded-xl bg-white/5 border border-[#D3AF54]/30 flex items-center justify-center text-[#D3AF54] shrink-0">
-                <HeaderIcon size={20} />
-              </div>
-              <div className="space-y-0.5">
-                <span className="text-[10px] tracking-[0.25em] font-bold text-[#D3AF54] uppercase font-sans block">
-                  {currentPolicy.subtitle}
-                </span>
-                <h2 className="font-serif font-bold text-xl sm:text-2xl text-white tracking-wide">
-                  {currentPolicy.title}
-                </h2>
-              </div>
-            </div>
-
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white border border-white/10 flex items-center justify-center transition-all cursor-pointer shadow-sm"
-              aria-label="Close modal"
-            >
-              <X size={18} />
-            </button>
-          </div>
-
-          {/* Scrollable Content Body */}
-          <div className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-6 text-left relative z-10 text-xs sm:text-sm leading-relaxed text-[#D8CFEB]/90">
-            
+    <article className="legal-page">
+      <div className="legal-page-inner">
+        <header className="legal-page-header">
+          <p className="legal-page-eyebrow">Astro Advice by Kundan Singh</p>
+          <h1>{current.title}</h1>
+          <nav aria-label="Policies">
+            {policies.map(item => <NavLink key={item.id} to={item.path}>{item.title}</NavLink>)}
+          </nav>
+        </header>
+        <div className="legal-page-content">
             {/* ========================================================= */}
             {/* TAB 1: PRIVACY POLICY                                    */}
             {/* ========================================================= */}
-            {activeTab === 'privacy' && (
+            {policy === 'privacy' && (
               <div className="space-y-6">
                 <div className="p-4 rounded-2xl bg-white/[0.03] border border-[#D3AF54]/25 space-y-1.5">
                   <span className="text-[10px] uppercase font-bold text-[#D3AF54] tracking-wider block">
@@ -143,10 +43,10 @@ export default function LegalModal({ isOpen, onClose, activeTab = 'privacy', onT
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
+                  <h2 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
                     <Database size={16} />
                     <span>1. Information We Collect</span>
-                  </h3>
+                  </h2>
                   <p className="text-slate-300">
                     To compute accurate astrological charts (Kundali), planetary dashas, and schedule readings, we collect:
                   </p>
@@ -154,39 +54,47 @@ export default function LegalModal({ isOpen, onClose, activeTab = 'privacy', onT
                     <li><strong>Personal Contact Data:</strong> Full Name, Email Address, and Phone/WhatsApp Number.</li>
                     <li><strong>Birth Credentials:</strong> Exact Date of Birth, Time of Birth, and Place of Birth (City/State/Country).</li>
                     <li><strong>Consultation Inquiries:</strong> Specific questions submitted for Horary Astrology (Prashna Kundali), Vastu layouts, or Numerology.</li>
-                    <li><strong>Verification Data:</strong> Security OTP verification status managed via Resend and Redis to eliminate spam.</li>
+                    <li><strong>Verification Data:</strong> Email verification status and security records used to protect forms and prevent misuse.</li>
                   </ul>
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
+                  <h2 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
                     <Lock size={16} />
-                    <span>2. Strict Astrological Confidentiality Guarantee</span>
-                  </h3>
+                    <span>2. Confidentiality & Service Providers</span>
+                  </h2>
                   <div className="p-3.5 rounded-xl bg-[#D3AF54]/10 border border-[#D3AF54]/30 text-white space-y-1">
                     <p className="font-semibold text-[#ECCF86]">
-                      ✦ We NEVER sell, rent, lease, or distribute your personal information or birth charts to third parties or marketing brokers.
+                      We do not sell or rent your personal information or birth charts, or use them for advertising.
                     </p>
                     <p className="text-xs text-slate-300">
-                      All consultation recordings, discussions, and remedial guidance remain strictly confidential between you and Astrologer Kundan Singh.
+                      We treat consultation details as confidential. Providers that host the website, store records and deliver messages process the information needed to provide those services. These include Vercel, Neon, Resend and Cloudflare. We may also disclose information when required by law.
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
+                  <h2 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
                     <Eye size={16} />
                     <span>3. How Your Information Is Used</span>
-                  </h3>
+                  </h2>
                   <p className="text-slate-300">
-                    Your details are used solely for: (a) casting planetary positions and analyzing astrological charts; (b) scheduling your consultation session; (c) dispatching meeting links (Zoom/Google Meet) and OTP authentication codes via Resend.
+                    Your details are used solely for: (a) casting planetary positions and analyzing astrological charts; (b) scheduling your consultation session; (c) responding to inquiries; and (d) sending verification codes, consultation updates and Google Meet links when online booking is available.
                   </p>
                 </div>
 
+                <section className="space-y-2">
+                  <h2 className="font-serif font-bold text-base text-[#D3AF54]">4. Google Account & Calendar Connection</h2>
+                  <p>The studio owner can sign in with Google and separately choose to connect their calendar. We use their Google account identifier and verified email to restrict access to the private studio page. With permission, the calendar connection reads calendar settings and supports creating, checking and cancelling consultation events and Google Meet links on the connected calendar. It does not import personal calendar appointments into the website.</p>
+                  <p>Connection credentials are stored on our server, with the long-lived Google access credential encrypted. Calendar identifiers, appointment references and meeting links are kept with the records needed to operate the service. When appointment invitations are sent, the participants receive the relevant appointment details through Google and our email provider; birth details and private consultation notes are not included in calendar event descriptions.</p>
+                  <p>Google account and calendar data are not sold or used for advertising. Access is limited to providing and supporting this connection, security and legal obligations. You can withdraw access through <a href="https://myaccount.google.com/connections" target="_blank" rel="noopener noreferrer">your Google Account connections</a> and contact us to request deletion of stored connection data. Withdrawing access stops future access but does not itself delete existing calendar events or records.</p>
+                  <p>We retain information for the purposes described here, including service delivery, security and applicable record-keeping requirements. Contact us to request access, correction or deletion; any records that must be retained will be explained when handling your request.</p>
+                </section>
+
                 <div className="space-y-2">
-                  <h3 className="font-serif font-bold text-base text-[#D3AF54]">
-                    4. Grievance & Data Inquiries
-                  </h3>
+                  <h2 className="font-serif font-bold text-base text-[#D3AF54]">
+                    5. Grievance & Data Inquiries
+                  </h2>
                   <p className="text-slate-300">
                     To request correction or deletion of your birth records, contact our studio:
                   </p>
@@ -202,23 +110,23 @@ export default function LegalModal({ isOpen, onClose, activeTab = 'privacy', onT
             {/* ========================================================= */}
             {/* TAB 2: TERMS & CONDITIONS                                */}
             {/* ========================================================= */}
-            {activeTab === 'terms' && (
+            {policy === 'terms' && (
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <h3 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
+                  <h2 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
                     <CheckCircle2 size={16} />
                     <span>1. Acceptance of Terms</span>
-                  </h3>
+                  </h2>
                   <p className="text-slate-300">
                     By booking a session, submitting an inquiry, or consulting with <strong>Astrologer Kundan Singh</strong>, you confirm you are at least 18 years of age and agree to these terms.
                   </p>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-[#D3AF54]/10 border border-[#D3AF54]/30 space-y-2">
-                  <h3 className="font-serif font-bold text-base text-[#ECCF86] flex items-center gap-2">
+                  <h2 className="font-serif font-bold text-base text-[#ECCF86] flex items-center gap-2">
                     <AlertCircle size={18} />
                     <span>2. Astrological Advisory Disclaimer</span>
-                  </h3>
+                  </h2>
                   <p className="text-white text-xs sm:text-sm">
                     Vedic Astrology, Numerology, Prashna Kundali, Laal Kitaab Remedies, and Vastu Shastra are traditional spiritual sciences based on symbolic interpretation and planetary cycles.
                   </p>
@@ -228,19 +136,19 @@ export default function LegalModal({ isOpen, onClose, activeTab = 'privacy', onT
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="font-serif font-bold text-base text-[#D3AF54]">
+                  <h2 className="font-serif font-bold text-base text-[#D3AF54]">
                     3. Client Responsibility for Birth Data
-                  </h3>
+                  </h2>
                   <p className="text-slate-300">
                     Planetary calculations (Lagna, Navamsha, and Dashas) depend on exact minutes. The client assumes responsibility for providing accurate Date, Time, and Place of Birth. Astroadvice is not liable for misinterpretations resulting from incorrect client-supplied birth credentials.
                   </p>
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
+                  <h2 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
                     <Clock size={16} />
                     <span>4. Studio Schedule & Timings</span>
-                  </h3>
+                  </h2>
                   <ul className="list-disc pl-5 space-y-1 text-slate-300">
                     <li><strong>Working Days:</strong> Monday to Saturday (Sundays Closed).</li>
                     <li><strong>Operating Windows:</strong> 10:00 AM - 12:00 PM & 3:00 PM - 6:00 PM IST.</li>
@@ -249,10 +157,10 @@ export default function LegalModal({ isOpen, onClose, activeTab = 'privacy', onT
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
+                  <h2 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
                     <Scale size={16} />
                     <span>5. Governing Law</span>
-                  </h3>
+                  </h2>
                   <p className="text-slate-300">
                     These Terms are governed by the laws of India. Any disputes shall be subject exclusively to the jurisdiction of the courts in New Delhi, India.
                   </p>
@@ -263,13 +171,13 @@ export default function LegalModal({ isOpen, onClose, activeTab = 'privacy', onT
             {/* ========================================================= */}
             {/* TAB 3: REFUND POLICY                                     */}
             {/* ========================================================= */}
-            {activeTab === 'refund' && (
+            {policy === 'refund' && (
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <h3 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
+                  <h2 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
                     <CheckCircle2 size={16} />
                     <span>1. Nature of Advisory Services</span>
-                  </h3>
+                  </h2>
                   <p className="text-slate-300">
                     Consultations involve dedicated mathematical chart calculations, planetary transit analysis, and scheduled professional time reserved exclusively for you.
                   </p>
@@ -296,9 +204,9 @@ export default function LegalModal({ isOpen, onClose, activeTab = 'privacy', onT
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="font-serif font-bold text-base text-[#D3AF54]">
+                  <h2 className="font-serif font-bold text-base text-[#D3AF54]">
                     2. Non-Refundable Scenarios
-                  </h3>
+                  </h2>
                   <ul className="list-disc pl-5 space-y-1 text-slate-300">
                     <li><strong>Completed Consultations:</strong> Once a live reading session has taken place, fees are non-refundable.</li>
                     <li><strong>Delivered Prashna Answers:</strong> Horary Prashna charts that have already been cast and dispatched via email/WhatsApp cannot be refunded.</li>
@@ -307,10 +215,10 @@ export default function LegalModal({ isOpen, onClose, activeTab = 'privacy', onT
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
+                  <h2 className="font-serif font-bold text-base text-[#D3AF54] flex items-center gap-2">
                     <Clock size={16} />
                     <span>3. Refund Processing Timeline</span>
-                  </h3>
+                  </h2>
                   <p className="text-slate-300">
                     Approved refunds are credited directly back to the original payment source (UPI, Bank Account, Card) within <strong>5 to 7 business days</strong>.
                   </p>
@@ -318,30 +226,15 @@ export default function LegalModal({ isOpen, onClose, activeTab = 'privacy', onT
 
                 <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 space-y-1 text-xs">
                   <p className="font-bold text-[#D3AF54]">Rescheduling & Billing Helpline:</p>
-                  <p>📞 Phone / WhatsApp: <a href="tel:+918796191327" className="text-white font-bold hover:underline">+91 8796191327</a></p>
+                  <p>📞 Call for cancellations or rescheduling: <a href="tel:+918527790801" className="text-white font-bold hover:underline">+91 8527790801</a></p>
                   <p>📧 Email: <a href="mailto:astroadvicebyks@gmail.com" className="text-white hover:underline">astroadvicebyks@gmail.com</a></p>
                 </div>
               </div>
             )}
 
-          </div>
-
-          {/* Modal Footer Action */}
-          <div className="p-4 sm:p-5 border-t border-[#AB7A57]/20 bg-[#140e1d]/90 flex items-center justify-between shrink-0 relative z-10">
-            <span className="text-[11px] text-slate-400 font-sans hidden sm:inline">
-              © 2026 Astroadvice by Kundan Singh
-            </span>
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-full sm:w-auto bg-[#D3AF54] hover:bg-[#D3AF54]/90 text-[#181122] font-bold text-xs uppercase tracking-wider px-6 py-2.5 rounded-xl transition-all cursor-pointer shadow-md"
-            >
-              I Understand & Close
-            </button>
-          </div>
-
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
+    </article>
   )
 }
+

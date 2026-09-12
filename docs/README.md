@@ -1,6 +1,10 @@
 # Project plans
 
+**Current, 2026-09-12 — official-domain release approved by user:** publish the reviewed website and permanent privacy/terms/refund pages through the existing PR and main branch. Clean paths now replace HashRouter, with old hash links preserved at startup. No payment checkout activation. See [policy publication evidence](evidence/plan-001/2026-09-12-policy-pages.md). After domain verification, return to Google Branding using final URLs, final callback registration and durable Calendar consent. Calendar API is already enabled; Audience is Testing. The checkpoints below are history, not current instructions.
+
 Start here when resuming work after a break or a context reset.
+
+**Current deployed handoff:** user saved Calendar encryption/client secrets. Migration 008 applied and restricted pooled runtime verified. Commit `fe22e74` published to the existing draft PR; Vercel preview deployment `HeAnYqs3zCs9LJA5jQ6A66dUYXJP` reports success. Live readiness 200/storage_ready=true, Google status 401 without session, callback 400 without state. Next user-only batch: enable Calendar API if needed, register the exact backend callback in the existing Google web client, report Audience publishing status. Then grant separate Calendar permission through `/#/studio/calendar` and Check connection. No main/domain move or real Calendar authorization yet. This supersedes local-only status below.
 
 **Latest: client Google sign-in is user-confirmed DONE.** Separate Calendar connection, encrypted token storage, callback and private panel now implemented locally; migration 008 not hosted and source not yet published. Account handoff: save Google token encryption secret in Vercel Preview/Production, cover Preview with existing Google client secret, enable Calendar API/register backend callback, and check Google Audience publishing status. Then agent applies tested migration and publishes the existing preview branch; client grants Calendar consent. See [Calendar connection evidence](evidence/plan-001/2026-09-11-google-connection.md). Older sign-in handoffs below are history.
 
