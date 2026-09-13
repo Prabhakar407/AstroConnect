@@ -5,6 +5,7 @@ import { Calendar, Clock, Shield, Sparkles, ArrowLeft, Star, Gem, CheckCircle, A
 import EmailOtpModal from './EmailOtpModal'
 import NameChangeService from './NameChangeService'
 import { publicServiceById } from '../data/publicServices'
+import './ServiceDetail.css'
 
 import { sendVerification, submitInquiry } from '../lib/formApi'
 
@@ -53,6 +54,13 @@ const itemVariants = {
     transition: { type: "spring", stiffness: 120, damping: 18 }
   }
 };
+
+function ServiceBookingStrip({ serviceId, title = 'Ready to discuss this consultation?' }) {
+  return <section className="service-detail-cta" aria-label={`Book ${publicServiceById[serviceId]?.title || 'a consultation'}`}>
+    <div><h2>{title}</h2><p>Choose a suitable day and time. The consultation type will already be selected.</p></div>
+    <Link to={`/booking?service=${serviceId}`}><Calendar aria-hidden="true" />Book an Appointment</Link>
+  </section>;
+}
 
 const serviceDetails = {
   'vedic-astrology': {
@@ -263,12 +271,12 @@ export default function ServiceDetail() {
 
   if (serviceId === 'numerology') {
     return (
-      <div className="w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center font-sans text-[#181122] overflow-x-hidden">
+      <div className="service-detail-page w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center font-sans text-[#181122] overflow-x-hidden">
         {/* Decorative pattern */}
         <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
 
         {/* Banner / Header Image Container */}
-        <div className="w-full h-[clamp(200px,35vh,400px)] relative overflow-hidden flex items-center justify-center">
+        <div className="service-detail-hero-art w-full h-[clamp(200px,35vh,400px)] relative overflow-hidden flex items-center justify-center">
           <img 
             src={numerologyImg} 
             alt="Vedic Numerology" 
@@ -287,13 +295,13 @@ export default function ServiceDetail() {
         </div>
 
         {/* Section 1: Vedic Numerology Card (bg-[#F4F1E3], floats over banner using -mt-16) */}
-        <div className="w-full flex flex-col items-center px-6 relative z-10 -mt-16 sm:-mt-24 pb-12">
+        <div className="service-detail-intro-shell w-full flex flex-col items-center px-6 relative z-10 -mt-16 sm:-mt-24 pb-12">
           <div className="w-full max-w-5xl">
             <motion.div 
               variants={itemVariants} 
               initial="hidden"
               animate="show"
-              className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-3 relative overflow-hidden text-white"
+              className="service-detail-intro-card bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-3 relative overflow-hidden text-white"
             >
               <div className="absolute top-0 right-0 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
               
@@ -309,7 +317,7 @@ export default function ServiceDetail() {
 
               <div className="pt-1 text-left">
                 <Link 
-                  to="/booking"
+                  to={`/booking?service=${serviceId}`}
                   className="inline-flex items-center gap-2 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-6 py-2.5 rounded-xl shadow-md transition-all duration-300 text-xs uppercase tracking-wider"
                 >
                   <Calendar size={14} />
@@ -362,6 +370,8 @@ export default function ServiceDetail() {
             </motion.div>
           </div>
         </div>
+
+        <ServiceBookingStrip serviceId="numerology" title="Explore what your numbers may reveal" />
 
         {/* Section 3: Planetary Associations Strip (bg-[#EDE9D7]) */}
         <div className="w-full bg-[#EDE9D7] py-16 flex flex-col items-center px-6 relative z-10">
@@ -616,6 +626,8 @@ export default function ServiceDetail() {
               </div>
             </motion.div>
 
+            <ServiceBookingStrip serviceId="numerology" title="Ready for your numerology consultation?" />
+
             {/* Back to Home CTA Button */}
             <motion.div variants={itemVariants} className="flex justify-center pt-4">
               <Link 
@@ -634,12 +646,12 @@ export default function ServiceDetail() {
 
   if (serviceId === 'vedic-astrology') {
     return (
-      <div className="w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center font-sans text-[#181122] overflow-x-hidden">
+      <div className="service-detail-page w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center font-sans text-[#181122] overflow-x-hidden">
         {/* Decorative patterns */}
         <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
         
         {/* Banner / Header Image Container (Reduced Height) */}
-        <div className="w-full h-[clamp(120px,20vh,250px)] relative overflow-hidden flex items-center justify-center">
+        <div className="service-detail-hero-art w-full h-[clamp(120px,20vh,250px)] relative overflow-hidden flex items-center justify-center">
           <img 
             src={details.image} 
             alt={details.title} 
@@ -658,13 +670,13 @@ export default function ServiceDetail() {
         </div>
 
         {/* Section 1: Intro Card (bg-[#F4F1E3], floats over banner using -mt-10) */}
-        <div className="w-full flex flex-col items-center px-6 relative z-10 -mt-10 sm:-mt-16 pb-12">
+        <div className="service-detail-intro-shell w-full flex flex-col items-center px-6 relative z-10 -mt-10 sm:-mt-16 pb-12">
           <div className="w-full max-w-5xl">
             <motion.div 
               variants={itemVariants} 
               initial="hidden"
               animate="show"
-              className="bg-[#FFFDEE] border border-[#AB7A57]/20 rounded-3xl p-5 sm:p-6 shadow-sm space-y-4 relative overflow-hidden text-[#181122]"
+              className="service-detail-intro-card bg-[#FFFDEE] border border-[#AB7A57]/20 rounded-3xl p-5 sm:p-6 shadow-sm space-y-4 relative overflow-hidden text-[#181122]"
             >
               <div className="absolute top-0 right-0 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
               
@@ -679,7 +691,7 @@ export default function ServiceDetail() {
 
               <div className="pt-1 text-left">
                 <Link 
-                  to="/booking"
+                  to={`/booking?service=${serviceId}`}
                   className="inline-flex items-center gap-2 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-6 py-2.5 rounded-xl shadow-md transition-all duration-300 text-xs uppercase tracking-wider"
                 >
                   <Calendar size={14} />
@@ -716,7 +728,7 @@ export default function ServiceDetail() {
 
                 <div className="pt-4 mt-auto text-left">
                   <Link 
-                    to="/booking"
+                    to={`/booking?service=${serviceId}`}
                     className="inline-flex items-center gap-2 bg-[#181122] hover:bg-[#181122]/90 text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition-all duration-300 text-xs uppercase tracking-wider"
                   >
                     <Calendar size={13} style={{ color: '#ECCF86' }} />
@@ -825,6 +837,8 @@ export default function ServiceDetail() {
           </div>
         </div>
 
+        <ServiceBookingStrip serviceId="vedic-astrology" title="Discuss your birth chart personally" />
+
         {/* Section 3: Core Life Pathways Explored (bg-[#EDE9D7]) */}
         <div className="w-full bg-[#EDE9D7] py-8 md:py-16 flex flex-col items-center px-6 relative z-10 pb-8 md:pb-20">
           <div className="w-full max-w-5xl space-y-6 md:space-y-10 text-left">
@@ -892,6 +906,8 @@ export default function ServiceDetail() {
               </div>
             </motion.div>
 
+            <ServiceBookingStrip serviceId="vedic-astrology" title="Ready for your Vedic astrology consultation?" />
+
             {/* Back to Home CTA Button */}
             <motion.div variants={itemVariants} className="flex justify-center pt-4">
               <Link 
@@ -909,12 +925,12 @@ export default function ServiceDetail() {
   }
   if (serviceId === 'laal-kitaab') {
     return (
-      <div className="w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center font-sans text-[#181122] overflow-x-hidden">
+      <div className="service-detail-page w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center font-sans text-[#181122] overflow-x-hidden">
         {/* Ambient energy */}
         <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
 
         {/* Banner / Header Image Container */}
-        <div className="w-full h-[clamp(200px,35vh,400px)] relative overflow-hidden flex items-center justify-center">
+        <div className="service-detail-hero-art w-full h-[clamp(200px,35vh,400px)] relative overflow-hidden flex items-center justify-center">
           <img 
             src={details.image} 
             alt={details.title} 
@@ -933,14 +949,14 @@ export default function ServiceDetail() {
         </div>
 
         {/* Section 1: Tab switcher header area (bg-[#F4F1E3]) */}
-        <div className="w-full flex flex-col items-center px-6 relative z-10 -mt-16 sm:-mt-24 pb-12">
+        <div className="service-detail-intro-shell w-full flex flex-col items-center px-6 relative z-10 -mt-16 sm:-mt-24 pb-12">
           <div className="w-full max-w-5xl space-y-6">
             {/* Lal Kitaab Remedies title card */}
             <motion.div 
               variants={itemVariants} 
               initial="hidden"
               animate="show"
-              className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-3 relative overflow-hidden text-white"
+              className="service-detail-intro-card bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-3 relative overflow-hidden text-white"
             >
               <div className="absolute top-0 right-0 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
               
@@ -951,6 +967,11 @@ export default function ServiceDetail() {
                 <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans font-medium text-left">
                   Simple, non-expensive, and highly practical daily solutions to balance ancestral debts (Rinas) and planetary blockages.
                 </p>
+              </div>
+              <div className="pt-1 text-left">
+                <Link to="/booking?service=laal-kitaab" className="inline-flex items-center gap-2 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-6 py-2.5 rounded-xl shadow-md transition-all duration-300 text-xs uppercase tracking-wider">
+                  <Calendar size={14} /><span>Book Appointment</span>
+                </Link>
               </div>
             </motion.div>
 
@@ -985,6 +1006,8 @@ export default function ServiceDetail() {
           </div>
         </div>
 
+        <ServiceBookingStrip serviceId="laal-kitaab" title="Discuss practical remedies for your chart" />
+
         {/* Section 2: Tab Content (bg-white with border-y) */}
         <div className="w-full bg-white border-y border-[#AB7A57]/10 py-16 flex flex-col items-center px-6 relative z-10">
           <div className="w-full max-w-5xl">
@@ -998,7 +1021,7 @@ export default function ServiceDetail() {
               {activeLalKitaabTab === 0 && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
                   {/* What is Lal Kitaab? (Left Page) */}
-                  <div className="bg-[#ECCF86] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow duration-300 relative flex flex-col justify-between border-l-8 border-l-[#181122] text-left">
+                  <div className="bg-[#ECCF86] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow duration-300 relative flex flex-col justify-between text-left">
                     <div className="space-y-3">
                       <h3 className="text-lg sm:text-xl font-serif font-bold text-[#181122] flex items-center gap-2">
                         <span>What is Lal Kitaab?</span>
@@ -1017,7 +1040,7 @@ export default function ServiceDetail() {
                   </div>
 
                   {/* Why Choose Lal Kitaab Remedies? (Right Page) */}
-                  <div className="bg-[#ECCF86] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow duration-300 relative flex flex-col justify-between border-l-8 border-l-[#181122] text-left">
+                  <div className="bg-[#ECCF86] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow duration-300 relative flex flex-col justify-between text-left">
                     <div className="space-y-3">
                       <div className="space-y-1 text-left">
                         <h3 className="text-lg sm:text-xl font-serif font-bold text-[#181122] flex items-center gap-2">
@@ -1052,7 +1075,7 @@ export default function ServiceDetail() {
                     <div className="pt-3 border-t border-[#AB7A57]/20 mt-3 flex items-center justify-between">
                       <span className="text-[10px] font-sans font-bold text-[#181122]/70 uppercase tracking-wider">Ready for a reading?</span>
                       <Link 
-                        to="/booking"
+                        to={`/booking?service=${serviceId}`}
                         className="inline-flex items-center gap-1.5 bg-[#181122] hover:bg-[#181122]/90 text-white font-bold px-3.5 py-1.5 rounded-lg shadow-md transition-all duration-300 text-[9px] uppercase tracking-wider cursor-pointer"
                       >
                         <Calendar size={10} style={{ color: '#ECCF86' }} />
@@ -1088,7 +1111,7 @@ export default function ServiceDetail() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: idx * 0.1 }}
                         whileHover={{ scale: 1.03, y: -6 }}
-                        className="bg-[#ECCF86] border-t-4 border-t-[#D3AF54] border-x border-b border-[#AB7A57]/20 rounded-2xl p-6 flex flex-col items-start text-left gap-4 transition-all duration-300 shadow-md hover:shadow-xl group cursor-pointer text-[#181122]"
+                        className="bg-[#ECCF86] border border-[#AB7A57]/20 rounded-2xl p-6 flex flex-col items-start text-left gap-4 transition-all duration-300 shadow-md hover:shadow-xl group cursor-pointer text-[#181122]"
                       >
                         <div className="flex items-center gap-3 w-full">
                           <div className="w-10 h-10 rounded-full border border-[#D3AF54]/40 bg-[#181122] text-[#ECCF86] flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(24,17,34,0.3)] transition-all duration-300 font-serif font-bold text-xs sm:text-sm">
@@ -1146,7 +1169,7 @@ export default function ServiceDetail() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: idx * 0.1 }}
                         whileHover={{ scale: 1.02, y: -4 }}
-                        className="p-5 rounded-2xl bg-[#ECCF86] border border-[#AB7A57]/20 border-l-8 border-l-[#D3AF54] hover:border-l-[#181122] hover:shadow-xl transition-all duration-300 flex items-start gap-4 cursor-pointer group text-left shadow-md"
+                        className="p-5 rounded-2xl bg-[#ECCF86] border border-[#AB7A57]/20 hover:border-[#D3AF54]/70 hover:shadow-xl transition-all duration-300 flex items-start gap-4 cursor-pointer group text-left shadow-md"
                       >
                         <div className="w-12 h-12 rounded-xl border border-[#D3AF54]/40 bg-[#181122] flex flex-col items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-all duration-300 text-center">
                           <span className="text-[8px] uppercase tracking-wider text-[#ECCF86] font-bold leading-none">Focus</span>
@@ -1173,6 +1196,8 @@ export default function ServiceDetail() {
           </div>
         </div>
 
+        <ServiceBookingStrip serviceId="laal-kitaab" title="Ready for a Laal Kitaab consultation?" />
+
         {/* Section 3: Back to Home (bg-[#EDE9D7]) */}
         <div className="w-full bg-[#EDE9D7] py-8 md:py-12 flex flex-col items-center px-6 relative z-10 pb-8 md:pb-20">
           <div className="w-full max-w-5xl">
@@ -1193,12 +1218,12 @@ export default function ServiceDetail() {
 
   if (serviceId === 'vastu') {
     return (
-      <div className="w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center font-sans text-[#181122] overflow-x-hidden">
+      <div className="service-detail-page w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center font-sans text-[#181122] overflow-x-hidden">
         {/* Decorative patterns */}
         <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
         
         {/* Banner / Header Image Container */}
-        <div className="w-full h-[clamp(200px,35vh,400px)] relative overflow-hidden flex items-center justify-center">
+        <div className="service-detail-hero-art w-full h-[clamp(200px,35vh,400px)] relative overflow-hidden flex items-center justify-center">
           <img 
             src={details.image} 
             alt={details.title} 
@@ -1217,13 +1242,13 @@ export default function ServiceDetail() {
         </div>
 
         {/* Section 1: Intro Card (bg-[#F4F1E3], floats over banner using -mt-16) */}
-        <div className="w-full flex flex-col items-center px-6 relative z-10 -mt-16 sm:-mt-24 pb-12">
+        <div className="service-detail-intro-shell w-full flex flex-col items-center px-6 relative z-10 -mt-16 sm:-mt-24 pb-12">
           <div className="w-full max-w-5xl">
             <motion.div 
               variants={itemVariants} 
               initial="hidden"
               animate="show"
-              className="bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-3 relative overflow-hidden text-white text-left"
+              className="service-detail-intro-card bg-[#181122] border border-[#AB7A57]/20 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-3 relative overflow-hidden text-white text-left"
             >
               <div className="absolute top-0 right-0 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
               
@@ -1235,7 +1260,7 @@ export default function ServiceDetail() {
 
               <div className="pt-1 text-left">
                 <Link 
-                  to="/booking"
+                  to={`/booking?service=${serviceId}`}
                   className="inline-flex items-center gap-2 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-6 py-2.5 rounded-xl shadow-md transition-all duration-300 text-xs uppercase tracking-wider"
                 >
                   <Calendar size={14} />
@@ -1307,6 +1332,8 @@ export default function ServiceDetail() {
           </div>
         </div>
 
+        <ServiceBookingStrip serviceId="vastu" title="Bring your space into the conversation" />
+
         {/* Section 3: The Five Elements Section (bg-[#EDE9D7]) */}
         <div className="w-full bg-[#EDE9D7] py-16 flex flex-col items-center px-6 relative z-10">
           <div className="w-full max-w-5xl">
@@ -1326,7 +1353,7 @@ export default function ServiceDetail() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
                 {[
                   { name: 'Earth', sanskrit: 'Prithvi', dir: 'SW', icon: earthImg },
                   { name: 'Fire', sanskrit: 'Agni', dir: 'SE', icon: fireImg },
@@ -1334,15 +1361,14 @@ export default function ServiceDetail() {
                   { name: 'Water', sanskrit: 'Jal', dir: 'NE', icon: waterImg },
                   { name: 'Space', sanskrit: 'Akash', dir: 'Center', icon: spaceImg }
                 ].map((item, idx) => {
-                  const isSpace = item.name === 'Space';
                   return (
                     <div 
                       key={idx} 
-                      className={`bg-white border border-[#AB7A57]/15 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:scale-[1.02] hover:border-gold-aura transition-all duration-300 ${
-                        isSpace ? 'col-span-2 md:col-span-4 max-w-[220px] justify-self-center mx-auto w-full' : 'w-full'
+                      className={`vastu-element-card bg-white border border-[#AB7A57]/15 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:scale-[1.02] hover:border-gold-aura transition-all duration-300 col-span-1 md:col-span-2 ${
+                        idx === 3 ? 'md:col-start-2' : idx === 4 ? 'col-span-2 md:col-span-2 max-w-[280px] md:max-w-none justify-self-center w-full' : 'w-full'
                       }`}
                     >
-                      <div className="w-14 h-14 rounded-full bg-[#FFF9E6] border border-gold-aura/30 flex items-center justify-center mb-2 overflow-hidden p-1.5 shadow-xs">
+                      <div className="w-16 h-16 rounded-full bg-[#FFF9E6] border border-gold-aura/30 flex items-center justify-center mb-3 overflow-hidden p-2 shadow-xs">
                         <img src={item.icon} alt={item.name} className="w-full h-full object-contain" />
                       </div>
                       <span className="font-serif font-bold text-[#181122] text-base sm:text-lg">{item.name}</span>
@@ -1418,7 +1444,7 @@ export default function ServiceDetail() {
                 ].map((item, idx) => (
                   <div 
                     key={idx} 
-                    className="p-5 rounded-2xl bg-white border border-[#AB7A57]/15 border-l-4 border-l-[#AB7A57]/30 hover:border-l-gold-aura hover:bg-[#FFFDEE] hover:shadow-xs transition-all duration-300 flex items-start gap-4 cursor-pointer group text-left"
+                    className="p-5 rounded-2xl bg-white border border-[#AB7A57]/15 hover:border-[#D3AF54]/70 hover:bg-[#FFFDEE] hover:shadow-xs transition-all duration-300 flex items-start gap-4 cursor-pointer group text-left"
                   >
                     {/* Direction Badge */}
                     <div className="w-12 h-12 rounded-xl border border-gold-aura/40 bg-[#FFFDEE] flex flex-col items-center justify-center shrink-0 shadow-2xs group-hover:scale-105 transition-all duration-300 text-center">
@@ -1442,6 +1468,8 @@ export default function ServiceDetail() {
                 ))}
               </div>
             </motion.div>
+
+            <ServiceBookingStrip serviceId="vastu" title="Ready for your Vastu consultation?" />
 
             {/* Back to Home CTA Button */}
             <motion.div variants={itemVariants} className="flex justify-center pt-4">
@@ -1468,13 +1496,13 @@ export default function ServiceDetail() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-8 md:pb-16 overflow-x-hidden">
+      <div className="service-detail-page w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122] pb-8 md:pb-16 overflow-x-hidden">
       
       {/* Decorative patterns */}
       <div className="absolute top-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(171,122,87,0.06),transparent_70%)] rounded-full -z-10 pointer-events-none animate-pulse"></div>
       
       {/* Banner / Header Image Container */}
-      <div className="w-full h-[clamp(200px,35vh,400px)] relative overflow-hidden flex items-center justify-center">
+      <div className="service-detail-hero-art w-full h-[clamp(200px,35vh,400px)] relative overflow-hidden flex items-center justify-center">
         <img 
           src={details.image} 
           alt={details.title} 
@@ -1497,13 +1525,13 @@ export default function ServiceDetail() {
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="w-full max-w-5xl px-6 md:px-12 -mt-16 sm:-mt-24 relative z-10 space-y-6 md:space-y-10 text-left"
+        className="service-detail-intro-shell w-full max-w-5xl px-6 md:px-12 -mt-16 sm:-mt-24 relative z-10 space-y-6 md:space-y-10 text-left"
       >
         
         {/* Intro Service Card */}
         <motion.div 
           variants={itemVariants} 
-          className="bg-[#181122] text-white border border-[#AB7A57]/20 rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-6 relative overflow-hidden"
+          className="service-detail-intro-card bg-[#181122] text-white border border-[#AB7A57]/20 rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl space-y-6 relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
           
@@ -1534,7 +1562,7 @@ export default function ServiceDetail() {
 
           <div className="pt-2">
             <Link 
-              to="/booking"
+              to={`/booking?service=${serviceId}`}
               className="inline-flex items-center gap-2.5 bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold px-8 py-3.5 rounded-xl shadow-lg shadow-[#D3AF54]/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-xs sm:text-sm uppercase tracking-wider"
             >
               <Calendar size={16} />
@@ -1846,12 +1874,12 @@ function PrashnaKundaliDetail({ details, navigate }) {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center overflow-hidden font-sans">
+    <div className="service-detail-page w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center overflow-hidden font-sans">
       
       {/* ========================================================= */}
       {/* 1. HERO SECTION (Warm Ivory bg-[#F4F1E3])                  */}
       {/* ========================================================= */}
-      <div className="w-full py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
+      <div className="service-detail-prashna-hero w-full py-16 md:py-20 flex flex-col items-center relative z-10 px-6">
         {/* Ambient glowing energy fields */}
         <div className="absolute top-10 left-1/4 w-[350px] h-[350px] bg-[#D3AF54]/5 rounded-full blur-[100px] pointer-events-none -z-10 animate-pulse" />
 
@@ -1884,7 +1912,7 @@ function PrashnaKundaliDetail({ details, navigate }) {
             <span className="text-xl md:text-2xl font-sans font-medium text-slate-500 block mb-2 tracking-normal">
               Instant Answers to Urgent Life Questions:
             </span>
-            <span className="bg-gradient-to-r from-[#D3AF54] via-[#AB7A57] to-[#D3AF54] bg-clip-text text-transparent drop-shadow-sm">
+            <span className="text-[#181122]">
               Expert Prashna Kundali Analysis
             </span>
           </h1>
@@ -1895,8 +1923,11 @@ function PrashnaKundaliDetail({ details, navigate }) {
           </p>
 
           {/* Scroll Button */}
-          <div className="pt-2">
-            <p className="text-[#76561d] font-semibold text-base mb-4">{details.price}</p>
+          <div className="pt-2 flex flex-wrap justify-center gap-3">
+            <p className="w-full text-[#76561d] font-semibold text-base mb-1">{details.price}</p>
+            <Link to="/booking?service=prashna-kundali" className="inline-flex items-center gap-2.5 bg-[#181122] hover:bg-[#30263c] text-white font-bold px-8 py-3.5 rounded-xl shadow-md transition-all duration-300 text-xs sm:text-sm uppercase tracking-wider">
+              <Calendar size={16} /><span>Book Appointment</span>
+            </Link>
             <button 
               onClick={() => document.getElementById('questionForm')?.scrollIntoView({ behavior: 'smooth' })}
               className="inline-flex items-center gap-2.5 bg-[#F1E4C3] hover:bg-[#EAD18D] text-[#181122] font-bold px-8 py-3.5 rounded-xl border border-[#D3AF54]/30 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-xs sm:text-sm uppercase tracking-wider cursor-pointer font-sans"
@@ -1957,6 +1988,8 @@ function PrashnaKundaliDetail({ details, navigate }) {
         </div>
 
       </div>
+
+      <ServiceBookingStrip serviceId="prashna-kundali" title="Prefer a booked one-to-one consultation?" />
 
       {/* ========================================================= */}
       {/* 3. TYPES OF QUESTIONS SECTION (Warm Sand bg-[#EDE9D7])     */}
@@ -2169,6 +2202,8 @@ function PrashnaKundaliDetail({ details, navigate }) {
         </div>
 
       </div>
+
+      <ServiceBookingStrip serviceId="prashna-kundali" title="Book time for your Prashna Kundali" />
 
       {/* ========================================================= */}
       {/* 5. FOOTER RETURN LINK SECTION (Warm Ivory bg-[#F4F1E3])    */}

@@ -552,7 +552,7 @@ function FeatureCard({ feature, className, ...props }) {
           Read More
         </Link>
         <Link 
-          to={feature.id === "name-change" ? "/booking?service=name-change" : "/booking"}
+          to={`/booking?service=${feature.id}`}
           className="flex-grow bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-bold text-xs py-2 px-3 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center gap-1.5 shadow-md shadow-[#D3AF54]/10"
         >
           Book Now

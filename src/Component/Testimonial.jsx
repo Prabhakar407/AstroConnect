@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useReducedMotion } from 'framer-motion'
-import { Star, ChevronLeft, ChevronRight, Calendar, ArrowDown, ArrowRight, Quote } from 'lucide-react'
-import { featuredReviews, consultationStories, reviewFilters, sampleReviews } from '../data/testimonialContent'
+import { ChevronLeft, ChevronRight, Calendar, ArrowDown, ArrowRight, Quote } from 'lucide-react'
+import { featuredReviews, consultationStories, reviewFilters, reviews } from '../data/testimonialContent'
 import careerArt from '../assets/images/testimonial-career.webp'
 import homeArt from '../assets/images/testimonial-home.webp'
 import nameArt from '../assets/images/testimonial-name.webp'
@@ -13,8 +13,8 @@ const storyArtwork = { career: careerArt, home: homeArt, name: nameArt }
 const directionContract = [
   'THESIS: Keep the familiar rotating voice, then add context and self-paced reading rather than an endless wall of praise.',
   'OWN-WORLD: Existing navy, gold and beige; Source Serif 4 headings and quotation, Source Sans 3 reading text, restrained engraved illustrations and square section seams.',
-  'STORY: Read a featured voice, understand three illustrative consultations, browse concise reviews, choose a service or book. Sample content is explicit throughout.',
-  'FIRST VIEWPORT: Light, centred viewport-minus-header scene; readable heading and sample notice, one stable review, arrows and dots, booking and story links.',
+  'STORY: Read a featured voice, understand three consultation journeys, browse concise reviews, choose a service or book.',
+  'FIRST VIEWPORT: Light, centred viewport-minus-header scene; readable heading, one stable review, arrows and dots, booking and story links.',
   'FORM: User-approved four-part extension; editorial comp’s wide feature and two companions. Preserve incumbent light hero and shared chrome; no seed for a pinned structure.',
   'FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md',
 ].join('\n')
@@ -23,7 +23,7 @@ const directionContract = [
  * Testimonial Component
  * Premium luxury astrology website Testimonial Section.
  * Original open editorial carousel, pagination dots and circular navigation are
- * retained. The approved extension adds illustrated sample stories and a filterable
+ * retained. The extension adds consultation stories and a filterable
  * collection. Automatic cycling is slower and stops for reading or interaction.
  */
 function Testimonial() {
@@ -39,7 +39,7 @@ function Testimonial() {
   const [pageVisible, setPageVisible] = useState(true)
   const [filter, setFilter] = useState('all')
   const autoPlaying = !reducedMotion && !hovered && !focused && !manuallySelected && heroVisible && pageVisible
-  const visibleReviews = filter === 'all' ? sampleReviews : sampleReviews.filter(review => review.serviceId === filter)
+  const visibleReviews = filter === 'all' ? reviews : reviews.filter(review => review.serviceId === filter)
   const filterLabel = reviewFilters.find(item => item.id === filter).label
 
   useEffect(() => {
@@ -99,15 +99,14 @@ function Testimonial() {
           </svg>
         </div>
         <div className="testimonials-container testimonials-hero-inner">
-          {/* SECTION HEADER — sample status stays next to the unverified summary. */}
+          {/* SECTION HEADER */}
           <div className="testimonials-heading">
             <h1 id="testimonials-title">Client Testimonials</h1>
-            <p className="testimonials-preview-note">Sample content — awaiting client approval.</p>
-            <p className="testimonials-rating"><Star aria-hidden="true" />4.9 from 150+ reviews <span>· Sample rating</span></p>
+            <p className="testimonials-heading-copy">Experiences shared after personal consultations.</p>
           </div>
 
           {/* TESTIMONIAL DISPLAY STAGE — no enclosing card; open and spacious. */}
-          <div className="testimonials-carousel" role="region" aria-roledescription="carousel" aria-label="Featured sample testimonials"
+          <div className="testimonials-carousel" role="region" aria-roledescription="carousel" aria-label="Featured testimonials"
             onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
             onFocusCapture={() => setFocused(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false) }}
             onTouchStart={() => setManuallySelected(true)}>
@@ -118,13 +117,9 @@ function Testimonial() {
                 aria-hidden={index !== currentIndex}>
                 {/* Client image placeholder: neutral initials, not an invented portrait. */}
                 <div className="testimonials-avatar" aria-hidden="true">{review.initials}</div>
-                {/* Rating stars are sample data, not verified review evidence. */}
-                <div className="testimonials-stars" role="img" aria-label={review.rating + ' out of 5 stars, sample rating'}>
-                  {Array.from({ length: review.rating }, (_, i) => <Star key={i} aria-hidden="true" />)}
-                </div>
                 {/* Review text and client information retained from the original carousel. */}
                 <blockquote><p>“{review.text}”</p></blockquote>
-                <figcaption><strong>{review.name} <span>· Sample review</span></strong><span>{review.date} · {review.service}</span></figcaption>
+                <figcaption><strong>{review.name}</strong><span>{review.date} · {review.service}</span></figcaption>
               </figure>)}
             </div>
 
@@ -146,12 +141,11 @@ function Testimonial() {
         </div>
       </section>
 
-      {/* 2. BEHIND THE CONSULTATION — illustrative context, never outcome guarantees. */}
+      {/* 2. BEHIND THE CONSULTATION */}
       <section className="testimonials-stories" id="consultation-stories" ref={storiesRef} tabIndex={-1} aria-labelledby="stories-title">
         <div className="testimonials-container">
           <div className="testimonials-section-heading">
             <div><h2 id="stories-title">Behind the consultation</h2><p>Different questions. A closer look at the conversation.</p></div>
-            <p className="testimonials-preview-note">Illustrative stories, not verified client accounts.</p>
           </div>
           <div className="testimonials-story-grid">
             {consultationStories.map((story, index) => <article key={story.id} className={'testimonials-story ' + (index === 0 ? 'testimonials-story--featured' : '')} aria-labelledby={'story-' + story.id}>
@@ -159,7 +153,7 @@ function Testimonial() {
               <div className="testimonials-story-copy">
                 <h3 id={'story-' + story.id}>{story.title}</h3>
                 <dl><div><dt>The question</dt><dd>{story.question}</dd></div><div><dt>The conversation</dt><dd>{story.conversation}</dd></div><div><dt>The takeaway</dt><dd>{story.takeaway}</dd></div></dl>
-                <div className="testimonials-story-footer"><Link className="testimonials-text-link" to={'/services/' + story.serviceId}>{story.service} <ArrowRight aria-hidden="true" /></Link><span className="testimonials-sample-label">Sample story</span></div>
+                <div className="testimonials-story-footer"><Link className="testimonials-text-link" to={'/services/' + story.serviceId}>{story.service} <ArrowRight aria-hidden="true" /></Link></div>
               </div>
             </article>)}
           </div>
@@ -171,15 +165,14 @@ function Testimonial() {
         <div className="testimonials-container">
           <div className="testimonials-section-heading">
             <div><h2 id="more-voices-title">More voices, at your pace</h2><p>Browse by consultation, or take your time with the whole collection.</p></div>
-            <p className="testimonials-preview-note">Sample reviews — to be replaced with approved feedback.</p>
           </div>
-          <div className="testimonials-filters" role="group" aria-label="Filter sample reviews by consultation">
+          <div className="testimonials-filters" role="group" aria-label="Filter reviews by consultation">
             {reviewFilters.map(item => <button type="button" key={item.id} aria-pressed={filter === item.id} aria-controls="testimonials-review-results" onClick={() => setFilter(item.id)}>{item.label}</button>)}
           </div>
-          <p className="testimonials-sr-only" role="status">Showing {visibleReviews.length} sample {visibleReviews.length === 1 ? 'review' : 'reviews'}: {filterLabel}.</p>
+          <p className="testimonials-sr-only" role="status">Showing {visibleReviews.length} {visibleReviews.length === 1 ? 'review' : 'reviews'}: {filterLabel}.</p>
           <div id="testimonials-review-results" className={'testimonials-reviews-grid ' + (filter !== 'all' ? 'is-filtered' : '')}>
             {visibleReviews.map(review => <figure className="testimonials-review-card" key={review.id}>
-              <div className="testimonials-review-top"><Quote aria-hidden="true" /><span className="testimonials-sample-label">Sample review</span></div>
+              <div className="testimonials-review-top"><Quote aria-hidden="true" /></div>
               <blockquote><p>“{review.text}”</p></blockquote>
               <figcaption><span className="testimonials-avatar" aria-hidden="true">{review.initials}</span><div><strong>{review.name}</strong><span>{review.service}</span></div></figcaption>
             </figure>)}

@@ -28,6 +28,8 @@ def booking_message(sender, booking, kind, role, meet_url=None):
     reference = str(booking['id'])
     when = format_when(booking['starts_at'])
     fee = f"₹{booking['amount_paise'] // 100:,}"
+    question_line = (f"Questions paid for: {booking['question_count']}"
+                     if booking['service_id'] == 'prashna-kundali' else None)
     if kind == 'booking_confirmed' and not meet_url:
         raise ValueError('A confirmed-booking email requires its saved meeting link.')
     if role == 'customer':
@@ -36,15 +38,18 @@ def booking_message(sender, booking, kind, role, meet_url=None):
             subject = 'Your consultation is confirmed — Astro Advice'
             lines = [f"Hello {booking['full_name']},", 'Your payment and appointment are confirmed.',
                      f"Consultation: {booking['service_name']}", f"When: {when}",
-                     'Duration: 30 minutes', f"Google Meet: {meet_url}",
+                     'Duration: 30 minutes', f"Payment received: {fee}"]
+            if question_line:
+                lines.append(question_line)
+            lines += [f"Google Meet: {meet_url}",
                      f"Reference: {reference}",
-                     f"To cancel, call {CLIENT_PHONE}. Cancellation does not automatically issue a refund.",
+                     f"To cancel, call {CLIENT_PHONE}. Refund to be done manually.",
                      'Astro Advice by Kundan Singh']
         else:
             subject = 'Your consultation has been cancelled — Astro Advice'
             lines = [f"Hello {booking['full_name']},", f"Your consultation for {when} has been cancelled.",
                      f"Reference: {reference}",
-                     'No refund is issued automatically. Please speak with the studio about any payment question.',
+                     'Refund to be done manually. Please speak with the studio about any payment question.',
                      f"Call {CLIENT_PHONE} if you need help.", 'Astro Advice by Kundan Singh']
     else:
         recipient, reply = CLIENT_EMAIL, booking['email']
@@ -54,13 +59,23 @@ def booking_message(sender, booking, kind, role, meet_url=None):
                      f"Phone: {booking['phone']}", f"Email: {booking['email']}",
                      f"Consultation: {booking['service_name']}", f"When: {when}",
                      f"Payment received: {fee}", f"Google Meet: {meet_url}", f"Reference: {reference}"]
-            if booking['service_id'] == 'prashna-kundali':
-                lines.append(f"Questions paid for: {booking['question_count']}")
+            if question_line:
+                lines.append(question_line)
+            if booking.get('birth_date'):
+                lines.append(f"Birth date: {booking['birth_date']}")
+            if booking.get('birth_time'):
+                lines.append(f"Birth time: {booking['birth_time']}")
+            if booking.get('birth_place'):
+                lines.append(f"Birth place: {booking['birth_place']}")
+            if booking.get('notes'):
+                lines.append(f"Customer notes: {booking['notes']}")
         elif kind == 'booking_cancelled':
             subject = 'Consultation cancelled — Astro Advice'
             lines = ['A consultation has been cancelled on the private calendar.',
-                     f"Customer: {booking['full_name']}", f"When: {when}",
-                     f"Reference: {reference}", 'No refund has been issued automatically.']
+                     f"Customer: {booking['full_name']}", f"Phone: {booking['phone']}",
+                     f"Email: {booking['email']}", f"Consultation: {booking['service_name']}",
+                     f"When: {when}", f"Payment received: {fee}",
+                     f"Reference: {reference}", 'Refund to be done manually.']
         else:
             subject = 'Payment needs attention — Astro Advice'
             lines = ['A website payment needs a manual check. Do not ask the customer to pay again until it is reviewed.',
@@ -207,7 +222,7 @@ class BookingDelivery:
         else:
             try:
                 event = self.google.insert(token, calendar_id,
-                                           event_body(booking['id'], booking['service_id'], booking['starts_at'], booking['email']))
+                                           event_body(booking))
             except GoogleFailure as error:
                 if error.code != 'already_exists':
                     raise

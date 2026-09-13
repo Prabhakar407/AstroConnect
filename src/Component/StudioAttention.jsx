@@ -18,8 +18,8 @@ const deliveryNames = {
 const paymentEventNames = {
   'payment.authorized': 'Authorized payment', 'payment.captured': 'Captured payment',
   'payment.failed': 'Failed payment', 'order.paid': 'Paid order',
-  'refund.created': 'Refund created', 'refund.processed': 'Refund processed',
-  'refund.failed': 'Refund failed',
+  'refund.created': 'Refund update', 'refund.processed': 'Refund update',
+  'refund.failed': 'Refund update',
 };
 
 function PaymentCase({ item, user, refresh, onExpired }) {
@@ -46,7 +46,7 @@ function PaymentCase({ item, user, refresh, onExpired }) {
     </div>
     <p className="studio-calendar__small">Requested for {when(item.starts_at)} IST · Booking {item.booking_id}</p>
     <div className="studio-attention__contact"><a href={`tel:${item.phone}`}>{item.phone}</a><a href={`mailto:${item.email}`}>{item.email}</a></div>
-    <p className="studio-calendar__small">Check this payment in Razorpay before asking the customer to pay again. The website does not issue refunds automatically.</p>
+    <p className="studio-calendar__small">Check this payment in Razorpay before asking the customer to pay again. Refund to be done manually.</p>
     <div className="studio-attention__resolution">
       <label>What did you do?<select value={resolution} onChange={event => setResolution(event.target.value)}>
         <option value="">Choose one</option>

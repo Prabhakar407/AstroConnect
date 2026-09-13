@@ -15,6 +15,13 @@ from src.backend.google_calendar import (
 
 
 class GoogleCalendarTests(unittest.TestCase):
+    @staticmethod
+    def booking(service='vedic-astrology', email='guest@example.com'):
+        return {'id': uuid4(), 'service_id': service, 'service_name': SERVICES[service]['title'],
+                'starts_at': datetime(2026, 9, 15, 4, 30, tzinfo=UTC), 'email': email,
+                'full_name': 'Synthetic Guest', 'phone': '+918000000000', 'amount_paise': 310000,
+                'question_count': 1, 'birth_date': '1990-01-01', 'birth_time': None,
+                'birth_place': 'New Delhi', 'notes': ''}
     def provider(self, status=200, data=None, *, handler=None):
         self.calls = []
         def request(req):
@@ -41,17 +48,17 @@ class GoogleCalendarTests(unittest.TestCase):
                 authorization_url('client', uri, 's'*43, 'n'*43, 'v'*43)
 
     def test_all_six_services_are_thirty_minutes_in_indian_time(self):
-        booking = uuid4()
         for service in SERVICES:
-            body = event_body(booking, service, datetime(2026, 9, 15, 4, 30, tzinfo=UTC), 'guest@example.com')
+            booking = self.booking(service)
+            body = event_body(booking)
             self.assertEqual(body['start']['dateTime'], '2026-09-15T10:00:00+05:30')
             self.assertEqual(body['end']['dateTime'], '2026-09-15T10:30:00+05:30')
             self.assertEqual(body['attendees'], [{'email': 'guest@example.com'}])
             self.assertEqual(body['visibility'], 'private')
             self.assertIn(SERVICES[service]['title'], body['summary'])
-            self.assertNotIn('birth', json.dumps(body).lower())
+            self.assertIn('Birth date: 1990-01-01', body['description'])
             self.assertRegex(body['id'], r'^[a-v0-9]{5,1024}$')
-            self.assertEqual(body['id'], event_identity(booking)[0])
+            self.assertEqual(body['id'], event_identity(booking['id'])[0])
 
     def test_event_identity_stays_stable_and_distinct(self):
         first, second = uuid4(), uuid4()
@@ -61,9 +68,11 @@ class GoogleCalendarTests(unittest.TestCase):
     def test_bad_event_input_rejected(self):
         for email in ('bad', 'guest@example.com\r\nBcc:other@example.com', CLIENT_EMAIL):
             with self.assertRaises(ValueError):
-                event_body(uuid4(), 'numerology', datetime.now(UTC), email)
+                event_body(self.booking('numerology', email))
         with self.assertRaises(ValueError):
-            event_body(uuid4(), 'numerology', datetime(2026, 9, 15), 'guest@example.com')
+            booking = self.booking('numerology')
+            booking['starts_at'] = datetime(2026, 9, 15)
+            event_body(booking)
 
     def test_pending_failure_cancellation_and_verified_meet_url(self):
         event = {'id': 'savedid', 'conferenceData': {'createRequest': {'status': {'statusCode': 'pending'}}}}
@@ -103,7 +112,7 @@ class GoogleCalendarTests(unittest.TestCase):
                 self.provider(data=body).tokens(refresh_token='synthetic')
 
     def test_insert_requests_google_invitation_and_meet(self):
-        body = event_body(uuid4(), 'name-change', datetime.now(UTC), 'guest@example.com')
+        body = event_body(self.booking('name-change'))
         provider = self.provider(data=body)
         self.assertEqual(provider.insert('synthetic-access', CLIENT_EMAIL, body), body)
         request = self.calls[0]

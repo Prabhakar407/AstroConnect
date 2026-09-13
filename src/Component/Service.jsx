@@ -85,7 +85,7 @@ function Service() {
                 <ServicePrice service={service} />
                 <div className="service-actions">
                   <Link className="service-button service-button--outline" to={`/services/${service.id}`} aria-label={`Read more about ${service.title}`}>Read More <ArrowRight aria-hidden="true" /></Link>
-                  <Link className="service-button service-button--gold" to={service.id === 'name-change' ? '/booking?service=name-change' : '/booking'} aria-label={`Book ${service.title}`}><Calendar aria-hidden="true" />Book Now</Link>
+                  <Link className="service-button service-button--gold" to={`/booking?service=${service.id}`} aria-label={`Book ${service.title}`}><Calendar aria-hidden="true" />Book Now</Link>
                 </div>
               </div>
             </div>

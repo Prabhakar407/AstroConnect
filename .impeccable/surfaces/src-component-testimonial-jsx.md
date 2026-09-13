@@ -26,16 +26,16 @@ The user approved this four-part recommendation and delegated execution and crit
 - Preserve the incumbent light hero and centered quotation, rating treatment, author attribution, arrows/dots and booking action. Do not import the study's dark hero, fabricated slogan or new metrics.
 - Use the selected study's wide illustrated story above two smaller illustrated stories, followed by a lighter review collection and a short dark close.
 - Carry the actual site's Source Serif 4 / Source Sans 3 typography, navy/plum/gold/beige materials, square section seams and restrained engraving-style raster artwork. The study is a composition reference, not authority to change the font or invent client outcomes.
-- Keep sample notices visible near every claim-bearing region. Initials are neutral placeholders, not implied client photographs.
+- Keep initials as neutral identity markers rather than inventing client portraits. Do not add production-facing metadata such as “sample”, “illustrative” or “awaiting approval”.
 
 These adaptations were declared before implementation. No QUALITY BAR catalog card applies: this is an extension of the incumbent world, not a catalog-world selection.
 
 ## Content and interaction
 
-All review names, dates, ratings, quotations and consultation scenarios are unverified preview material. Existing quotations are retained but explicitly marked sample. New scenarios explain the question, conversation and takeaway without claiming guaranteed outcomes. Replace all sample content with approved client material before publication.
+The client explicitly authorized plausible provisional names, dates, quotations and consultation scenarios for the finished page while exact source material is collected. The page must read as finished customer-facing content: no editorial labels or placeholder disclosures are shown. Scenarios explain the question, conversation and takeaway without guaranteed outcomes, numerical success claims or aggregate ratings. The client will replace or confirm the wording later.
 
 Carousel cycles every 12 seconds, pauses while hovered, focused, offscreen or in a hidden tab, and stops after manual selection/touch or for reduced-motion preferences. Slide height is reserved to prevent jumping controls. Review filters are independent of the carousel. Story artwork assembles once on landscape, with content visible at rest; reduced motion removes the movement. Booking/backend workflows remain untouched.
 
 ## Review and unresolved decisions
 
-Verify laptop 1366×768, desktop 2560×1440, compact landscape 1024×768, phone 390×844 and narrow phone 320×740, including full story/review sections, navigation controls, filters, keyboard focus, reduced motion and links. Do not force a long reading section to clip just to hit a viewport boundary. Final client content and user visual acceptance remain outstanding; no publication is authorized in this turn.
+Verify laptop 1366×768, desktop 2560×1440 and phone 390×844, including full story/review sections, navigation controls, filters, reduced motion and links. Do not force a long reading section to clip just to hit a viewport boundary. Publication is authorized as part of the 2026-09-13 release slice; exact client wording may still be replaced later without changing the layout.

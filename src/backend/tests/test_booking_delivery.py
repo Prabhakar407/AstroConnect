@@ -114,7 +114,22 @@ class BookingDeliveryTests(unittest.TestCase):
         self.assertEqual(self.google.deleted[0][1], event_identity(booking['id'])[0])
         cancellation_messages = [payload['text'] for payload, key in self.sent if '/booking_cancelled/' in key]
         self.assertEqual(len(cancellation_messages), 2)
-        self.assertTrue(all('No refund' in text for text in cancellation_messages))
+        self.assertTrue(all('Refund to be done manually.' in text for text in cancellation_messages))
+
+    def test_confirmation_messages_and_calendar_include_operational_details(self):
+        booking = self.confirmed()
+        jobs = self.jobs(booking['id'])
+        self.delivery.run(jobs['calendar']['id'])
+        self.time = self.time.replace(second=31)
+        self.delivery.run(jobs['customer']['id'])
+        self.delivery.run(jobs['client']['id'])
+        body = self.google.inserted[0][1]
+        for value in (booking['full_name'], booking['phone'], booking['email'], booking['service_name'], str(booking['id'])):
+            self.assertIn(str(value), body['description'] + body['summary'])
+        customer = next(payload['text'] for payload, key in self.sent if '/customer/' in key)
+        client = next(payload['text'] for payload, key in self.sent if '/client/' in key)
+        self.assertIn('Payment received:', customer)
+        self.assertIn('Birth date:', client)
 
     def test_cancellation_supersedes_every_unsent_confirmation(self):
         booking = self.confirmed()

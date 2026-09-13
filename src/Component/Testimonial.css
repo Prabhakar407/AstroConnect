@@ -84,7 +84,6 @@
 .testimonials-story--featured dt { margin: 0; }
 .testimonials-story dd { max-width: 65ch; }
 .testimonials-story-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; justify-content: space-between; margin-top: 16px; }
-.testimonials-sample-label { font-size: var(--testimonials-small); color: #c6b58b; }
 /* Filters change the reading collection, never the featured carousel. */
 .testimonials-reviews { min-height: var(--testimonials-scene); padding-block: clamp(48px, 5vh, 88px); display: flex; align-items: center; }
 .testimonials-reviews.is-filtered { min-height: 0; }
@@ -99,7 +98,6 @@
 .testimonials-review-card { padding: clamp(24px, 2vw, 36px); min-width: 0; display: flex; flex-direction: column; gap: 20px; background: #f8f4e8; border-radius: 12px; box-shadow: 0 12px 24px -20px rgb(54 36 16 / 40%); }
 .testimonials-review-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .testimonials-review-top svg { width: 28px; height: 28px; color: #8c671e; }
-.testimonials-review-card .testimonials-sample-label { color: #705831; }
 .testimonials-review-card blockquote { flex: 1; text-wrap: pretty; }
 .testimonials-review-card figcaption { display: flex; align-items: center; gap: 12px; padding-top: 4px; }
 .testimonials-review-card .testimonials-avatar { width: 44px; font-size: 18px; }

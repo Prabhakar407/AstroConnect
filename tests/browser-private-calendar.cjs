@@ -93,6 +93,22 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
           };
         } else if (path.endsWith("/google/status")) {
           data = { connected: true };
+        } else if (path.endsWith("/booking-days")) {
+          data = { month: url.searchParams.get("month"), days: cancelled ? {} : { "2026-09-10": 1 } };
+        } else if (path.endsWith("/bookings")) {
+          const filter = url.searchParams.get("view") || "upcoming";
+          const visible = (!cancelled && filter === "upcoming") || (cancelled && filter === "cancelled");
+          data = { items: visible ? [{
+            id: "11111111-1111-4111-8111-111111111111", service_id: "name-change",
+            service_name: "Name Change Consultation", question_count: 1, amount_paise: 510000,
+            currency: "INR", duration_minutes: 30, starts_at: "2026-09-10T04:30:00Z",
+            full_name: "Synthetic Customer", email: "synthetic@example.com", phone: "+919000000001",
+            birth_date: "1990-01-02", birth_time: "10:30:00", birth_place: "New Delhi",
+            notes: "Please compare two spellings.", state: cancelled ? "cancelled" : "confirmed",
+            payment_state: "received", payment_reference: "pay_synthetic",
+            payment_order_reference: "order_synthetic", calendar_state: cancelled ? "cancelled" : "ready",
+            meet_url: cancelled ? null : "https://meet.google.com/abc-defg-hij",
+          }] : [], next_cursor: null };
         } else if (path.endsWith("/day")) {
           if (failDay) {
             status = 503;
@@ -165,7 +181,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
             data = {
               success: true,
               delivery_status: "pending",
-              refund_issued: false,
+              refund_instruction: "Refund to be done manually.",
             };
           } else throw new Error(`Unexpected private endpoint ${path}`);
         }
@@ -209,8 +225,13 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       await page
         .getByRole("button", { name: "Sign in with Google", exact: true })
         .click();
+      await page.getByRole("heading", { name: "Appointments", exact: true }).waitFor();
+      await page.getByText("Synthetic Customer", { exact: true }).click();
+      await page.getByText("Payment: pay_synthetic", { exact: true }).waitFor();
+      await shot("appointments");
+      await page.getByRole("button", { name: "Calendar", exact: true }).click();
       await page
-        .getByRole("button", { name: "Thursday, 10 September", exact: true })
+        .getByRole("button", { name: "Thursday, 10 September, 1 appointment", exact: true })
         .click();
       await page.getByText("Payment in progress", { exact: true }).waitFor();
       await shot("day");
@@ -253,7 +274,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         .click();
       await page
         .getByRole("status")
-        .filter({ hasText: "No refund has been issued" })
+        .filter({ hasText: "Refund to be done manually" })
         .waitFor();
       await shot("cancelled");
       failDay = true;

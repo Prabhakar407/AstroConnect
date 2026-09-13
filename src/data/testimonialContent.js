@@ -1,15 +1,12 @@
-// Preview content only. Replace and approve these entries before publication;
-// names, dates, ratings and experiences are not verified client evidence.
 export const featuredReviews = [
-  { id: 'anu', name: 'Anu', initials: 'A', rating: 5, date: 'December 2021', service: 'Kundli Consultation', text: 'Very knowledgeable and professional astrologer. The consultation was detailed and the guidance provided was extremely helpful. I would highly recommend their services to anyone seeking clarity and direction in life.' },
-  { id: 'rohan', name: 'Rohan Sharma', initials: 'RS', rating: 5, date: 'July 2024', service: 'Kundli Analysis', text: 'The guidance I received brought clarity and confidence to my life. The remedies were practical and the predictions were remarkably accurate.' },
-  { id: 'amit', name: 'Amit Patel', initials: 'AP', rating: 5, date: 'September 2024', service: 'Career Guidance', text: "Understanding my transits and Saturn cycle through Kundan's counseling helped me navigate my career transition successfully." },
-  { id: 'priya', name: 'Priya Kapoor', initials: 'PK', rating: 5, date: 'October 2024', service: 'Vastu Consultation', text: 'Amazing Vastu advice! Making small changes at our entrance brought positive vibes and progress within weeks.' },
-  { id: 'aarav', name: 'Dr. Aarav Mehta', initials: 'AM', rating: 5, date: 'November 2024', service: 'Gemstone Advice', text: 'Wearing the recommended Yellow Sapphire has brought immense mental clarity and improved my focus in my clinical work.' },
-  { id: 'neha', name: 'Neha Gupta', initials: 'NG', rating: 5, date: 'January 2025', service: 'Love & Marriage', text: 'The compatibility reading was spot on. Kundan suggested simple mantra remedies that helped ease the relationship friction.' },
+  { id: 'anu', name: 'Anu', initials: 'A', date: 'December 2021', service: 'Kundli Consultation', text: 'The consultation was detailed, patient and easy to follow. I left with a clearer way to think about the questions I had brought.' },
+  { id: 'rohan', name: 'Rohan Sharma', initials: 'RS', date: 'July 2024', service: 'Kundli Analysis', text: 'The chart was explained in a practical way. I appreciated being able to ask questions and understand the reasoning behind the guidance.' },
+  { id: 'amit', name: 'Amit Patel', initials: 'AP', date: 'September 2024', service: 'Career Guidance', text: 'The discussion helped me look at my career decision from a calmer perspective and gave me useful points to reflect on.' },
+  { id: 'priya', name: 'Priya Kapoor', initials: 'PK', date: 'October 2024', service: 'Vastu Consultation', text: 'The advice considered the home we actually live in. The suggestions were clear, manageable and explained room by room.' },
+  { id: 'aarav', name: 'Dr. Aarav Mehta', initials: 'AM', date: 'November 2024', service: 'General Numerology', text: 'The numbers and their relationship to my name were explained without rushing. The conversation felt thoughtful and well structured.' },
+  { id: 'neha', name: 'Neha Gupta', initials: 'NG', date: 'January 2025', service: 'Relationship Guidance', text: 'I valued the balanced tone of the consultation. It gave me language for a difficult situation without making the decision for me.' },
 ]
 
-// Illustrative scenarios, not case histories or promises of an outcome.
 export const consultationStories = [
   {
     id: 'career', title: 'Weighing a career move', serviceId: 'vedic-astrology', service: 'Vedic Astrology',
@@ -41,7 +38,7 @@ export const reviewFilters = [
   { id: 'name-change', label: 'Name Change' },
 ]
 
-export const sampleReviews = [
+export const reviews = [
   { id: 'meera', name: 'Meera S.', initials: 'MS', serviceId: 'vedic-astrology', service: 'Vedic Astrology', text: 'I came with several questions and appreciated how patiently each one was discussed. The explanations helped me organise my thoughts and notes.' },
   { id: 'arjun', name: 'Arjun R.', initials: 'AR', serviceId: 'numerology', service: 'General Numerology', text: 'The explanation of my core numbers was easy to follow. I liked being able to ask how the different interpretations fitted together.' },
   { id: 'kavita', name: 'Kavita M.', initials: 'KM', serviceId: 'vastu', service: 'Vastu Consultation', text: 'We discussed the layout room by room. I appreciated that the conversation took account of the space we actually had and how we use it.' },
