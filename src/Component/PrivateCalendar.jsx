@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import StudioInquiries from './StudioInquiries';
+import StudioAttention from './StudioAttention';
 import StudioGoogleConnection from './StudioGoogleConnection';
 import {
   CalendarDays,
@@ -304,8 +305,10 @@ export default function PrivateCalendar() {
               calendar.
             </p>
           </div>
-        ) : view !== 'calendar' ? (
-          <StudioInquiries key={view} user={user} attention={view === 'attention'} onExpired={sessionExpired} />
+        ) : view === 'attention' ? (
+          <StudioAttention key={view} user={user} onExpired={sessionExpired} />
+        ) : view === 'inquiries' ? (
+          <StudioInquiries key={view} user={user} attention={false} onExpired={sessionExpired} />
         ) : (
           <div className="studio-calendar__layout">
             <aside className="studio-calendar__panel">

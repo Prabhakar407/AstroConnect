@@ -64,9 +64,10 @@ export function createWorker(fetcher = (...args) => fetch(...args)) {
         try {
           const body = message.body;
           if (!object(body) || Object.keys(body).sort().join(',') !== 'environment,job_id,kind' ||
-              !['inquiry_received', 'payment_event'].includes(body.kind) || body.environment !== ENVIRONMENT ||
+              !['inquiry_received', 'payment_event', 'booking_confirmed', 'booking_cancelled', 'payment_review'].includes(body.kind) || body.environment !== ENVIRONMENT ||
               typeof body.job_id !== 'string' || !UUID.test(body.job_id)) throw new Error('invalid_queue_message');
-          const path = body.kind === 'payment_event' ? '/api/internal/delivery/payment' : '/api/internal/delivery/inquiry';
+          const path = body.kind === 'payment_event' ? '/api/internal/delivery/payment' :
+            body.kind === 'inquiry_received' ? '/api/internal/delivery/inquiry' : '/api/internal/delivery/booking';
           const { status, data } = await call(path, env.ASTRO_DELIVERY_SECRET,
             { job_id: body.job_id }, fetcher, env.ASTRO_API_ORIGIN);
           if (!identity(data) || data.job_id !== body.job_id) throw new Error('handler_mismatch');
@@ -97,7 +98,9 @@ export function createWorker(fetcher = (...args) => fetch(...args)) {
           { run_id }, fetcher, env.ASTRO_API_ORIGIN);
         if (status !== 200 || !identity(data) || data.run_id !== run_id ||
             !Number.isInteger(data.selected) || data.selected < 0 || data.selected > 25 ||
-            data.published !== data.selected) throw new Error('recovery_unconfirmed');
+            data.published !== data.selected || !Number.isInteger(data.needs_attention) ||
+            data.needs_attention < 0 || data.needs_attention > 10000) throw new Error('recovery_unconfirmed');
+        if (data.needs_attention > 0) throw new Error('recovery_attention');
         console.info('inquiry_recovery_checked');
       } catch {
         // Failed scheduled run is visible in Cloudflare; independent proactive

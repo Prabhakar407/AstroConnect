@@ -105,7 +105,7 @@ class EventTests(unittest.TestCase):
             self.assertTrue(result['terminal'])
             self.assertEqual(result['state'], 'sent')
         with self.store.transaction() as conn:
-            self.assertEqual(conn.execute("SELECT count(*) AS n FROM delivery_jobs WHERE kind='booking_confirmed'").fetchone()['n'], 1)
+            self.assertEqual(conn.execute("SELECT count(*) AS n FROM delivery_jobs WHERE kind='booking_confirmed'").fetchone()['n'], 3)
 
     def test_payment_consumer_requires_internal_credential(self):
         from uuid import uuid4

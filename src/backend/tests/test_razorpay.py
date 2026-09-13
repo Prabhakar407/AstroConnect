@@ -120,10 +120,12 @@ class RazorpayTests(unittest.TestCase):
         self.assertEqual(provider.orders_page(intent, skip=100), {'items': []})
         self.assertEqual(self.calls[0].url.params['receipt'], order_receipt(intent, 'test'))
         self.assertEqual(self.calls[0].url.params['skip'], '100')
+        self.assertEqual(provider.order_payments('order_saved'), {'items': []})
+        self.assertEqual(str(self.calls[1].url), 'https://api.razorpay.com/v1/orders/order_saved/payments')
         for bad in ('../orders', 'pay_good?secret=value', 'https://attacker.example'):
             with self.assertRaises(ValueError):
                 provider.payment(bad)
-        self.assertEqual(len(self.calls), 1)
+        self.assertEqual(len(self.calls), 2)
 
     def test_missing_configuration_never_calls_provider(self):
         for key, secret in (('', ''), ('rzp_other_value', 'secret'), ('rzp_test_ok', ' ')):

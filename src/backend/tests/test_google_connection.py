@@ -8,7 +8,7 @@ from unittest.mock import patch
 from cryptography.fernet import Fernet
 
 from src.backend.google_calendar import SCOPES, GoogleFailure
-from src.backend.google_connection import COOKIE
+from src.backend.google_connection import COOKIE, saved_connection_ready
 from src.backend.tests import test_admin as admin_tests
 
 
@@ -142,6 +142,18 @@ class GoogleConnectionTests(unittest.TestCase):
         self.begin()
         self.assertTrue(self.callback().headers['location'].endswith('google=failed'))
         self.assertFalse(self.connected())
+
+    def test_saved_connection_readiness_checks_scope_and_encryption_key(self):
+        self.begin()
+        self.callback()
+        self.assertTrue(saved_connection_ready(self.settings, self.store))
+        original_key = self.settings.google_token_key
+        self.settings.google_token_key = Fernet.generate_key().decode()
+        self.assertFalse(saved_connection_ready(self.settings, self.store))
+        self.settings.google_token_key = original_key
+        with self.store.transaction() as conn:
+            conn.execute("UPDATE google_connection SET scopes='openid email'")
+        self.assertFalse(saved_connection_ready(self.settings, self.store))
 
     def test_access_check_refreshes_under_lock_and_checks_meet_without_creating_event(self):
         self.begin()

@@ -27,6 +27,17 @@
 .studio-inquiries__empty { padding:44px 16px; max-width:60ch; margin:auto; text-align:center; color:#66594f; }
 .studio-inquiries__empty svg { margin:0 auto 16px; color:#77551d; }
 .studio-inquiries__empty h3 { color:#181122; }
+.studio-attention { display:grid; gap:24px; }
+.studio-attention__item { border-top:1px solid #d6ceba; padding:20px 4px; overflow-wrap:anywhere; }
+.studio-attention__heading { display:flex; align-items:flex-start; justify-content:space-between; gap:24px; }
+.studio-attention__heading h3,.studio-attention__heading p { margin:0; }
+.studio-attention__heading > strong { color:#77551d; font-size:1.1em; white-space:nowrap; }
+.studio-attention__contact { display:flex; flex-wrap:wrap; gap:8px 20px; margin:12px 0; }
+.studio-attention__contact a { color:#6b4a12; overflow-wrap:anywhere; }
+.studio-attention__resolution { display:grid; grid-template-columns:minmax(220px,1fr) minmax(220px,1fr) auto; gap:12px; align-items:end; margin-top:16px; }
+.studio-attention__resolution label { display:grid; gap:6px; font-weight:600; }
+.studio-attention__resolution label span { font-weight:400; }
+.studio-attention__resolution select,.studio-attention__resolution input { width:100%; min-height:44px; border:1px solid #bdb29b; border-radius:8px; background:#fffdf7; color:#181122; padding:8px 10px; font:inherit; }
 @media(max-width:760px) {
   .studio-inquiry > summary { display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:10px; }
   .studio-inquiry__meta { grid-column:1; grid-row:2; }
@@ -35,6 +46,8 @@
   .studio-inquiry__content { grid-template-columns:minmax(0,1fr); gap:24px; }
   .studio-calendar__tabs button { padding:9px 12px; }
   .studio-inquiry__actions { align-items:stretch; flex-direction:column; }
+  .studio-attention__heading { gap:12px; }
+  .studio-attention__resolution { grid-template-columns:minmax(0,1fr); }
 }
 .studio-calendar {
   --font-sans: "Source Sans 3", "Segoe UI", sans-serif;
@@ -277,7 +290,7 @@
   color: #36552f;
 }
 .studio-calendar__slot--booked {
-  border-left: 3px solid #896c28;
+  border-color: #896c28;
 }
 .studio-calendar__slot--booked .studio-calendar__state {
   background: #ede0b9;

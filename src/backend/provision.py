@@ -37,6 +37,8 @@ PRIVILEGES = {
     "payment_orders": "SELECT, INSERT, UPDATE",
     "payment_observations": "SELECT, INSERT, UPDATE",
     "payment_events": "SELECT, INSERT, UPDATE",
+    "booking_calendar_events": "SELECT, INSERT, UPDATE",
+    "payment_cases": "SELECT, INSERT, UPDATE",
     "google_authorizations": "SELECT, INSERT, DELETE",
 }
 

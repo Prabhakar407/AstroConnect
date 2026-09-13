@@ -39,14 +39,26 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         reducedMotion: "reduce",
       });
       const page = await context.newPage();
-      // Keep a predictable booking day, but let animation timestamps advance.
-      await page.clock.install({ time: new Date("2026-09-09T04:00:00Z") });
+      await page.addInitScript(() => {
+        window.Razorpay = class SyntheticRazorpayCheckout {
+          constructor(options) { this.options = options; }
+          on() {}
+          open() {
+            window.setTimeout(() => this.options.handler({
+              razorpay_payment_id: 'pay_synthetic_browser_check',
+              razorpay_signature: 'a'.repeat(64),
+            }), 0);
+          }
+        };
+      });
       const errors = [],
         sent = [];
       let sendFailure = false,
         saveMode = "failure",
         availabilityFailure = false,
-        verificationDelay = 0;
+        verificationDelay = 0,
+        checkoutPaid = false,
+        checkoutCancelled = false;
       page.on("pageerror", (error) => errors.push(error.message));
       await context.route("**/api/**", async (route) => {
         const request = route.request(),
@@ -91,6 +103,43 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
             success: true,
             verification_token:
               "synthetic-browser-token-not-real-1234567890123",
+          };
+        } else if (path === '/api/checkout/resume') {
+          data = checkoutCancelled ? {
+            booking_id: '22222222-2222-4222-8222-222222222222', service_id: 'name-change', service_name: 'Name Change Consultation',
+            question_count: 1, amount_paise: 510000, currency: 'INR', duration_minutes: 30,
+            starts_at: '2026-09-10T10:30:00+05:30', ends_at: '2026-09-10T11:00:00+05:30', timezone: 'Asia/Kolkata',
+            appointment_state: 'cancelled', payment_state: 'received', meeting_state: 'cancelled',
+            meet_url: null, confirmation_email_state: 'pending',
+            hold_expires_at: '2026-09-09T04:11:00Z', server_now: '2026-09-09T04:01:00Z',
+          } : checkoutPaid ? {
+            booking_id: '22222222-2222-4222-8222-222222222222', service_id: 'name-change', service_name: 'Name Change Consultation',
+            question_count: 1, amount_paise: 510000, currency: 'INR', duration_minutes: 30,
+            starts_at: '2026-09-10T10:30:00+05:30', ends_at: '2026-09-10T11:00:00+05:30', timezone: 'Asia/Kolkata',
+            appointment_state: 'confirmed', payment_state: 'received', meeting_state: 'ready',
+            meet_url: 'https://meet.google.com/abc-defg-hij', confirmation_email_state: 'accepted',
+            hold_expires_at: '2026-09-09T04:11:00Z', server_now: '2026-09-09T04:01:00Z',
+          } : { detail: 'No booking is in progress.' };
+          if (!checkoutPaid) status = 404;
+        } else if (path === '/api/checkout/verify-payment') {
+          checkoutPaid = true;
+          data = {
+            booking_id: '22222222-2222-4222-8222-222222222222', service_id: 'name-change', service_name: 'Name Change Consultation',
+            question_count: 1, amount_paise: 510000, currency: 'INR', duration_minutes: 30,
+            starts_at: '2026-09-10T10:30:00+05:30', ends_at: '2026-09-10T11:00:00+05:30', timezone: 'Asia/Kolkata',
+            appointment_state: 'confirmed', payment_state: 'received', meeting_state: 'ready',
+            meet_url: 'https://meet.google.com/abc-defg-hij', confirmation_email_state: 'accepted',
+            hold_expires_at: '2026-09-09T04:11:00Z', server_now: '2026-09-09T04:01:00Z',
+          };
+        } else if (path === '/api/checkout' && saveMode === 'checkout') {
+          data = {
+            booking_id: '22222222-2222-4222-8222-222222222222', order_id: 'order_synthetic_browser_check',
+            payment_key_id: 'rzp_test_synthetic_browser_check', order_state: 'ready', service_id: 'name-change',
+            service_name: 'Name Change Consultation', question_count: 1, amount_paise: 510000, currency: 'INR',
+            duration_minutes: 30, starts_at: '2026-09-10T10:30:00+05:30', ends_at: '2026-09-10T11:00:00+05:30',
+            timezone: 'Asia/Kolkata', appointment_state: 'held', payment_state: 'not_received', meeting_state: 'unavailable',
+            meet_url: null, confirmation_email_state: 'unavailable', hold_expires_at: '2026-09-09T04:11:00Z',
+            server_now: '2026-09-09T04:01:00Z',
           };
         } else if (request.method() === "POST") {
           sent.push({ path, payload: request.postDataJSON() });
@@ -160,9 +209,11 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
           throw error;
         }
       };
-      await page.goto(base + "#/booking");
+      await page.goto(base + "booking");
       await page.locator("#readingType").selectOption("prashna-kundali");
       await page.locator("#questionCount").selectOption("10");
+      await page.waitForFunction(() => [...document.querySelectorAll('button')]
+        .some(button => button.textContent.trim() === '19' && !button.disabled));
       assert.ok(
         (await page.locator("#booking-form").innerText()).includes("₹11,000"),
       );
@@ -242,6 +293,8 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       await shot("booking-availability-error");
       assert.equal(await page.locator('#booking-form button[type=submit]').isDisabled(), true);
       availabilityFailure = false;
+      await page.getByRole('button', { name: 'Try again' }).click();
+      await page.getByRole("button", { name: /10:30 AM.*11:00 AM/ }).click();
       await page.locator("#readingType").selectOption("numerology");
       assert.equal(await page.locator("#questionCount").count(), 0);
       assert.ok(
@@ -251,8 +304,25 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       assert.ok(
         (await page.locator("#booking-form").innerText()).includes("₹5,100"),
       );
+      saveMode = 'checkout';
+      await page.locator('#booking-form button[type=submit]').click();
+      await verify();
+      await page.getByRole('heading', { name: 'Your time is reserved' }).waitFor();
+      assert.ok((await page.locator('body').innerText()).includes('Test Mode is active'));
+      await shot('booking-payment-ready');
+      await page.getByRole('button', { name: 'Pay ₹5,100 securely' }).click();
+      await page.getByRole('heading', { name: 'Your appointment is confirmed' }).waitFor();
+      assert.equal(await page.getByRole('link', { name: 'Open Google Meet' }).getAttribute('href'), 'https://meet.google.com/abc-defg-hij');
+      await shot('booking-confirmed');
+      checkoutCancelled = true;
+      await page.reload();
+      await page.getByRole('heading', { name: 'This appointment was cancelled' }).waitFor();
+      assert.equal(await page.getByRole('link', { name: 'Open Google Meet' }).count(), 0);
+      assert.ok((await page.locator('body').innerText()).includes('does not automatically issue a refund'));
+      await shot('booking-cancelled');
 
-      await page.goto(base + "#/contact");
+      saveMode = 'failure';
+      await page.goto(base + "contact");
       await page.locator("#name").fill("Synthetic Test");
       await page.locator("#email").fill("synthetic@example.com");
       await page.locator("#phone").fill("+919000000001");
@@ -324,7 +394,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       );
       await shot("contact-saved");
 
-      await page.goto(base + "#/");
+      await page.goto(base);
       await page.locator("#form-name").fill("Synthetic Test");
       await page.locator("#form-email").fill("synthetic@example.com");
       await page.locator("#form-dob").fill("2000-01-01");
@@ -364,7 +434,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
           path: `${output}/home-inquiry-error-${viewport.width}.png`,
         });
 
-      await page.goto(base + "#/services/prashna-kundali");
+      await page.goto(base + "services/prashna-kundali");
       const form = page.locator("#prashna-form");
       for (const [name, value] of Object.entries({
         name: "Synthetic Test",

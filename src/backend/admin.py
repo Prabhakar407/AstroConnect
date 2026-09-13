@@ -17,7 +17,7 @@ from google.oauth2 import id_token
 from pydantic import Field
 
 from .domain import CLIENT_EMAIL, RuleViolation
-from .models import InputModel
+from .models import InputModel, PaymentCaseResolution
 from .storage import StorageUnavailable
 from .verification import EmailVerification
 from . import private_inquiries
@@ -54,7 +54,7 @@ def google_identity(credential, audience):
         raise RuleViolation("Google sign-in could not be verified. Please try again.", 401) from None
 
 
-def admin_router(settings, store, identity_verifier=None):
+def admin_router(settings, store, identity_verifier=None, *, booking_dispatch=None, payment_dispatch=None):
     router = APIRouter(prefix="/api/admin")
     verify_identity = identity_verifier or google_identity
 
@@ -168,6 +168,29 @@ def admin_router(settings, store, identity_verifier=None):
         private_inquiries.mark_seen(store, inquiry_id, actor)
         return {'success': True}
 
+    @router.get('/attention')
+    def attention(request: Request):
+        session(request)
+        from .private_attention import overview
+        return overview(store)
+
+    @router.post('/attention/payments/{case_id}/handled')
+    def payment_case_handled(case_id: UUID, payload: PaymentCaseResolution, request: Request):
+        actor = session(request, write=True)['google_subject']
+        from .private_attention import handle_case
+        handle_case(store, case_id, actor, payload.resolution, payload.note)
+        return {'success': True, 'message': 'This item is marked as handled. No refund or payment change was made by the website.'}
+
+    @router.post('/attention/delivery/{job_id}/retry')
+    def retry_booking_delivery(job_id: UUID, request: Request):
+        session(request, write=True)
+        from .private_attention import retry_delivery
+        retried = retry_delivery(store, job_id)
+        dispatch = payment_dispatch if retried['kind'] == 'payment_event' else booking_dispatch
+        if dispatch and retried['republish']:
+            dispatch.after_save(retried['record_id'])
+        return {'success': True, 'message': 'Delivery has been queued again.'}
+
     @router.post("/closures")
     def close(payload: CloseInput, request: Request):
         actor = session(request, write=True)["google_subject"]
@@ -184,6 +207,8 @@ def admin_router(settings, store, identity_verifier=None):
     def cancel(booking_id: UUID, request: Request):
         actor = session(request, write=True)["google_subject"]
         store.cancel(booking_id, actor)
+        if booking_dispatch:
+            booking_dispatch.after_save(booking_id)
         return {"success": True, "delivery_status": "pending", "refund_issued": False}
 
     from .google_connection import add_routes

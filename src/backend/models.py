@@ -87,9 +87,19 @@ class ReceiptInput(InputModel):
     request_id: UUID
 
 
+class CheckoutConfirmationInput(ReceiptInput):
+    payment_id: str = Field(pattern=r"^pay_[A-Za-z0-9]+$", max_length=100)
+    signature: str = Field(pattern=r"^[a-fA-F0-9]{64}$", repr=False)
+
+
 class DeliveryInput(InputModel):
     job_id: UUID
 
 
 class RecoveryInput(InputModel):
     run_id: UUID
+
+
+class PaymentCaseResolution(InputModel):
+    resolution: Literal['checked_no_action', 'customer_contacted', 'refund_handled']
+    note: str = Field(default='', max_length=500)
