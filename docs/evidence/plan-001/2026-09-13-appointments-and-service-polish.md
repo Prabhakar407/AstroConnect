@@ -41,4 +41,13 @@ The local browser runs use synthetic records and responses. Existing provider/da
 
 ## Release/readback boundary
 
-This record travels with the reviewed source revision authorized for the existing `main`/Vercel production path. After publication, official-domain readback must confirm `/api/ready`, the public pages and authentication refusal on the private appointment endpoint. A public readback cannot prove an authenticated studio session; that behaviour is covered by the synthetic browser journey and backend authorization tests without exposing client access.
+The source revision was published through [pull request 7](https://github.com/Prabhakar407/AstroConnect/pull/7), merged as `8df0cfe`, after both Vercel checks passed. Vercel reported the matching production deployment complete.
+
+Official-domain readback then confirmed:
+
+- `/api/ready`: HTTP 200, `storage_ready=true`, `booking_enabled=true`;
+- `/api/services`: all six permanent prices, INR currency and 30-minute durations unchanged;
+- `/api/admin/bookings` without a studio session: HTTP 401 with `no-store` caching;
+- the full public browser regression at 1366×768, 2560×1440 and 390×844, with no browser errors or horizontal overflow.
+
+The official Services, Testimonials and Vastu captures were inspected again and match the reviewed local composition. A public readback cannot prove an authenticated studio session; that behaviour is covered by the synthetic browser journey and backend authorization tests without exposing client access. No booking, payment, email, Calendar event or provider mutation was created during release verification.
