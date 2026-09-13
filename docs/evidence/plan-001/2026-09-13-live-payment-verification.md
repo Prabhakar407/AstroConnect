@@ -28,7 +28,14 @@ This record contains operational facts only. It deliberately excludes customer i
 - Read-only official-domain journeys passed at 1440×900, 2560×1440, 1366×650 and 390×844 with no API writes, horizontal overflow or browser errors. Quote and availability failure recovery retained form state.
 - Stationary 1440×900 and 2560×1440 captures showed the permanent prices and a fully visible form. A dim intermediate frame in the scroll-through harness was confirmed as capture timing during motion, not a stationary customer-page defect.
 
-## Remaining live cleanup
+## Cancellation cleanup proof
 
-- The authorized studio user must mark the paid test appointment cancelled from the private calendar after the agreed phone-cancellation step.
-- Completion evidence must then prove: booking cancelled; slot released; Google event cancelled and Meet URL removed; customer and client cancellation messages sent and delivered; the accepted ₹1 payment preserved; and no automatic refund claimed or issued.
+- The authorized studio user marked the paid test appointment cancelled from the private calendar after the agreed phone-cancellation step. This cleanup occurred after the temporary-price release had already been restored; it did not extend the ₹1 public window.
+- The booking reached `cancelled`, its slot claim was removed, the Google Calendar record reached `cancelled`, and the stored Meet URL was removed.
+- Calendar, customer-cancellation and client-cancellation operations each completed in one attempt with no error.
+- Signed Resend events recorded both cancellation messages as `email.sent` and `email.delivered` to their receiving mail servers.
+- The accepted ₹1 payment remained saved with provider status `captured`, zero refunded and no refund webhook event. The website made no automatic-refund claim.
+
+## Final conclusion
+
+The controlled Live journey proved the official customer path from email verification through exact server-priced Razorpay order, captured real payment, signed payment notifications, booking confirmation, Calendar and Meet creation, both participant messages, private phone-agreed cancellation, slot release, Calendar/Meet cleanup and both cancellation messages. Permanent prices were restored within the authorized hour and remained present in the final official readiness and service checks.
