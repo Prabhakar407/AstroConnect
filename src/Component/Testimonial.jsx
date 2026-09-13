@@ -10,11 +10,13 @@ import closingLandscape from '../assets/images/testimonial-closing-landscape.web
 import './Testimonial.css'
 
 const storyArtwork = { career: careerArt, home: homeArt, name: nameArt }
+const getReviewPool = filter => filter === 'all' ? reviews : reviews.filter(review => review.serviceId === filter)
+const reviewWindowSize = filter => filter === 'all' ? 6 : 3
 const directionContract = [
-  'THESIS: Keep the familiar rotating voice, then add context and self-paced reading rather than an endless wall of praise.',
+  'THESIS: Keep the familiar rotating voice, then add context and a gently changing review collection rather than an endless wall of praise.',
   'OWN-WORLD: Existing navy, gold and beige; Source Serif 4 headings and quotation, Source Sans 3 reading text, restrained engraved illustrations and square section seams.',
   'STORY: Read a featured voice, understand three consultation journeys, browse concise reviews, choose a service or book.',
-  'FIRST VIEWPORT: Light, centred viewport-minus-header scene; readable heading, one stable review, arrows and dots, booking and story links.',
+  'FIRST VIEWPORT: Light, centred viewport-minus-header scene; readable rotating review, arrows and dots, booking and story links.',
   'FORM: User-approved four-part extension; editorial comp’s wide feature and two companions. Preserve incumbent light hero and shared chrome; no seed for a pinned structure.',
   'FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md',
 ].join('\n')
@@ -23,23 +25,30 @@ const directionContract = [
  * Testimonial Component
  * Premium luxury astrology website Testimonial Section.
  * Original open editorial carousel, pagination dots and circular navigation are
- * retained. The extension adds consultation stories and a filterable
- * collection. Automatic cycling is slower and stops for reading or interaction.
+ * retained. The extension adds consultation stories and a filterable review
+ * collection. Automatic motion stops while the relevant content is being read.
  */
 function Testimonial() {
   const pageRef = useRef(null)
   const heroRef = useRef(null)
   const storiesRef = useRef(null)
+  const reviewsRef = useRef(null)
+  const flipTimeoutRef = useRef(null)
+  const reviewTimerRef = useRef(null)
+  const visibleReviewsRef = useRef(reviews.slice(0, reviewWindowSize('all')))
   const reducedMotion = useReducedMotion()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
   const [manuallySelected, setManuallySelected] = useState(false)
   const [heroVisible, setHeroVisible] = useState(true)
+  const [reviewsVisible, setReviewsVisible] = useState(false)
+  const [reviewsHovered, setReviewsHovered] = useState(false)
   const [pageVisible, setPageVisible] = useState(true)
   const [filter, setFilter] = useState('all')
+  const [visibleReviews, setVisibleReviews] = useState(visibleReviewsRef.current)
+  const [flippedReviewId, setFlippedReviewId] = useState(null)
   const autoPlaying = !reducedMotion && !hovered && !focused && !manuallySelected && heroVisible && pageVisible
-  const visibleReviews = filter === 'all' ? reviews : reviews.filter(review => review.serviceId === filter)
   const filterLabel = reviewFilters.find(item => item.id === filter).label
 
   useEffect(() => {
@@ -53,6 +62,8 @@ function Testimonial() {
     measure()
     const heroObserver = new IntersectionObserver(([entry]) => setHeroVisible(entry.isIntersecting), { threshold: .3 })
     heroObserver.observe(heroRef.current)
+    const reviewsObserver = new IntersectionObserver(([entry]) => setReviewsVisible(entry.isIntersecting), { threshold: .2 })
+    reviewsObserver.observe(reviewsRef.current)
     // Readable at rest; the observer adds only a once-only assembly flourish.
     const storyObserver = new IntersectionObserver(entries => entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -64,21 +75,66 @@ function Testimonial() {
     const handleVisibility = () => setPageVisible(!document.hidden)
     handleVisibility()
     document.addEventListener('visibilitychange', handleVisibility)
-    return () => { comment.remove(); resize.disconnect(); heroObserver.disconnect(); storyObserver.disconnect(); document.removeEventListener('visibilitychange', handleVisibility) }
+    return () => {
+      comment.remove()
+      resize.disconnect()
+      heroObserver.disconnect()
+      reviewsObserver.disconnect()
+      storyObserver.disconnect()
+      document.removeEventListener('visibilitychange', handleVisibility)
+      clearInterval(reviewTimerRef.current)
+      clearTimeout(flipTimeoutRef.current)
+    }
   }, [])
 
-  // Auto transition: twelve seconds per review; no timer while offscreen or reading.
-  // Manual selection stops autoplay for this visit, without adding another control.
+  // Auto transition: two seconds per review; no timer while offscreen or reading.
+  // The loop pauses while the visitor is reading or operating its controls,
+  // and manual selection hands control to the visitor for the rest of the visit.
   useEffect(() => {
     if (!autoPlaying) return
-    const timer = setInterval(() => setCurrentIndex(index => (index + 1) % featuredReviews.length), 12000)
+    const timer = setInterval(() => setCurrentIndex(index => (index + 1) % featuredReviews.length), 2000)
     return () => clearInterval(timer)
   }, [autoPlaying])
+
+  // Replace one visible review at a time from the selected category. The
+  // replacement always comes from outside the current window, so duplicates
+  // cannot appear in the grid.
+  useEffect(() => {
+    clearInterval(reviewTimerRef.current)
+    if (reducedMotion || !pageVisible || !reviewsVisible || reviewsHovered) return
+    const pool = getReviewPool(filter)
+    reviewTimerRef.current = setInterval(() => {
+      const current = visibleReviewsRef.current
+      const visibleIds = new Set(current.map(review => review.id))
+      const available = pool.filter(review => !visibleIds.has(review.id))
+      if (!current.length || !available.length) return
+      const slot = Math.floor(Math.random() * current.length)
+      const replacement = available[Math.floor(Math.random() * available.length)]
+      const next = [...current]
+      next[slot] = replacement
+      visibleReviewsRef.current = next
+      setVisibleReviews(next)
+      setFlippedReviewId(replacement.id)
+      clearTimeout(flipTimeoutRef.current)
+      flipTimeoutRef.current = setTimeout(() => setFlippedReviewId(null), 600)
+    }, 2500)
+    return () => clearInterval(reviewTimerRef.current)
+  }, [filter, pageVisible, reducedMotion, reviewsHovered, reviewsVisible])
 
   // Manual navigation handlers preserve the original previous/next/dot behavior.
   const selectReview = index => {
     setManuallySelected(true)
     setCurrentIndex((index + featuredReviews.length) % featuredReviews.length)
+  }
+  const selectFilter = id => {
+    const pool = getReviewPool(id)
+    clearInterval(reviewTimerRef.current)
+    clearTimeout(flipTimeoutRef.current)
+    setFlippedReviewId(null)
+    setFilter(id)
+    const next = pool.slice(0, reviewWindowSize(id))
+    visibleReviewsRef.current = next
+    setVisibleReviews(next)
   }
   const exploreStories = event => {
     event.preventDefault()
@@ -160,18 +216,19 @@ function Testimonial() {
         </div>
       </section>
 
-      {/* 3. REVIEW COLLECTION — stable reading and only populated service filters. */}
-      <section className={'testimonials-reviews ' + (filter !== 'all' ? 'is-filtered' : '')} aria-labelledby="more-voices-title">
+      {/* 3. REVIEW COLLECTION — one-at-a-time rotation and populated service filters. */}
+      <section ref={reviewsRef} className={'testimonials-reviews ' + (filter !== 'all' ? 'is-filtered' : '')} aria-labelledby="more-voices-title"
+        onMouseEnter={() => setReviewsHovered(true)} onMouseLeave={() => setReviewsHovered(false)}>
         <div className="testimonials-container">
           <div className="testimonials-section-heading">
             <div><h2 id="more-voices-title">More voices, at your pace</h2><p>Browse by consultation, or take your time with the whole collection.</p></div>
           </div>
           <div className="testimonials-filters" role="group" aria-label="Filter reviews by consultation">
-            {reviewFilters.map(item => <button type="button" key={item.id} aria-pressed={filter === item.id} aria-controls="testimonials-review-results" onClick={() => setFilter(item.id)}>{item.label}</button>)}
+            {reviewFilters.map(item => <button type="button" key={item.id} aria-pressed={filter === item.id} aria-controls="testimonials-review-results" onClick={() => selectFilter(item.id)}>{item.label}</button>)}
           </div>
-          <p className="testimonials-sr-only" role="status">Showing {visibleReviews.length} {visibleReviews.length === 1 ? 'review' : 'reviews'}: {filterLabel}.</p>
-          <div id="testimonials-review-results" className={'testimonials-reviews-grid ' + (filter !== 'all' ? 'is-filtered' : '')}>
-            {visibleReviews.map(review => <figure className="testimonials-review-card" key={review.id}>
+          <p className="testimonials-sr-only" role="status">Showing {visibleReviews.length} of {getReviewPool(filter).length} reviews: {filterLabel}.</p>
+          <div id="testimonials-review-results" className={'testimonials-reviews-grid ' + (filter !== 'all' ? 'is-filtered' : '')} aria-live="off">
+            {visibleReviews.map(review => <figure className={'testimonials-review-card ' + (review.id === flippedReviewId ? 'is-flipping' : '')} key={review.id} data-review-id={review.id}>
               <div className="testimonials-review-top"><Quote aria-hidden="true" /></div>
               <blockquote><p>“{review.text}”</p></blockquote>
               <figcaption><span className="testimonials-avatar" aria-hidden="true">{review.initials}</span><div><strong>{review.name}</strong><span>{review.service}</span></div></figcaption>
