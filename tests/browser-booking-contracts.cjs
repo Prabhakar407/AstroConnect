@@ -2,8 +2,11 @@
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE_PATH || 'playwright');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const catalogue = require('../src/data/consultationCatalogue.json');
 const base = process.env.ASTRO_BROWSER_BASE || 'http://127.0.0.1:5186';
 const output = process.env.ASTRO_BROWSER_OUTPUT || '/tmp/astro-booking-contracts';
+const prashnaUnit = catalogue.find(item => item.id === 'prashna-kundali').amount_paise;
+const fee = count => `₹${((prashnaUnit * count) / 100).toLocaleString('en-IN')}`;
 
 (async () => {
   fs.mkdirSync(output, { recursive: true });
@@ -34,7 +37,7 @@ const output = process.env.ASTRO_BROWSER_OUTPUT || '/tmp/astro-booking-contracts
       assert.equal(await page.getByText('Online booking is being configured.', { exact: false }).count(), 0);
       await page.locator('#readingType').selectOption('prashna-kundali');
       await page.locator('#questionCount').selectOption('10');
-      await page.waitForFunction(() => document.querySelector('#booking-form')?.innerText.includes('₹11,000'));
+      await page.waitForFunction(expected => document.querySelector('#booking-form')?.innerText.includes(expected), fee(10));
       assert.equal(await page.locator('#booking-form button[type=submit]').isDisabled(), true);
       await page.locator('#name').fill('Synthetic visual check');
       await page.evaluate(() => document.fonts.ready);
@@ -66,11 +69,11 @@ const output = process.env.ASTRO_BROWSER_OUTPUT || '/tmp/astro-booking-contracts
       await page.unroute('**/api/quote?*');
       await page.getByRole('button', { name: 'Check fee again', exact: true }).click();
       await page.getByRole('button', { name: 'Check fee again', exact: true }).waitFor({ state: 'hidden' });
-      await page.waitForFunction(() => document.querySelector('#booking-form')?.innerText.includes('₹9,900'));
+      await page.waitForFunction(expected => document.querySelector('#booking-form')?.innerText.includes(expected), fee(9));
       assert.equal(await page.locator('#name').inputValue(), 'Synthetic visual check');
       assert.deepEqual(writes, []);
       assert.deepEqual(errors, []);
-      results.push({ viewport, actualPolicyRead: true, wrongDeviceClockIgnored: true, prashnaTotal: 11000, availabilityRecovered: true, quoteRecovered: true, pageErrors: 0, writes: 0 });
+      results.push({ viewport, actualPolicyRead: true, wrongDeviceClockIgnored: true, prashnaTotalPaise: prashnaUnit * 10, availabilityRecovered: true, quoteRecovered: true, pageErrors: 0, writes: 0 });
       await context.close();
     }
     fs.writeFileSync(`${output}/results.json`, JSON.stringify(results, null, 2));

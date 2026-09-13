@@ -24,7 +24,7 @@ TEST_SECRET = "isolated-unit-test-secret-not-a-real-credential"
 
 class DomainTests(unittest.TestCase):
     def test_all_prices(self):
-        expected = {"vedic-astrology": 100, "numerology": 100, "vastu": 100, "laal-kitaab": 100, "prashna-kundali": 100, "name-change": 100}
+        expected = {"vedic-astrology": 210000, "numerology": 310000, "vastu": 510000, "laal-kitaab": 110000, "prashna-kundali": 110000, "name-change": 510000}
         for service_id, amount in expected.items():
             with self.subTest(service=service_id):
                 self.assertEqual(quote(service_id)["amount_paise"], amount)
@@ -33,7 +33,7 @@ class DomainTests(unittest.TestCase):
     def test_question_bounds_and_duration(self):
         for count in range(1, 11):
             result = quote("prashna-kundali", count)
-            self.assertEqual(result["amount_paise"], 100 * count)
+            self.assertEqual(result["amount_paise"], 110000 * count)
             self.assertEqual(result["duration_minutes"], 30)
         for count in (0, 11, True, 1.0, "2", None):
             with self.subTest(count=count), self.assertRaises(RuleViolation):
@@ -175,7 +175,7 @@ class PostgresTests(unittest.TestCase):
 
     def test_hold_price_and_duration(self):
         row = self.hold(question_count=10)
-        self.assertEqual(row["amount_paise"], 1000)
+        self.assertEqual(row["amount_paise"], 1100000)
         self.assertEqual(row["duration_minutes"], 30)
         self.assertEqual(row["state"], "held")
         self.assertFalse(self.store.availability("2026-09-10")["slots"]["10:00"])

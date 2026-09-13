@@ -1,8 +1,8 @@
 [
-  {"id":"vedic-astrology","title":"Vedic Astrology","amount_paise":100,"per_question":false},
-  {"id":"numerology","title":"General Numerology","amount_paise":100,"per_question":false},
-  {"id":"vastu","title":"Vastu Consultation","amount_paise":100,"per_question":false},
-  {"id":"laal-kitaab","title":"Laal Kitaab Remedies","amount_paise":100,"per_question":false},
-  {"id":"prashna-kundali","title":"Prashna Kundali","amount_paise":100,"per_question":true},
-  {"id":"name-change","title":"Name Change Consultation","amount_paise":100,"per_question":false}
+  {"id":"vedic-astrology","title":"Vedic Astrology","amount_paise":210000,"per_question":false},
+  {"id":"numerology","title":"General Numerology","amount_paise":310000,"per_question":false},
+  {"id":"vastu","title":"Vastu Consultation","amount_paise":510000,"per_question":false},
+  {"id":"laal-kitaab","title":"Laal Kitaab Remedies","amount_paise":110000,"per_question":false},
+  {"id":"prashna-kundali","title":"Prashna Kundali","amount_paise":110000,"per_question":true},
+  {"id":"name-change","title":"Name Change Consultation","amount_paise":510000,"per_question":false}
 ]
