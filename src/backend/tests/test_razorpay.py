@@ -56,6 +56,15 @@ class RazorpayTests(unittest.TestCase):
                 provider.create_order(intent, invalid)
         self.assertEqual(len(self.calls), 1)
 
+    def test_default_partial_payment_may_be_omitted_from_response(self):
+        intent = uuid4()
+        receipt = order_receipt(intent, 'test')
+        provider = self.provider(lambda request: httpx.Response(200, json={
+            'id': 'order_synthetic', 'entity': 'order', 'amount': 110000,
+            'currency': 'INR', 'receipt': receipt, 'status': 'created',
+        }))
+        self.assertEqual(provider.create_order(intent, 110000)['id'], 'order_synthetic')
+
     def test_timeout_never_retries_and_write_is_uncertain(self):
         def timeout(request):
             raise httpx.ReadTimeout('private provider detail', request=request)

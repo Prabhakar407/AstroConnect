@@ -77,7 +77,7 @@ class PaymentCheckout:
             valid = (isinstance(remote, dict) and remote.get('entity') == 'order' and
                      remote.get('receipt') == row['receipt'] and type(remote.get('amount')) is int and
                      remote['amount'] == row['amount_paise'] and remote.get('currency') == 'INR' and
-                     remote.get('partial_payment') is False)
+                     remote.get('partial_payment', False) is False)
             try:
                 remote_id = identifier(remote.get('id') if isinstance(remote, dict) else None, 'order')
             except ValueError:

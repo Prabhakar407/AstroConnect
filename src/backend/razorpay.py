@@ -119,7 +119,7 @@ class Razorpay:
             raise RazorpayFailure('payment_order_mismatch', uncertain=True) from None
         if (result.get('entity') != 'order' or result.get('receipt') != receipt or
                 type(result.get('amount')) is not int or result['amount'] != amount or
-                result.get('currency') != 'INR' or result.get('partial_payment') is not False):
+                result.get('currency') != 'INR' or result.get('partial_payment', False) is not False):
             raise RazorpayFailure('payment_order_mismatch', uncertain=True)
         return result
 

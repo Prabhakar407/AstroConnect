@@ -91,6 +91,17 @@ class CheckoutTests(unittest.TestCase):
         self.assertEqual(row['state'], 'ready')
         self.assertEqual(self.provider.creates, 1)
 
+    def test_order_binding_accepts_provider_default_when_partial_payment_is_omitted(self):
+        original_create = self.provider.create_order
+
+        def create_without_default_field(booking_id, amount):
+            remote = original_create(booking_id, amount)
+            remote.pop('partial_payment')
+            return remote
+
+        self.provider.create_order = create_without_default_field
+        self.assertEqual(self.start()['state'], 'ready')
+
     def test_empty_lookup_never_recreates(self):
         self.provider.fail = True
         row = self.start()

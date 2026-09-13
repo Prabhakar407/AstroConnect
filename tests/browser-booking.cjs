@@ -56,6 +56,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       let sendFailure = false,
         saveMode = "failure",
         availabilityFailure = false,
+        availabilityDelay = 0,
         verificationDelay = 0,
         checkoutPaid = false,
         checkoutCancelled = false;
@@ -79,6 +80,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
           data = { service_id: service.id, service_name: service.title, question_count: count, amount_paise: service.amount_paise * count, currency: 'INR', duration_minutes: 30, quote_version: 'a'.repeat(64) };
         }
         else if (path === "/api/availability") {
+          await pause(availabilityDelay);
           if (availabilityFailure) {
             status = 503;
             data = {
@@ -212,8 +214,14 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       await page.goto(base + "booking");
       await page.locator("#readingType").selectOption("prashna-kundali");
       await page.locator("#questionCount").selectOption("10");
-      await page.waitForFunction(() => [...document.querySelectorAll('button')]
-        .some(button => button.textContent.trim() === '19' && !button.disabled));
+      try {
+        await page.waitForFunction(() => [...document.querySelectorAll('button')]
+          .some(button => button.textContent.trim() === '19' && !button.disabled));
+      } catch (error) {
+        console.log('CALENDAR_DIAGNOSTIC', await page.locator('#booking-form').innerText(), errors);
+        await shot('calendar-diagnostic');
+        throw error;
+      }
       assert.ok(
         (await page.locator("#booking-form").innerText()).includes("₹11,000"),
       );
@@ -242,6 +250,15 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       );
       await page.getByRole("button", { name: "10", exact: true }).click();
       await page.getByRole("button", { name: /10:30 AM.*11:00 AM/ }).waitFor();
+      // Let the completed request leave its in-flight guard before simulating a later tab focus.
+      await pause(50);
+      availabilityDelay = 500;
+      await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+      await page.getByText('Refreshing available times…', { exact: true }).waitFor();
+      assert.equal(await page.getByRole("button", { name: /10:30 AM.*11:00 AM/ }).isDisabled(), false);
+      assert.ok((await page.getByRole("button", { name: /10:30 AM.*11:00 AM/ }).innerText()).includes('Open'));
+      await page.getByText('Refreshing available times…', { exact: true }).waitFor({ state: 'hidden' });
+      availabilityDelay = 0;
       assert.equal(await page.getByText('Online booking is being configured.', { exact: false }).count(), 0);
       await shot("booking-questions");
       const overflows = await page

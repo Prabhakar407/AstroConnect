@@ -6,12 +6,14 @@ export default function useBookingSchedule(date) {
   const [schedule, setSchedule] = useState({ policy: null, slots: {}, loading: true, error: '' })
   const [refresh, setRefresh] = useState(0)
   const lastActivity = useRef(performance.now())
+  const loadedDate = useRef('')
   useEffect(() => {
     let active = true, running = false
     const load = async () => {
       if (running || document.hidden) return
       running = true
-      setSchedule(previous => ({ ...previous, loading: true, error: '', slots: {} }))
+      const dateChanged = loadedDate.current !== date
+      setSchedule(previous => ({ ...previous, loading: true, error: '', slots: dateChanged ? {} : previous.slots }))
       try {
         const policy = await requestJson('/api/booking-policy')
         validatePolicy(policy)
@@ -25,7 +27,10 @@ export default function useBookingSchedule(date) {
           }
           slots = availability.slots
         }
-        if (active) setSchedule({ policy, slots, loading: false, error: '' })
+        if (active) {
+          loadedDate.current = date
+          setSchedule({ policy, slots, loading: false, error: '' })
+        }
       } catch (error) {
         if (active) setSchedule(previous => ({ ...previous, slots: {}, loading: false, error: error.message }))
       } finally { running = false }
