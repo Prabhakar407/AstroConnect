@@ -33,12 +33,12 @@
   width: calc(100% - (2 * var(--services-gutter)));
   max-width: 2400px;
   margin-inline: auto;
-  background: linear-gradient(90deg, rgb(194 170 105 / 19%) 0%, rgb(219 205 161 / 11%) 38%, rgb(237 233 215 / 0%) 100%);
+  background: linear-gradient(90deg, rgb(142 111 88 / 25%) 0%, rgb(181 154 130 / 16%) 42%, rgb(237 233 215 / 0%) 100%);
   pointer-events: none;
   z-index: 0;
 }
 .services-page .service-chapter--reverse::after {
-  background: linear-gradient(270deg, rgb(194 170 105 / 19%) 0%, rgb(219 205 161 / 11%) 38%, rgb(237 233 215 / 0%) 100%);
+  background: linear-gradient(270deg, rgb(142 111 88 / 25%) 0%, rgb(181 154 130 / 16%) 42%, rgb(237 233 215 / 0%) 100%);
 }
 .service-chapter-inner { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.8fr); gap: clamp(28px, 4vw, 80px); align-items: center; padding-block: 24px; }
 .service-artwork { position: relative; width: 100%; max-width: 390px; justify-self: center; background: #080817; box-shadow: 8px 12px 24px -12px rgb(24 17 34 / 38%); isolation: isolate; transition: transform 300ms ease, box-shadow 300ms ease; }
@@ -107,8 +107,20 @@
     --services-art-column: clamp(220px, 15vw, 320px);
   }
   .services-page .services-container { width: var(--services-frame); max-width: none; padding-inline: 0; }
-  .services-page .service-chapter-inner { grid-template-columns: var(--services-art-column) minmax(0, 1fr); gap: clamp(32px, 3vw, 64px); }
-  .services-page .service-chapter--reverse .service-chapter-inner { grid-template-columns: minmax(0, 1fr) var(--services-art-column); }
+  .services-page .service-chapter-inner {
+    grid-template-columns: var(--services-art-column) minmax(0, 1fr);
+    gap: clamp(32px, 3vw, 64px);
+    padding-inline: clamp(30px, 2.4vw, 58px) clamp(18px, 1.35vw, 32px);
+  }
+  .services-page .service-chapter--reverse .service-chapter-inner {
+    grid-template-columns: minmax(0, 1fr) var(--services-art-column);
+    padding-inline: clamp(18px, 1.35vw, 32px) clamp(30px, 2.4vw, 58px);
+  }
+  .services-page .service-chapter--reverse .service-copy { justify-self: end; text-align: right; }
+  .services-page .service-chapter--reverse .service-description { margin-left: auto; }
+  .services-page .service-chapter--reverse .service-focus,
+  .services-page .service-chapter--reverse .service-bottom,
+  .services-page .service-chapter--reverse .service-actions { justify-content: flex-end; }
   .services-page .service-artwork { max-width: none; }
   .services-page .service-chapter::before { width: var(--services-frame); margin-inline: auto; }
   .services-page .service-chapter::after { width: var(--services-frame); max-width: none; }
@@ -143,6 +155,9 @@
   .service-bottom { flex-direction: column; align-items: flex-start; gap: 16px; margin-top: 20px; }
   .service-chapter-inner { gap: 32px; }
 }
+@media (min-width: 1024px) and (max-width: 1199px) and (orientation: landscape) {
+  .services-page .service-chapter--reverse .service-bottom { align-items: flex-end; }
+}
 /* Portrait layouts use a separate content-led stack without viewport forcing. */
 @media (max-width: 767px), (orientation: portrait) {
   .services-page, .name-change-page { --services-body: 17px; --services-small: 16px; --services-gutter: 24px; --services-title: 29px; }
@@ -154,10 +169,10 @@
   .services-index svg { flex-basis: 19px; width: 19px; height: 19px; }
   .service-chapter-inner { grid-template-columns: 1fr; padding-block: 36px 40px; gap: 28px; }
   .services-page .service-chapter::after {
-    background: linear-gradient(90deg, rgb(194 170 105 / 13%) 0%, rgb(219 205 161 / 8%) 42%, rgb(237 233 215 / 0%) 100%);
+    background: linear-gradient(90deg, rgb(142 111 88 / 16%) 0%, rgb(181 154 130 / 10%) 42%, rgb(237 233 215 / 0%) 100%);
   }
   .services-page .service-chapter--reverse::after {
-    background: linear-gradient(270deg, rgb(194 170 105 / 13%) 0%, rgb(219 205 161 / 8%) 42%, rgb(237 233 215 / 0%) 100%);
+    background: linear-gradient(270deg, rgb(142 111 88 / 16%) 0%, rgb(181 154 130 / 10%) 42%, rgb(237 233 215 / 0%) 100%);
   }
   .service-artwork { max-width: 245px; }
   .service-description { margin-top: 14px !important; }
