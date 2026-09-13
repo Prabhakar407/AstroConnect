@@ -24,7 +24,8 @@ const visibleReviewIds = page => page.locator('.testimonials-review-card').evalu
 
     const grid = page.locator('#testimonials-review-results')
     await grid.scrollIntoViewIfNeeded()
-    await page.mouse.move(0, 0)
+    const gridBox = await grid.boundingBox()
+    await page.mouse.move(gridBox.x + gridBox.width / 2, gridBox.y + Math.min(gridBox.height / 2, 100))
     await pause(250)
     const firstWindow = await visibleReviewIds(page)
     assert.equal(firstWindow.length, 6)
@@ -38,7 +39,8 @@ const visibleReviewIds = page => page.locator('.testimonials-review-card').evalu
 
     for (const label of ['Vedic Astrology', 'General Numerology', 'Vastu', 'Laal Kitaab', 'Prashna', 'Name Change']) {
       await page.getByRole('button', { name: label, exact: true }).click()
-      await page.mouse.move(0, 0)
+      const filteredGridBox = await grid.boundingBox()
+      await page.mouse.move(filteredGridBox.x + filteredGridBox.width / 2, filteredGridBox.y + Math.min(filteredGridBox.height / 2, 100))
       const before = await visibleReviewIds(page)
       assert.equal(before.length, 3, `${label} should show three reviews`)
       assert.equal(new Set(before).size, 3)

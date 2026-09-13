@@ -45,6 +45,24 @@ async function assertPageHealth(page, errors) {
       await page.goto(`${base}/services`, { waitUntil: 'domcontentloaded' })
       await page.getByRole('heading', { name: /Guidance for every/ }).waitFor()
       assert.equal(await page.locator('.service-chapter').count(), 6)
+      if (viewport.width >= 1024 && viewport.width > viewport.height) {
+        const chapterLayout = await page.locator('.service-chapter').evaluateAll(chapters => chapters.map((chapter, index) => {
+          const inner = chapter.querySelector('.service-chapter-inner').getBoundingClientRect()
+          const artwork = chapter.querySelector('.service-artwork').getBoundingClientRect()
+          const copy = chapter.querySelector('.service-copy')
+          return {
+            index,
+            tint: getComputedStyle(chapter, '::after').backgroundImage,
+            textAlign: getComputedStyle(copy).textAlign,
+            artworkInset: index % 2 ? inner.right - artwork.right : artwork.left - inner.left,
+          }
+        }))
+        chapterLayout.forEach(({ index, tint, textAlign, artworkInset }) => {
+          assert.ok(tint.includes('142, 111, 88'), `Chapter ${index + 1} should use the warm-brown tint`)
+          assert.ok(artworkInset >= 28, `Chapter ${index + 1} artwork should sit inside the tinted frame`)
+          assert.equal(textAlign, index % 2 ? 'right' : 'start', `Chapter ${index + 1} copy should face its artwork`)
+        })
+      }
       for (const [id] of services) {
         assert.equal(await page.locator(`a[href="/booking?service=${id}"]`).count() > 0, true)
       }

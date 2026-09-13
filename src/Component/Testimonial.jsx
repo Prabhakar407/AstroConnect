@@ -43,7 +43,6 @@ function Testimonial() {
   const [manuallySelected, setManuallySelected] = useState(false)
   const [heroVisible, setHeroVisible] = useState(true)
   const [reviewsVisible, setReviewsVisible] = useState(false)
-  const [reviewsHovered, setReviewsHovered] = useState(false)
   const [pageVisible, setPageVisible] = useState(true)
   const [filter, setFilter] = useState('all')
   const [visibleReviews, setVisibleReviews] = useState(visibleReviewsRef.current)
@@ -101,7 +100,7 @@ function Testimonial() {
   // cannot appear in the grid.
   useEffect(() => {
     clearInterval(reviewTimerRef.current)
-    if (reducedMotion || !pageVisible || !reviewsVisible || reviewsHovered) return
+    if (reducedMotion || !pageVisible || !reviewsVisible) return
     const pool = getReviewPool(filter)
     reviewTimerRef.current = setInterval(() => {
       const current = visibleReviewsRef.current
@@ -119,7 +118,7 @@ function Testimonial() {
       flipTimeoutRef.current = setTimeout(() => setFlippedReviewId(null), 600)
     }, 2500)
     return () => clearInterval(reviewTimerRef.current)
-  }, [filter, pageVisible, reducedMotion, reviewsHovered, reviewsVisible])
+  }, [filter, pageVisible, reducedMotion, reviewsVisible])
 
   // Manual navigation handlers preserve the original previous/next/dot behavior.
   const selectReview = index => {
@@ -217,8 +216,7 @@ function Testimonial() {
       </section>
 
       {/* 3. REVIEW COLLECTION — one-at-a-time rotation and populated service filters. */}
-      <section ref={reviewsRef} className={'testimonials-reviews ' + (filter !== 'all' ? 'is-filtered' : '')} aria-labelledby="more-voices-title"
-        onMouseEnter={() => setReviewsHovered(true)} onMouseLeave={() => setReviewsHovered(false)}>
+      <section ref={reviewsRef} className={'testimonials-reviews ' + (filter !== 'all' ? 'is-filtered' : '')} aria-labelledby="more-voices-title">
         <div className="testimonials-container">
           <div className="testimonials-section-heading">
             <div><h2 id="more-voices-title">More voices, at your pace</h2><p>Browse by consultation, or take your time with the whole collection.</p></div>
