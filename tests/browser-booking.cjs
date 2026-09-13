@@ -242,6 +242,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       );
       await page.getByRole("button", { name: "10", exact: true }).click();
       await page.getByRole("button", { name: /10:30 AM.*11:00 AM/ }).waitFor();
+      assert.equal(await page.getByText('Online booking is being configured.', { exact: false }).count(), 0);
       await shot("booking-questions");
       const overflows = await page
         .locator("#booking-form button")

@@ -31,6 +31,7 @@ const output = process.env.ASTRO_BROWSER_OUTPUT || '/tmp/astro-booking-contracts
       await page.getByRole('button', { name: day, exact: true }).click();
       await page.getByRole('button', { name: /10:00 AM.*10:30 AM/ }).waitFor();
       await page.waitForFunction(() => !document.querySelector('#booking-form')?.innerText.includes('Checking available times'));
+      assert.equal(await page.getByText('Online booking is being configured.', { exact: false }).count(), 0);
       await page.locator('#readingType').selectOption('prashna-kundali');
       await page.locator('#questionCount').selectOption('10');
       await page.waitForFunction(() => document.querySelector('#booking-form')?.innerText.includes('₹11,000'));

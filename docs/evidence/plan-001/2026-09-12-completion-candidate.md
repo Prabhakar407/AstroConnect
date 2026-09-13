@@ -25,6 +25,7 @@ This is the current evidence index for the seven-point booking-system checklist.
 - Cancelling while Google is creating an event removes that event instead of leaving an orphaned meeting.
 - A cancelled customer receipt never shows the former Meet link and cannot be mistaken for a current appointment.
 - Checkout refuses to take payment if database schema, queue recovery, email, Google, merchant binding or official-origin readiness is incomplete.
+- Selecting a date preserves the confirmed booking-readiness result instead of replacing it with the availability response's conservative default; a hosted visual check found this false-disabled state and the regression journey now asserts that the configuration banner stays absent.
 - Payment and booking work that exhausts automatic retries causes the scheduled helper to fail visibly and appears in the client page.
 - Database integration fixtures reject any database other than the named isolated local test database.
 
