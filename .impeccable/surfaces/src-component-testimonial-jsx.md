@@ -34,7 +34,7 @@ These adaptations were declared before implementation. No QUALITY BAR catalog ca
 
 The client explicitly authorized plausible provisional names, dates, quotations and consultation scenarios for the finished page while exact source material is collected. The page must read as finished customer-facing content: no editorial labels or placeholder disclosures are shown. Scenarios explain the question, conversation and takeaway without guaranteed outcomes, numerical success claims or aggregate ratings. The client will replace or confirm the wording later.
 
-Carousel cycles every 12 seconds, pauses while hovered, focused, offscreen or in a hidden tab, and stops after manual selection/touch or for reduced-motion preferences. Slide height is reserved to prevent jumping controls. Review filters are independent of the carousel. Story artwork assembles once on landscape, with content visible at rest; reduced motion removes the movement. Booking/backend workflows remain untouched.
+Carousel cycles every 2 seconds, pauses while hovered, focused, offscreen or in a hidden tab, and stops after manual selection or touch so the visitor retains control. Slide height is reserved to prevent jumping controls. The review collection holds 30 provisional accounts: All Experiences displays six and each service filter displays three from its category. While the section is visible and not being read or operated, one card is replaced every 2.5 seconds by a review that is not already visible; a restrained card flip explains the replacement. Reduced-motion preferences keep both collections still. Story artwork assembles once on landscape, with content visible at rest. Booking/backend workflows remain untouched.
 
 ## Review and unresolved decisions
 
