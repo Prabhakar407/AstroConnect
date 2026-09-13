@@ -15,7 +15,7 @@ from psycopg.conninfo import conninfo_to_dict
 from psycopg.rows import dict_row
 from pydantic import ValidationError
 
-from .domain import ADVANCE_DAYS, CLIENT_PHONE, DURATION_MINUTES, IST, MINIMUM_NOTICE_MINUTES, SLOT_TIMES, RuleViolation, aware_utc, booking_start, closure_slots, day_slots, parse_day, quote, validate_day
+from .domain import ADVANCE_DAYS, CLIENT_EMAIL, CLIENT_PHONE, DURATION_MINUTES, IST, MINIMUM_NOTICE_MINUTES, SLOT_TIMES, RuleViolation, aware_utc, booking_start, closure_slots, day_slots, parse_day, quote, validate_day
 from .models import BookingDetails
 
 SCHEDULE_LOCK = 83124001
@@ -94,6 +94,14 @@ class Store:
                         for path in (Path(__file__).parent / 'migrations').glob('*.sql')}
             return bool(expected) and all(applied.get(name) == checksum for name, checksum in expected.items())
 
+    def booking_integrations_ready(self):
+        """Stored connection proof only; provider health is checked during work."""
+        if not self.ready():
+            return False
+        with self.transaction() as conn:
+            return bool(conn.execute("""SELECT 1 FROM google_connection WHERE singleton=true
+                AND calendar_id=%s AND refresh_token_encrypted<>''""", (CLIENT_EMAIL,)).fetchone())
+
     def policy(self):
         with self.transaction() as conn:
             return self.policy_at(self.now(conn))
@@ -171,7 +179,9 @@ class Store:
 
     @staticmethod
     def enqueue(conn, kind, record_id, now, *, suffix=""):
-        roles = ("customer", "client") if kind == "inquiry_received" else (None,)
+        roles = (("customer", "client") if kind == "inquiry_received" else
+                 ("calendar", "customer", "client") if kind in ("booking_confirmed", "booking_cancelled") else
+                 ("client",) if kind == "payment_review" else (None,))
         for role in roles:
             key = f"{kind}:{record_id}:{suffix}" + (f":{role}" if role else "")
             conn.execute("""INSERT INTO delivery_jobs (id,dedupe_key,kind,record_id,created_at,next_attempt_at,recipient_role,dispatch_after)
@@ -309,6 +319,13 @@ class Store:
                 raise RuleViolation("Only an upcoming confirmed booking can be cancelled here.", 409)
             conn.execute("DELETE FROM slot_claims WHERE booking_id=%s", (booking_id,))
             conn.execute("UPDATE bookings SET state='cancelled',cancelled_at=%s,cancelled_by=%s WHERE id=%s", (now, actor, booking_id))
+            # Invalidate confirmation work before cancellation work is visible.
+            # A provider call already accepted remains historical evidence; an
+            # unfinished or in-flight confirmation must not be replayed later.
+            conn.execute("""UPDATE delivery_jobs SET state='sent',last_error_code='superseded_by_cancellation',
+                lease_token=NULL,lease_until=NULL,dispatch_token=NULL
+                WHERE record_id=%s AND kind='booking_confirmed' AND provider_id IS NULL
+                AND state IN ('pending','processing','failed')""", (booking_id,))
             self.enqueue(conn, "booking_cancelled", booking_id, now)
 
     def save_inquiry(self, payload, request_id, token_digest, receipt_secret):
@@ -355,10 +372,27 @@ class Store:
             payments = [record['disposition'] for record in conn.execute("SELECT disposition FROM payments WHERE booking_id=%s", (row['id'],))]
             payments += [record['disposition'] for record in conn.execute(
                 'SELECT disposition FROM payment_observations WHERE booking_id=%s', (row['id'],))]
+            event = conn.execute('SELECT state,meet_url FROM booking_calendar_events WHERE booking_id=%s',
+                                 (row['id'],)).fetchone()
+            message_kind = 'booking_cancelled' if row['state'] == 'cancelled' else 'booking_confirmed'
+            customer_email = conn.execute("""SELECT state,provider_id FROM delivery_jobs
+                WHERE kind=%s AND record_id=%s AND recipient_role='customer'
+                ORDER BY created_at DESC,id DESC LIMIT 1""", (message_kind, row['id'])).fetchone()
+            meeting_state = ('cancelled' if row['state'] == 'cancelled' and (not event or event['state'] == 'cancelled') else
+                             'pending' if row['state'] == 'cancelled' else
+                             'ready' if event and event['state'] == 'ready' else
+                             'needs_attention' if event and event['state'] == 'failed' else
+                             'pending' if row['state'] == 'confirmed' else 'unavailable')
+            email_state = ('accepted' if customer_email and customer_email['provider_id'] else
+                           'needs_attention' if customer_email and customer_email['state'] == 'failed' else
+                           'pending' if customer_email else 'unavailable')
             return {"booking_id": str(row["id"]), "service_id": row["service_id"], "service_name": row["service_name"],
                     "question_count": row["question_count"], "amount_paise": row["amount_paise"], "currency": row["currency"],
                     "duration_minutes": row["duration_minutes"], "starts_at": row["starts_at"].isoformat(),
                     "ends_at": (row["starts_at"] + timedelta(minutes=row["duration_minutes"])).isoformat(),
                     "timezone": "Asia/Kolkata", "appointment_state": row["state"],
                     "payment_state": "needs_attention" if "review" in payments else "received" if "accepted" in payments else "not_received",
+                    "meeting_state": meeting_state,
+                    "meet_url": event['meet_url'] if row['state'] == 'confirmed' and event and event['state'] == 'ready' else None,
+                    "confirmation_email_state": email_state,
                     "hold_expires_at": row["hold_expires_at"].isoformat(), "server_now": now.isoformat()}

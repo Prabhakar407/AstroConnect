@@ -21,6 +21,7 @@ mkdirSync(output, { recursive:true });
       }
       const errors=[]; page.on('pageerror',e=>errors.push(e.message));
       let signedIn=true, empty=false, fail=false, delayDetail=false, detailPending;
+      let paymentHandled=false, deliveryRetried=false, paymentEventRetried=false;
       const seen=new Set();
       const rows = [
         {id:'11111111-1111-4111-8111-111111111111',name:'Synthetic visitor — career',subject:'General Numerology',source:'home'},
@@ -34,6 +35,30 @@ mkdirSync(output, { recursive:true });
         if(path==='/api/admin/session') return fulfilled(route,{email:'synthetic-studio@example.invalid',csrf_token:'synthetic-browser-csrf'});
         if(path==='/api/admin/logout') {signedIn=false;return fulfilled(route,{success:true});}
         if(path==='/api/admin/day') return fulfilled(route,{slots:[],closures:[]});
+        if(path==='/api/admin/attention') return fulfilled(route,{
+          payment_cases:paymentHandled?[]:[{id:'44444444-4444-4444-8444-444444444444',kind:'late_or_mismatched_payment',
+            booking_id:'55555555-5555-4555-8555-555555555555',full_name:'Synthetic payment visitor',
+            email:'payment@example.invalid',phone:'+918000000001',service_name:'General Numerology',amount_paise:310000,
+            starts_at:'2026-09-15T10:00:00+05:30',created_at:'2026-09-11T06:30:00Z'}],
+          delivery_problems:deliveryRetried?[]:[{id:'66666666-6666-4666-8666-666666666666',recipient_role:'calendar',
+            full_name:'Synthetic calendar visitor',service_name:'Vedic Astrology',last_error_code:'reconnect_required'}],
+          payment_event_problems:paymentEventRetried?[]:[{id:'77777777-7777-4777-8777-777777777777',event_id:'evt_synthetic',
+            kind:'payment.captured',payment_id:'pay_synthetic123',last_error:'payment_order_unmatched',
+            received_at:'2026-09-11T06:30:00Z',next_attempt_at:'2026-09-11T06:45:00Z',attempts:12}],
+        });
+        if(path==='/api/admin/attention/payments/44444444-4444-4444-8444-444444444444/handled') {
+          assert.equal(route.request().headers()['x-astro-csrf'],'synthetic-browser-csrf');
+          assert.deepEqual(route.request().postDataJSON(),{resolution:'checked_no_action',note:'Synthetic review complete.'});
+          paymentHandled=true; return fulfilled(route,{success:true});
+        }
+        if(path==='/api/admin/attention/delivery/66666666-6666-4666-8666-666666666666/retry') {
+          assert.equal(route.request().headers()['x-astro-csrf'],'synthetic-browser-csrf');
+          deliveryRetried=true; return fulfilled(route,{success:true});
+        }
+        if(path==='/api/admin/attention/delivery/77777777-7777-4777-8777-777777777777/retry') {
+          assert.equal(route.request().headers()['x-astro-csrf'],'synthetic-browser-csrf');
+          paymentEventRetried=true; return fulfilled(route,{success:true});
+        }
         if(path.endsWith('/seen')) {
           assert.equal(route.request().headers()['x-astro-csrf'],'synthetic-browser-csrf');
           seen.add(path.split('/').at(-2));return fulfilled(route,{success:true});
@@ -53,7 +78,7 @@ mkdirSync(output, { recursive:true });
         }
         return fulfilled(route,{detail:'Not part of this synthetic check'},404);
       });
-      await page.goto(base+'/#/studio/calendar');
+      await page.goto(base+'/studio/calendar');
       await page.getByRole('button',{name:'Inquiries',exact:true}).click();
       await page.getByText(rows[0].name,{exact:true}).waitFor();
       await page.locator('details.studio-inquiry').first().locator('summary').click();
@@ -79,6 +104,21 @@ mkdirSync(output, { recursive:true });
       await page.waitForFunction(()=>document.querySelectorAll('details.studio-inquiry').length===3);
       empty=true;
       await page.getByRole('button',{name:'Needs attention',exact:true}).click();
+      await page.getByRole('heading',{name:'Late or mismatched payment',exact:true}).waitFor();
+      await capture('attention');
+      await page.getByLabel('What did you do?').selectOption('checked_no_action');
+      await page.getByLabel('Private note (optional)').fill('Synthetic review complete.');
+      await page.getByRole('button',{name:'Mark as handled',exact:true}).click();
+      await page.getByRole('heading',{name:'Google Calendar and Meet did not complete',exact:true}).waitFor();
+      page.once('dialog', dialog=>dialog.accept());
+      await page.getByRole('button',{name:'Try delivery again',exact:true}).click();
+      await page.getByRole('heading',{name:'Captured payment needs checking',exact:true}).waitFor();
+      page.once('dialog', dialog=>{
+        assert.equal(dialog.message(),'Check this Razorpay update again?');
+        dialog.accept();
+      });
+      await page.getByRole('button',{name:'Check again',exact:true}).click();
+      await page.getByRole('heading',{name:'No booking or payment items need attention',exact:true}).waitFor();
       await page.getByRole('heading',{name:'No inquiry emails need attention'}).waitFor();
       await capture('empty');
       fail=true;

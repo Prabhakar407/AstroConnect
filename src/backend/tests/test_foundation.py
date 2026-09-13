@@ -97,11 +97,11 @@ class UnconfiguredApiTests(unittest.TestCase):
         self.client = TestClient(create_app(Settings()))
 
     def test_health_is_not_readiness(self):
-        self.assertFalse(self.client.get("/").json()["booking_enabled"])
+        self.assertEqual(self.client.get("/").json(), {"status": "online"})
         self.assertEqual(self.client.get("/api/ready").status_code, 503)
 
     def test_booking_cannot_bypass_payment(self):
-        self.assertEqual(self.client.post("/api/book-appointment", json={"paid": True}).status_code, 503)
+        self.assertEqual(self.client.post("/api/book-appointment", json={"paid": True}).status_code, 410)
 
     def test_unconfigured_email_and_availability_fail_closed(self):
         self.assertEqual(self.client.post("/api/auth/send-otp", json={"email": "test@example.com", "purpose": "contact"}).status_code, 503)
@@ -143,7 +143,9 @@ class PostgresTests(unittest.TestCase):
         self.time = NOW
         self.store = Store(self.dsn, clock=lambda: self.time)
         with self.store.transaction() as conn:
-            conn.execute("TRUNCATE slot_claims,payments,bookings,closures,inquiries,delivery_jobs,email_challenges,email_verifications,rate_limits,email_events,verification_emails CASCADE")
+            conn.execute("""TRUNCATE payment_events,booking_calendar_events,payment_cases,
+                slot_claims,payments,bookings,closures,inquiries,delivery_jobs,email_challenges,
+                email_verifications,rate_limits,email_events,verification_emails CASCADE""")
         self.codes = []
         self.verification = EmailVerification(self.store, TEST_SECRET, lambda email, code, purpose, challenge_id: self.codes.append((email, code, purpose)) or True)
 
@@ -231,7 +233,7 @@ class PostgresTests(unittest.TestCase):
             self.store.confirm_paid(row["id"], "synthetic_once", 1, "INR")
         self.assertEqual(self.store.confirm_paid(row["id"], "synthetic_second", 1, "INR"), "review")
         with self.store.transaction() as conn:
-            self.assertEqual(conn.execute("SELECT count(*) AS n FROM delivery_jobs WHERE kind='booking_confirmed'").fetchone()["n"], 1)
+            self.assertEqual(conn.execute("SELECT count(*) AS n FROM delivery_jobs WHERE kind='booking_confirmed'").fetchone()["n"], 3)
             self.assertEqual(conn.execute("SELECT state FROM bookings WHERE id=%s", (row["id"],)).fetchone()["state"], "confirmed")
 
     def test_cancel_releases_slot_preserves_payment_and_record(self):
@@ -240,10 +242,13 @@ class PostgresTests(unittest.TestCase):
         self.store.cancel(row["id"], "test-owner")
         self.store.cancel(row["id"], "test-owner")
         self.assertTrue(self.store.availability("2026-09-10")["slots"]["10:00"])
+        status = self.store.booking_status(row['request_id'], 'a' * 64)
+        self.assertEqual(status['appointment_state'], 'cancelled')
+        self.assertEqual(status['confirmation_email_state'], 'pending')
         with self.store.transaction() as conn:
             self.assertEqual(conn.execute("SELECT state FROM bookings WHERE id=%s", (row["id"],)).fetchone()["state"], "cancelled")
             self.assertEqual(conn.execute("SELECT count(*) AS n FROM payments").fetchone()["n"], 1)
-            self.assertEqual(conn.execute("SELECT count(*) AS n FROM delivery_jobs WHERE kind='booking_cancelled'").fetchone()["n"], 1)
+            self.assertEqual(conn.execute("SELECT count(*) AS n FROM delivery_jobs WHERE kind='booking_cancelled'").fetchone()["n"], 3)
 
     def test_reopen_only_its_own_claims(self):
         self.hold()

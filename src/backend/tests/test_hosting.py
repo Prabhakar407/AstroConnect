@@ -43,7 +43,7 @@ class HostingTests(unittest.TestCase):
         self.assertEqual(client.get("/api/health").status_code, 200)
         self.assertEqual(len(client.get("/api/services").json()["services"]), 6)
         self.assertEqual(client.get("/api/ready").status_code, 503)
-        self.assertEqual(client.post("/api/book-appointment", json={"paid": True}).status_code, 503)
+        self.assertEqual(client.post("/api/book-appointment", json={"paid": True}).status_code, 410)
         self.assertEqual(client.get("/api/missing").status_code, 404)
         self.assertTrue(client.get("/api/missing").headers["content-type"].startswith("application/json"))
 

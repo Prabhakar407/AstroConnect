@@ -27,6 +27,14 @@ def identifier(value, prefix):
     return value
 
 
+def merchant_identity(value):
+    """Normalize Razorpay's MID and its account-prefixed webhook form."""
+    if not isinstance(value, str):
+        return None
+    value = value.removeprefix('acc_')
+    return value if re.fullmatch(r'[A-Za-z0-9]{1,64}', value) else None
+
+
 def order_receipt(intent_id, mode):
     if mode not in ('test', 'live'):
         raise ValueError('Invalid payment mode.')
@@ -120,6 +128,9 @@ class Razorpay:
 
     def payment(self, payment_id):
         return self._request('GET', 'payments/' + identifier(payment_id, 'pay'))
+
+    def order_payments(self, order_id):
+        return self._request('GET', 'orders/' + identifier(order_id, 'order') + '/payments')
 
     def orders_page(self, intent_id, *, skip=0):
         # A page, not a uniqueness assertion. Durable reconciliation must paginate

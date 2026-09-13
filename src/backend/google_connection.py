@@ -32,6 +32,21 @@ def cipher(settings):
         raise StorageUnavailable('Google Calendar connection needs its server configuration.') from None
 
 
+def saved_connection_ready(settings, store):
+    """Verify the saved client connection can be opened before taking payment."""
+    try:
+        crypt = cipher(settings)
+        with store.transaction() as conn:
+            row = conn.execute('''SELECT calendar_id,refresh_token_encrypted,scopes
+                FROM google_connection WHERE singleton=true''').fetchone()
+        if (not row or row['calendar_id'].lower() != CLIENT_EMAIL or
+                not set(SCOPES[2:]).issubset(set(row['scopes'].split()))):
+            return False
+        return bool(crypt.decrypt(row['refresh_token_encrypted'].encode()).decode())
+    except (InvalidToken, StorageUnavailable, UnicodeError, AttributeError):
+        return False
+
+
 def add_routes(router, settings, store, session, verify_identity, provider=None):
     google = provider or GoogleCalendar(settings.google_client_id, settings.google_client_secret)
 

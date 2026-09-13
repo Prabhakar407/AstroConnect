@@ -3,6 +3,9 @@
 Public routes must authenticate the receipt and rate-limit requests. Background
 reconciliation uses the same observe method after fetching through pinned keys.
 """
+from datetime import timedelta
+from uuid import uuid4
+
 from .domain import RuleViolation
 from .razorpay import RazorpayFailure, identifier, payment_matches, verify_checkout
 from .storage import check_receipt, receipt_digest
@@ -106,6 +109,43 @@ class PaymentCheckout:
             return self.bind(booking_id, self.provider.order(remote_id))
         return row
 
+    def reconcile_one(self):
+        """Independently inspect one due order; never depend on a browser/webhook.
+
+        A single scheduled invocation stays bounded to one order lookup. Captured,
+        refunded or otherwise money-bearing results reuse the same finalizer as
+        browser and webhook observations.
+        """
+        with self.store.transaction() as conn:
+            now = self.store.now(conn)
+            row = conn.execute('''SELECT o.booking_id,o.state,o.order_id
+                FROM payment_orders o JOIN bookings b ON b.id=o.booking_id
+                WHERE o.key_id=%s AND o.mode=%s
+                AND o.state IN ('ready','creation_unknown')
+                AND b.starts_at>%s
+                AND (o.last_checked_at IS NULL OR o.last_checked_at<=%s)
+                ORDER BY COALESCE(o.last_checked_at,o.created_at),o.created_at
+                LIMIT 1 FOR UPDATE SKIP LOCKED''',
+                (self.provider.key_id, self.provider.mode, now - timedelta(hours=24), now - timedelta(minutes=5))).fetchone()
+            if not row:
+                return False
+            conn.execute('''UPDATE payment_orders SET last_checked_at=%s,check_attempts=check_attempts+1
+                WHERE booking_id=%s''', (now, row['booking_id']))
+        if row['state'] == 'creation_unknown':
+            self.reconcile_creation(row['booking_id'])
+            return True
+        page = self.provider.order_payments(row['order_id'])
+        if not isinstance(page, dict):
+            raise RazorpayFailure('payment_response_invalid')
+        items, count = page.get('items'), page.get('count')
+        if (page.get('entity') != 'collection' or not isinstance(items, list) or len(items) > 100 or
+                type(count) is not int or count != len(items) or any(not isinstance(item, dict) for item in items)):
+            raise RazorpayFailure('payment_response_invalid')
+        for payment in items:
+            payment_id = identifier(payment.get('id'), 'pay')
+            self.observe(row['booking_id'], payment_id, payment)
+        return True
+
     def browser_confirmation(self, request_id, secret, payment_id, signature):
         booking, order = self.authorized(request_id, secret)
         if not order['order_id']:
@@ -160,6 +200,12 @@ class PaymentCheckout:
                     conn.execute("UPDATE bookings SET state='payment_review' WHERE id=%s", (booking_id,))
                 self.store.enqueue(conn, 'payment_review', booking_id, now,
                                    suffix=order['key_id'] + ':' + payment_id)
+                case_kind = 'refund' if payment['amount_refunded'] > 0 or payment['status'] == 'refunded' else 'late_or_mismatched_payment'
+                conn.execute('''INSERT INTO payment_cases
+                    (id,booking_id,key_id,external_reference,kind,created_at)
+                    VALUES (%s,%s,%s,%s,%s,%s)
+                    ON CONFLICT(key_id,external_reference,kind) DO NOTHING''',
+                    (uuid4(), booking_id, order['key_id'], payment_id, case_kind, now))
             else:
                 disposition = 'pending'
             if previous and previous['disposition'] in ('accepted', 'review'):

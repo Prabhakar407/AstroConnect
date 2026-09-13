@@ -3,28 +3,16 @@ import hashlib
 import json
 import re
 from datetime import timedelta
+from uuid import uuid4
 
 from .domain import RuleViolation
-from .razorpay import RazorpayFailure, identifier, verify_signature
+from .razorpay import RazorpayFailure, identifier, merchant_identity, verify_signature
 from .storage import StorageUnavailable
 
 EVENTS = frozenset(('payment.authorized', 'payment.captured', 'payment.failed', 'order.paid',
                     'refund.created', 'refund.processed', 'refund.failed',
                     'payment.dispute.created', 'payment.dispute.won', 'payment.dispute.lost',
                     'payment.dispute.closed', 'payment.dispute.under_review', 'payment.dispute.action_required'))
-
-
-def merchant_identity(value):
-    """Compare the dashboard MID and account-prefixed representation strictly.
-
-    Keep case significant and remove at most one known resource prefix. Real
-    signed-event acceptance must still be proven against the client's account.
-    """
-    if not isinstance(value, str):
-        return None
-    value = value.removeprefix('acc_')
-    return value if re.fullmatch(r'[A-Za-z0-9]{1,64}', value) else None
-
 
 class PaymentEvents:
     def __init__(self, store, checkout, secret, account_id):
@@ -133,6 +121,11 @@ class PaymentEvents:
                     # or cancellation; the original booking remains unchanged.
                     self.store.enqueue(conn, 'payment_review', order['booking_id'], now,
                                        suffix='dispute:' + event['event_id'])
+                    conn.execute('''INSERT INTO payment_cases
+                        (id,booking_id,key_id,external_reference,kind,created_at)
+                        VALUES (%s,%s,%s,%s,'dispute',%s)
+                        ON CONFLICT(key_id,external_reference,kind) DO NOTHING''',
+                        (uuid4(), order['booking_id'], key, event['event_id'], now))
                 saved = conn.execute('''UPDATE payment_events SET processed_at=%s,last_error=NULL
                     WHERE key_id=%s AND event_id=%s AND attempts=%s RETURNING record_id''', (now, key, event['event_id'], attempt)).fetchone()
                 if saved:

@@ -197,7 +197,7 @@ class DispatchTests(unittest.TestCase):
             headers={'Authorization': 'Bearer ' + SETTINGS.recovery_secret})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'application': 'astro-advice-booking', 'environment': 'production',
-            **body, 'selected': 2, 'published': 2})
+            **body, 'selected': 2, 'published': 2, 'needs_attention': 0})
         self.assertNotIn(self.payload['email'], response.text)
         self.assertEqual(response.headers['cache-control'], 'no-store')
 

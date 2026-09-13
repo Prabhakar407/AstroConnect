@@ -21,6 +21,8 @@ class Provider:
         self.creates = 0
         self.remote = None
         self.fail = False
+        self.payments = []
+        self.payment_reads = 0
 
     def create_order(self, booking_id, amount):
         self.creates += 1
@@ -36,6 +38,10 @@ class Provider:
 
     def order(self, order_id):
         return self.remote
+
+    def order_payments(self, order_id):
+        self.payment_reads += 1
+        return {'entity': 'collection', 'count': len(self.payments), 'items': self.payments}
 
 
 @unittest.skipUnless(os.getenv('ASTRO_TEST_DATABASE_URL'), 'Requires isolated local database.')
@@ -100,7 +106,7 @@ class CheckoutTests(unittest.TestCase):
             self.assertEqual(self.checkout.observe(row['booking_id'], 'pay_synthetic', self.payment(row)), 'accepted')
         with self.store.transaction() as conn:
             self.assertEqual(conn.execute('SELECT state FROM bookings').fetchone()['state'], 'confirmed')
-            self.assertEqual(conn.execute("SELECT count(*) AS n FROM delivery_jobs WHERE kind='booking_confirmed'").fetchone()['n'], 1)
+            self.assertEqual(conn.execute("SELECT count(*) AS n FROM delivery_jobs WHERE kind='booking_confirmed'").fetchone()['n'], 3)
             self.assertEqual(conn.execute('SELECT count(*) AS n FROM payments').fetchone()['n'], 1)
 
     def test_confirmation_and_observation_are_atomic(self):
@@ -161,3 +167,19 @@ class CheckoutTests(unittest.TestCase):
             self.checkout.observe(row['booking_id'], 'pay_synthetic', self.payment(row, order_id='order_other'))
         with self.store.transaction() as conn:
             self.assertEqual(conn.execute('SELECT count(*) AS n FROM payment_observations').fetchone()['n'], 0)
+
+    def test_independent_reconciliation_confirms_without_browser_or_webhook(self):
+        row = self.start()
+        self.provider.payments = [self.payment(row)]
+        self.assertTrue(self.checkout.reconcile_one())
+        self.assertEqual(self.store.booking_status(self.request_id, 'a' * 64)['appointment_state'], 'confirmed')
+        self.assertEqual(self.provider.payment_reads, 1)
+        # The five-minute due window prevents a busy scheduled loop.
+        self.assertFalse(self.checkout.reconcile_one())
+        self.assertEqual(self.provider.payment_reads, 1)
+
+    def test_independent_reconciliation_validates_collection(self):
+        self.start()
+        self.provider.order_payments = lambda order_id: {'entity': 'collection', 'count': 2, 'items': []}
+        with self.assertRaises(RazorpayFailure):
+            self.checkout.reconcile_one()

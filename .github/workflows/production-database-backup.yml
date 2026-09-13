@@ -1,0 +1,30 @@
+name: Production database backup
+
+on:
+  schedule:
+    - cron: '37 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: astro-advice-production-database-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install supported backup tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-client age rclone
+      - name: Export, encrypt and verify the production backup
+        env:
+          ASTRO_BACKUP_DATABASE_URL: ${{ secrets.ASTRO_BACKUP_DATABASE_URL }}
+          ASTRO_BACKUP_AGE_RECIPIENT: ${{ secrets.ASTRO_BACKUP_AGE_RECIPIENT }}
+          ASTRO_BACKUP_RCLONE_CONFIG: ${{ secrets.ASTRO_BACKUP_RCLONE_CONFIG }}
+        run: bash scripts/backup-database.sh

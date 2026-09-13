@@ -48,7 +48,7 @@ const output = process.env.ASTRO_BROWSER_OUTPUT || '/tmp/astro-hosting-browser';
         if (path === 'services') assert.equal((await response.json()).services.length, 6);
       }
       const disabled = await context.request.post(`${base}/api/book-appointment`, { data: { paid: true } });
-      assert.equal(disabled.status(), 503);
+      assert.equal(disabled.status(), 410);
       await capture('same-origin-booking');
       await page.goto(`${base}/#/studio/calendar`);
       await page.getByRole('heading', { name: 'Your availability' }).waitFor();

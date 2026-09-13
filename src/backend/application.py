@@ -1,8 +1,8 @@
-"""Small API boundary for the approved booking foundation.
+"""API boundary for public booking and the client's private studio tools.
 
-Payment HTTP actions stay closed until the verified provider flow is implemented.
-Private calendar access requires configured Google sign-in and a secure
-client session. Internal scheduling methods are not an alternative public checkout.
+Checkout is available only when storage, email, queue, Google Calendar and the
+matching Razorpay merchant configuration are all ready. Private operations
+still require the approved Google identity and a secure client session.
 """
 
 import os
@@ -17,10 +17,11 @@ from fastapi.responses import JSONResponse
 
 from .admin import admin_router
 from .domain import CATALOGUE, DURATION_MINUTES, RuleViolation, quote
-from .models import ContactInput, DeliveryInput, PrashnaInput, ReceiptInput, RecoveryInput, SendCode, VerifyCode
+from .models import (BookingInput, CheckoutConfirmationInput, ContactInput, DeliveryInput,
+                     PrashnaInput, ReceiptInput, RecoveryInput, SendCode, VerifyCode)
 from .resend_email import send_code
 from .inquiry_delivery import InquiryDelivery
-from .inquiry_dispatch import APPLICATION, ENVIRONMENT, InquiryDispatch
+from .inquiry_dispatch import APPLICATION, ENVIRONMENT, BookingDispatch, InquiryDispatch, queue_configured
 from .storage import StorageUnavailable, Store, fingerprint, receipt_digest
 from .verification import EmailVerification
 from .email_events import receive_event
@@ -107,17 +108,50 @@ class BodyLimitMiddleware:
         await self.app(scope, replay, send)
 
 
-def create_app(settings=None, *, store=None, code_sender=None, identity_verifier=None, notification_sender=None, queue_publisher=None):
+def create_app(settings=None, *, store=None, code_sender=None, identity_verifier=None,
+               notification_sender=None, queue_publisher=None, payment_provider=None):
     settings = settings or Settings.from_environment()
     store = store or Store(settings.database_url)
     verification = EmailVerification(store, settings.otp_secret, code_sender or (lambda *args: send_code(settings, *args)))
     delivery = InquiryDelivery(store, settings, sender=notification_sender)
     dispatch = InquiryDispatch(store, settings, publisher=queue_publisher)
+    payment_dispatch = InquiryDispatch(store, settings, publisher=queue_publisher, kind='payment_event')
+    from .booking_delivery import BookingDelivery
+    booking_delivery = BookingDelivery(store, settings, sender=notification_sender)
+    booking_dispatch = BookingDispatch(store, settings, publisher=queue_publisher)
     app = FastAPI(title="AstroAdvice Booking Engine", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(BodyLimitMiddleware)
     app.add_middleware(CORSMiddleware, allow_origins=list(settings.origins), allow_credentials=True,
                        allow_methods=["GET", "POST"], allow_headers=["Content-Type", "X-Astro-CSRF", "X-Astro-Receipt"])
-    app.include_router(admin_router(settings, store, identity_verifier))
+    app.include_router(admin_router(settings, store, identity_verifier, booking_dispatch=booking_dispatch,
+                                    payment_dispatch=payment_dispatch))
+
+    def booking_ready():
+        if payment_provider is not None:
+            return True
+        required = (settings.otp_secret, settings.resend_key, settings.resend_webhook_secret,
+                    settings.sender, settings.delivery_secret, settings.recovery_secret,
+                    settings.google_client_id, settings.google_client_secret, settings.google_token_key,
+                    settings.razorpay_key_id, settings.razorpay_key_secret,
+                    settings.razorpay_webhook_secret, settings.razorpay_account_id)
+        if (not all(required) or len(settings.otp_secret) < 32 or
+                len(settings.delivery_secret) < 32 or len(settings.recovery_secret) < 32 or
+                len(settings.resend_webhook_secret) < 32 or
+                len(settings.razorpay_webhook_secret) < 32 or
+                'https://astroadvicebykundansingh.com' not in settings.origins or
+                not queue_configured(settings)):
+            return False
+        from .google_connection import saved_connection_ready
+        from .razorpay import Razorpay, merchant_identity
+        try:
+            Razorpay(settings.razorpay_key_id, settings.razorpay_key_secret)
+        except RazorpayFailure:
+            return False
+        return bool(merchant_identity(settings.razorpay_account_id)) and saved_connection_ready(settings, store)
+
+    def require_booking_ready():
+        if not booking_ready():
+            raise StorageUnavailable('Online booking is being configured. Please call +91 85277 90801 for an appointment.')
 
     @app.exception_handler(RuleViolation)
     async def rule_error(request, exc):
@@ -126,6 +160,18 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
     @app.exception_handler(StorageUnavailable)
     async def storage_error(request, exc):
         return JSONResponse({"detail": str(exc), "code": "storage_unavailable"}, status_code=503)
+
+    from .razorpay import RazorpayFailure
+
+    @app.exception_handler(RazorpayFailure)
+    async def payment_provider_error(request, exc):
+        messages = {
+            'payment_provider_unavailable': 'The payment service did not respond. Your reserved time and details are unchanged; please try again.',
+            'payment_response_invalid': 'The payment service returned an unexpected response. Please retry or contact the studio.',
+            'payment_order_mismatch': 'We could not safely match this payment request. Please contact the studio before paying again.',
+        }
+        return JSONResponse({"detail": messages.get(exc.code, 'We could not safely confirm the payment request.'),
+                             "code": exc.code}, status_code=502)
 
     @app.exception_handler(RequestValidationError)
     async def invalid_input(request, exc):
@@ -145,12 +191,14 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
     @app.get("/")
     @app.get("/api/health")
     def health():
-        return {"status": "online", "booking_enabled": False}
+        # Process liveness only: monitoring this route must not keep Neon awake.
+        return {"status": "online"}
 
     @app.get("/api/ready")
     def readiness():
         ready = store.ready()
-        return JSONResponse({"storage_ready": ready, "booking_enabled": False}, status_code=200 if ready else 503)
+        return JSONResponse({"storage_ready": ready, "booking_enabled": booking_ready() if ready else False},
+                            status_code=200 if ready else 503)
 
     @app.get("/api/services")
     def services():
@@ -162,7 +210,7 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
 
     @app.get("/api/booking-policy")
     def policy():
-        return store.policy()
+        return {**store.policy(), 'booking_enabled': booking_ready()}
 
     @app.get("/api/availability")
     def availability(date: str):
@@ -170,8 +218,9 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
 
     @app.post("/api/auth/send-otp")
     def issue_code(payload: SendCode, request: Request):
-        if payload.purpose == "booking":
-            raise StorageUnavailable("Online booking is being configured. Please call +91 85277 90801 for an appointment.")
+        if payload.purpose == 'booking':
+            # Do not send a code that can only lead the customer to a dead end.
+            require_booking_ready()
         if code_sender is None and not (settings.resend_key and settings.sender):
             raise StorageUnavailable("Email verification is not available yet. Please contact the studio by phone.")
         verification.issue(str(payload.email), payload.purpose, request.client.host if request.client else "unknown")
@@ -220,15 +269,22 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
         require_internal(request, settings.recovery_secret)
         try:
             result = dispatch.run()
+            booking_result = booking_dispatch.run(limit=25 - result['selected'])
             store.cleanup_ephemeral()
         finally:
             # A failed inquiry publication must not prevent payment recovery.
             # Reuse this scheduled request with one bounded provider fetch.
             if (settings.razorpay_key_id and settings.razorpay_key_secret and
                     settings.razorpay_webhook_secret and settings.razorpay_account_id):
-                payment_events_service().process_one()
+                payments = payment_events_service()
+                payments.checkout.reconcile_one()
+                payments.process_one()
+        from .private_attention import pending_count
         return {'application': APPLICATION, 'environment': ENVIRONMENT,
-                'run_id': str(payload.run_id), **result}
+                'run_id': str(payload.run_id),
+                'selected': result['selected'] + booking_result['selected'],
+                'published': result['published'] + booking_result['published'],
+                'needs_attention': pending_count(store)}
 
     @app.post("/api/prashna")
     def prashna(payload: PrashnaInput, request: Request):
@@ -261,20 +317,65 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
     def retired_help():
         return JSONResponse({"detail": "Please use the Contact page to send an inquiry."}, status_code=410)
 
-    @app.post("/api/book-appointment")
-    def booking_not_enabled():
-        # There is intentionally no public direct call to Store.hold/confirm_paid.
-        raise StorageUnavailable("Online payment and booking are not available yet. Please call +91 85277 90801 for an appointment.")
-
-    def payment_events_service():
-        from .razorpay import Razorpay, RazorpayFailure
+    def payment_checkout_service():
         from .payment_checkout import PaymentCheckout
-        from .payment_events import PaymentEvents
+        if payment_provider is not None:
+            return PaymentCheckout(store, payment_provider)
+        from .razorpay import Razorpay
         try:
             provider = Razorpay(settings.razorpay_key_id, settings.razorpay_key_secret)
         except RazorpayFailure:
-            raise StorageUnavailable('Payment notifications are not configured.') from None
-        return PaymentEvents(store, PaymentCheckout(store, provider),
+            raise StorageUnavailable('Secure payment is not configured yet.') from None
+        return PaymentCheckout(store, provider)
+
+    def checkout_response(checkout, request_id, receipt):
+        booking, order = checkout.authorized(request_id, receipt)
+        status = store.booking_status(request_id, receipt)
+        return {**status,
+            'booking_id': str(booking['id']),
+            'order_id': order['order_id'],
+            'payment_key_id': order['key_id'],
+            'amount_paise': order['amount_paise'],
+            'currency': 'INR',
+            'order_state': order['state'],
+        }
+
+    @app.post('/api/checkout')
+    def begin_checkout(payload: BookingInput, request: Request):
+        require_booking_ready()
+        checkout = payment_checkout_service()
+        receipt = request.headers.get('X-Astro-Receipt')
+        details = payload.model_dump(exclude={'verification_token', 'request_id'})
+        checkout.start(details, payload.request_id, verification.digest(payload.verification_token), receipt)
+        result = checkout_response(checkout, payload.request_id, receipt)
+        return JSONResponse(result, status_code=200 if result['order_state'] == 'ready' else 202)
+
+    @app.post('/api/checkout/resume')
+    def resume_checkout(payload: ReceiptInput, request: Request):
+        limit_receipt_reads(payload, request, 'booking')
+        checkout = payment_checkout_service()
+        return checkout_response(checkout, payload.request_id, request.headers.get('X-Astro-Receipt'))
+
+    @app.post('/api/checkout/verify-payment')
+    def verify_checkout_payment(payload: CheckoutConfirmationInput, request: Request):
+        limit_receipt_reads(payload, request, 'booking')
+        checkout = payment_checkout_service()
+        receipt = request.headers.get('X-Astro-Receipt')
+        checkout.browser_confirmation(payload.request_id, receipt, payload.payment_id, payload.signature)
+        result = store.booking_status(payload.request_id, receipt)
+        if result['appointment_state'] == 'confirmed':
+            booking_dispatch.after_save(result['booking_id'])
+        return result
+
+    @app.post("/api/book-appointment")
+    def retired_booking_route():
+        return JSONResponse({"detail": "Please refresh the booking page and use its secure payment button.",
+                             "code": "route_retired"}, status_code=410)
+
+    def payment_events_service():
+        from .payment_events import PaymentEvents
+        checkout = payment_checkout_service()
+        return PaymentEvents(store, checkout,
                              settings.razorpay_webhook_secret, settings.razorpay_account_id)
 
     @app.post('/api/webhooks/razorpay')
@@ -294,6 +395,18 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
     def deliver_payment(payload: DeliveryInput, request: Request):
         require_internal(request, settings.delivery_secret)
         result = payment_events_service().deliver(payload.job_id)
+        if result['state'] == 'sent':
+            booking_dispatch.after_save(None)
+        return JSONResponse({'application': APPLICATION, 'environment': ENVIRONMENT, **result},
+                            status_code=200 if result['terminal'] else 202)
+
+    @app.post('/api/internal/delivery/booking')
+    def deliver_booking(payload: DeliveryInput, request: Request):
+        require_internal(request, settings.delivery_secret)
+        try:
+            result = booking_delivery.run(payload.job_id)
+        except ValueError:
+            raise RuleViolation('This booking task is unavailable.', 404, 'delivery_unavailable') from None
         return JSONResponse({'application': APPLICATION, 'environment': ENVIRONMENT, **result},
                             status_code=200 if result['terminal'] else 202)
 

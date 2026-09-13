@@ -20,7 +20,7 @@ class ProvisionTests(unittest.TestCase):
                 permissions = set(PRIVILEGES[table].split(', '))
                 self.assertTrue({'SELECT', 'UPDATE', 'DELETE'} <= permissions)
         # Housekeeping must not acquire deletion rights over business history.
-        for table in ('bookings', 'inquiries', 'payments', 'delivery_jobs'):
+        for table in ('bookings', 'inquiries', 'payments', 'delivery_jobs', 'booking_calendar_events', 'payment_cases'):
             self.assertNotIn('DELETE', PRIVILEGES[table])
 
     def test_private_operator_file_preserves_connection_equals(self):

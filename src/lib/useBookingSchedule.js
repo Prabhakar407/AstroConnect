@@ -13,17 +13,19 @@ export default function useBookingSchedule(date) {
       running = true
       setSchedule(previous => ({ ...previous, loading: true, error: '', slots: {} }))
       try {
-        let data = await requestJson('/api/booking-policy')
-        validatePolicy(data)
+        const policy = await requestJson('/api/booking-policy')
+        validatePolicy(policy)
         if (!active) return
-        if (date && dateInPolicy(date, data)) {
-          data = await requestJson(`/api/availability?date=${date}`)
-          validatePolicy(data)
-          if (data.date !== date || !data.slots || data.slot_times.some(slot => typeof data.slots[slot] !== 'boolean')) {
+        let slots = {}
+        if (date && dateInPolicy(date, policy)) {
+          const availability = await requestJson(`/api/availability?date=${date}`)
+          validatePolicy(availability)
+          if (availability.date !== date || !availability.slots || availability.slot_times.some(slot => typeof availability.slots[slot] !== 'boolean')) {
             throw new Error('We could not confirm these times. Please try again.')
           }
+          slots = availability.slots
         }
-        if (active) setSchedule({ policy: data, slots: data.slots || {}, loading: false, error: '' })
+        if (active) setSchedule({ policy, slots, loading: false, error: '' })
       } catch (error) {
         if (active) setSchedule(previous => ({ ...previous, slots: {}, loading: false, error: error.message }))
       } finally { running = false }

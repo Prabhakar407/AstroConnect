@@ -4,6 +4,7 @@ import os
 import unittest
 from datetime import timedelta
 from email.message import Message
+from types import SimpleNamespace
 from unittest.mock import patch
 from uuid import uuid4
 
@@ -67,8 +68,31 @@ class PreparationTests(unittest.TestCase):
         self.assertEqual(response.headers["cache-control"], "no-store")
         health = client.get("/api/health")
         self.assertEqual(health.status_code, 200)
-        self.assertFalse(health.json()["booking_enabled"])
+        self.assertEqual(health.json(), {"status": "online"})
         self.assertEqual(client.get("/api/not-a-route").status_code, 404)
+
+    def test_booking_readiness_requires_official_origin_and_valid_core_secrets(self):
+        complete = dict(
+            database_url='unused', otp_secret='o' * 32, resend_key='resend', resend_webhook_secret='e' * 32,
+            sender='Astro Advice <bookings@mail.astroadvicebykundansingh.com>', delivery_secret='d' * 32,
+            recovery_secret='r' * 32, google_client_id='google-client', google_client_secret='google-secret',
+            google_token_key='saved-key', razorpay_key_id='rzp_test_valid', razorpay_key_secret='payment-secret',
+            razorpay_webhook_secret='w' * 32, razorpay_account_id='syntheticMerchantId',
+            cloudflare_account_id='a' * 32, cloudflare_queue_id='b' * 32,
+            cloudflare_queue_token='queue-token-value-long-enough',
+        )
+        policy_store = SimpleNamespace(policy=lambda: {})
+        with patch('src.backend.google_connection.saved_connection_ready', return_value=True):
+            official = Settings(**complete, origins=('https://preview.example', 'https://astroadvicebykundansingh.com'))
+            self.assertTrue(TestClient(create_app(official, store=policy_store)).get('/api/booking-policy').json()['booking_enabled'])
+            preview_only = Settings(**complete, origins=('https://preview.example',))
+            self.assertFalse(TestClient(create_app(preview_only, store=policy_store)).get('/api/booking-policy').json()['booking_enabled'])
+            short = Settings(**(complete | {'otp_secret': 'short'}), origins=('https://astroadvicebykundansingh.com',))
+            self.assertFalse(TestClient(create_app(short, store=policy_store)).get('/api/booking-policy').json()['booking_enabled'])
+            for name in ('resend_webhook_secret', 'razorpay_webhook_secret', 'delivery_secret', 'recovery_secret'):
+                with self.subTest(short_secret=name):
+                    short = Settings(**(complete | {name: 'short'}), origins=('https://astroadvicebykundansingh.com',))
+                    self.assertFalse(TestClient(create_app(short, store=policy_store)).get('/api/booking-policy').json()['booking_enabled'])
 
     def test_policy_cannot_invent_clock_when_storage_is_missing(self):
         response = TestClient(create_app(Settings())).get("/api/booking-policy")

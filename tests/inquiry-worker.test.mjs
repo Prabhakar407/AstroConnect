@@ -27,6 +27,19 @@ test('payment jobs use their fixed handler and acknowledge only matching durable
   assert.equal(waiting.retries.length, 1);
 });
 
+test('booking fulfilment jobs use their fixed booking handler', async () => {
+  for (const kind of ['booking_confirmed', 'booking_cancelled', 'payment_review']) {
+    const msg = message({ job_id: randomUUID(), kind, environment: 'production' });
+    await createWorker(async (url, options) => {
+      assert.equal(url, 'https://astroadvicebykundansingh.com/api/internal/delivery/booking');
+      assert.deepEqual(JSON.parse(options.body), { job_id: msg.body.job_id });
+      return reply(result(msg));
+    }).queue({ messages: [msg] }, env);
+    assert.equal(msg.acks, 1);
+    assert.deepEqual(msg.retries, []);
+  }
+});
+
 test('acknowledges matching durable success and uses only fixed destination', async () => {
   const msg = message();
   const worker = createWorker(async (url, options) => {
@@ -68,7 +81,7 @@ test('delivery and recovery use the explicitly configured official domain', asyn
   const worker = createWorker(async (url, options) => {
     urls.push(url);
     const body = JSON.parse(options.body);
-    return reply(body.job_id ? result(msg) : { ...identity, run_id: body.run_id, selected: 0, published: 0 });
+    return reply(body.job_id ? result(msg) : { ...identity, run_id: body.run_id, selected: 0, published: 0, needs_attention: 0 });
   });
   await worker.queue({ messages: [msg] }, { ...env, ASTRO_API_ORIGIN: origin });
   await worker.scheduled({}, { ...env, ASTRO_API_ORIGIN: origin });
@@ -128,7 +141,7 @@ test('rejects HTML, redirects, wrong identity and misleading success', async () 
 });
 
 test('malformed payload cannot choose destination, recipient or another job type', async () => {
-  const bodies = [null, [], {}, { job_id: randomUUID(), kind: 'booking_confirmed', environment: 'production' },
+  const bodies = [null, [], {}, { job_id: randomUUID(), kind: 'unknown_job', environment: 'production' },
     { job_id: randomUUID(), kind: 'inquiry_received', environment: 'preview' },
     { job_id: 'bad', kind: 'inquiry_received', environment: 'production' },
     { job_id: randomUUID(), kind: 'inquiry_received', environment: 'production', url: 'https://evil.invalid' }];
@@ -202,22 +215,32 @@ test('scheduled recovery runs without visitors or queued messages and uses separ
     assert.equal(options.redirect, 'manual');
     const { run_id } = JSON.parse(options.body);
     assert.match(run_id, /^[a-f0-9-]{36}$/);
-    return reply({ ...identity, run_id, selected: 0, published: 0 });
+    return reply({ ...identity, run_id, selected: 0, published: 0, needs_attention: 0 });
   }).scheduled({}, env);
   assert.equal(calls, 1);
 });
 
 test('scheduled failures are reported, not silently marked healthy', async () => {
   const variants = [
-    body => ({ ...identity, ...body, selected: 2, published: 1 }),
-    body => ({ ...identity, ...body, selected: 26, published: 26 }),
-    body => ({ ...identity, ...body, selected: 0, published: 0, run_id: randomUUID() }),
-    body => ({ ...identity, ...body, selected: 0, published: 0, environment: 'preview' }),
+    body => ({ ...identity, ...body, selected: 2, published: 1, needs_attention: 0 }),
+    body => ({ ...identity, ...body, selected: 26, published: 26, needs_attention: 0 }),
+    body => ({ ...identity, ...body, selected: 0, published: 0, needs_attention: 0, run_id: randomUUID() }),
+    body => ({ ...identity, ...body, selected: 0, published: 0, needs_attention: 0, environment: 'preview' }),
+    body => ({ ...identity, ...body, selected: 0, published: 0, needs_attention: -1 }),
+    body => ({ ...identity, ...body, selected: 0, published: 0, needs_attention: 10001 }),
+    body => ({ ...identity, ...body, selected: 0, published: 0 }),
   ];
   for (const variant of variants) {
     await assert.rejects(createWorker(async (url, options) => reply(variant(JSON.parse(options.body)))).scheduled({}, env), /inquiry_recovery_failed/);
   }
   await assert.rejects(createWorker(async () => { throw new Error('private failure'); }).scheduled({}, env), /^Error: inquiry_recovery_failed$/);
+});
+
+test('scheduled recovery raises an operational failure when durable work needs attention', async () => {
+  await assert.rejects(createWorker(async (url, options) => {
+    const { run_id } = JSON.parse(options.body);
+    return reply({ ...identity, run_id, selected: 0, published: 0, needs_attention: 1 });
+  }).scheduled({}, env), /^Error: inquiry_recovery_failed$/);
 });
 
 test('permanent helper config keeps work bounded without a public HTTP endpoint', () => {

@@ -1,13 +1,37 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { Calendar, Clock, Sparkles, Send, MapPin, User, Mail, Phone, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Send, MapPin, User, Mail, Phone, ChevronLeft, ChevronRight, ShieldCheck, RefreshCw } from 'lucide-react'
 import EmailOtpModal from './EmailOtpModal'
 import { useSearchParams } from 'react-router-dom'
 import catalogue from '../data/consultationCatalogue.json'
 import { requestJson, sendVerification } from '../lib/formApi'
 import { dateInPolicy, todayInIndia, slotTimes, slotLabel, formatFee } from '../lib/bookingPolicy'
 import useBookingSchedule from '../lib/useBookingSchedule'
-import { createReceipt, rememberReceipt } from '../lib/requestReceipt'
+import { createReceipt, forgetReceipt, readReceipt, rememberReceipt } from '../lib/requestReceipt'
+
+let razorpayLoader
+
+function loadRazorpayCheckout() {
+  if (window.Razorpay) return Promise.resolve(window.Razorpay)
+  if (razorpayLoader) return razorpayLoader
+  razorpayLoader = new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-astro-razorpay]')
+    const script = existing || document.createElement('script')
+    const failed = () => reject(new Error('The secure payment window could not load. Check your connection and try again.'))
+    script.addEventListener('load', () => window.Razorpay ? resolve(window.Razorpay) : failed(), { once: true })
+    script.addEventListener('error', failed, { once: true })
+    if (!existing) {
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+      script.async = true
+      script.dataset.astroRazorpay = 'true'
+      document.head.appendChild(script)
+    }
+  }).catch(error => {
+    razorpayLoader = null
+    throw error
+  })
+  return razorpayLoader
+}
 
 /**
  * CelestialDivider Component
@@ -87,6 +111,10 @@ function Appointment_Booking() {
   const totalFee = currentQuote?.amount_paise ?? selectedService.amount_paise * (selectedService.per_question ? formData.questionCount : 1)
   
   const [submitted, setSubmitted] = useState(false)
+  const [checkout, setCheckout] = useState(null)
+  const [paymentMessage, setPaymentMessage] = useState('')
+  const [remainingSeconds, setRemainingSeconds] = useState(0)
+  const [recoveryChecking, setRecoveryChecking] = useState(true)
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
@@ -95,6 +123,62 @@ function Appointment_Booking() {
 
   const [currentYear, setCurrentYear] = useState(Number(today.slice(0, 4)))
   const [currentMonth, setCurrentMonth] = useState(Number(today.slice(5, 7)) - 1)
+
+  const receiptOptions = () => ({ headers: { 'X-Astro-Receipt': receipt.current.secret } })
+
+  const acceptBookingStatus = (data) => {
+    if (!data || typeof data.booking_id !== 'string') throw new Error('We could not confirm the appointment status.')
+    if (data.appointment_state === 'confirmed' && data.payment_state === 'received') {
+      setCheckout(data)
+      setSubmitted(true)
+      return data
+    }
+    setCheckout(data)
+    if (data.hold_expires_at && data.server_now) {
+      setRemainingSeconds(Math.max(0, Math.ceil((Date.parse(data.hold_expires_at) - Date.parse(data.server_now)) / 1000)))
+    }
+    return data
+  }
+
+  const checkBookingStatus = async () => {
+    if (!receipt.current) return
+    setLoading(true)
+    setPaymentMessage('')
+    try {
+      const data = await requestJson('/api/checkout/resume', { request_id: receipt.current.id }, 'POST', receiptOptions())
+      acceptBookingStatus(data)
+    } catch (error) {
+      setPaymentMessage(error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    const saved = readReceipt('booking')
+    if (!saved) {
+      setRecoveryChecking(false)
+      return
+    }
+    receipt.current = saved
+    requestJson('/api/checkout/resume', { request_id: saved.id }, 'POST', { headers: { 'X-Astro-Receipt': saved.secret } })
+      .then(acceptBookingStatus)
+      .catch(error => {
+        if (error.status === 403 || error.status === 404) {
+          forgetReceipt('booking')
+          receipt.current = null
+        } else {
+          setPaymentMessage(error.message)
+        }
+      })
+      .finally(() => setRecoveryChecking(false))
+  }, [])
+
+  useEffect(() => {
+    if (!checkout || submitted || checkout.appointment_state !== 'held' || remainingSeconds <= 0) return
+    const timer = window.setInterval(() => setRemainingSeconds(value => Math.max(0, value - 1)), 1000)
+    return () => window.clearInterval(timer)
+  }, [checkout, submitted, remainingSeconds])
 
   useEffect(() => {
     let active = true
@@ -178,7 +262,7 @@ function Appointment_Booking() {
     return availabilityLoading || Boolean(availabilityError) || !dateInPolicy(date, policy)
   }
 
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     if (formData.name.trim().length < 2 || formData.name.trim().length > 100) {
       return "Please enter your full name, between 2 and 100 characters.";
     }
@@ -210,14 +294,14 @@ function Appointment_Booking() {
       return "Please select a time slot.";
     }
     return null;
-  }
+  }, [formData, policy, slotAvailability, today])
 
   useEffect(() => {
     if (attemptedSubmit) {
       const err = validateForm()
       setErrorMsg(err || "")
     }
-  }, [formData, attemptedSubmit])
+  }, [attemptedSubmit, validateForm])
 
   const handleInputChange = (e) => {
     if (loading || showOtpModal) return
@@ -277,9 +361,8 @@ function Appointment_Booking() {
     if (!receipt.current) receipt.current = createReceipt()
     rememberReceipt('booking', receipt.current)
 
-    // The server keeps this action closed until verified payment is integrated.
     try {
-      const data = await requestJson('/api/book-appointment', {
+      const data = await requestJson('/api/checkout', {
         request_id: receipt.current.id,
         full_name: draft.name,
         email: draft.email,
@@ -296,13 +379,80 @@ function Appointment_Booking() {
         quote_version: draft.quoteVersion,
         verification_token: verificationToken,
       }, 'POST', { headers: { 'X-Astro-Receipt': receipt.current.secret } })
-      if (data.status !== 'confirmed' || !data.booking_id) throw new Error('Your appointment is not confirmed yet. Please contact the studio.')
-      setSubmitted(true)
+      acceptBookingStatus(data)
+      if (data.order_state !== 'ready' || !data.order_id) {
+        setPaymentMessage('Your time is reserved, but secure payment is still being prepared. Check again in a moment; do not start another booking.')
+      }
     } catch (err) {
       setErrorMsg(err.message)
     } finally {
       setLoading(false)
     }
+  }
+
+  const openPayment = async () => {
+    if (!checkout || checkout.order_state !== 'ready' || checkout.appointment_state !== 'held' || remainingSeconds <= 0) return
+    setLoading(true)
+    setPaymentMessage('')
+    try {
+      const Razorpay = await loadRazorpayCheckout()
+      const draft = verifiedDraft.current || formData
+      const payment = new Razorpay({
+        key: checkout.payment_key_id,
+        amount: checkout.amount_paise,
+        currency: checkout.currency,
+        name: 'AstroAdvice by Kundan Singh',
+        description: checkout.service_name,
+        order_id: checkout.order_id,
+        prefill: { name: draft.name, email: draft.email, contact: draft.phone },
+        theme: { color: '#D3AF54' },
+        modal: {
+          ondismiss: () => setPaymentMessage('Payment was not completed. Your time remains reserved until the timer ends, and you can safely try the same payment again.'),
+        },
+        handler: async response => {
+          setLoading(true)
+          setPaymentMessage('Confirming the payment securely…')
+          try {
+            const data = await requestJson('/api/checkout/verify-payment', {
+              request_id: receipt.current.id,
+              payment_id: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+            }, 'POST', receiptOptions())
+            acceptBookingStatus(data)
+            if (data.appointment_state !== 'confirmed') {
+              setPaymentMessage(data.payment_state === 'needs_attention'
+                ? 'Your payment needs a manual check. Please do not pay again; the studio will review it.'
+                : 'Razorpay is still confirming the payment. Please check the status again in a moment.')
+            }
+          } catch (error) {
+            setPaymentMessage(`${error.message} Please do not start another payment; use “Check payment status” first.`)
+          } finally {
+            setLoading(false)
+          }
+        },
+      })
+      payment.on('payment.failed', () => {
+        setPaymentMessage('The payment did not go through. No appointment has been confirmed; you can retry while the timer is running.')
+      })
+      payment.open()
+    } catch (error) {
+      setPaymentMessage(error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const resetBooking = () => {
+    forgetReceipt('booking')
+    receipt.current = null
+    verifiedDraft.current = null
+    setSubmitted(false)
+    setCheckout(null)
+    setPaymentMessage('')
+    setFormData({
+      name: '', phone: '', email: '', birthDate: '', birthTime: '', birthPlace: '',
+      readingType: 'vedic-astrology', bookingDate: '', bookingSlot: '', questionCount: 1, notes: '',
+    })
   }
 
   return (
@@ -356,7 +506,11 @@ function Appointment_Booking() {
 
         <div className="w-full max-w-4xl bg-[#181122] border border-[#AB7A57]/20 rounded-2xl p-4 sm:p-5 shadow-xl relative text-white">
           
-          {submitted ? (
+          {recoveryChecking ? (
+            <div role="status" className="flex min-h-64 items-center justify-center gap-3 text-sm text-[#F4E6BE]">
+              <RefreshCw size={18} className="animate-spin" /> Checking for an appointment already in progress…
+            </div>
+          ) : submitted ? (
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -365,33 +519,97 @@ function Appointment_Booking() {
               <div className="w-16 h-16 rounded-full bg-emerald-900/20 border-2 border-emerald-500 flex items-center justify-center text-emerald-500 text-3xl shadow-[0_0_15px_rgba(16,185,129,0.2)] animate-pulse">
                 ✓
               </div>
-              <h4 className="font-serif text-white font-bold text-xl md:text-2xl">Booking Request Received!</h4>
-              <p className="text-xs md:text-sm text-[#D8CFEB] max-w-md font-sans leading-relaxed">
-                Your appointment is confirmed. If your meeting details have not arrived, please contact the studio on +91 85277 90801.
+              <h4 className="font-serif text-white font-bold text-xl md:text-2xl">Your appointment is confirmed</h4>
+              <p className="text-sm text-[#D8CFEB] max-w-lg font-sans leading-relaxed">
+                {checkout?.meeting_state === 'ready'
+                  ? 'Payment, appointment and Google Meet are ready. Your calendar invitation is being delivered separately.'
+                  : checkout?.meeting_state === 'needs_attention'
+                    ? 'Payment is confirmed, but the studio needs to finish the Google Meet invitation. You do not need to pay again.'
+                    : 'Payment has been received. We are preparing the calendar invitation and Google Meet link for both you and the studio.'}
               </p>
+              {checkout?.meet_url && <a href={checkout.meet_url} target="_blank" rel="noreferrer"
+                className="min-h-11 rounded-xl bg-[#D3AF54] px-6 py-2.5 text-sm font-semibold text-[#181122]">Open Google Meet</a>}
+              {checkout?.booking_id && <p className="max-w-full break-all text-xs text-white/65">Reference: {checkout.booking_id}</p>}
               <CelestialDivider />
+              {checkout?.meeting_state !== 'ready' && <button type="button" onClick={checkBookingStatus} disabled={loading}
+                className="min-h-11 rounded-xl border border-[#D3AF54]/65 px-5 py-2.5 text-sm font-semibold text-[#F4E6BE] disabled:opacity-60">
+                {loading ? 'Checking…' : 'Check invitation status'}
+              </button>}
               <button 
-                onClick={() => {
-                  setSubmitted(false)
-                  setFormData({
-                    name: "",
-                    phone: "",
-                    email: "",
-                    birthDate: "",
-                    birthTime: "",
-                    birthPlace: "",
-                    readingType: "vedic-astrology",
-                    bookingDate: "",
-                    bookingSlot: "",
-                    questionCount: 1,
-                    notes: ""
-                  })
-                }}
+                onClick={resetBooking}
                 className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] border border-[#D3AF54] px-5 py-2 rounded-xl transition duration-300 font-semibold text-xs sm:text-sm cursor-pointer shadow-md shadow-[#D3AF54]/10"
               >
                 Book Another Session
               </button>
             </motion.div>
+          ) : checkout ? (
+            <motion.section
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              aria-labelledby="payment-heading"
+              className="mx-auto flex max-w-2xl flex-col gap-5 py-7 sm:py-10"
+            >
+              <div className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#D3AF54]/15 text-[#D3AF54]">
+                  <ShieldCheck size={22} />
+                </span>
+                <div className="min-w-0">
+                  <h2 id="payment-heading" className="font-serif text-xl font-semibold text-white sm:text-2xl">
+                    {checkout.appointment_state === 'payment_review' ? 'Your payment is being checked' :
+                      checkout.appointment_state === 'cancelled' ? 'This appointment was cancelled' :
+                        checkout.appointment_state === 'expired' ? 'This reservation has ended' : 'Your time is reserved'}
+                  </h2>
+                  <p className="mt-1 text-sm leading-relaxed text-white/75">
+                    {checkout.appointment_state === 'held'
+                      ? `${checkout.service_name} · ${formatFee(checkout.amount_paise)} · 30 minutes`
+                      : checkout.appointment_state === 'payment_review'
+                        ? 'Please do not pay again. The studio can see this exception and will check it.'
+                        : checkout.appointment_state === 'cancelled'
+                          ? 'This appointment is no longer active. Cancellation does not automatically issue a refund; please call the studio with any payment question.'
+                          : 'No payment should be made against this expired reservation. Choose a fresh available time.'}
+                  </p>
+                </div>
+              </div>
+
+              {checkout.appointment_state === 'held' && (
+                <div className="flex flex-wrap items-center justify-between gap-4 border-y border-white/10 py-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#D3AF54]">Reservation time left</p>
+                    <p aria-live="polite" className="mt-1 font-serif text-2xl font-semibold text-white">
+                      {String(Math.floor(remainingSeconds / 60)).padStart(2, '0')}:{String(remainingSeconds % 60).padStart(2, '0')}
+                    </p>
+                  </div>
+                  {checkout.payment_key_id?.startsWith('rzp_test_') && (
+                    <p className="max-w-xs text-sm leading-relaxed text-amber-200">Test Mode is active. This checkout cannot collect real money.</p>
+                  )}
+                </div>
+              )}
+
+              {paymentMessage && <p role="status" className="rounded-xl bg-white/7 px-4 py-3 text-sm leading-relaxed text-[#F4E6BE]">{paymentMessage}</p>}
+
+              <div className="flex flex-wrap gap-3">
+                {checkout.appointment_state === 'held' && checkout.order_state === 'ready' && remainingSeconds > 0 && (
+                  <button type="button" onClick={openPayment} disabled={loading}
+                    className="min-h-11 rounded-xl bg-[#D3AF54] px-6 py-2.5 text-sm font-semibold text-[#181122] transition hover:bg-[#E1BE65] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F4E6BE] disabled:cursor-wait disabled:opacity-60">
+                    {loading ? 'Preparing secure payment…' : `Pay ${formatFee(checkout.amount_paise)} securely`}
+                  </button>
+                )}
+                {(checkout.appointment_state === 'held' || checkout.appointment_state === 'payment_review') && (
+                  <button type="button" onClick={checkBookingStatus} disabled={loading}
+                    className="min-h-11 rounded-xl border border-[#D3AF54]/65 px-5 py-2.5 text-sm font-semibold text-[#F4E6BE] transition hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F4E6BE] disabled:cursor-wait disabled:opacity-60">
+                    Check payment status
+                  </button>
+                )}
+                {(checkout.appointment_state === 'expired' || checkout.appointment_state === 'cancelled' ||
+                  (checkout.appointment_state === 'held' && remainingSeconds === 0)) && (
+                  <button type="button" onClick={resetBooking}
+                    className="min-h-11 rounded-xl bg-[#D3AF54] px-6 py-2.5 text-sm font-semibold text-[#181122]">
+                    Choose another time
+                  </button>
+                )}
+              </div>
+              <p className="break-all text-xs leading-relaxed text-white/55">Booking reference: {checkout.booking_id}</p>
+            </motion.section>
           ) : (
             <motion.form 
               id="booking-form"
