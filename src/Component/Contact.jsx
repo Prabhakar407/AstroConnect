@@ -27,8 +27,12 @@ const faqs = [
     a: "We need your exact Date of Birth, exact Time of Birth (within a few minutes), and Place of Birth (city and state/country) for precise chart calculations."
   },
   {
-    q: "Are consultations online or offline?",
-    a: "Both! Online sessions are held via Zoom or Google Meet. In-person consultations are available at Vasant Kunj, Delhi by prior appointment only."
+    q: "How are website bookings conducted?",
+    a: "All appointments booked through this website are online on Google Meet. After payment and confirmation, the meeting link is sent to your email."
+  },
+  {
+    q: "How do I cancel or ask about a refund?",
+    a: "Please call +91 85277 90801. Cancellations and any refund arrangements are handled manually by the studio; cancelling does not issue an automatic refund."
   },
   {
     q: "What does a consultation include?",

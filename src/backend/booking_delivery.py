@@ -37,11 +37,13 @@ def booking_message(sender, booking, kind, role, meet_url=None):
         if kind == 'booking_confirmed':
             subject = 'Your consultation is confirmed — Astro Advice'
             lines = [f"Hello {booking['full_name']},", 'Your payment and appointment are confirmed.',
+                     'This is an online consultation on Google Meet.',
                      f"Consultation: {booking['service_name']}", f"When: {when}",
                      'Duration: 30 minutes', f"Payment received: {fee}"]
             if question_line:
                 lines.append(question_line)
-            lines += [f"Google Meet: {meet_url}",
+            lines += ['Use the Google Meet link below to join at your appointment time.',
+                     f"Google Meet: {meet_url}",
                      f"Reference: {reference}",
                      f"To cancel, call {CLIENT_PHONE}. Refund to be done manually.",
                      'Astro Advice by Kundan Singh']

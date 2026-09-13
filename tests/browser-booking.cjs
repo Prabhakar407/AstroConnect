@@ -224,6 +224,11 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         }
       };
       await page.goto(base + "booking");
+      await page.getByRole('heading', { name: 'Website bookings are online', exact: true }).waitFor();
+      assert.ok((await page.locator('body').innerText()).includes('Your consultation takes place on Google Meet.'));
+      assert.deepEqual(await page.locator('ol li strong').allTextContents(), [
+        'Choose your time', 'Confirm your booking', 'Join on Google Meet',
+      ]);
       await page.locator("#readingType").selectOption("prashna-kundali");
       await page.locator("#questionCount").selectOption("10");
       try {
@@ -342,6 +347,8 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       await shot('booking-payment-ready');
       await page.getByRole('button', { name: `Pay ${formatFee(nameChangeAmount)} securely` }).click();
       await page.getByRole('heading', { name: 'Your appointment is confirmed' }).waitFor();
+      assert.ok((await page.locator('body').innerText()).includes('Your online consultation is confirmed.'));
+      assert.ok((await page.locator('body').innerText()).includes('also being sent to you by email'));
       assert.equal(await page.getByRole('link', { name: 'Open Google Meet' }).getAttribute('href'), 'https://meet.google.com/abc-defg-hij');
       await shot('booking-confirmed');
       checkoutCancelled = true;
@@ -363,6 +370,11 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
       saveMode = 'failure';
       await page.goto(base + "contact");
+      await page.getByRole('button', { name: 'How are website bookings conducted?', exact: true }).click();
+      await page.getByText('All appointments booked through this website are online on Google Meet.', { exact: false }).waitFor();
+      await page.getByRole('button', { name: 'How do I cancel or ask about a refund?', exact: true }).click();
+      await page.getByText('Cancellations and any refund arrangements are handled manually by the studio', { exact: false }).waitFor();
+      assert.ok((await page.locator('body').innerText()).includes('+91 85277 90801'));
       await page.locator("#name").fill("Synthetic Test");
       await page.locator("#email").fill("synthetic@example.com");
       await page.locator("#phone").fill("+919000000001");
