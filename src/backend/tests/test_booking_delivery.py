@@ -129,6 +129,8 @@ class BookingDeliveryTests(unittest.TestCase):
         customer = next(payload['text'] for payload, key in self.sent if '/customer/' in key)
         client = next(payload['text'] for payload, key in self.sent if '/client/' in key)
         self.assertIn('Payment received:', customer)
+        self.assertIn('This is an online consultation on Google Meet.', customer)
+        self.assertIn('Use the Google Meet link below to join at your appointment time.', customer)
         self.assertIn('Birth date:', client)
 
     def test_cancellation_supersedes_every_unsent_confirmation(self):

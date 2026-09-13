@@ -479,7 +479,7 @@ function Appointment_Booking() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#FDFCF5] relative flex flex-col items-center font-sans text-[#181122]">
+    <div className="w-full min-h-screen bg-[#F4F1E3] relative flex flex-col items-center font-sans text-[#181122]">
       
       {/* ========================================================= */}
       {/* 1. HEADER SECTION (Warm Ivory bg-[#F4F1E3])               */}
@@ -499,7 +499,7 @@ function Appointment_Booking() {
           <span className="text-[#AB7A57] text-xs tracking-[0.25em] font-bold uppercase block mb-2 font-sans">
             ✦ RESERVE YOUR SPOT ✦
           </span>
-          <h1 className="text-[clamp(1.75rem,3.2vw,3.5rem)] font-serif font-bold text-[#181122] tracking-wide leading-tight">
+          <h1 className="text-[clamp(1.5rem,2.55vw,2.8rem)] font-serif font-bold text-[#181122] tracking-wide leading-tight">
             Schedule A Consultation
           </h1>
           <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-3 mb-1"></div>
@@ -507,9 +507,9 @@ function Appointment_Booking() {
       </div>
 
       {/* ========================================================= */}
-      {/* 2. BOOKING FORM CONTAINER (Pure White bg-white)           */}
+      {/* 2. ONLINE BOOKING GUIDE AND FORM                           */}
       {/* ========================================================= */}
-      <div className="w-full bg-white py-5 px-4 flex flex-col items-center relative z-10 overflow-hidden">
+      <div className="w-full bg-[#F4F1E3] py-5 px-4 flex flex-col items-center relative z-10 overflow-hidden">
         
         <div className="absolute bottom-20 left-10 w-96 h-96 bg-[radial-gradient(circle_at_center,rgba(211,175,84,0.04),transparent_70%)] rounded-full -z-10 pointer-events-none"></div>
 
@@ -526,6 +526,27 @@ function Appointment_Booking() {
             <line x1="5" y1="100" x2="195" y2="100" />
           </svg>
         </motion.div>
+
+        <section className="w-full max-w-[1600px] lg:w-[88vw] pb-6 sm:pb-8" aria-labelledby="online-booking-title">
+          <div className="max-w-3xl">
+            <h2 id="online-booking-title" className="font-serif text-xl font-semibold text-[#181122] sm:text-2xl">Website bookings are online</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#594C45] sm:text-base">Your consultation takes place on Google Meet. We share the meeting link by email after your booking is confirmed.</p>
+          </div>
+          <ol className="mt-5 grid grid-cols-1 divide-y divide-[#AB7A57]/25 border-y border-[#AB7A57]/25 lg:landscape:grid-cols-3 lg:landscape:divide-x lg:landscape:divide-y-0">
+            <li className="grid grid-cols-[auto_1fr] gap-3 py-4 lg:landscape:px-6 lg:landscape:first:pl-0">
+              <span className="font-serif text-2xl leading-none text-[#9A6C49]" aria-hidden="true">1</span>
+              <div><strong className="block text-sm font-semibold text-[#181122] sm:text-base">Choose your time</strong><span className="mt-1 block text-sm leading-relaxed text-[#66564D]">Select a consultation and an available slot.</span></div>
+            </li>
+            <li className="grid grid-cols-[auto_1fr] gap-3 py-4 lg:landscape:px-6">
+              <span className="font-serif text-2xl leading-none text-[#9A6C49]" aria-hidden="true">2</span>
+              <div><strong className="block text-sm font-semibold text-[#181122] sm:text-base">Confirm your booking</strong><span className="mt-1 block text-sm leading-relaxed text-[#66564D]">Enter your details and complete payment.</span></div>
+            </li>
+            <li className="grid grid-cols-[auto_1fr] gap-3 py-4 lg:landscape:px-6 lg:landscape:last:pr-0">
+              <span className="font-serif text-2xl leading-none text-[#9A6C49]" aria-hidden="true">3</span>
+              <div><strong className="block text-sm font-semibold text-[#181122] sm:text-base">Join on Google Meet</strong><span className="mt-1 block text-sm leading-relaxed text-[#66564D]">Open the link shared in your confirmation email.</span></div>
+            </li>
+          </ol>
+        </section>
 
         <div className="w-full max-w-[1600px] lg:w-[88vw] bg-[#181122] border border-[#AB7A57]/20 rounded-2xl p-4 shadow-xl relative text-white">
           
@@ -545,10 +566,10 @@ function Appointment_Booking() {
               <h4 className="font-serif text-white font-bold text-xl md:text-2xl">Your appointment is confirmed</h4>
               <p className="text-sm text-[#D8CFEB] max-w-lg font-sans leading-relaxed">
                 {checkout?.meeting_state === 'ready'
-                  ? 'Payment, appointment and Google Meet are ready. Your calendar invitation is being delivered separately.'
+                  ? 'Your online consultation is confirmed. The Google Meet link is below and is also being sent to you by email.'
                   : checkout?.meeting_state === 'needs_attention'
-                    ? 'Payment is confirmed, but the studio needs to finish the Google Meet invitation. You do not need to pay again.'
-                    : 'Payment has been received. We are preparing the calendar invitation and Google Meet link for both you and the studio.'}
+                    ? 'Your online consultation is confirmed, but the studio needs to finish your Google Meet invitation. You do not need to pay again; the link will be emailed once ready.'
+                    : 'Payment has been received. We are preparing your Google Meet link and will email it to you as soon as it is ready.'}
               </p>
               {checkout?.meet_url && <a href={checkout.meet_url} target="_blank" rel="noreferrer"
                 className="min-h-11 rounded-xl bg-[#D3AF54] px-6 py-2.5 text-sm font-semibold text-[#181122]">Open Google Meet</a>}
@@ -1023,7 +1044,7 @@ function Appointment_Booking() {
               </svg>
             </span>
             <p className="text-xs text-slate-600 font-sans text-center leading-relaxed whitespace-normal sm:whitespace-nowrap">
-              <strong>Need to cancel your session?</strong> Please call <a href="tel:+918527790801" className="text-[#AB7A57] hover:underline font-bold">+91 85277 90801</a>.
+              <strong className="font-bold text-[#33233D]">Need to cancel your session?</strong> Please call <a href="tel:+918527790801" className="text-[#8F5F3E] hover:underline font-bold">+91 85277 90801</a>.
             </p>
           </div>
         </div>
