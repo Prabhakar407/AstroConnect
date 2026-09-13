@@ -117,6 +117,7 @@ function Appointment_Booking() {
   const [recoveryChecking, setRecoveryChecking] = useState(true)
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
+  const [noticeMsg, setNoticeMsg] = useState("")
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
   const [showOtpModal, setShowOtpModal] = useState(false)
   const bookingBlocked = loading || !bookingEnabled || !currentQuote || Boolean(quoteError) || availabilityLoading || Boolean(availabilityError) || slotAvailability[formData.bookingSlot] !== true
@@ -128,6 +129,17 @@ function Appointment_Booking() {
 
   const acceptBookingStatus = (data) => {
     if (!data || typeof data.booking_id !== 'string') throw new Error('We could not confirm the appointment status.')
+    if (data.appointment_state === 'expired' && data.payment_state === 'not_received') {
+      forgetReceipt('booking')
+      receipt.current = null
+      verifiedDraft.current = null
+      setCheckout(null)
+      setSubmitted(false)
+      setRemainingSeconds(0)
+      setPaymentMessage('')
+      setNoticeMsg('Your previous reservation expired. Please choose a new available time.')
+      return data
+    }
     if (data.appointment_state === 'confirmed' && data.payment_state === 'received') {
       setCheckout(data)
       setSubmitted(true)
@@ -316,6 +328,7 @@ function Appointment_Booking() {
   const handleBookingSubmit = async (e) => {
     e.preventDefault()
     setAttemptedSubmit(true)
+    setNoticeMsg('')
     
     const validationError = validateForm()
     if (validationError) {
@@ -449,6 +462,10 @@ function Appointment_Booking() {
     setSubmitted(false)
     setCheckout(null)
     setPaymentMessage('')
+    setNoticeMsg('')
+    setErrorMsg('')
+    setAttemptedSubmit(false)
+    setRemainingSeconds(0)
     setFormData({
       name: '', phone: '', email: '', birthDate: '', birthTime: '', birthPlace: '',
       readingType: 'vedic-astrology', bookingDate: '', bookingSlot: '', questionCount: 1, notes: '',
@@ -620,6 +637,9 @@ function Appointment_Booking() {
               viewport={{ once: true, margin: "-100px" }}
               className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[minmax(0,0.86fr)_minmax(0,1fr)_minmax(0,1.2fr)] gap-4 xl:gap-3 items-start scroll-mt-20 w-full"
             >
+              {noticeMsg && <p role="status" className="col-span-1 lg:col-span-2 xl:col-span-3 rounded-xl border border-[#D3AF54]/30 bg-[#D3AF54]/10 px-4 py-3 text-sm leading-relaxed text-[#F4E6BE]">
+                {noticeMsg}
+              </p>}
               {!bookingEnabled && <p role="status" className="col-span-1 lg:col-span-2 xl:col-span-3 rounded-xl border border-[#D3AF54]/30 bg-[#D3AF54]/10 px-4 py-3 text-sm leading-relaxed text-[#F4E6BE]">
                 Online booking is being configured. To arrange an appointment, please call <a href="tel:+918527790801" className="font-semibold underline">+91 85277 90801</a>.
               </p>}

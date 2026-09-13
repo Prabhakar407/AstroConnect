@@ -58,6 +58,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         availabilityFailure = false,
         availabilityDelay = 0,
         verificationDelay = 0,
+        checkoutExpired = false,
         checkoutPaid = false,
         checkoutCancelled = false;
       page.on("pageerror", (error) => errors.push(error.message));
@@ -107,7 +108,14 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
               "synthetic-browser-token-not-real-1234567890123",
           };
         } else if (path === '/api/checkout/resume') {
-          data = checkoutCancelled ? {
+          data = checkoutExpired ? {
+            booking_id: '22222222-2222-4222-8222-222222222222', service_id: 'name-change', service_name: 'Name Change Consultation',
+            question_count: 1, amount_paise: 510000, currency: 'INR', duration_minutes: 30,
+            starts_at: '2026-09-10T10:30:00+05:30', ends_at: '2026-09-10T11:00:00+05:30', timezone: 'Asia/Kolkata',
+            appointment_state: 'expired', payment_state: 'not_received', meeting_state: 'unavailable',
+            meet_url: null, confirmation_email_state: 'unavailable',
+            hold_expires_at: '2026-09-09T04:00:00Z', server_now: '2026-09-09T04:01:00Z',
+          } : checkoutCancelled ? {
             booking_id: '22222222-2222-4222-8222-222222222222', service_id: 'name-change', service_name: 'Name Change Consultation',
             question_count: 1, amount_paise: 510000, currency: 'INR', duration_minutes: 30,
             starts_at: '2026-09-10T10:30:00+05:30', ends_at: '2026-09-10T11:00:00+05:30', timezone: 'Asia/Kolkata',
@@ -122,7 +130,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
             meet_url: 'https://meet.google.com/abc-defg-hij', confirmation_email_state: 'accepted',
             hold_expires_at: '2026-09-09T04:11:00Z', server_now: '2026-09-09T04:01:00Z',
           } : { detail: 'No booking is in progress.' };
-          if (!checkoutPaid) status = 404;
+          if (!checkoutPaid && !checkoutExpired) status = 404;
         } else if (path === '/api/checkout/verify-payment') {
           checkoutPaid = true;
           data = {
@@ -338,6 +346,16 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       assert.equal(await page.getByRole('link', { name: 'Open Google Meet' }).count(), 0);
       assert.ok((await page.locator('body').innerText()).includes('does not automatically issue a refund'));
       await shot('booking-cancelled');
+
+      checkoutCancelled = false;
+      checkoutPaid = false;
+      checkoutExpired = true;
+      await page.reload();
+      await page.locator('#booking-form').waitFor();
+      await page.getByText('Your previous reservation expired. Please choose a new available time.', { exact: true }).waitFor();
+      assert.equal(await page.evaluate(() => sessionStorage.getItem('astro:receipt:booking')), null);
+      assert.equal(await page.getByRole('heading', { name: 'This reservation has ended' }).count(), 0);
+      await shot('booking-expired-recovered');
 
       saveMode = 'failure';
       await page.goto(base + "contact");
