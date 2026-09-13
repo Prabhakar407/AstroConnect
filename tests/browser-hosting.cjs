@@ -2,8 +2,10 @@
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE_PATH || 'playwright');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const catalogue = require('../src/data/consultationCatalogue.json');
 const base = 'http://127.0.0.1:5186';
 const output = process.env.ASTRO_BROWSER_OUTPUT || '/tmp/astro-hosting-browser';
+const nameChangeFee = `₹${(catalogue.find(item => item.id === 'name-change').amount_paise / 100).toLocaleString('en-IN')}`;
 
 (async () => {
   fs.mkdirSync(output, { recursive: true });
@@ -35,7 +37,7 @@ const output = process.env.ASTRO_BROWSER_OUTPUT || '/tmp/astro-hosting-browser';
       await page.goto(`${base}/#/booking`);
       await page.getByRole('heading', { name: 'Schedule A Consultation' }).waitFor();
       await page.locator('#readingType').selectOption('name-change');
-      assert.ok((await page.locator('#booking-form').innerText()).includes('₹5,100'));
+      assert.ok((await page.locator('#booking-form').innerText()).includes(nameChangeFee));
       assert.equal(await page.getByRole('button', { name: 'Submit Appointment Request' }).isDisabled(), true);
       const policy = await context.request.get(`${base}/api/booking-policy`);
       assert.equal(policy.status(), 503, 'This harness requires the unconfigured local backend');

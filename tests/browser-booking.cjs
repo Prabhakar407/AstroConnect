@@ -8,6 +8,10 @@ const output = process.env.ASTRO_BROWSER_OUTPUT || "/tmp/astro-browser-checks";
 fs.mkdirSync(output, { recursive: true });
 const base = process.env.ASTRO_BROWSER_BASE || "http://127.0.0.1:5186/";
 const catalogue = require('../src/data/consultationCatalogue.json');
+const nameChangeAmount = catalogue.find(item => item.id === 'name-change').amount_paise;
+const numerologyAmount = catalogue.find(item => item.id === 'numerology').amount_paise;
+const prashnaAmount = catalogue.find(item => item.id === 'prashna-kundali').amount_paise;
+const formatFee = amount => `₹${(amount / 100).toLocaleString('en-IN')}`;
 const slotTimes = [
   "10:00",
   "10:30",
@@ -110,21 +114,21 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         } else if (path === '/api/checkout/resume') {
           data = checkoutExpired ? {
             booking_id: '22222222-2222-4222-8222-222222222222', service_id: 'name-change', service_name: 'Name Change Consultation',
-            question_count: 1, amount_paise: 510000, currency: 'INR', duration_minutes: 30,
+            question_count: 1, amount_paise: nameChangeAmount, currency: 'INR', duration_minutes: 30,
             starts_at: '2026-09-10T10:30:00+05:30', ends_at: '2026-09-10T11:00:00+05:30', timezone: 'Asia/Kolkata',
             appointment_state: 'expired', payment_state: 'not_received', meeting_state: 'unavailable',
             meet_url: null, confirmation_email_state: 'unavailable',
             hold_expires_at: '2026-09-09T04:00:00Z', server_now: '2026-09-09T04:01:00Z',
           } : checkoutCancelled ? {
             booking_id: '22222222-2222-4222-8222-222222222222', service_id: 'name-change', service_name: 'Name Change Consultation',
-            question_count: 1, amount_paise: 510000, currency: 'INR', duration_minutes: 30,
+            question_count: 1, amount_paise: nameChangeAmount, currency: 'INR', duration_minutes: 30,
             starts_at: '2026-09-10T10:30:00+05:30', ends_at: '2026-09-10T11:00:00+05:30', timezone: 'Asia/Kolkata',
             appointment_state: 'cancelled', payment_state: 'received', meeting_state: 'cancelled',
             meet_url: null, confirmation_email_state: 'pending',
             hold_expires_at: '2026-09-09T04:11:00Z', server_now: '2026-09-09T04:01:00Z',
           } : checkoutPaid ? {
             booking_id: '22222222-2222-4222-8222-222222222222', service_id: 'name-change', service_name: 'Name Change Consultation',
-            question_count: 1, amount_paise: 510000, currency: 'INR', duration_minutes: 30,
+            question_count: 1, amount_paise: nameChangeAmount, currency: 'INR', duration_minutes: 30,
             starts_at: '2026-09-10T10:30:00+05:30', ends_at: '2026-09-10T11:00:00+05:30', timezone: 'Asia/Kolkata',
             appointment_state: 'confirmed', payment_state: 'received', meeting_state: 'ready',
             meet_url: 'https://meet.google.com/abc-defg-hij', confirmation_email_state: 'accepted',
@@ -135,7 +139,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
           checkoutPaid = true;
           data = {
             booking_id: '22222222-2222-4222-8222-222222222222', service_id: 'name-change', service_name: 'Name Change Consultation',
-            question_count: 1, amount_paise: 510000, currency: 'INR', duration_minutes: 30,
+            question_count: 1, amount_paise: nameChangeAmount, currency: 'INR', duration_minutes: 30,
             starts_at: '2026-09-10T10:30:00+05:30', ends_at: '2026-09-10T11:00:00+05:30', timezone: 'Asia/Kolkata',
             appointment_state: 'confirmed', payment_state: 'received', meeting_state: 'ready',
             meet_url: 'https://meet.google.com/abc-defg-hij', confirmation_email_state: 'accepted',
@@ -145,7 +149,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
           data = {
             booking_id: '22222222-2222-4222-8222-222222222222', order_id: 'order_synthetic_browser_check',
             payment_key_id: 'rzp_test_synthetic_browser_check', order_state: 'ready', service_id: 'name-change',
-            service_name: 'Name Change Consultation', question_count: 1, amount_paise: 510000, currency: 'INR',
+            service_name: 'Name Change Consultation', question_count: 1, amount_paise: nameChangeAmount, currency: 'INR',
             duration_minutes: 30, starts_at: '2026-09-10T10:30:00+05:30', ends_at: '2026-09-10T11:00:00+05:30',
             timezone: 'Asia/Kolkata', appointment_state: 'held', payment_state: 'not_received', meeting_state: 'unavailable',
             meet_url: null, confirmation_email_state: 'unavailable', hold_expires_at: '2026-09-09T04:11:00Z',
@@ -231,7 +235,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         throw error;
       }
       assert.ok(
-        (await page.locator("#booking-form").innerText()).includes("₹11,000"),
+        (await page.locator("#booking-form").innerText()).includes(formatFee(prashnaAmount * 10)),
       );
       assert.ok(
         (await page.locator("#booking-form").innerText()).includes(
@@ -324,11 +328,11 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       await page.locator("#readingType").selectOption("numerology");
       assert.equal(await page.locator("#questionCount").count(), 0);
       assert.ok(
-        (await page.locator("#booking-form").innerText()).includes("₹3,100"),
+        (await page.locator("#booking-form").innerText()).includes(formatFee(numerologyAmount)),
       );
       await page.locator("#readingType").selectOption("name-change");
       assert.ok(
-        (await page.locator("#booking-form").innerText()).includes("₹5,100"),
+        (await page.locator("#booking-form").innerText()).includes(formatFee(nameChangeAmount)),
       );
       saveMode = 'checkout';
       await page.locator('#booking-form button[type=submit]').click();
@@ -336,7 +340,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       await page.getByRole('heading', { name: 'Your time is reserved' }).waitFor();
       assert.ok((await page.locator('body').innerText()).includes('Test Mode is active'));
       await shot('booking-payment-ready');
-      await page.getByRole('button', { name: 'Pay ₹5,100 securely' }).click();
+      await page.getByRole('button', { name: `Pay ${formatFee(nameChangeAmount)} securely` }).click();
       await page.getByRole('heading', { name: 'Your appointment is confirmed' }).waitFor();
       assert.equal(await page.getByRole('link', { name: 'Open Google Meet' }).getAttribute('href'), 'https://meet.google.com/abc-defg-hij');
       await shot('booking-confirmed');

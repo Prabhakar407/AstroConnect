@@ -899,7 +899,7 @@ function Appointment_Booking() {
                     <select id="questionCount" name="questionCount" value={formData.questionCount} onChange={handleInputChange} className="w-full rounded-xl border border-white/20 bg-[#181122] px-3 py-2 text-sm text-white">
                       {Array.from({ length: 10 }, (_, index) => index + 1).map(count => <option key={count} value={count}>{count} {count === 1 ? 'question' : 'questions'}</option>)}
                     </select>
-                    <p className="text-sm leading-relaxed text-white/80">Additional questions during the consultation are charged at ₹1,100 each, payable at that time.</p>
+                    <p className="text-sm leading-relaxed text-white/80">Additional questions during the consultation are charged at ₹1 each, payable at that time.</p>
                   </div>}
                   <p aria-live="polite" className="text-sm font-semibold text-[#D3AF54]">Total: {formatFee(totalFee)} <span className="font-normal text-white/80">· 30-minute session</span></p>
                   {quoteError && !availabilityError && <p role="alert" className="text-sm text-amber-200">{quoteError} <button type="button" className="underline underline-offset-4" onClick={() => setQuoteRetry(value => value + 1)}>Check fee again</button></p>}
