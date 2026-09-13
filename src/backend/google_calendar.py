@@ -53,7 +53,11 @@ def event_identity(booking_id):
     return 'astro' + value, 'meet' + value
 
 
-def event_body(booking_id, service_id, starts_at, customer_email):
+def event_body(booking):
+    booking_id = booking['id']
+    service_id = booking['service_id']
+    starts_at = booking['starts_at']
+    customer_email = booking['email']
     start = aware_utc(starts_at).astimezone(IST)
     if not isinstance(customer_email, str) or not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+', customer_email):
         raise ValueError('A validated customer email is required.')
@@ -61,10 +65,29 @@ def event_body(booking_id, service_id, starts_at, customer_email):
         raise ValueError('The customer cannot be the calendar organizer.')
     event_id, request_id = event_identity(booking_id)
     service = SERVICES[service_id]
+    fee = f"₹{booking['amount_paise'] // 100:,}"
+    lines = [
+        'Online consultation with Astro Advice by Kundan Singh.',
+        f"Customer: {booking['full_name']}",
+        f"Phone: {booking['phone']}",
+        f"Email: {customer_email}",
+        f"Consultation: {booking.get('service_name') or service['title']}",
+        f"Payment received: {fee}",
+    ]
+    if service_id == 'prashna-kundali':
+        lines.append(f"Questions paid for: {booking['question_count']}")
+    if booking.get('birth_date'):
+        lines.append(f"Birth date: {booking['birth_date']}")
+    if booking.get('birth_time'):
+        lines.append(f"Birth time: {booking['birth_time']}")
+    if booking.get('birth_place'):
+        lines.append(f"Birth place: {booking['birth_place']}")
+    if booking.get('notes'):
+        lines.append(f"Customer notes: {booking['notes']}")
+    lines += [f"Booking reference: {booking_id}", 'For cancellations, please call +91 85277 90801.']
     return {
-        'id': event_id, 'summary': 'Astro Advice — ' + service['title'],
-        'description': 'Online consultation with Astro Advice by Kundan Singh. '
-                       'For cancellations, please call +91 85277 90801.',
+        'id': event_id, 'summary': f"Astro Advice — {booking['full_name']} — {service['title']}",
+        'description': '\n'.join(lines),
         'start': {'dateTime': start.isoformat(), 'timeZone': 'Asia/Kolkata'},
         'end': {'dateTime': (start + timedelta(minutes=DURATION_MINUTES)).isoformat(), 'timeZone': 'Asia/Kolkata'},
         'attendees': [{'email': customer_email}], 'visibility': 'private',

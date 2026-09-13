@@ -125,7 +125,7 @@ class AdminTests(unittest.TestCase):
                 self.store.confirm_paid(row['id'], 'synthetic-payment', row['amount_paise'], 'INR')
         response = self.client.post(f"/api/admin/bookings/{row['id']}/cancel", headers=self.headers)
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(response.json()['refund_issued'])
+        self.assertEqual(response.json()['refund_instruction'], 'Refund to be done manually.')
         self.assertTrue(self.store.availability('2026-09-10')["slots"]['10:00'])
 
     def test_login_throttle_commits_failures(self):

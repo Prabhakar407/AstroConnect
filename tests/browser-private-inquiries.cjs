@@ -33,6 +33,7 @@ mkdirSync(output, { recursive:true });
         const url=new URL(route.request().url()); const path=url.pathname;
         if(!signedIn) return fulfilled(route,{detail:'Please sign in again.'},401);
         if(path==='/api/admin/session') return fulfilled(route,{email:'synthetic-studio@example.invalid',csrf_token:'synthetic-browser-csrf'});
+        if(path==='/api/admin/bookings') return fulfilled(route,{items:[],next_cursor:null});
         if(path==='/api/admin/logout') {signedIn=false;return fulfilled(route,{success:true});}
         if(path==='/api/admin/day') return fulfilled(route,{slots:[],closures:[]});
         if(path==='/api/admin/attention') return fulfilled(route,{

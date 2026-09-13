@@ -20,7 +20,7 @@ from .domain import CLIENT_EMAIL, RuleViolation
 from .models import InputModel, PaymentCaseResolution
 from .storage import StorageUnavailable
 from .verification import EmailVerification
-from . import private_inquiries
+from . import private_bookings, private_inquiries
 
 SESSION_COOKIE = "__Host-astro_session"
 LOGIN_COOKIE = "__Host-astro_login"
@@ -152,6 +152,16 @@ def admin_router(settings, store, identity_verifier=None, *, booking_dispatch=No
         session(request)
         return store.private_day(date)
 
+    @router.get("/bookings")
+    def bookings(request: Request, view: str = "upcoming", before: UUID | None = None):
+        session(request)
+        return private_bookings.page(store, view, before)
+
+    @router.get("/booking-days")
+    def booking_days(request: Request, month: str):
+        session(request)
+        return private_bookings.booking_days(store, month)
+
     @router.get('/inquiries')
     def inquiries(request: Request, before: UUID | None = None, attention: bool = False):
         session(request)
@@ -179,7 +189,7 @@ def admin_router(settings, store, identity_verifier=None, *, booking_dispatch=No
         actor = session(request, write=True)['google_subject']
         from .private_attention import handle_case
         handle_case(store, case_id, actor, payload.resolution, payload.note)
-        return {'success': True, 'message': 'This item is marked as handled. No refund or payment change was made by the website.'}
+        return {'success': True, 'message': 'This item is marked as handled. Refund to be done manually.'}
 
     @router.post('/attention/delivery/{job_id}/retry')
     def retry_booking_delivery(job_id: UUID, request: Request):
@@ -209,7 +219,7 @@ def admin_router(settings, store, identity_verifier=None, *, booking_dispatch=No
         store.cancel(booking_id, actor)
         if booking_dispatch:
             booking_dispatch.after_save(booking_id)
-        return {"success": True, "delivery_status": "pending", "refund_issued": False}
+        return {"success": True, "delivery_status": "pending", "refund_instruction": "Refund to be done manually."}
 
     from .google_connection import add_routes
     add_routes(router, settings, store, session, verify_identity)

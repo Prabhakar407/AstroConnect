@@ -43,8 +43,15 @@ export default function NameChangeService() {
 
     <section className="services-help">
       <div className="services-container services-help-inner">
+        <div><h2>Want to compare possible names?</h2><p>Bring the spellings you are considering and discuss them together.</p></div>
+        <Link className="service-button service-button--gold" to="/booking?service=name-change"><Calendar aria-hidden="true" />Book an Appointment</Link>
+      </div>
+    </section>
+
+    <section className="name-change-related">
+      <div className="services-container services-help-inner">
         <div><h2>Looking beyond your name?</h2><p>General Numerology explores your core numbers and life path more broadly.</p></div>
-        <Link className="service-button service-button--gold" to="/services/numerology">General Numerology<ArrowRight aria-hidden="true" /></Link>
+        <div className="service-actions"><Link className="service-button service-button--outline" to="/services/numerology">General Numerology<ArrowRight aria-hidden="true" /></Link><Link className="service-button service-button--gold" to="/booking?service=name-change"><Calendar aria-hidden="true" />Book Now</Link></div>
       </div>
     </section>
   </div>

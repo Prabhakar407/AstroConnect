@@ -17,11 +17,12 @@ Customers can book only up to ten days ahead. Every service lasts 30 minutes. Pr
 
 Open `https://astroadvicebykundansingh.com/studio/calendar` and sign in with the studio Google account.
 
-- **Calendar:** see appointments, close or reopen free dates/times, and record phone cancellations.
+- **Appointments:** see upcoming, past and cancelled bookings; open a booking for the customer, payment, birth, question and meeting details; record a phone-agreed cancellation.
+- **Calendar:** see booking counts on dates, inspect a selected day's slots, and close or reopen free dates/times.
 - **Inquiries:** read Contact, Home and Prashna inquiries.
 - **Needs attention:** handle unusual payments, failed Calendar/Meet work and failed customer/studio emails.
 
-A date or time containing an existing booking or payment in progress cannot be closed. Cancelling an appointment updates the website record, removes the website-created Google event and sends both parties a cancellation email. It does **not** automatically refund money. Cancellations and payment questions are handled by phone.
+A date or time containing an existing booking or payment in progress cannot be closed. Cancelling an appointment updates the website record, removes the website-created Google event and sends both parties a cancellation email. The private page states **“Refund to be done manually.”** Cancellations and payment questions are handled by phone.
 
 ## If something needs attention
 
@@ -87,13 +88,9 @@ The official website origin must remain in every relevant provider. An approved 
 - If checkout must stop, remove or invalidate only a required checkout dependency in Vercel and redeploy the reviewed source. Keep webhook and recovery routes reachable so already-paid work can finish. Do not add a second manual on/off flag.
 - Roll back website source through the existing Git/Vercel deployment history. Database migrations are forward-only; recover with a reviewed corrective migration or the documented backup process, never by editing an applied migration file.
 
-## Moving from fake money to real money
+## Live payment state
 
-1. First finish the complete Test Mode journey on the official website: OTP, payment, refresh/recovery, confirmed booking, Calendar event, Meet link, both emails, phone cancellation and private exception handling.
-2. In the same client merchant, create the matching Live Mode key ID/secret and configure the existing final Razorpay callback with the agreed events and a Live webhook secret.
-3. Replace the Vercel Razorpay values as one coordinated Live set and deploy the exact reviewed revision. Do not mix one Test value with one Live value.
-4. Recheck `/api/ready`; booking must remain unavailable if any required official connection is wrong.
-5. Make one small real payment only after separate explicit approval of the amount, payer, appointment and refund/settlement handling. Reconcile Razorpay, the database, Meet and both emails before handover.
+The official system uses the client's Live Razorpay merchant credentials. A controlled ₹1 journey already proved payment, booking confirmation, Calendar and Meet creation, participant emails and phone cancellation; permanent service prices were restored immediately afterward. Never mix Test and Live credentials, repeat the temporary-price window, or make another verification payment without explicit approval of that payment. Normal read-only checks use `/api/ready`, the service catalogue and private operational views.
 
 ## No-card/free-plan boundaries
 

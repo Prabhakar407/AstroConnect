@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import StudioInquiries from './StudioInquiries';
 import StudioAttention from './StudioAttention';
+import StudioAppointments from './StudioAppointments';
 import StudioGoogleConnection from './StudioGoogleConnection';
 import {
   CalendarDays,
@@ -37,7 +38,7 @@ const dateKey = (date) => date.toISOString().slice(0, 10);
 
 export default function PrivateCalendar() {
   const [user, setUser] = useState(null);
-  const [view, setView] = useState('calendar');
+  const [view, setView] = useState('appointments');
   const sessionExpired = useCallback(() => {
     setUser(null); setDay(null); setNotice('');
     setError('Your session has expired. Please sign in again.');
@@ -51,6 +52,7 @@ export default function PrivateCalendar() {
   const [day, setDay] = useState(null);
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(0);
+  const [bookingDays, setBookingDays] = useState({});
   const [start, setStart] = useState("10:00");
   const [end, setEnd] = useState("12:00");
   const [reason, setReason] = useState("");
@@ -77,7 +79,7 @@ export default function PrivateCalendar() {
   }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || view !== 'calendar') return;
     let active = true;
     setDay(null);
     setLoading(true);
@@ -96,7 +98,16 @@ export default function PrivateCalendar() {
     return () => {
       active = false;
     };
-  }, [date, user, refresh]);
+  }, [date, user, view, refresh]);
+
+  useEffect(() => {
+    if (!user || view !== 'calendar') return;
+    let active = true;
+    adminRequest(`/booking-days?month=${encodeURIComponent(month)}`)
+      .then(data => { if (active) setBookingDays(data.days || {}); })
+      .catch(err => { if (active && err.status === 401) sessionExpired(); });
+    return () => { active = false; };
+  }, [month, user, view, refresh, sessionExpired]);
 
   useEffect(() => {
     if (!user) return;
@@ -246,9 +257,9 @@ export default function PrivateCalendar() {
             <p className="studio-calendar__eyebrow">
               <LockKeyhole size={17} /> Private studio calendar
             </p>
-            <h1>{view === 'calendar' ? 'Your availability' : view === 'inquiries' ? 'Your inquiries' : 'Needs attention'}</h1>
+            <h1>{view === 'appointments' ? 'Your appointments' : view === 'calendar' ? 'Your availability' : view === 'inquiries' ? 'Your inquiries' : 'Needs attention'}</h1>
             <p>
-              {view === 'calendar' ? 'Keep your consultation times up to date. All times are in India Standard Time.' : 'Your website requests, saved privately and ready for follow-up.'}
+              {view === 'appointments' ? 'See every booking in one place. All times are in India Standard Time.' : view === 'calendar' ? 'Keep your consultation times up to date. All times are in India Standard Time.' : 'Your website requests, saved privately and ready for follow-up.'}
             </p>
           </div>
           {user && (
@@ -262,7 +273,7 @@ export default function PrivateCalendar() {
           )}
         </header>
         {user && <div className="studio-calendar__toolbar"><nav className="studio-calendar__tabs" aria-label="Studio views">
-          {[['calendar', 'Calendar'], ['inquiries', 'Inquiries'], ['attention', 'Needs attention']].map(([key, label]) =>
+          {[['appointments', 'Appointments'], ['calendar', 'Calendar'], ['inquiries', 'Inquiries'], ['attention', 'Needs attention']].map(([key, label]) =>
             <button key={key} aria-pressed={view === key} disabled={busy} onClick={() => { setView(key); setError(''); setNotice(''); }}>{label}</button>)}
         </nav>
         {view === 'calendar' && <StudioGoogleConnection user={user} onSessionExpired={sessionExpired} />}
@@ -305,6 +316,8 @@ export default function PrivateCalendar() {
               calendar.
             </p>
           </div>
+        ) : view === 'appointments' ? (
+          <StudioAppointments key={view} user={user} onExpired={sessionExpired} onNotice={message => { setNotice(message); setRefresh(value => value + 1); }} />
         ) : view === 'attention' ? (
           <StudioAttention key={view} user={user} onExpired={sessionExpired} />
         ) : view === 'inquiries' ? (
@@ -349,10 +362,11 @@ export default function PrivateCalendar() {
                 ))}
                 {Array.from({ length: count }, (_, index) => {
                   const key = `${month}-${String(index + 1).padStart(2, "0")}`;
+                  const appointments = bookingDays[key] || 0;
                   return (
                     <button
                       key={key}
-                      aria-label={dayName(key)}
+                      aria-label={`${dayName(key)}${appointments ? `, ${appointments} appointment${appointments === 1 ? '' : 's'}` : ''}`}
                       aria-pressed={date === key}
                       disabled={busy || key < todayInIndia()}
                       onClick={() => {
@@ -361,7 +375,8 @@ export default function PrivateCalendar() {
                         setNotice("");
                       }}
                     >
-                      {index + 1}
+                      <span>{index + 1}</span>
+                      {appointments > 0 && <small aria-hidden="true">{appointments}</small>}
                     </button>
                   );
                 })}
@@ -505,13 +520,13 @@ export default function PrivateCalendar() {
                                   onClick={() => {
                                     if (
                                       window.confirm(
-                                        "Has this cancellation been agreed by phone? This releases the appointment and records the cancellation. No refund is issued automatically.",
+                                        "Has this cancellation been agreed by phone? This releases the appointment and records the cancellation. Refund to be done manually.",
                                       )
                                     )
                                       change(
                                         `/bookings/${slot.booking_id}/cancel`,
                                         undefined,
-                                        "Cancellation recorded and time released. No refund has been issued; calendar and email updates are pending.",
+                                        "Cancellation recorded and time released. Refund to be done manually. Calendar and email updates are pending.",
                                       );
                                   }}
                                 >

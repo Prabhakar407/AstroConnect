@@ -79,6 +79,8 @@ const itemVariants = {
  */
 function Appointment_Booking() {
   const [searchParams] = useSearchParams()
+  const requestedService = searchParams.get('service')
+  const initialService = catalogue.some(service => service.id === requestedService) ? requestedService : ''
   const { scrollY } = useScroll()
   const yZodiac = useTransform(scrollY, [0, 1000], [0, -80])
   const rZodiac = useTransform(scrollY, [0, 1000], [0, 35])
@@ -91,7 +93,7 @@ function Appointment_Booking() {
     birthDate: "",
     birthTime: "",
     birthPlace: "",
-    readingType: catalogue.some(service => service.id === searchParams.get('service')) ? searchParams.get('service') : 'vedic-astrology',
+    readingType: initialService,
     questionCount: 1,
     bookingDate: "",
     bookingSlot: "",
@@ -106,9 +108,9 @@ function Appointment_Booking() {
   const [quoteRetry, setQuoteRetry] = useState(0)
   const verifiedDraft = useRef(null)
   const receipt = useRef(null)
-  const selectedService = catalogue.find(service => service.id === formData.readingType) || catalogue[0]
+  const selectedService = catalogue.find(service => service.id === formData.readingType) || null
   const currentQuote = serverQuote?.service_id === formData.readingType && serverQuote?.question_count === formData.questionCount ? serverQuote : null
-  const totalFee = currentQuote?.amount_paise ?? selectedService.amount_paise * (selectedService.per_question ? formData.questionCount : 1)
+  const totalFee = currentQuote?.amount_paise ?? (selectedService ? selectedService.amount_paise * (selectedService.per_question ? formData.questionCount : 1) : 0)
   
   const [submitted, setSubmitted] = useState(false)
   const [checkout, setCheckout] = useState(null)
@@ -120,7 +122,7 @@ function Appointment_Booking() {
   const [noticeMsg, setNoticeMsg] = useState("")
   const [attemptedSubmit, setAttemptedSubmit] = useState(false)
   const [showOtpModal, setShowOtpModal] = useState(false)
-  const bookingBlocked = loading || !bookingEnabled || !currentQuote || Boolean(quoteError) || availabilityLoading || Boolean(availabilityError) || slotAvailability[formData.bookingSlot] !== true
+  const bookingBlocked = loading || !selectedService || !bookingEnabled || !currentQuote || Boolean(quoteError) || availabilityLoading || Boolean(availabilityError) || slotAvailability[formData.bookingSlot] !== true
 
   const [currentYear, setCurrentYear] = useState(Number(today.slice(0, 4)))
   const [currentMonth, setCurrentMonth] = useState(Number(today.slice(5, 7)) - 1)
@@ -196,6 +198,7 @@ function Appointment_Booking() {
     let active = true
     setQuoteError('')
     setServerQuote(null)
+    if (!selectedService) return () => { active = false }
     requestJson(`/api/quote?service_id=${formData.readingType}&question_count=${formData.questionCount}`)
       .then(data => {
         if (data.service_id !== formData.readingType || data.question_count !== formData.questionCount ||
@@ -204,7 +207,7 @@ function Appointment_Booking() {
         if (active) setServerQuote(data)
       }).catch(error => { if (active) { setServerQuote(null); setQuoteError(error.message) } })
     return () => { active = false }
-  }, [formData.readingType, formData.questionCount, quoteRetry])
+  }, [formData.readingType, formData.questionCount, quoteRetry, selectedService])
 
   useEffect(() => {
     if (!policy) return
@@ -275,6 +278,9 @@ function Appointment_Booking() {
   }
 
   const validateForm = useCallback(() => {
+    if (!selectedService) {
+      return "Please choose a consultation.";
+    }
     if (formData.name.trim().length < 2 || formData.name.trim().length > 100) {
       return "Please enter your full name, between 2 and 100 characters.";
     }
@@ -306,7 +312,7 @@ function Appointment_Booking() {
       return "Please select a time slot.";
     }
     return null;
-  }, [formData, policy, slotAvailability, today])
+  }, [formData, policy, slotAvailability, today, selectedService])
 
   useEffect(() => {
     if (attemptedSubmit) {
@@ -468,7 +474,7 @@ function Appointment_Booking() {
     setRemainingSeconds(0)
     setFormData({
       name: '', phone: '', email: '', birthDate: '', birthTime: '', birthPlace: '',
-      readingType: 'vedic-astrology', bookingDate: '', bookingSlot: '', questionCount: 1, notes: '',
+      readingType: initialService, bookingDate: '', bookingSlot: '', questionCount: 1, notes: '',
     })
   }
 
@@ -582,7 +588,7 @@ function Appointment_Booking() {
                       : checkout.appointment_state === 'payment_review'
                         ? 'Please do not pay again. The studio can see this exception and will check it.'
                         : checkout.appointment_state === 'cancelled'
-                          ? 'This appointment is no longer active. Cancellation does not automatically issue a refund; please call the studio with any payment question.'
+                          ? 'This appointment is no longer active. Refund to be done manually; please call the studio with any payment question.'
                           : 'No payment should be made against this expired reservation. Choose a fresh available time.'}
                   </p>
                 </div>
@@ -890,18 +896,19 @@ function Appointment_Booking() {
                       onChange={handleInputChange}
                       className="w-full bg-[#181122] border border-white/10 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-[#D3AF54] focus:ring-2 focus:ring-[#D3AF54]/15 transition-all duration-300 cursor-pointer"
                     >
+                      <option value="" disabled>Choose a consultation</option>
                       {catalogue.map(service => <option key={service.id} value={service.id}>{service.title} ({formatFee(service.amount_paise)}{service.per_question ? ' per question' : ''})</option>)}
                     </select>
                   </div>
 
-                  {selectedService.per_question && <div className="space-y-2">
+                  {selectedService?.per_question && <div className="space-y-2">
                     <label htmlFor="questionCount" className="block text-sm font-semibold text-[#D3AF54]">Number of questions</label>
                     <select id="questionCount" name="questionCount" value={formData.questionCount} onChange={handleInputChange} className="w-full rounded-xl border border-white/20 bg-[#181122] px-3 py-2 text-sm text-white">
                       {Array.from({ length: 10 }, (_, index) => index + 1).map(count => <option key={count} value={count}>{count} {count === 1 ? 'question' : 'questions'}</option>)}
                     </select>
                     <p className="text-sm leading-relaxed text-white/80">Additional questions during the consultation are charged at ₹1,100 each, payable at that time.</p>
                   </div>}
-                  <p aria-live="polite" className="text-sm font-semibold text-[#D3AF54]">Total: {formatFee(totalFee)} <span className="font-normal text-white/80">· 30-minute session</span></p>
+                  <p aria-live="polite" className="text-sm font-semibold text-[#D3AF54]">{selectedService ? <>Total: {formatFee(totalFee)} <span className="font-normal text-white/80">· 30-minute session</span></> : 'Choose a consultation to see the fee.'}</p>
                   {quoteError && !availabilityError && <p role="alert" className="text-sm text-amber-200">{quoteError} <button type="button" className="underline underline-offset-4" onClick={() => setQuoteRetry(value => value + 1)}>Check fee again</button></p>}
 
                   {/* Choose Time Slot Button Grid */}

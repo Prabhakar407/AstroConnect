@@ -348,7 +348,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       await page.reload();
       await page.getByRole('heading', { name: 'This appointment was cancelled' }).waitFor();
       assert.equal(await page.getByRole('link', { name: 'Open Google Meet' }).count(), 0);
-      assert.ok((await page.locator('body').innerText()).includes('does not automatically issue a refund'));
+      assert.ok((await page.locator('body').innerText()).includes('Refund to be done manually'));
       await shot('booking-cancelled');
 
       checkoutCancelled = false;

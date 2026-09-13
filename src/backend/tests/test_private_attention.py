@@ -39,7 +39,7 @@ class PrivateAttentionTests(unittest.TestCase):
             'resolution': 'customer_contacted', 'note': 'Synthetic test only',
         })
         self.assertEqual(response.status_code, 200)
-        self.assertIn('No refund', response.json()['message'])
+        self.assertIn('Refund to be done manually.', response.json()['message'])
         self.assertEqual(self.client.get('/api/admin/attention').json()['payment_cases'], [])
         with self.store.transaction() as conn:
             self.assertEqual(conn.execute('SELECT count(*) AS n FROM payments').fetchone()['n'], 0)

@@ -1031,7 +1031,7 @@ export default function Home() {
 
                     <div className="home-service-action mt-5 flex justify-start w-full">
                       <Link 
-                        to="/booking"
+                        to={`/booking?service=${allServices[activeServiceTab].id}`}
                         className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-semibold px-5 py-2 rounded-xl transition duration-300 shadow-md shadow-[#D3AF54]/10 cursor-pointer text-xs uppercase tracking-wider flex items-center gap-2"
                       >
                         <Calendar size={14} />
@@ -1142,7 +1142,7 @@ export default function Home() {
 
                        <div className="home-service-action mt-6 flex justify-start w-full">
                          <Link 
-                           to="/booking"
+                           to={`/booking?service=${allServices[activeServiceTab].id}`}
                            className="bg-[#D3AF54] hover:bg-[#D3AF54]/95 text-[#181122] font-semibold px-5 py-2.5 rounded-xl transition duration-300 shadow-md shadow-[#D3AF54]/10 hover:scale-[1.02] active:scale-[0.98] cursor-pointer text-xs uppercase tracking-wider flex items-center gap-2"
                          >
                            <Calendar size={14} />
