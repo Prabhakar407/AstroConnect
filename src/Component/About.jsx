@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import aboutImg from '../assets/images/About.webp'
+import aboutImg from '../assets/images/About.png'
 import './About.css'
 import { publicServices } from '../data/publicServices'
 import { ServiceFocus } from './ServicePresentation'
