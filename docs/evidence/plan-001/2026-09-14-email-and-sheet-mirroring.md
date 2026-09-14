@@ -9,7 +9,9 @@ This slice prepares two readable customer-record copies and replaces the plain t
 - The connected Drive identity was independently confirmed as the NeuraFlow account.
 - A complete native-spreadsheet search plus Astro Advice/customer-record keyword searches found no spreadsheet in that account, so there was no like-for-like workbook to preserve or discuss.
 - Created one permanent NeuraFlow-owned workbook inside `Client Shares/Astro Advice by Kundan Singh`. It has `Appointments` and `Inquiries` tabs, frozen/filterable headers, readable column widths, India time zone and restrained native formatting. API readback confirmed its owner, parent folder, tab names, headers, filters and dimensions.
-- The current Drive connection cannot inspect or create content under the client Gmail account. No client workbook was created, altered or guessed. That account must be connected and searched before its permanent workbook is created.
+- The client supplied an existing client-owned website workbook after checking that account. It contained only confirmed pre-launch dummy data and the user explicitly authorized replacing it. The old three-tab layout and dummy rows were removed in place, preserving the client-owned file, its permanent link and its access controls.
+- The client workbook is now named `Astro Advice Customer Records — Client Copy`. Its `Appointments` and `Inquiries` tabs match the NeuraFlow copy exactly in headers, ordering, frozen/filterable first rows, column widths, tab colors, locale and India time zone. Connector readback verified both structures after the rewrite.
+- The existing spreadsheet-only service account retains editor access to the client workbook and was granted editor access to the NeuraFlow workbook. Drive metadata confirms the two workbooks have different owners and the same service account can reach both destinations.
 - No customer record was written during workbook setup.
 
 Private workbook identifiers and credentials are deliberately absent from Git.
@@ -47,7 +49,6 @@ The first scheduled GitHub backup run checked out source and installed all tools
 
 ## Remaining release sequence
 
-1. Connect Drive as the client Gmail, repeat the duplicate search, then create and format the client-owned workbook only if no like-for-like copy exists.
-2. Create the permanent spreadsheet-only service account in the existing Google project, share both workbooks with it and place the three protected values in the existing Vercel project.
-3. Release the website and matching existing Cloudflare Worker together, then prove one inquiry and one confirmed/cancelled appointment reach both workbooks without duplicates.
-4. Repair the three GitHub backup secrets, run the workflow, verify the encrypted Drive files and perform the documented isolated restore proof.
+1. Obtain a fresh JSON key for the existing spreadsheet-only service account and place it plus the two fixed workbook IDs in the existing Vercel project as the three protected Sheet settings.
+2. Release the website and matching existing Cloudflare Worker together, then prove one inquiry and one confirmed/cancelled appointment reach both workbooks without duplicates.
+3. Repair the three GitHub backup secrets, run the workflow, verify the encrypted Drive files and perform the documented isolated restore proof.
