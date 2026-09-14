@@ -50,6 +50,6 @@ The first scheduled GitHub backup run checked out source and installed all tools
 
 ## Remaining release sequence
 
-1. Place the locally verified service-account JSON plus the two fixed workbook IDs in the existing Vercel project as the three protected Sheet settings.
+1. The user confirms the locally verified service-account JSON plus the two fixed workbook IDs are saved in the existing Vercel project for Production and Preview. Hosted runtime loading remains unproved until release.
 2. Release the website and matching existing Cloudflare Worker together, then prove one inquiry and one confirmed/cancelled appointment reach both workbooks without duplicates.
 3. Repair the three GitHub backup secrets, run the workflow, verify the encrypted Drive files and perform the documented isolated restore proof.
