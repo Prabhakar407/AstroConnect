@@ -178,15 +178,18 @@ class Store:
             raise RuleViolation("Please verify your email again before submitting.", 403)
 
     @staticmethod
-    def enqueue(conn, kind, record_id, now, *, suffix=""):
+    def enqueue(conn, kind, record_id, now, *, suffix="", message_version=1):
         roles = (("customer", "client") if kind == "inquiry_received" else
                  ("calendar", "customer", "client") if kind in ("booking_confirmed", "booking_cancelled") else
+                 ("client_sheet", "agency_sheet") if kind in ("sheet_booking", "sheet_inquiry") else
                  ("client",) if kind == "payment_review" else (None,))
         for role in roles:
-            key = f"{kind}:{record_id}:{suffix}" + (f":{role}" if role else "")
-            conn.execute("""INSERT INTO delivery_jobs (id,dedupe_key,kind,record_id,created_at,next_attempt_at,recipient_role,dispatch_after)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT (dedupe_key) DO NOTHING""",
-                (uuid4(), key, kind, record_id, now, now, role, now))
+            version_suffix = f":v{message_version}" if message_version != 1 else ""
+            key = f"{kind}:{record_id}:{suffix}" + (f":{role}" if role else "") + version_suffix
+            conn.execute("""INSERT INTO delivery_jobs
+                (id,dedupe_key,kind,record_id,created_at,next_attempt_at,recipient_role,dispatch_after,message_version)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT (dedupe_key) DO NOTHING""",
+                (uuid4(), key, kind, record_id, now, now, role, now, message_version))
 
     def hold(self, payload, request_id, token_digest, receipt_secret, *, payment_key_id=None):
         """Internal checkout primitive. A hold is not a confirmed/paid booking."""
@@ -271,6 +274,7 @@ class Store:
             if accepted:
                 conn.execute("UPDATE bookings SET state='confirmed' WHERE id=%s", (booking_id,))
                 self.enqueue(conn, "booking_confirmed", booking_id, now)
+                self.enqueue(conn, "sheet_booking", booking_id, now)
             else:
                 # Preserve a previously confirmed booking when a second payment
                 # needs review. Never seize another booking/closure's slot.
@@ -327,6 +331,10 @@ class Store:
                 WHERE record_id=%s AND kind='booking_confirmed' AND provider_id IS NULL
                 AND state IN ('pending','processing','failed')""", (booking_id,))
             self.enqueue(conn, "booking_cancelled", booking_id, now)
+            # A second version updates the existing appointment row to
+            # cancelled. If a confirmed copy is already in flight, this later
+            # version still converges both workbooks on the current DB truth.
+            self.enqueue(conn, "sheet_booking", booking_id, now, message_version=2)
 
     def save_inquiry(self, payload, request_id, token_digest, receipt_secret):
         digest = receipt_digest(receipt_secret, "inquiry", request_id)
@@ -348,6 +356,7 @@ class Store:
                          (inquiry_id, request_id, request_hash, payload["kind"], payload["name"], payload["email"], payload.get("phone", ""),
                           payload.get("dob", ""), payload["subject"], payload["message"], payload.get("location", ""), now, digest, now + timedelta(hours=24), payload.get('source', payload['kind'])))
             self.enqueue(conn, "inquiry_received", inquiry_id, now)
+            self.enqueue(conn, "sheet_inquiry", inquiry_id, now)
             return inquiry_id
 
     def inquiry_status(self, request_id, receipt_secret):

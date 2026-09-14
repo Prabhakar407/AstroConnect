@@ -40,6 +40,19 @@ test('booking fulfilment jobs use their fixed booking handler', async () => {
   }
 });
 
+test('spreadsheet copy jobs use their fixed spreadsheet handler', async () => {
+  for (const kind of ['sheet_booking', 'sheet_inquiry']) {
+    const msg = message({ job_id: randomUUID(), kind, environment: 'production' });
+    await createWorker(async (url, options) => {
+      assert.equal(url, 'https://astroadvicebykundansingh.com/api/internal/delivery/sheet');
+      assert.deepEqual(JSON.parse(options.body), { job_id: msg.body.job_id });
+      return reply(result(msg));
+    }).queue({ messages: [msg] }, env);
+    assert.equal(msg.acks, 1);
+    assert.deepEqual(msg.retries, []);
+  }
+});
+
 test('acknowledges matching durable success and uses only fixed destination', async () => {
   const msg = message();
   const worker = createWorker(async (url, options) => {
@@ -223,7 +236,7 @@ test('scheduled recovery runs without visitors or queued messages and uses separ
 test('scheduled failures are reported, not silently marked healthy', async () => {
   const variants = [
     body => ({ ...identity, ...body, selected: 2, published: 1, needs_attention: 0 }),
-    body => ({ ...identity, ...body, selected: 26, published: 26, needs_attention: 0 }),
+    body => ({ ...identity, ...body, selected: 76, published: 76, needs_attention: 0 }),
     body => ({ ...identity, ...body, selected: 0, published: 0, needs_attention: 0, run_id: randomUUID() }),
     body => ({ ...identity, ...body, selected: 0, published: 0, needs_attention: 0, environment: 'preview' }),
     body => ({ ...identity, ...body, selected: 0, published: 0, needs_attention: -1 }),

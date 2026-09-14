@@ -14,6 +14,7 @@ const caseNames = {
 };
 const deliveryNames = {
   calendar: 'Google Calendar and Meet', customer: 'Customer email', client: 'Studio email',
+  client_sheet: 'Client Google Sheet', agency_sheet: 'NeuraFlow Google Sheet',
 };
 const paymentEventNames = {
   'payment.authorized': 'Authorized payment', 'payment.captured': 'Captured payment',
@@ -96,7 +97,7 @@ export default function StudioAttention({ user, onExpired }) {
       </div><button aria-label="Refresh booking problems" className="studio-calendar__secondary" onClick={refresh}><RefreshCw size={18} /></button></div>
       {error && <p className="studio-calendar__error" role="alert">{error}</p>}
       {!data && !error && <p role="status">Checking booking follow-up…</p>}
-      {data && !data.payment_cases.length && !data.delivery_problems.length && !(data.payment_event_problems || []).length && <div className="studio-inquiries__empty">
+      {data && !data.payment_cases.length && !data.delivery_problems.length && !(data.payment_event_problems || []).length && !(data.sheet_problems || []).length && <div className="studio-inquiries__empty">
         <h3>No booking or payment items need attention</h3><p>Refresh if you have just reconnected Google Calendar or fixed email delivery.</p>
       </div>}
       {data?.payment_cases.map(item => <PaymentCase key={item.id} item={item} user={user} refresh={refresh} onExpired={onExpired} />)}
@@ -111,6 +112,13 @@ export default function StudioAttention({ user, onExpired }) {
           <p>Razorpay reference {item.payment_id}</p></div><span className="studio-inquiry__badge">Needs retry</span></div>
         <p className="studio-calendar__small">Received {when(item.received_at)} IST. Check this payment in Razorpay before asking the customer to pay again.</p>
         <button className="studio-calendar__secondary" onClick={() => retry(item)}>Check again</button>
+      </article>)}
+      {data?.sheet_problems?.map(item => <article className="studio-attention__item" key={item.id}>
+        <div className="studio-attention__heading"><div><h3>{deliveryNames[item.recipient_role]} needs an update</h3>
+          <p>{item.person_name}{item.service_name ? ` · ${item.service_name}` : item.subject ? ` · ${item.subject}` : ''}</p></div>
+          <span className="studio-inquiry__badge">Needs retry</span></div>
+        <p className="studio-calendar__small">The website record is safe. Check the spreadsheet connection, then try this copy again.</p>
+        <button className="studio-calendar__secondary" onClick={() => retry(item)}>Try copy again</button>
       </article>)}
     </section>
     <StudioInquiries user={user} attention onExpired={onExpired} />

@@ -3,7 +3,6 @@
 Only inquiry jobs are supported. The hosting helper is wired separately; it must
 authenticate before invoking this processor. Booking/meeting jobs stay untouched.
 """
-import html
 from datetime import timedelta
 from uuid import UUID, uuid4
 
@@ -13,6 +12,7 @@ from .domain import CLIENT_EMAIL, CLIENT_PHONE
 from .resend_email import EmailDeliveryError, send_message
 from .storage import StorageUnavailable
 from .email_budget import reserve_email
+from .email_templates import message
 
 MAX_ATTEMPTS = 8
 LEASE = timedelta(seconds=90)
@@ -28,23 +28,29 @@ def inquiry_message(sender, inquiry, recipient_role):
         recipient, reply = inquiry['email'], CLIENT_EMAIL
         phone_label = f'{CLIENT_PHONE[:3]} {CLIENT_PHONE[3:8]} {CLIENT_PHONE[8:]}'
         subject = 'Your inquiry has been saved — Astro Advice'
-        lines = [f"Hello {inquiry['name']},", 'Your inquiry has been saved. The studio will contact you.',
-                 'This is an inquiry, not a confirmed appointment or a payment receipt.',
-                 f'Reference: {reference}', f'You can reply to this email or call {phone_label}.',
-                 'Astro Advice by Kundan Singh']
+        return message(sender=sender, recipient=recipient, reply_to=reply, subject=subject,
+            preheader='The studio has received your inquiry.', title='We have received your inquiry',
+            introduction=f"Hello {inquiry['name']}, the studio will review your message and contact you.",
+            sections=({'heading': 'Your inquiry', 'rows': (
+                ('Topic', inquiry.get('subject')), ('Message', inquiry.get('message')),
+                ('Inquiry reference', reference))},),
+            notice=f"This inquiry is not an appointment or payment receipt. You can reply to this email or call {phone_label}.")
     else:
         recipient, reply = CLIENT_EMAIL, inquiry['email']
         subject = 'New website inquiry — Astro Advice'
-        lines = [f"A new inquiry from {inquiry['name']} has been saved.",
-                 'Reply to this email to contact the sender.', f'Reference: {reference}',
-                 'The complete inquiry is stored privately on your website.',
-                 'This inquiry does not reserve an appointment or record a payment.',
-                 'Astro Advice by Kundan Singh']
-    return {'from': sender, 'to': [recipient], 'reply_to': reply, 'subject': subject,
-            'text': '\n\n'.join(lines),
-            'html': '<div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;'
-                    'color:#231b2e;max-width:560px;padding:16px;margin:0 auto;overflow-wrap:anywhere;">'
-                    + ''.join(f'<p>{html.escape(line)}</p>' for line in lines) + '</div>'}
+        source = {'home': 'Homepage consultation inquiry', 'contact': 'Contact page inquiry',
+                  'prashna': 'Prashna Kundali inquiry'}.get(inquiry.get('source'), 'Website inquiry')
+        return message(sender=sender, recipient=recipient, reply_to=reply, subject=subject,
+            preheader=f"A new inquiry has arrived from {inquiry['name']}.", title='A new website inquiry has arrived',
+            introduction='Reply to this email to contact the customer directly.',
+            sections=(
+                {'heading': 'Customer', 'rows': (
+                    ('Name', inquiry.get('name')), ('Email', inquiry.get('email')), ('Phone', inquiry.get('phone')),
+                    ('Date of birth', inquiry.get('dob')), ('Location', inquiry.get('location')))},
+                {'heading': 'Inquiry', 'rows': (
+                    ('Received through', source), ('Topic', inquiry.get('subject')),
+                    ('Message', inquiry.get('message')), ('Inquiry reference', reference))},
+            ), notice='This inquiry does not reserve an appointment or record a payment.')
 
 
 def outcome(row):
@@ -86,7 +92,7 @@ class InquiryDelivery:
             if not self.settings.resend_key or (payload is None and not self.settings.sender):
                 raise StorageUnavailable('Email delivery is not configured.')
             if payload is None:
-                inquiry = conn.execute('SELECT id,name,email FROM inquiries WHERE id=%s', (row['record_id'],)).fetchone()
+                inquiry = conn.execute('SELECT * FROM inquiries WHERE id=%s', (row['record_id'],)).fetchone()
                 if not inquiry:
                     row = conn.execute("""UPDATE delivery_jobs SET state='failed',last_error_code='missing_inquiry',
                         lease_token=NULL,lease_until=NULL WHERE id=%s RETURNING *""", (job_id,)).fetchone()

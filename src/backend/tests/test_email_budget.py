@@ -80,7 +80,8 @@ class BudgetTests(unittest.TestCase):
         payload = dict(kind='contact', name='Synthetic', email='synthetic@example.com', subject='Help', message='Synthetic message')
         inquiry = self.store.save_inquiry(payload, uuid4(), self.verified(payload['email'], 'contact'), 'a' * 64)
         with self.store.transaction() as conn:
-            job = conn.execute('SELECT id FROM delivery_jobs WHERE record_id=%s LIMIT 1', (inquiry,)).fetchone()['id']
+            job = conn.execute("SELECT id FROM delivery_jobs WHERE record_id=%s AND kind='inquiry_received' LIMIT 1",
+                               (inquiry,)).fetchone()['id']
         for _ in range(99): self.reserve()
         sends = []
         worker = InquiryDelivery(self.store, Settings(resend_key='synthetic', sender='studio@example.com'),

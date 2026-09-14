@@ -20,7 +20,7 @@ Open `https://astroadvicebykundansingh.com/studio/calendar` and sign in with the
 - **Appointments:** see upcoming, past and cancelled bookings; open a booking for the customer, payment, birth, question and meeting details; record a phone-agreed cancellation.
 - **Calendar:** see booking counts on dates, inspect a selected day's slots, and close or reopen free dates/times.
 - **Inquiries:** read Contact, Home and Prashna inquiries.
-- **Needs attention:** handle unusual payments, failed Calendar/Meet work and failed customer/studio emails.
+- **Needs attention:** handle unusual payments, failed Calendar/Meet work, failed customer/studio emails and a failed Google Sheet copy.
 
 A date or time containing an existing booking or payment in progress cannot be closed. Cancelling an appointment updates the website record, removes the website-created Google event and sends both parties a cancellation email. The private page states **“Refund to be done manually.”** Cancellations and payment questions are handled by phone.
 
@@ -29,6 +29,7 @@ A date or time containing an existing booking or payment in progress cannot be c
 - Check Razorpay before asking a customer to pay again.
 - A late, mismatched, refunded or disputed payment stays visible under **Needs attention**. Marking it handled only records the client's note; it never moves money.
 - If Google Calendar, Meet or an email fails, fix or reconnect that service and press **Try delivery again**.
+- If a Google Sheet copy fails, the website record is still safe. Restore the workbook share or service-account access, then press **Try copy again**. Never type the same record into the Sheet as a replacement row.
 - An unmatched Razorpay notification also appears under **Needs attention** with its Razorpay payment reference and a **Check again** button.
 - Do not delete database rows, recreate an order, invent a meeting link or promise a refund to make an error disappear.
 
@@ -40,6 +41,14 @@ A date or time containing an existing booking or payment in progress cannot be c
 - Review the private **Needs attention** tab at the start and end of each working day, even if no alert was received.
 
 ## Backups and recovery
+
+### Readable customer-record copies
+
+Neon remains the master record. Every inquiry and every confirmed appointment is also copied to two private workbooks: one owned by the client and one owned by NeuraFlow. Both workbooks have **Appointments** and **Inquiries** tabs. A cancellation updates the same appointment row by its permanent booking reference. Unpaid or abandoned checkout holds are not copied because they are not appointments.
+
+The website uses one Google service account with spreadsheet-only permission. Each workbook must be shared directly with that service-account email as an editor. The server needs `ASTRO_GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON`, `ASTRO_CLIENT_SHEET_ID` and `ASTRO_AGENCY_SHEET_ID` in protected Vercel settings. These copies are operational safeguards, not replacements for the database or encrypted backup below.
+
+### Encrypted database backup
 
 GitHub runs `.github/workflows/production-database-backup.yml` once each day. It makes a consistent PostgreSQL export, checks it, encrypts it with an `age` public key and uploads it to the client-controlled Google Drive folder `astro-advice-production-backups`. It verifies the uploaded encrypted bytes before reporting success. Only app-owned backup names older than 15 days are moved to Google Drive Trash. No plaintext backup or decryption key is uploaded.
 
@@ -75,6 +84,7 @@ GitHub sends a separate failure notification for the daily backup job. Cloudflar
 | Private sign-in, Calendar and Meet | Existing Google project `astrologer-kundan-singh`; callback `/api/admin/google/callback`; studio account only |
 | Payment | Client's existing Razorpay merchant; callback `/api/webhooks/razorpay` |
 | Durable work and 15-minute recovery | Existing Cloudflare Worker and existing queue `astroadvice-by-kundan-snigh-inquiries` |
+| Readable customer-record copies | Two private Google Sheet workbooks, separately owned by client and NeuraFlow |
 | Independent retained backup | GitHub scheduled job to client-controlled Google Drive folder |
 
 The official website origin must remain in every relevant provider. An approved preview origin may coexist with it. Preview must never replace the official callback or destination.

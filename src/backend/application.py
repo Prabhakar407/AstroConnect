@@ -21,7 +21,9 @@ from .models import (BookingInput, CheckoutConfirmationInput, ContactInput, Deli
                      PrashnaInput, ReceiptInput, RecoveryInput, SendCode, VerifyCode)
 from .resend_email import send_code
 from .inquiry_delivery import InquiryDelivery
-from .inquiry_dispatch import APPLICATION, ENVIRONMENT, BookingDispatch, InquiryDispatch, queue_configured
+from .inquiry_dispatch import (APPLICATION, ENVIRONMENT, BookingDispatch, InquiryDispatch,
+                               SheetDispatch, queue_configured)
+from .sheet_delivery import SheetDelivery
 from .storage import StorageUnavailable, Store, fingerprint, receipt_digest
 from .verification import EmailVerification
 from .email_events import receive_event
@@ -42,6 +44,9 @@ class Settings:
     google_client_id: str = ""
     google_client_secret: str = field(default="", repr=False)
     google_token_key: str = field(default="", repr=False)
+    google_sheets_service_account_json: str = field(default="", repr=False)
+    client_sheet_id: str = field(default="", repr=False)
+    agency_sheet_id: str = field(default="", repr=False)
     razorpay_key_id: str = field(default="", repr=False)
     razorpay_key_secret: str = field(default="", repr=False)
     razorpay_webhook_secret: str = field(default="", repr=False)
@@ -64,6 +69,9 @@ class Settings:
                    google_client_id=os.getenv("ASTRO_GOOGLE_CLIENT_ID", ""),
                    google_client_secret=os.getenv("ASTRO_GOOGLE_CLIENT_SECRET", ""),
                    google_token_key=os.getenv("ASTRO_GOOGLE_TOKEN_KEY", ""),
+                   google_sheets_service_account_json=os.getenv("ASTRO_GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON", ""),
+                   client_sheet_id=os.getenv("ASTRO_CLIENT_SHEET_ID", ""),
+                   agency_sheet_id=os.getenv("ASTRO_AGENCY_SHEET_ID", ""),
                    razorpay_key_id=os.getenv("ASTRO_RAZORPAY_KEY_ID", ""),
                    razorpay_key_secret=os.getenv("ASTRO_RAZORPAY_KEY_SECRET", ""),
                    razorpay_webhook_secret=os.getenv("ASTRO_RAZORPAY_WEBHOOK_SECRET", ""),
@@ -119,12 +127,14 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
     from .booking_delivery import BookingDelivery
     booking_delivery = BookingDelivery(store, settings, sender=notification_sender)
     booking_dispatch = BookingDispatch(store, settings, publisher=queue_publisher)
+    sheet_delivery = SheetDelivery(store, settings)
+    sheet_dispatch = SheetDispatch(store, settings, publisher=queue_publisher)
     app = FastAPI(title="AstroAdvice Booking Engine", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(BodyLimitMiddleware)
     app.add_middleware(CORSMiddleware, allow_origins=list(settings.origins), allow_credentials=True,
                        allow_methods=["GET", "POST"], allow_headers=["Content-Type", "X-Astro-CSRF", "X-Astro-Receipt"])
     app.include_router(admin_router(settings, store, identity_verifier, booking_dispatch=booking_dispatch,
-                                    payment_dispatch=payment_dispatch))
+                                    payment_dispatch=payment_dispatch, sheet_dispatch=sheet_dispatch))
 
     def booking_ready():
         if payment_provider is not None:
@@ -244,6 +254,7 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
         data["kind"] = "contact"
         inquiry_id = store.save_inquiry(data, payload.request_id, verification.digest(payload.verification_token), request.headers.get("X-Astro-Receipt"))
         dispatch.after_save(inquiry_id)
+        sheet_dispatch.after_save(inquiry_id)
         return store.inquiry_status(payload.request_id, request.headers.get("X-Astro-Receipt"))
 
     def require_internal(request, secret):
@@ -267,9 +278,16 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
     @app.post("/api/internal/recovery/inquiries")
     def recover_inquiries(payload: RecoveryInput, request: Request):
         require_internal(request, settings.recovery_secret)
+        results, dispatch_failure = [], None
         try:
-            result = dispatch.run()
-            booking_result = booking_dispatch.run(limit=25 - result['selected'])
+            # One broken destination must not starve the other durable work.
+            # Each dispatcher remains separately bounded to one queue batch.
+            for durable_dispatch in (dispatch, booking_dispatch, sheet_dispatch):
+                try:
+                    results.append(durable_dispatch.run())
+                except StorageUnavailable as error:
+                    dispatch_failure = dispatch_failure or error
+                    results.append({'selected': 0, 'published': 0})
             store.cleanup_ephemeral()
         finally:
             # A failed inquiry publication must not prevent payment recovery.
@@ -279,11 +297,13 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
                 payments = payment_events_service()
                 payments.checkout.reconcile_one()
                 payments.process_one()
+        if dispatch_failure:
+            raise dispatch_failure
         from .private_attention import pending_count
         return {'application': APPLICATION, 'environment': ENVIRONMENT,
                 'run_id': str(payload.run_id),
-                'selected': result['selected'] + booking_result['selected'],
-                'published': result['published'] + booking_result['published'],
+                'selected': sum(result['selected'] for result in results),
+                'published': sum(result['published'] for result in results),
                 'needs_attention': pending_count(store)}
 
     @app.post("/api/prashna")
@@ -292,6 +312,7 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
         data.update(kind="prashna", subject="Prashna Kundali inquiry", message=payload.question)
         inquiry_id = store.save_inquiry(data, payload.request_id, verification.digest(payload.verification_token), request.headers.get("X-Astro-Receipt"))
         dispatch.after_save(inquiry_id)
+        sheet_dispatch.after_save(inquiry_id)
         return store.inquiry_status(payload.request_id, request.headers.get("X-Astro-Receipt"))
 
     @app.post("/api/inquiry-status")
@@ -365,6 +386,7 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
         result = store.booking_status(payload.request_id, receipt)
         if result['appointment_state'] == 'confirmed':
             booking_dispatch.after_save(result['booking_id'])
+            sheet_dispatch.after_save(result['booking_id'])
         return result
 
     @app.post("/api/book-appointment")
@@ -397,6 +419,7 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
         result = payment_events_service().deliver(payload.job_id)
         if result['state'] == 'sent':
             booking_dispatch.after_save(None)
+            sheet_dispatch.after_save(None)
         return JSONResponse({'application': APPLICATION, 'environment': ENVIRONMENT, **result},
                             status_code=200 if result['terminal'] else 202)
 
@@ -407,6 +430,16 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
             result = booking_delivery.run(payload.job_id)
         except ValueError:
             raise RuleViolation('This booking task is unavailable.', 404, 'delivery_unavailable') from None
+        return JSONResponse({'application': APPLICATION, 'environment': ENVIRONMENT, **result},
+                            status_code=200 if result['terminal'] else 202)
+
+    @app.post('/api/internal/delivery/sheet')
+    def deliver_sheet(payload: DeliveryInput, request: Request):
+        require_internal(request, settings.delivery_secret)
+        try:
+            result = sheet_delivery.run(payload.job_id)
+        except ValueError:
+            raise RuleViolation('This spreadsheet task is unavailable.', 404, 'delivery_unavailable') from None
         return JSONResponse({'application': APPLICATION, 'environment': ENVIRONMENT, **result},
                             status_code=200 if result['terminal'] else 202)
 

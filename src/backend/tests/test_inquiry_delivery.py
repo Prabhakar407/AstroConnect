@@ -38,9 +38,11 @@ class InquiryMessageTests(unittest.TestCase):
         for message in (customer, client):
             self.assertNotIn('<script>', message['html'])
             self.assertIn('&lt;script&gt;', message['html'])
-            self.assertNotIn(row['message'], json.dumps(message))
-            self.assertNotIn(row['dob'], json.dumps(message))
             self.assertNotIn(row['name'], message['subject'])
+        self.assertIn(row['message'], customer['text'])
+        self.assertIn(row['message'], client['text'])
+        self.assertIn(row['dob'], client['text'])
+        self.assertIn('Astro Advice by Kundan Singh', customer['html'])
         with self.assertRaises(ValueError):
             inquiry_message(SETTINGS.sender, row, 'unapproved')
 
@@ -83,7 +85,7 @@ class InquiryDeliveryTests(unittest.TestCase):
 
     def jobs(self):
         with self.store.transaction() as conn:
-            return conn.execute('SELECT * FROM delivery_jobs ORDER BY recipient_role').fetchall()
+            return conn.execute("SELECT * FROM delivery_jobs WHERE kind='inquiry_received' ORDER BY recipient_role").fetchall()
 
     def test_two_atomic_jobs_and_no_duplicates_after_save_retry(self):
         self.store.save_inquiry(self.payload, self.request_id, 'consumed', 'a' * 64)

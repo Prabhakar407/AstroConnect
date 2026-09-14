@@ -34,7 +34,7 @@ for (const redirect of [false, true]) {
       const body = await request.json();
       const identity = { application: 'astro-advice-booking', environment: 'production' };
       return Response.json(body.job_id ? { ...identity, job_id: body.job_id, state: 'sent', terminal: true }
-        : { ...identity, run_id: body.run_id, selected: 0, published: 0 });
+        : { ...identity, run_id: body.run_id, selected: 0, published: 0, needs_attention: 0 });
     } };
   const runtime = new Miniflare(convertV4MiniflareOptions ? convertV4MiniflareOptions(options) : options);
   try {

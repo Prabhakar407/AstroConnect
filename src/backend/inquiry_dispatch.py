@@ -35,7 +35,8 @@ def publish_jobs(settings, job_ids, *, kind='inquiry_received'):
     if not isinstance(job_ids, list) or not 1 <= len(job_ids) <= BATCH_SIZE:
         raise ValueError('Invalid inquiry publication batch.')
     ids = [str(UUID(str(value))) for value in job_ids]
-    if kind not in ('inquiry_received', 'payment_event', 'booking_confirmed', 'booking_cancelled', 'payment_review'):
+    if kind not in ('inquiry_received', 'payment_event', 'booking_confirmed', 'booking_cancelled', 'payment_review',
+                    'sheet_booking', 'sheet_inquiry'):
         raise ValueError('Invalid publication kind.')
     body = {'messages': [{'body': {'job_id': value, 'kind': kind,
                                   'environment': ENVIRONMENT}, 'content_type': 'json'} for value in ids]}
@@ -65,7 +66,8 @@ def publish_jobs(settings, job_ids, *, kind='inquiry_received'):
 class InquiryDispatch:
     def __init__(self, store, settings, *, publisher=None, kind='inquiry_received'):
         self.store, self.settings = store, settings
-        if kind not in ('inquiry_received', 'payment_event', 'booking_confirmed', 'booking_cancelled', 'payment_review'):
+        if kind not in ('inquiry_received', 'payment_event', 'booking_confirmed', 'booking_cancelled', 'payment_review',
+                        'sheet_booking', 'sheet_inquiry'):
             raise ValueError('Invalid publication kind.')
         self.kind = kind
         self.publisher = publisher or (lambda ids: publish_jobs(settings, ids, kind=kind))
@@ -205,3 +207,8 @@ class BookingDispatch:
             self.run(booking_id)
         except Exception:
             logger.warning('booking_dispatch_pending_recovery')
+
+
+class SheetDispatch(BookingDispatch):
+    """Publish both spreadsheet mirrors without coupling them to email work."""
+    kinds = ('sheet_booking', 'sheet_inquiry')

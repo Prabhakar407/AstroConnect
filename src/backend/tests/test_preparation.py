@@ -19,6 +19,20 @@ from src.backend.tests import test_foundation as foundation
 
 
 class PreparationTests(unittest.TestCase):
+    def test_sheet_settings_are_server_only_and_never_exposed_by_repr(self):
+        environment = {
+            'ASTRO_GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON': '{"private_key":"private-sheet-key"}',
+            'ASTRO_CLIENT_SHEET_ID': 'private-client-sheet-id',
+            'ASTRO_AGENCY_SHEET_ID': 'private-agency-sheet-id',
+        }
+        with patch.dict(os.environ, environment, clear=True):
+            settings = Settings.from_environment()
+        self.assertEqual(settings.google_sheets_service_account_json, environment['ASTRO_GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON'])
+        self.assertEqual(settings.client_sheet_id, environment['ASTRO_CLIENT_SHEET_ID'])
+        self.assertEqual(settings.agency_sheet_id, environment['ASTRO_AGENCY_SHEET_ID'])
+        represented = repr(settings)
+        self.assertTrue(all(value not in represented for value in environment.values()))
+
     def test_connection_settings_do_not_need_enable_switches(self):
         environment = {"ASTRO_RESEND_API_KEY": "synthetic-key", "ASTRO_EMAIL_FROM": "studio@example.com",
                        "ASTRO_GOOGLE_CLIENT_ID": "synthetic-client-id"}

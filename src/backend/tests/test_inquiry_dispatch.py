@@ -94,7 +94,7 @@ class DispatchTests(unittest.TestCase):
 
     def jobs(self):
         with self.store.transaction() as conn:
-            return conn.execute('SELECT * FROM delivery_jobs ORDER BY id').fetchall()
+            return conn.execute("SELECT * FROM delivery_jobs WHERE kind='inquiry_received' ORDER BY id").fetchall()
 
     def test_publishes_after_commit_records_acceptance_but_not_delivery(self):
         self.assertEqual(self.dispatch.run(self.inquiry_id), {'selected': 2, 'published': 2})
@@ -197,7 +197,7 @@ class DispatchTests(unittest.TestCase):
             headers={'Authorization': 'Bearer ' + SETTINGS.recovery_secret})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'application': 'astro-advice-booking', 'environment': 'production',
-            **body, 'selected': 2, 'published': 2, 'needs_attention': 0})
+            **body, 'selected': 4, 'published': 4, 'needs_attention': 0})
         self.assertNotIn(self.payload['email'], response.text)
         self.assertEqual(response.headers['cache-control'], 'no-store')
 
@@ -211,7 +211,7 @@ class DispatchTests(unittest.TestCase):
         with self.store.transaction() as conn:
             self.assertIsNone(conn.execute("SELECT key FROM rate_limits WHERE key='expired-cleanup'").fetchone())
             self.assertEqual(conn.execute('SELECT count(*) AS n FROM inquiries').fetchone()['n'], 1)
-            self.assertEqual(conn.execute('SELECT count(*) AS n FROM delivery_jobs').fetchone()['n'], 2)
+            self.assertEqual(conn.execute('SELECT count(*) AS n FROM delivery_jobs').fetchone()['n'], 4)
 
     def test_recovery_failure_is_not_success_and_payload_cannot_select_urls(self):
         client = TestClient(create_app(SETTINGS, store=self.store, queue_publisher=lambda ids: False))

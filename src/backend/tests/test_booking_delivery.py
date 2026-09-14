@@ -66,8 +66,8 @@ class BookingDeliveryTests(unittest.TestCase):
         self.delivery = BookingDelivery(self.store, self.settings, google=self.google,
                                         sender=lambda payload, key: self.sent.append((payload, key)) or str(uuid4()))
 
-    def confirmed(self):
-        booking = self.store.hold(self.payload(), uuid4(), self.verified(), 'a' * 64)
+    def confirmed(self, **overrides):
+        booking = self.store.hold(self.payload(**overrides), uuid4(), self.verified(), 'a' * 64)
         self.store.confirm_paid(booking['id'], 'synthetic-paid', booking['amount_paise'], 'INR')
         return booking
 
@@ -117,7 +117,7 @@ class BookingDeliveryTests(unittest.TestCase):
         self.assertTrue(all('Refund to be done manually.' in text for text in cancellation_messages))
 
     def test_confirmation_messages_and_calendar_include_operational_details(self):
-        booking = self.confirmed()
+        booking = self.confirmed(birth_time='09:30')
         jobs = self.jobs(booking['id'])
         self.delivery.run(jobs['calendar']['id'])
         self.time = self.time.replace(second=31)
@@ -128,10 +128,13 @@ class BookingDeliveryTests(unittest.TestCase):
             self.assertIn(str(value), body['description'] + body['summary'])
         customer = next(payload['text'] for payload, key in self.sent if '/customer/' in key)
         client = next(payload['text'] for payload, key in self.sent if '/client/' in key)
-        self.assertIn('Payment received:', customer)
-        self.assertIn('This is an online consultation on Google Meet.', customer)
-        self.assertIn('Use the Google Meet link below to join at your appointment time.', customer)
-        self.assertIn('Birth date:', client)
+        self.assertIn('Amount paid:', customer)
+        self.assertIn('online consultation', customer)
+        self.assertIn('Join on Google Meet', customer)
+        self.assertIn('Date of birth:', client)
+        self.assertIn('1 January 1990', client)
+        self.assertIn('9:30 AM', client)
+        self.assertIn('+91 85277 90801', customer)
 
     def test_cancellation_supersedes_every_unsent_confirmation(self):
         booking = self.confirmed()

@@ -1,19 +1,19 @@
 """Durable Google Meet, participant-email and payment-attention delivery."""
 
-import html
 from datetime import timedelta
 from uuid import UUID, uuid4
 
 from cryptography.fernet import InvalidToken
 from psycopg.types.json import Jsonb
 
-from .domain import CLIENT_EMAIL, CLIENT_PHONE, IST
+from .domain import CLIENT_EMAIL, IST
 from .email_budget import reserve_email
 from .google_calendar import GoogleCalendar, GoogleFailure, event_body, event_identity, meeting_result
 from .google_connection import cipher
 from .inquiry_delivery import MAX_ATTEMPTS, LEASE, outcome
 from .resend_email import EmailDeliveryError, send_message
 from .storage import StorageUnavailable
+from .email_templates import display_phone, message
 
 KINDS = frozenset(('booking_confirmed', 'booking_cancelled', 'payment_review'))
 
@@ -22,75 +22,90 @@ def format_when(value):
     return value.astimezone(IST).strftime('%A, %d %B %Y at %I:%M %p IST').replace(' 0', ' ')
 
 
+def format_birth_date(value):
+    return value.strftime('%d %B %Y').lstrip('0') if value else ''
+
+
+def format_birth_time(value):
+    return value.strftime('%I:%M %p').lstrip('0') if value else ''
+
+
 def booking_message(sender, booking, kind, role, meet_url=None):
     if role not in ('customer', 'client') or kind not in KINDS:
         raise ValueError('Unsupported booking email.')
     reference = str(booking['id'])
     when = format_when(booking['starts_at'])
     fee = f"₹{booking['amount_paise'] // 100:,}"
-    question_line = (f"Questions paid for: {booking['question_count']}"
-                     if booking['service_id'] == 'prashna-kundali' else None)
+    question_row = (("Questions paid for", booking['question_count']),) if booking['service_id'] == 'prashna-kundali' else ()
     if kind == 'booking_confirmed' and not meet_url:
         raise ValueError('A confirmed-booking email requires its saved meeting link.')
     if role == 'customer':
         recipient, reply = booking['email'], CLIENT_EMAIL
         if kind == 'booking_confirmed':
             subject = 'Your consultation is confirmed — Astro Advice'
-            lines = [f"Hello {booking['full_name']},", 'Your payment and appointment are confirmed.',
-                     'This is an online consultation on Google Meet.',
-                     f"Consultation: {booking['service_name']}", f"When: {when}",
-                     f"Payment received: {fee}"]
-            if question_line:
-                lines.append(question_line)
-            lines += ['Use the Google Meet link below to join at your appointment time.',
-                     f"Google Meet: {meet_url}",
-                     f"Reference: {reference}",
-                     f"To cancel, call {CLIENT_PHONE}. Refund to be done manually.",
-                     'Astro Advice by Kundan Singh']
+            return message(sender=sender, recipient=recipient, reply_to=reply, subject=subject,
+                preheader=f"Your {booking['service_name']} consultation is confirmed.",
+                title='Your consultation is confirmed',
+                introduction=f"Hello {booking['full_name']}, your payment is confirmed and your online consultation is ready.",
+                sections=({'heading': 'Appointment details', 'rows': (
+                    ('Consultation', booking['service_name']), ('Date and time', when),
+                    ('Amount paid', fee), *question_row, ('Booking reference', reference))},),
+                action=('Join on Google Meet', meet_url),
+                notice=f"To cancel, call {display_phone()}. Refund to be done manually.")
         else:
             subject = 'Your consultation has been cancelled — Astro Advice'
-            lines = [f"Hello {booking['full_name']},", f"Your consultation for {when} has been cancelled.",
-                     f"Reference: {reference}",
-                     'Refund to be done manually. Please speak with the studio about any payment question.',
-                     f"Call {CLIENT_PHONE} if you need help.", 'Astro Advice by Kundan Singh']
+            return message(sender=sender, recipient=recipient, reply_to=reply, subject=subject,
+                preheader=f"Your consultation for {when} has been cancelled.",
+                title='Your consultation has been cancelled',
+                introduction=f"Hello {booking['full_name']}, the studio has cancelled this appointment.",
+                sections=({'heading': 'Cancelled appointment', 'rows': (
+                    ('Consultation', booking['service_name']), ('Date and time', when),
+                    ('Amount paid', fee), *question_row, ('Booking reference', reference))},),
+                notice=f"Refund to be done manually. Please call {display_phone()} about the refund or another appointment.")
     else:
         recipient, reply = CLIENT_EMAIL, booking['email']
         if kind == 'booking_confirmed':
             subject = 'New paid consultation — Astro Advice'
-            lines = ['A paid consultation is confirmed.', f"Customer: {booking['full_name']}",
-                     f"Phone: {booking['phone']}", f"Email: {booking['email']}",
-                     f"Consultation: {booking['service_name']}", f"When: {when}",
-                     f"Payment received: {fee}", f"Google Meet: {meet_url}", f"Reference: {reference}"]
-            if question_line:
-                lines.append(question_line)
-            if booking.get('birth_date'):
-                lines.append(f"Birth date: {booking['birth_date']}")
-            if booking.get('birth_time'):
-                lines.append(f"Birth time: {booking['birth_time']}")
-            if booking.get('birth_place'):
-                lines.append(f"Birth place: {booking['birth_place']}")
-            if booking.get('notes'):
-                lines.append(f"Customer notes: {booking['notes']}")
+            return message(sender=sender, recipient=recipient, reply_to=reply, subject=subject,
+                preheader=f"A paid {booking['service_name']} consultation has been booked.",
+                title='A new consultation is confirmed',
+                introduction='The customer has paid and the Google Meet appointment is ready.',
+                sections=(
+                    {'heading': 'Appointment', 'rows': (
+                        ('Consultation', booking['service_name']), ('Date and time', when),
+                        ('Amount paid', fee), *question_row, ('Booking reference', reference))},
+                    {'heading': 'Customer', 'rows': (
+                        ('Name', booking['full_name']), ('Phone', booking['phone']), ('Email', booking['email']),
+                        ('Date of birth', format_birth_date(booking.get('birth_date'))),
+                        ('Time of birth', format_birth_time(booking.get('birth_time'))),
+                        ('Place of birth', booking.get('birth_place')), ('Notes', booking.get('notes')))},
+                ), action=('Open Google Meet', meet_url),
+                notice='The customer has also received the appointment details and meeting link.')
         elif kind == 'booking_cancelled':
             subject = 'Consultation cancelled — Astro Advice'
-            lines = ['A consultation has been cancelled on the private calendar.',
-                     f"Customer: {booking['full_name']}", f"Phone: {booking['phone']}",
-                     f"Email: {booking['email']}", f"Consultation: {booking['service_name']}",
-                     f"When: {when}", f"Payment received: {fee}",
-                     f"Reference: {reference}", 'Refund to be done manually.']
+            return message(sender=sender, recipient=recipient, reply_to=reply, subject=subject,
+                preheader=f"The {booking['service_name']} appointment for {when} was cancelled.",
+                title='A consultation has been cancelled',
+                introduction='The cancellation has been recorded and the appointment time has been released.',
+                sections=(
+                    {'heading': 'Appointment', 'rows': (
+                        ('Consultation', booking['service_name']), ('Date and time', when),
+                        ('Amount paid', fee), *question_row, ('Booking reference', reference))},
+                    {'heading': 'Customer', 'rows': (
+                        ('Name', booking['full_name']), ('Phone', booking['phone']), ('Email', booking['email']))},
+                ), notice='Refund to be done manually.')
         else:
             subject = 'Payment needs attention — Astro Advice'
-            lines = ['A website payment needs a manual check. Do not ask the customer to pay again until it is reviewed.',
-                     f"Customer: {booking['full_name']}", f"Phone: {booking['phone']}",
-                     f"Email: {booking['email']}", f"Consultation: {booking['service_name']}",
-                     f"Requested time: {when}", f"Expected amount: {fee}", f"Reference: {reference}"]
-    return {
-        'from': sender, 'to': [recipient], 'reply_to': reply, 'subject': subject,
-        'text': '\n\n'.join(lines),
-        'html': '<div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.6;'
-                'color:#231b2e;max-width:560px;padding:16px;margin:0 auto;overflow-wrap:anywhere;">' +
-                ''.join(f'<p>{html.escape(line)}</p>' for line in lines) + '</div>',
-    }
+            return message(sender=sender, recipient=recipient, reply_to=reply, subject=subject,
+                preheader='A website payment needs a manual check.', title='A payment needs attention',
+                introduction='Please review this payment before asking the customer to pay again.',
+                sections=(
+                    {'heading': 'Requested appointment', 'rows': (
+                        ('Consultation', booking['service_name']), ('Requested time', when),
+                        ('Expected amount', fee), *question_row, ('Booking reference', reference))},
+                    {'heading': 'Customer', 'rows': (
+                        ('Name', booking['full_name']), ('Phone', booking['phone']), ('Email', booking['email']))},
+                ), notice='Do not ask the customer to pay again until the payment has been checked.')
 
 
 class BookingDelivery:

@@ -19,6 +19,14 @@ def overview(store):
             FROM delivery_jobs j JOIN payment_events e ON e.record_id=j.record_id
             WHERE j.kind='payment_event' AND j.state='failed' AND e.processed_at IS NULL
             ORDER BY e.received_at,e.event_id LIMIT 100''').fetchall()
+        sheets = conn.execute('''SELECT j.id,j.kind,j.recipient_role,j.last_error_code,
+            j.next_attempt_at,j.attempts,j.record_id,
+            COALESCE(b.full_name,i.name) AS person_name,b.service_name,i.subject
+            FROM delivery_jobs j
+            LEFT JOIN bookings b ON j.kind='sheet_booking' AND b.id=j.record_id
+            LEFT JOIN inquiries i ON j.kind='sheet_inquiry' AND i.id=j.record_id
+            WHERE j.kind IN ('sheet_booking','sheet_inquiry') AND j.state='failed'
+            ORDER BY j.next_attempt_at,j.id LIMIT 100''').fetchall()
     return {
         'payment_cases': [{**row, 'id': str(row['id']), 'booking_id': str(row['booking_id']),
                            'created_at': row['created_at'].isoformat(), 'starts_at': row['starts_at'].isoformat()}
@@ -30,6 +38,8 @@ def overview(store):
                                     'received_at': row['received_at'].isoformat(),
                                     'next_attempt_at': row['next_attempt_at'].isoformat()}
                                    for row in payment_events],
+        'sheet_problems': [{**row, 'id': str(row['id']), 'record_id': str(row['record_id']),
+                            'next_attempt_at': row['next_attempt_at'].isoformat()} for row in sheets],
     }
 
 
@@ -39,7 +49,8 @@ def pending_count(store):
         row = conn.execute('''SELECT
             (SELECT count(*) FROM payment_cases WHERE state='open') +
             (SELECT count(*) FROM delivery_jobs WHERE state='failed' AND kind IN
-                ('payment_event','booking_confirmed','booking_cancelled','payment_review')) AS total''').fetchone()
+                ('payment_event','booking_confirmed','booking_cancelled','payment_review',
+                 'sheet_booking','sheet_inquiry')) AS total''').fetchone()
     return row['total']
 
 
@@ -57,9 +68,10 @@ def handle_case(store, case_id, actor, resolution, note):
 def retry_delivery(store, job_id):
     with store.transaction() as conn:
         job = conn.execute('''SELECT * FROM delivery_jobs WHERE id=%s FOR UPDATE''', (job_id,)).fetchone()
-        if not job or job['kind'] not in ('payment_event', 'booking_confirmed', 'booking_cancelled', 'payment_review'):
+        if not job or job['kind'] not in ('payment_event', 'booking_confirmed', 'booking_cancelled', 'payment_review',
+                                          'sheet_booking', 'sheet_inquiry'):
             raise RuleViolation('This delivery item was not found.', 404, 'delivery_case_missing')
-        if job['provider_id']:
+        if job['provider_id'] or (job['kind'] in ('sheet_booking', 'sheet_inquiry') and job['accepted_at']):
             conn.execute("UPDATE delivery_jobs SET state='sent',last_error_code=NULL WHERE id=%s", (job_id,))
             return {'record_id': job['record_id'], 'kind': job['kind'], 'republish': False}
         now = store.now(conn)

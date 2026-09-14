@@ -54,7 +54,8 @@ def google_identity(credential, audience):
         raise RuleViolation("Google sign-in could not be verified. Please try again.", 401) from None
 
 
-def admin_router(settings, store, identity_verifier=None, *, booking_dispatch=None, payment_dispatch=None):
+def admin_router(settings, store, identity_verifier=None, *, booking_dispatch=None, payment_dispatch=None,
+                 sheet_dispatch=None):
     router = APIRouter(prefix="/api/admin")
     verify_identity = identity_verifier or google_identity
 
@@ -196,7 +197,9 @@ def admin_router(settings, store, identity_verifier=None, *, booking_dispatch=No
         session(request, write=True)
         from .private_attention import retry_delivery
         retried = retry_delivery(store, job_id)
-        dispatch = payment_dispatch if retried['kind'] == 'payment_event' else booking_dispatch
+        dispatch = (payment_dispatch if retried['kind'] == 'payment_event' else
+                    sheet_dispatch if retried['kind'] in ('sheet_booking', 'sheet_inquiry') else
+                    booking_dispatch)
         if dispatch and retried['republish']:
             dispatch.after_save(retried['record_id'])
         return {'success': True, 'message': 'Delivery has been queued again.'}
@@ -219,6 +222,8 @@ def admin_router(settings, store, identity_verifier=None, *, booking_dispatch=No
         store.cancel(booking_id, actor)
         if booking_dispatch:
             booking_dispatch.after_save(booking_id)
+        if sheet_dispatch:
+            sheet_dispatch.after_save(booking_id)
         return {"success": True, "delivery_status": "pending", "refund_instruction": "Refund to be done manually."}
 
     from .google_connection import add_routes
