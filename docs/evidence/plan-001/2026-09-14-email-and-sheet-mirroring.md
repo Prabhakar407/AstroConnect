@@ -50,6 +50,10 @@ The first scheduled GitHub backup run checked out source and installed all tools
 
 ## Remaining release sequence
 
-1. The user confirms the locally verified service-account JSON plus the two fixed workbook IDs are saved in the existing Vercel project for Production and Preview. Hosted runtime loading remains unproved until release.
-2. Release the website and matching existing Cloudflare Worker together, then prove one inquiry and one confirmed/cancelled appointment reach both workbooks without duplicates.
-3. Repair the three GitHub backup secrets, run the workflow, verify the encrypted Drive files and perform the documented isolated restore proof.
+1. **Done:** the user confirmed the locally verified service-account JSON plus the two fixed workbook IDs were saved in the existing Vercel project for Production and Preview.
+2. **Done:** website commit `97903a4` completed its Vercel production deployment. Official `/api/health` and `/api/ready` returned HTTP 200 with storage ready and booking enabled. The new private Sheet handler rejected an unauthenticated request and accepted the matching helper credential while rejecting a nonexistent job.
+3. **Done:** Cloudflare helper version `3325666e-1e28-4ddc-a9f1-16cea188f6a7` deployed with the existing Worker, queue consumer and 15-minute schedule. The first authenticated empty recovery pass returned zero outstanding work and zero attention items.
+4. **Done:** four bounded jobs copied one existing paid-and-cancelled prelaunch appointment and one existing prelaunch inquiry to both permanent workbooks. Neon recorded all four as sent, and bounded live reads found one matching appointment row and one matching inquiry row in each workbook. Replaying the same jobs created no duplicate rows.
+5. **Recovery proof:** the first website-originated publication timed out and truthfully returned unavailable while all four SQL jobs stayed pending. Direct queue publication isolated and proved the Worker/Sheet path. A second duplicate-safe Sheet job then published through the website itself, was consumed and completed; its target workbook still had one appointment row. This proves the Vercel queue token is valid and the earlier result was transient, not a configuration failure.
+6. **Cleanup:** the downloaded service-account JSON was removed from the local workspace after hosted proof. Its protected Vercel copy and provider-side key remain intentionally active.
+7. **Remaining:** inspect one genuinely new redesigned transactional message in the receiving inbox without resending an old customer notification. Repair the three GitHub backup secrets, run the workflow, verify the encrypted Drive files and perform the documented isolated restore proof.
