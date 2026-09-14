@@ -771,7 +771,7 @@ export default function Home() {
                   animate="animate"
                   className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[120%] w-auto object-contain origin-bottom pointer-events-none z-10"
                   style={{
-                    clipPath: 'polygon(0 0, 100% 0, 100% 18%, 0 18%)'
+                    clipPath: 'ellipse(24% 22% at 50% 20%)'
                   }}
                 />
 
