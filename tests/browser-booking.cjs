@@ -224,11 +224,11 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         }
       };
       await page.goto(base + "booking");
-      await page.getByRole('heading', { name: 'Website bookings are online', exact: true }).waitFor();
-      assert.ok((await page.locator('body').innerText()).includes('Your consultation takes place on Google Meet.'));
-      assert.deepEqual(await page.locator('ol li strong').allTextContents(), [
-        'Choose your time', 'Confirm your booking', 'Join on Google Meet',
-      ]);
+      await page.getByRole('heading', { name: 'Schedule an online consultation', exact: true }).waitFor();
+      const bookingBody = await page.locator('body').innerText();
+      assert.ok(bookingBody.includes('Consultations are scheduled on Google Meet. Links are shared after appointments are booked.'));
+      assert.equal(bookingBody.includes('Website bookings are online'), false);
+      assert.equal(await page.locator('#online-booking-title').count(), 0);
       await page.locator("#readingType").selectOption("prashna-kundali");
       await page.locator("#questionCount").selectOption("10");
       try {
@@ -242,11 +242,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       assert.ok(
         (await page.locator("#booking-form").innerText()).includes(formatFee(prashnaAmount * 10)),
       );
-      assert.ok(
-        (await page.locator("#booking-form").innerText()).includes(
-          "30-minute session",
-        ),
-      );
+      assert.equal((await page.locator("#booking-form").innerText()).includes("30-minute session"), false);
       assert.equal(
         await page
           .getByRole("button", { name: "13", exact: true })
@@ -266,14 +262,14 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         false,
       );
       await page.getByRole("button", { name: "10", exact: true }).click();
-      await page.getByRole("button", { name: /10:30 AM.*11:00 AM/ }).waitFor();
+      await page.getByRole("button", { name: /10:30 AM/ }).waitFor();
       // Let the completed request leave its in-flight guard before simulating a later tab focus.
       await pause(50);
       availabilityDelay = 500;
       await page.evaluate(() => window.dispatchEvent(new Event('focus')));
       await page.getByText('Refreshing available times…', { exact: true }).waitFor();
-      assert.equal(await page.getByRole("button", { name: /10:30 AM.*11:00 AM/ }).isDisabled(), false);
-      assert.ok((await page.getByRole("button", { name: /10:30 AM.*11:00 AM/ }).innerText()).includes('Open'));
+      assert.equal(await page.getByRole("button", { name: /10:30 AM/ }).isDisabled(), false);
+      assert.ok((await page.getByRole("button", { name: /10:30 AM/ }).innerText()).includes('Open'));
       await page.getByText('Refreshing available times…', { exact: true }).waitFor({ state: 'hidden' });
       availabilityDelay = 0;
       assert.equal(await page.getByText('Online booking is being configured.', { exact: false }).count(), 0);
@@ -290,7 +286,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       await page.locator("#email").fill("synthetic@example.com");
       await page.locator("#phone").fill("+919000000001");
       await page.locator("#birthDate").fill("2000-01-01");
-      await page.getByRole("button", { name: /10:30 AM.*11:00 AM/ }).click();
+      await page.getByRole("button", { name: /10:30 AM/ }).click();
       await page.locator("#booking-form button[type=submit]").click();
       await verify();
       assert.equal(
@@ -321,7 +317,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         .waitFor();
       assert.equal(
         await page
-          .getByRole("button", { name: /10:30 AM.*11:00 AM/ })
+          .getByRole("button", { name: /10:30 AM/ })
           .isDisabled(),
         true,
       );
@@ -329,7 +325,7 @@ const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       assert.equal(await page.locator('#booking-form button[type=submit]').isDisabled(), true);
       availabilityFailure = false;
       await page.getByRole('button', { name: 'Try again' }).click();
-      await page.getByRole("button", { name: /10:30 AM.*11:00 AM/ }).click();
+      await page.getByRole("button", { name: /10:30 AM/ }).click();
       await page.locator("#readingType").selectOption("numerology");
       assert.equal(await page.locator("#questionCount").count(), 0);
       assert.ok(
