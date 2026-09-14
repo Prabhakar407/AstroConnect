@@ -12,6 +12,7 @@ This slice prepares two readable customer-record copies and replaces the plain t
 - The client supplied an existing client-owned website workbook after checking that account. It contained only confirmed pre-launch dummy data and the user explicitly authorized replacing it. The old three-tab layout and dummy rows were removed in place, preserving the client-owned file, its permanent link and its access controls.
 - The client workbook is now named `Astro Advice Customer Records — Client Copy`. Its `Appointments` and `Inquiries` tabs match the NeuraFlow copy exactly in headers, ordering, frozen/filterable first rows, column widths, tab colors, locale and India time zone. Connector readback verified both structures after the rewrite.
 - The existing spreadsheet-only service account retains editor access to the client workbook and was granted editor access to the NeuraFlow workbook. Drive metadata confirms the two workbooks have different owners and the same service account can reach both destinations.
+- A fresh JSON key for that exact existing service account passed local structural validation and authenticated through the production Sheet adapter. Read-only header probes succeeded for both tabs in both workbooks; no customer row was created during this proof. The key is not committed or reproduced in this evidence.
 - No customer record was written during workbook setup.
 
 Private workbook identifiers and credentials are deliberately absent from Git.
@@ -49,6 +50,6 @@ The first scheduled GitHub backup run checked out source and installed all tools
 
 ## Remaining release sequence
 
-1. Obtain a fresh JSON key for the existing spreadsheet-only service account and place it plus the two fixed workbook IDs in the existing Vercel project as the three protected Sheet settings.
+1. Place the locally verified service-account JSON plus the two fixed workbook IDs in the existing Vercel project as the three protected Sheet settings.
 2. Release the website and matching existing Cloudflare Worker together, then prove one inquiry and one confirmed/cancelled appointment reach both workbooks without duplicates.
 3. Repair the three GitHub backup secrets, run the workflow, verify the encrypted Drive files and perform the documented isolated restore proof.
