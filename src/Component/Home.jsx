@@ -10,7 +10,7 @@ import { sendVerification, submitInquiry } from '../lib/formApi'
 import logoImg from "../assets/logos/Nav-Logo.webp";
 import featureBg from "../assets/images/Feature.webp";
 import astrologerPortrait from "../assets/images/astrologer_portrait.webp";
-import hero1 from "../assets/images/Hero1.webp";
+import hero1 from "../assets/images/Hero1.png";
 import about1 from "../assets/images/About1.webp";
 import zodiacWheel from "../assets/images/zodiac_wheel.webp";
 import vedicAstrologyImg from '../assets/images/Vedic Astrology.webp'
