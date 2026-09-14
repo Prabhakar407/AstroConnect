@@ -58,7 +58,7 @@ class PreparationTests(unittest.TestCase):
     def test_notice_exact_boundary_and_one_second_short(self):
         now = foundation.NOW.replace(hour=9, minute=30)
         self.assertEqual(booking_start("2026-09-09", "10:00", now) - now, timedelta(minutes=30))
-        with self.assertRaisesRegex(RuleViolation, "30 minutes"):
+        with self.assertRaisesRegex(RuleViolation, "later available time"):
             booking_start("2026-09-09", "10:00", now + timedelta(seconds=1))
 
     def test_services_envelope_and_uncached_liveness(self):

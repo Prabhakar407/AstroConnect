@@ -39,7 +39,7 @@ def booking_message(sender, booking, kind, role, meet_url=None):
             lines = [f"Hello {booking['full_name']},", 'Your payment and appointment are confirmed.',
                      'This is an online consultation on Google Meet.',
                      f"Consultation: {booking['service_name']}", f"When: {when}",
-                     'Duration: 30 minutes', f"Payment received: {fee}"]
+                     f"Payment received: {fee}"]
             if question_line:
                 lines.append(question_line)
             lines += ['Use the Google Meet link below to join at your appointment time.',

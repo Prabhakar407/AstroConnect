@@ -28,7 +28,7 @@ function Appointment({ item, user, onExpired, afterCancel }) {
 
   return <details className="studio-appointment">
     <summary>
-      <span className="studio-appointment__when"><strong>{dateTime(item.starts_at)}</strong><span>30 minutes · IST</span></span>
+      <span className="studio-appointment__when"><strong>{dateTime(item.starts_at)}</strong><span>Indian time (IST)</span></span>
       <span className="studio-appointment__identity"><strong>{item.full_name}</strong><span>{item.service_name}</span></span>
       <span className="studio-appointment__fee">{formatFee(item.amount_paise)}</span>
     </summary>

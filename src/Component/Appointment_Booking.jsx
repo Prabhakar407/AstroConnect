@@ -309,7 +309,7 @@ function Appointment_Booking() {
       return "Please select a date from the calendar grid.";
     }
     if (!formData.bookingSlot || slotAvailability[formData.bookingSlot] !== true) {
-      return "Please select a time slot.";
+      return "Please select a time.";
     }
     return null;
   }, [formData, policy, slotAvailability, today, selectedService])
@@ -494,20 +494,23 @@ function Appointment_Booking() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           style={{ y: yHeader }}
-          className="text-center max-w-2xl relative z-10"
+          className="text-center max-w-3xl relative z-10"
         >
           <span className="text-[#AB7A57] text-xs tracking-[0.25em] font-bold uppercase block mb-2 font-sans">
             ✦ RESERVE YOUR SPOT ✦
           </span>
           <h1 className="text-[clamp(1.5rem,2.55vw,2.8rem)] font-serif font-bold text-[#181122] tracking-wide leading-tight">
-            Schedule A Consultation
+            Schedule an online consultation
           </h1>
+          <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-[#594C45] sm:text-base">
+            Consultations are scheduled on Google Meet. Links are shared after appointments are booked.
+          </p>
           <div className="w-12 h-[1px] bg-[#D3AF54] mx-auto mt-3 mb-1"></div>
         </motion.div>
       </div>
 
       {/* ========================================================= */}
-      {/* 2. ONLINE BOOKING GUIDE AND FORM                           */}
+      {/* 2. BOOKING FORM                                            */}
       {/* ========================================================= */}
       <div className="w-full bg-[#F4F1E3] py-5 px-4 flex flex-col items-center relative z-10 overflow-hidden">
         
@@ -526,27 +529,6 @@ function Appointment_Booking() {
             <line x1="5" y1="100" x2="195" y2="100" />
           </svg>
         </motion.div>
-
-        <section className="w-full max-w-[1600px] lg:w-[88vw] pb-6 sm:pb-8" aria-labelledby="online-booking-title">
-          <div className="max-w-3xl">
-            <h2 id="online-booking-title" className="font-serif text-xl font-semibold text-[#181122] sm:text-2xl">Website bookings are online</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#594C45] sm:text-base">Your consultation takes place on Google Meet. We share the meeting link by email after your booking is confirmed.</p>
-          </div>
-          <ol className="mt-5 grid grid-cols-1 divide-y divide-[#AB7A57]/25 border-y border-[#AB7A57]/25 lg:landscape:grid-cols-3 lg:landscape:divide-x lg:landscape:divide-y-0">
-            <li className="grid grid-cols-[auto_1fr] gap-3 py-4 lg:landscape:px-6 lg:landscape:first:pl-0">
-              <span className="font-serif text-2xl leading-none text-[#9A6C49]" aria-hidden="true">1</span>
-              <div><strong className="block text-sm font-semibold text-[#181122] sm:text-base">Choose your time</strong><span className="mt-1 block text-sm leading-relaxed text-[#66564D]">Select a consultation and an available slot.</span></div>
-            </li>
-            <li className="grid grid-cols-[auto_1fr] gap-3 py-4 lg:landscape:px-6">
-              <span className="font-serif text-2xl leading-none text-[#9A6C49]" aria-hidden="true">2</span>
-              <div><strong className="block text-sm font-semibold text-[#181122] sm:text-base">Confirm your booking</strong><span className="mt-1 block text-sm leading-relaxed text-[#66564D]">Enter your details and complete payment.</span></div>
-            </li>
-            <li className="grid grid-cols-[auto_1fr] gap-3 py-4 lg:landscape:px-6 lg:landscape:last:pr-0">
-              <span className="font-serif text-2xl leading-none text-[#9A6C49]" aria-hidden="true">3</span>
-              <div><strong className="block text-sm font-semibold text-[#181122] sm:text-base">Join on Google Meet</strong><span className="mt-1 block text-sm leading-relaxed text-[#66564D]">Open the link shared in your confirmation email.</span></div>
-            </li>
-          </ol>
-        </section>
 
         <div className="w-full max-w-[1600px] lg:w-[88vw] bg-[#181122] border border-[#AB7A57]/20 rounded-2xl p-4 shadow-xl relative text-white">
           
@@ -605,7 +587,7 @@ function Appointment_Booking() {
                   </h2>
                   <p className="mt-1 text-sm leading-relaxed text-white/75">
                     {checkout.appointment_state === 'held'
-                      ? `${checkout.service_name} · ${formatFee(checkout.amount_paise)} · 30 minutes`
+                      ? `${checkout.service_name} · ${formatFee(checkout.amount_paise)}`
                       : checkout.appointment_state === 'payment_review'
                         ? 'Please do not pay again. The studio can see this exception and will check it.'
                         : checkout.appointment_state === 'cancelled'
@@ -929,13 +911,13 @@ function Appointment_Booking() {
                     </select>
                     <p className="text-sm leading-relaxed text-white/80">Additional questions during the consultation are charged at ₹1,100 each, payable at that time.</p>
                   </div>}
-                  <p aria-live="polite" className="text-sm font-semibold text-[#D3AF54]">{selectedService ? <>Total: {formatFee(totalFee)} <span className="font-normal text-white/80">· 30-minute session</span></> : 'Choose a consultation to see the fee.'}</p>
+                  <p aria-live="polite" className="text-sm font-semibold text-[#D3AF54]">{selectedService ? <>Total: {formatFee(totalFee)}</> : 'Choose a consultation to see the fee.'}</p>
                   {quoteError && !availabilityError && <p role="alert" className="text-sm text-amber-200">{quoteError} <button type="button" className="underline underline-offset-4" onClick={() => setQuoteRetry(value => value + 1)}>Check fee again</button></p>}
 
-                  {/* Choose Time Slot Button Grid */}
+                  {/* Choose Time Button Grid */}
                   <div className="space-y-1.5 text-left">
                     <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#D3AF54]/95">
-                      Choose Time Slot · Indian time (IST)
+                      Choose Time · Indian time (IST)
                     </label>
                     
                     {availabilityError && <div role="alert" className="text-sm leading-relaxed text-amber-200"><p>{availabilityError}</p><button type="button" onClick={retry} className="mt-2 min-h-11 underline underline-offset-4">Try again</button></div>}
@@ -944,7 +926,7 @@ function Appointment_Booking() {
                     </p>}
                     {!formData.bookingDate ? (
                       <div className="text-sm leading-relaxed text-white/80 border border-white/10 bg-white/5 rounded-xl p-3 text-center">
-                        ✦ Please select a date on the calendar first to view slot availability.
+                        ✦ Please select a date on the calendar first to view available times.
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-2 gap-2">

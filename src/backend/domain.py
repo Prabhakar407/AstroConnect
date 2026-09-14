@@ -62,12 +62,12 @@ def booking_start(day_value, slot, now):
     if day.weekday() == 6:
         raise RuleViolation("Consultations are available Monday to Saturday.")
     if slot not in SLOT_TIMES:
-        raise RuleViolation("Please choose an available 30-minute appointment slot.")
+        raise RuleViolation("Please choose an available appointment time.")
     start = datetime.combine(day, time.fromisoformat(slot), IST).astimezone(UTC)
     if start <= aware_utc(now):
         raise RuleViolation("That appointment time has already started. Please choose another.")
     if start < aware_utc(now) + timedelta(minutes=MINIMUM_NOTICE_MINUTES):
-        raise RuleViolation("Please choose a time at least 30 minutes from now.")
+        raise RuleViolation("Please choose a later available time.")
     return start
 
 

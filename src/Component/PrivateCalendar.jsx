@@ -461,7 +461,7 @@ export default function PrivateCalendar() {
                 <div>
                   <h2>{dayName(date)}</h2>
                   <p className="studio-calendar__small">
-                    30-minute consultations · IST
+                    Indian time (IST)
                   </p>
                 </div>
                 <button
