@@ -770,9 +770,8 @@ export default function Home() {
                   initial="initial"
                   animate="animate"
                   className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[120%] w-auto object-contain origin-bottom pointer-events-none z-10"
-                  style={{ 
-                    clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 50%)',
-                    filter: 'drop-shadow(0 10px 15px rgba(0, 0, 0, 0.6))'
+                  style={{
+                    clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 50%)'
                   }}
                 />
 
