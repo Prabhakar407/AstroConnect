@@ -6,7 +6,10 @@ result_path="${1:-$repository_root/verification-results/backend-release.json}"
 postgres_bin="${ASTRO_POSTGRES_BIN:-}"
 test_python="${ASTRO_TEST_PYTHON:-$repository_root/.venv/bin/python}"
 
-if [[ ! -x "$test_python" ]]; then
+if [[ "$test_python" != */* ]]; then
+  test_python="$(command -v "$test_python" || true)"
+fi
+if [[ -z "$test_python" || ! -x "$test_python" ]]; then
   echo "The Python test environment is missing. Install the locked backend dependencies first." >&2
   exit 1
 fi
