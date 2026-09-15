@@ -122,10 +122,9 @@ Do not release when any mandatory group failed, was not run or was unexpectedly 
 
 These remain small and explicit:
 
-1. Confirm receipt of a deliberately triggered Cloudflare recovery-failure alert.
-2. Confirm receipt of a deliberately triggered GitHub backup-failure alert.
-3. Keep the second offline backup decryption-key copy.
-4. Approve any new real payment, refund, customer message or provider-write exercise.
-5. Confirm actual inbox appearance when a materially redesigned real email requires acceptance.
+1. Confirm GitHub workflow-failure notifications remain enabled; the recorded backup failure already proves this repository's email route.
+2. Keep the second offline backup decryption-key copy.
+3. Approve any new real payment, refund, customer message or provider-write exercise.
+4. Confirm actual inbox appearance when a materially redesigned real email requires acceptance.
 
 Do not weaken authentication or use real customer data to make these checks easier.

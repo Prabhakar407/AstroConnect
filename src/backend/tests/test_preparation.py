@@ -85,6 +85,12 @@ class PreparationTests(unittest.TestCase):
         self.assertEqual(health.json(), {"status": "online"})
         self.assertEqual(client.get("/api/not-a-route").status_code, 404)
 
+    def test_recovery_health_fails_safely_without_storage(self):
+        response = TestClient(create_app(Settings())).get('/api/recovery-health')
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json(), {'detail': 'Booking storage is not configured.',
+                                           'code': 'storage_unavailable'})
+
     def test_booking_readiness_requires_official_origin_and_valid_core_secrets(self):
         complete = dict(
             database_url='unused', otp_secret='o' * 32, resend_key='resend', resend_webhook_secret='e' * 32,

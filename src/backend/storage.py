@@ -19,6 +19,7 @@ from .domain import ADVANCE_DAYS, CLIENT_EMAIL, CLIENT_PHONE, DURATION_MINUTES, 
 from .models import BookingDetails
 
 SCHEDULE_LOCK = 83124001
+RECOVERY_HEARTBEAT_MAX_AGE_MINUTES = 20
 
 
 class StorageUnavailable(RuntimeError):
@@ -125,6 +126,30 @@ class Store:
                     table=sql.Identifier(table), expiry=sql.Identifier(expiry)), (now,))
                 counts[table] = result.rowcount
         return counts
+
+    def record_recovery_completion(self, run_id, needs_attention):
+        """Record only that a complete recovery pass ran and whether work remains."""
+        if not isinstance(needs_attention, int) or isinstance(needs_attention, bool) or needs_attention < 0:
+            raise ValueError("Recovery attention count must be a non-negative integer.")
+        with self.transaction() as conn:
+            conn.execute("""INSERT INTO recovery_heartbeat
+                (singleton,last_completed_at,needs_attention,run_id)
+                VALUES (true,%s,%s,%s)
+                ON CONFLICT (singleton) DO UPDATE SET
+                    last_completed_at=EXCLUDED.last_completed_at,
+                    needs_attention=EXCLUDED.needs_attention,
+                    run_id=EXCLUDED.run_id""", (self.now(conn), needs_attention, run_id))
+
+    def recovery_healthy(self):
+        """Return a privacy-safe health result using the database clock."""
+        with self.transaction() as conn:
+            now = self.now(conn)
+            row = conn.execute("""SELECT
+                    last_completed_at >= %s - (%s * interval '1 minute')
+                    AND needs_attention=0 AS healthy
+                FROM recovery_heartbeat WHERE singleton=true""",
+                (now, RECOVERY_HEARTBEAT_MAX_AGE_MINUTES)).fetchone()
+            return bool(row and row['healthy'])
 
     @staticmethod
     def policy_at(now):

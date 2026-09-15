@@ -18,7 +18,7 @@ for (const path of paths) {
   assert.match(body, /<div id="root"><\/div>/, `${path}: application shell`)
 }
 
-const apiPaths = ['/api/health', '/api/ready', '/api/services', '/api/booking-policy']
+const apiPaths = ['/api/health', '/api/ready', '/api/recovery-health', '/api/services', '/api/booking-policy']
 for (const path of apiPaths) {
   const response = await fetch(origin + path, { redirect: 'error', signal: AbortSignal.timeout(20_000) })
   assert.equal(response.status, 200, `${path}: status`)
@@ -33,6 +33,9 @@ for (const path of apiPaths) {
 const ready = await (await fetch(origin + '/api/ready', { signal: AbortSignal.timeout(20_000) })).json()
 assert.equal(ready.storage_ready, true, 'Official storage must be ready')
 assert.equal(ready.booking_enabled, true, 'Official booking must be enabled')
+
+const recovery = await (await fetch(origin + '/api/recovery-health', { signal: AbortSignal.timeout(20_000) })).json()
+assert.deepEqual(recovery, { status: 'healthy' }, 'Official scheduled recovery must be current and clear')
 
 const services = await (await fetch(origin + '/api/services', { signal: AbortSignal.timeout(20_000) })).json()
 assert.equal(services.services?.length, 6, 'Official service catalogue must contain six consultations')

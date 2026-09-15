@@ -104,8 +104,8 @@ export function createWorker(fetcher = (...args) => fetch(...args)) {
         if (data.needs_attention > 0) throw new Error('recovery_attention');
         console.info('inquiry_recovery_checked');
       } catch {
-        // Failed scheduled run is visible in Cloudflare; independent proactive
-        // alerts still require the agreed monitoring destination, not Resend.
+        // A failed run leaves the database heartbeat stale. The separate
+        // GitHub watchdog checks that signal without using Resend.
         throw new Error('inquiry_recovery_failed');
       }
     },

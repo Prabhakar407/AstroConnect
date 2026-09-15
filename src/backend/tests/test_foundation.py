@@ -148,7 +148,7 @@ class PostgresTests(unittest.TestCase):
         self.admin_store = Store(self.admin_dsn, clock=lambda: self.time)
         self.store = Store(self.dsn, clock=lambda: self.time)
         with self.admin_store.transaction() as conn:
-            conn.execute("""TRUNCATE payment_events,booking_calendar_events,payment_cases,
+            conn.execute("""TRUNCATE payment_events,booking_calendar_events,payment_cases,recovery_heartbeat,
                 slot_claims,payments,bookings,closures,inquiries,delivery_jobs,email_challenges,
                 email_verifications,rate_limits,email_events,verification_emails CASCADE""")
         self.codes = []
