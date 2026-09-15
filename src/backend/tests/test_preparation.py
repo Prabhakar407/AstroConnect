@@ -223,7 +223,7 @@ class PreparationPostgresTests(unittest.TestCase):
             self.store.close_time("2026-09-09", None, None, "Test", "test-owner")
 
     def test_ready_verifies_checksums_not_just_names(self):
-        with self.store.transaction() as conn:
+        with self.admin_store.transaction() as conn:
             original = conn.execute("SELECT checksum FROM schema_migrations WHERE name='001_booking_foundation.sql'").fetchone()["checksum"]
             conn.execute("UPDATE schema_migrations SET checksum='wrong' WHERE name='001_booking_foundation.sql'")
         try:
@@ -231,7 +231,7 @@ class PreparationPostgresTests(unittest.TestCase):
             with self.assertRaises(StorageUnavailable):
                 self.store.migrate()
         finally:
-            with self.store.transaction() as conn:
+            with self.admin_store.transaction() as conn:
                 conn.execute("UPDATE schema_migrations SET checksum=%s WHERE name='001_booking_foundation.sql'", (original,))
         self.assertTrue(self.store.ready())
 

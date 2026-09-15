@@ -58,6 +58,7 @@ scratch/
 tmp/
 temp/
 *.db
+/verification-results/
 
 # Local historical backend and generated visual verification artifacts.
 # Keep durable design guidance, but never publish archived credentials or captures.

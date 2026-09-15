@@ -23,7 +23,7 @@ const fee = count => `₹${((prashnaUnit * count) / 100).toLocaleString('en-IN')
       const response = await context.request.get(`${base}/api/booking-policy`);
       assert.equal(response.status(), 200);
       const policy = await response.json();
-      await page.goto(`${base}/#/booking`);
+      await page.goto(`${base}/booking`);
       await page.waitForFunction(first => document.querySelector('#birthDate')?.max === first, policy.first_date);
       assert.equal(await page.locator('#birthDate').getAttribute('max'), policy.first_date);
       const candidate = new Date(`${policy.first_date}T00:00:00Z`);

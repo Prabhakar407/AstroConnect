@@ -23,7 +23,7 @@ class AdminTests(unittest.TestCase):
 
     def setUp(self):
         foundation.PostgresTests.setUp(self)
-        with self.store.transaction() as conn:
+        with self.admin_store.transaction() as conn:
             conn.execute('TRUNCATE admin_identity,admin_sessions,admin_login_challenges CASCADE')
         self.identity = {'email': CLIENT_EMAIL, 'email_verified': True, 'sub': 'synthetic-google-subject'}
         self.settings = Settings(google_client_id='synthetic-client-id', origins=('https://studio.example',))

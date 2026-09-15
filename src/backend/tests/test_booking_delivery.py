@@ -57,8 +57,9 @@ class BookingDeliveryTests(unittest.TestCase):
         self.settings = Settings(google_client_id='synthetic-client', google_client_secret='synthetic-secret',
                                  google_token_key=self.key.decode(), sender='Astro Advice <bookings@example.com>',
                                  resend_key='synthetic-resend')
-        with self.store.transaction() as conn:
+        with self.admin_store.transaction() as conn:
             conn.execute('TRUNCATE google_authorizations,google_connection,admin_sessions,admin_login_challenges,admin_identity CASCADE')
+        with self.store.transaction() as conn:
             conn.execute("INSERT INTO admin_identity VALUES (true,'synthetic-subject',%s)", (self.time,))
             token = Fernet(self.key).encrypt(b'synthetic-refresh').decode()
             conn.execute("INSERT INTO google_connection VALUES (true,'synthetic-subject','astroadvicebyks@gmail.com',%s,%s,%s)",

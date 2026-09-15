@@ -3,7 +3,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE_PATH || 'playwright')
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const catalogue = require('../src/data/consultationCatalogue.json');
-const base = 'http://127.0.0.1:5186';
+const base = process.env.ASTRO_BROWSER_BASE || 'http://127.0.0.1:5186';
 const output = process.env.ASTRO_BROWSER_OUTPUT || '/tmp/astro-hosting-browser';
 const nameChangeFee = `₹${(catalogue.find(item => item.id === 'name-change').amount_paise / 100).toLocaleString('en-IN')}`;
 
@@ -35,7 +35,7 @@ const nameChangeFee = `₹${(catalogue.find(item => item.id === 'name-change').a
         if (request.url().includes('/api/')) requests.push(request.url());
       });
       await page.goto(`${base}/#/booking`);
-      await page.getByRole('heading', { name: 'Schedule A Consultation' }).waitFor();
+      await page.getByRole('heading', { name: 'Schedule an online consultation' }).waitFor();
       await page.locator('#readingType').selectOption('name-change');
       assert.ok((await page.locator('#booking-form').innerText()).includes(nameChangeFee));
       assert.equal(await page.getByRole('button', { name: 'Submit Appointment Request' }).isDisabled(), true);
@@ -53,7 +53,7 @@ const nameChangeFee = `₹${(catalogue.find(item => item.id === 'name-change').a
       assert.equal(disabled.status(), 410);
       await capture('same-origin-booking');
       await page.goto(`${base}/#/studio/calendar`);
-      await page.getByRole('heading', { name: 'Your availability' }).waitFor();
+      await page.getByRole('heading', { name: 'Your appointments' }).waitFor();
       assert.equal(await page.getByRole('button', { name: 'Sign out' }).count(), 0);
       assert.equal(await page.getByRole('button', { name: 'Close the whole day' }).count(), 0);
       await capture('same-origin-private');

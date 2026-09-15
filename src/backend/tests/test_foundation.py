@@ -134,15 +134,20 @@ class PostgresTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.dsn = os.environ["ASTRO_TEST_DATABASE_URL"]
+        cls.admin_dsn = os.environ.get("ASTRO_TEST_DATABASE_ADMIN_URL", cls.dsn)
         parts = conninfo_to_dict(cls.dsn)
         if parts.get("dbname") != "astro_booking_test" or not parts.get("host", "").startswith("/tmp/astro-booking-check."):
             raise RuntimeError("Refusing destructive tests outside the named isolated local test database.")
-        Store(cls.dsn).migrate()
+        admin_parts = conninfo_to_dict(cls.admin_dsn)
+        if admin_parts.get("dbname") != "astro_booking_test" or admin_parts.get("host") != parts.get("host"):
+            raise RuntimeError("Refusing a test owner outside the same named isolated local test database.")
+        Store(cls.admin_dsn).migrate()
 
     def setUp(self):
         self.time = NOW
+        self.admin_store = Store(self.admin_dsn, clock=lambda: self.time)
         self.store = Store(self.dsn, clock=lambda: self.time)
-        with self.store.transaction() as conn:
+        with self.admin_store.transaction() as conn:
             conn.execute("""TRUNCATE payment_events,booking_calendar_events,payment_cases,
                 slot_claims,payments,bookings,closures,inquiries,delivery_jobs,email_challenges,
                 email_verifications,rate_limits,email_events,verification_emails CASCADE""")
@@ -170,8 +175,26 @@ class PostgresTests(unittest.TestCase):
         return self.held(data, uuid4(), self.verified(data["email"]))
 
     def test_migrations_repeat_safely(self):
-        self.store.migrate()
+        self.admin_store.migrate()
         self.assertTrue(self.store.ready())
+
+    def test_application_connection_has_restricted_production_shape(self):
+        with self.store.transaction() as conn:
+            role = conn.execute(
+                "SELECT current_user AS name, rolsuper, rolcreatedb, rolcreaterole, "
+                "rolreplication, rolbypassrls FROM pg_roles WHERE rolname=current_user"
+            ).fetchone()
+            schema = conn.execute(
+                "SELECT has_schema_privilege(current_user,'public','CREATE') AS create_schema"
+            ).fetchone()
+            deletion = conn.execute(
+                "SELECT has_table_privilege(current_user,'public.bookings','DELETE') AS delete_bookings"
+            ).fetchone()
+        if self.admin_dsn != self.dsn:
+            self.assertEqual(role["name"], "astro_booking_test_app")
+        self.assertFalse(any(role[key] for key in ("rolsuper", "rolcreatedb", "rolcreaterole", "rolreplication", "rolbypassrls")))
+        self.assertFalse(schema["create_schema"])
+        self.assertFalse(deletion["delete_bookings"])
 
     def test_hold_price_and_duration(self):
         row = self.hold(question_count=10)

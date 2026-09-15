@@ -24,7 +24,7 @@ class EventTests(unittest.TestCase):
 
     def setUp(self):
         checkout_tests.CheckoutTests.setUp(self)
-        with self.store.transaction() as conn:
+        with self.admin_store.transaction() as conn:
             conn.execute('TRUNCATE payment_events')
         self.events = PaymentEvents(self.store, self.checkout, 'synthetic-webhook-secret', 'acc_synthetic')
 

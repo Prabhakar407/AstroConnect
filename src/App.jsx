@@ -12,6 +12,7 @@ import Appointment_Booking from './Component/Appointment_Booking'
 import PrivateCalendar from './Component/PrivateCalendar'
 import Footer from './Component/Footer'
 import LegalPage from './Component/LegalPage'
+import NotFound from './Component/NotFound'
 import './App.css'
 
 /**
@@ -56,6 +57,7 @@ function App() {
             <Route path="/privacy-policy" element={<LegalPage policy="privacy" />} />
             <Route path="/terms-and-conditions" element={<LegalPage policy="terms" />} />
             <Route path="/refund-policy" element={<LegalPage policy="refund" />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
 
