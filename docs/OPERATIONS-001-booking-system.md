@@ -50,7 +50,7 @@ The website uses one Google service account with spreadsheet-only permission. Ea
 
 ### Encrypted database backup
 
-GitHub runs `.github/workflows/production-database-backup.yml` once each day. It makes a consistent PostgreSQL export, checks it, encrypts it with an `age` public key and uploads it to the client-controlled Google Drive folder `astro-advice-production-backups`. It verifies the uploaded encrypted bytes before reporting success. Only app-owned backup names older than 15 days are moved to Google Drive Trash. No plaintext backup or decryption key is uploaded.
+GitHub runs `.github/workflows/production-database-backup.yml` once each day. It makes a consistent PostgreSQL export, checks it, encrypts it with an `age` public key and uploads it to the client-controlled Google Drive folder `astro-advice-production-backups`. It verifies the uploaded encrypted bytes before reporting success. After verification, it keeps exactly the 15 most recent app-owned backups (including any additional manual runs) and permanently removes older encrypted archive/checksum pairs so Google Drive Trash cannot continue consuming storage. No unrelated Drive file, plaintext backup or decryption key is uploaded or removed.
 
 The GitHub repository needs these protected values:
 
@@ -65,7 +65,7 @@ To prove recovery, download one `.dump.age` file and run `scripts/restore-databa
 Current recovery targets:
 
 - Neon provides the short first line of recovery; the current Free project exposes six hours of point-in-time history.
-- The independent encrypted backup runs daily and keeps 15 days. If Neon and its short history are both unavailable, up to 24 hours of the newest records may need provider-led reconciliation.
+- The independent encrypted backup runs daily and keeps the 15 most recent successful copies. Under the normal daily schedule this is about 15 days; additional manual runs consume one of those 15 positions. If Neon and its short history are both unavailable, up to 24 hours of the newest records may need provider-led reconciliation.
 - Aim to start recovery within one hour of an alert and restore service within four hours. Payments and Google events must be reconciled before reopening checkout.
 
 ## Independent alerts

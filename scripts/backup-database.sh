@@ -44,6 +44,8 @@ encrypted="${plain}.age"
 checksum="${encrypted}.sha256"
 config="${work_dir}/rclone.conf"
 remote_folder="astro-advice-production-backups"
+remote_path="astro-drive:${remote_folder}"
+max_backups=15
 
 printf '%s' "${ASTRO_BACKUP_RCLONE_CONFIG}" > "${config}"
 pg_dump --dbname="${ASTRO_BACKUP_DATABASE_URL}" --format=custom --compress=9 \
@@ -55,22 +57,51 @@ age --recipient "${ASTRO_BACKUP_AGE_RECIPIENT}" --output "${encrypted}" "${plain
 sha256sum "${encrypted}" | sed "s#${work_dir}/##" > "${checksum}"
 
 rclone copyto --config "${config}" "${encrypted}" \
-  "astro-drive:${remote_folder}/${name}.age" --immutable
+  "${remote_path}/${name}.age" --immutable
 rclone copyto --config "${config}" "${checksum}" \
-  "astro-drive:${remote_folder}/${name}.age.sha256" --immutable
+  "${remote_path}/${name}.age.sha256" --immutable
 
 local_hash="$(sha256sum "${encrypted}" | cut -d' ' -f1)"
 remote_hash="$(rclone cat --config "${config}" \
-  "astro-drive:${remote_folder}/${name}.age" | sha256sum | cut -d' ' -f1)"
+  "${remote_path}/${name}.age" | sha256sum | cut -d' ' -f1)"
 if [[ "${local_hash}" != "${remote_hash}" ]]; then
   echo "Uploaded backup verification failed." >&2
   exit 1
 fi
 
-# Only this app-owned folder and filename pattern are eligible. Google Drive's
-# default trash behaviour keeps removals recoverable while enforcing retention.
-rclone delete --config "${config}" "astro-drive:${remote_folder}" \
-  --min-age 15d --filter '+ astro-advice-*.dump.age' \
-  --filter '+ astro-advice-*.dump.age.sha256' --filter '- *'
+# Keep an exact storage ceiling even when an operator starts additional manual
+# runs. Lexicographic order matches the UTC timestamp embedded in every name.
+# Cleanup starts only after the new encrypted archive has passed remote hash
+# verification. It is permanently limited to this app-owned folder and the
+# validated backup/checksum filename pair; Drive Trash is bypassed so expired
+# copies do not continue consuming the account's storage allowance.
+backup_listing="$(rclone lsf --config "${config}" "${remote_path}" \
+  --files-only --max-depth 1 --include 'astro-advice-*.dump.age')"
+backup_files=()
+while IFS= read -r backup_file; do
+  [[ -n "${backup_file}" ]] && backup_files+=("${backup_file}")
+done < <(printf '%s\n' "${backup_listing}" | LC_ALL=C sort)
 
-echo "Encrypted database backup uploaded and verified: ${name}.age"
+if (( ${#backup_files[@]} > max_backups )); then
+  remove_count=$(( ${#backup_files[@]} - max_backups ))
+  for (( index=0; index<remove_count; index++ )); do
+    backup_file="${backup_files[index]}"
+    if [[ ! "${backup_file}" =~ ^astro-advice-[0-9]{8}T[0-9]{6}Z-(manual|[0-9]+)-[0-9]+\.dump\.age$ ]]; then
+      echo "Refusing to remove an unexpected backup name: ${backup_file}" >&2
+      exit 1
+    fi
+    rclone delete --config "${config}" "${remote_path}" --max-depth 1 \
+      --drive-use-trash=false --include "/${backup_file}" \
+      --include "/${backup_file}.sha256" --exclude '*'
+  done
+fi
+
+remaining_listing="$(rclone lsf --config "${config}" "${remote_path}" \
+  --files-only --max-depth 1 --include 'astro-advice-*.dump.age')"
+remaining_count="$(printf '%s\n' "${remaining_listing}" | sed '/^$/d' | wc -l)"
+if (( remaining_count > max_backups )); then
+  echo "Backup retention verification failed: ${remaining_count} archives remain." >&2
+  exit 1
+fi
+
+echo "Encrypted database backup uploaded and verified: ${name}.age (${remaining_count}/${max_backups} retained)"
