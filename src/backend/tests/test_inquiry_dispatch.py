@@ -241,7 +241,7 @@ class DispatchTests(unittest.TestCase):
 
     def test_migration_backfills_without_changing_delivery_results(self):
         migrations = Path(__file__).parents[1] / 'migrations'
-        with self.store.transaction() as conn:
+        with self.admin_store.transaction() as conn:
             schema = sql.Identifier('dispatch_migration_' + uuid4().hex)
             conn.execute(sql.SQL('CREATE SCHEMA {}').format(schema))
             conn.execute(sql.SQL('SET LOCAL search_path TO {}').format(schema))

@@ -496,7 +496,7 @@ function Appointment_Booking() {
           style={{ y: yHeader }}
           className="text-center max-w-3xl relative z-10"
         >
-          <span className="text-[#AB7A57] text-xs tracking-[0.25em] font-bold uppercase block mb-2 font-sans">
+          <span className="text-[#8B5E3C] text-xs tracking-[0.25em] font-bold uppercase block mb-2 font-sans">
             ✦ RESERVE YOUR SPOT ✦
           </span>
           <h1 className="text-[clamp(1.5rem,2.55vw,2.8rem)] font-serif font-bold text-[#181122] tracking-wide leading-tight">

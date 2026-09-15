@@ -199,7 +199,7 @@ function Contact() {
 
         {/* Header Area directly above the box */}
         <div className="text-center max-w-xl relative flex flex-col items-center mb-6">
-          <span className="text-[#AB7A57] text-xs sm:text-sm tracking-[0.25em] font-bold uppercase mb-1">
+          <span className="text-[#8B5E3C] text-xs sm:text-sm tracking-[0.25em] font-bold uppercase mb-1">
             ✦ CONNECT WITH THE STARS ✦
           </span>
           <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#181122] tracking-wide mt-1 mb-2">
@@ -293,6 +293,7 @@ function Contact() {
                   <button 
                     type="button"
                     onClick={() => handleCopyText("astroadvicebyks@gmail.com", "email")}
+                    aria-label="Copy astroadvicebyks@gmail.com"
                     className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[#D8CFEB] hover:text-[#D3AF54] transition cursor-pointer relative shrink-0"
                   >
                     {copiedType === "email" ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
@@ -400,7 +401,7 @@ function Contact() {
                 )}
                 {/* Symmetrical Header */}
                 <div className="pb-1 space-y-1">
-                  <h3 className="font-serif font-bold text-xl sm:text-2xl text-[#AB7A57] tracking-wide">
+                  <h3 className="font-serif font-bold text-xl sm:text-2xl text-[#8B5E3C] tracking-wide">
                     Send Us a Message
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-500 leading-relaxed font-sans">
@@ -409,7 +410,7 @@ function Contact() {
                 </div>
                 {/* Full Name */}
                 <div className="space-y-1.5">
-                  <label htmlFor="name" className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider">
+                  <label htmlFor="name" className="block text-[11px] font-bold text-[#8B5E3C] uppercase tracking-wider">
                     Full Name <span className="text-[#D3AF54]">*</span>
                   </label>
                   <div className="relative">
@@ -432,7 +433,7 @@ function Contact() {
                 {/* Email and Phone row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label htmlFor="email" className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider">
+                    <label htmlFor="email" className="block text-[11px] font-bold text-[#8B5E3C] uppercase tracking-wider">
                       Email Address <span className="text-[#D3AF54]">*</span>
                     </label>
                     <div className="relative">
@@ -453,7 +454,7 @@ function Contact() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label htmlFor="phone" className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider">
+                    <label htmlFor="phone" className="block text-[11px] font-bold text-[#8B5E3C] uppercase tracking-wider">
                       Mobile Number <span className="text-[#D3AF54]">*</span>
                     </label>
                     <div className="relative">
@@ -476,7 +477,7 @@ function Contact() {
 
                 {/* Subject Selector dropdown */}
                 <div className="space-y-1.5 relative">
-                  <label htmlFor="subject" className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider">
+                  <label htmlFor="subject" className="block text-[11px] font-bold text-[#8B5E3C] uppercase tracking-wider">
                     Inquiry Topic
                   </label>
                   <div className="relative">
@@ -500,8 +501,8 @@ function Contact() {
 
                 {/* Message Box */}
                 <div className="space-y-1.5">
-                  <label htmlFor="message" className="block text-[11px] font-bold text-[#AB7A57] uppercase tracking-wider">
-                    Your Message / Question <span className="text-slate-400 text-[10px] normal-case font-normal italic">(Optional)</span>
+                  <label htmlFor="message" className="block text-[11px] font-bold text-[#8B5E3C] uppercase tracking-wider">
+                    Your Message / Question <span className="text-slate-600 text-[10px] normal-case font-normal italic">(Optional)</span>
                   </label>
                   <textarea 
                     id="message"
@@ -539,7 +540,7 @@ function Contact() {
           
           {/* Header / Toggle */}
           <div className="text-center mb-6">
-            <span className="text-[#AB7A57] text-xs font-bold uppercase tracking-widest block mb-2">✦ GOT QUESTIONS? ✦</span>
+            <span className="text-[#8B5E3C] text-xs font-bold uppercase tracking-widest block mb-2">✦ GOT QUESTIONS? ✦</span>
             <h3 className="text-2xl md:text-3xl font-serif font-bold text-[#181122]">Frequently Asked Questions</h3>
           </div>
 

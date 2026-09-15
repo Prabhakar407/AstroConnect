@@ -261,7 +261,7 @@ export default function ServiceDetail() {
   if (!details) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center bg-[#FDFCF5] px-6 text-[#181122]">
-        <h2 className="text-2xl font-serif font-bold mb-4">Service Not Found</h2>
+        <h1 className="text-2xl font-serif font-bold mb-4">Service Not Found</h1>
         <Link to="/" className="bg-[#D3AF54] text-[#181122] font-semibold px-6 py-2.5 rounded-xl text-sm uppercase">
           Back to Services
         </Link>
@@ -306,9 +306,9 @@ export default function ServiceDetail() {
               <div className="absolute top-0 right-0 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
               
               <div className="space-y-1 text-left">
-                <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#D3AF54] uppercase font-sans block">
+                <h1 className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#D3AF54] uppercase font-sans block">
                   ✦ GENERAL NUMEROLOGY ✦
-                </span>
+                </h1>
                 <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans font-medium text-left">
                   Unlock the hidden meanings in numbers. Discover how the vibrations of numbers influence your personality, destiny, and life path.
                 </p>
@@ -961,9 +961,9 @@ export default function ServiceDetail() {
               <div className="absolute top-0 right-0 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
               
               <div className="space-y-1 text-left">
-                <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#D3AF54] uppercase font-sans block text-left">
+                <h1 className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#D3AF54] uppercase font-sans block text-left">
                   ✦ LAL KITAAB REMEDIES ✦
-                </span>
+                </h1>
                 <p className="text-xs sm:text-sm text-[#D8CFEB] leading-relaxed font-sans font-medium text-left">
                   Simple, non-expensive, and highly practical daily solutions to balance ancestral debts (Rinas) and planetary blockages.
                 </p>
@@ -1253,9 +1253,9 @@ export default function ServiceDetail() {
               <div className="absolute top-0 right-0 w-48 h-48 bg-[#D3AF54]/5 rounded-full blur-3xl pointer-events-none" />
               
               <div className="space-y-1 text-left">
-                <span className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#D3AF54] uppercase font-sans block text-left">
+                <h1 className="text-sm sm:text-base tracking-[0.3em] font-bold text-[#D3AF54] uppercase font-sans block text-left">
                   ✦ VASTU CONSULTATION ✦
-                </span>
+                </h1>
               </div>
 
               <div className="pt-1 text-left">
