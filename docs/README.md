@@ -5,7 +5,7 @@ Start here after a break or context reset. This page lists the current authority
 ## Current position — 2026-09-15
 
 - The public website, paid booking journey, private studio tools, Google Calendar/Meet delivery, participant emails, dual Google Sheet copies, Cloudflare recovery and encrypted daily database backup are released on `astroadvicebykundansingh.com`.
-- [Plan 1](PLAN-001-booking-inquiries-and-client-calendar.md) owns the booking/inquiry requirements and operational handover. Its remaining human checks are alert receipt, the second offline decryption-key copy and any newly required real-provider acceptance.
+- [Plan 1](PLAN-001-booking-inquiries-and-client-calendar.md) owns the booking/inquiry requirements and operational handover. Its remaining human checks are the second offline decryption-key copy and any newly required real-provider acceptance.
 - [Plan 2](PLAN-002-testing-and-release-certification.md) owns repeatable testing and release proof. The deterministic local test system is implemented; its current checkpoint and acceptance checklist state what has been proved and what still requires hosted or human evidence.
 - [Testing guide](TESTING.md) is the practical runbook for the three certification commands and their meaning.
 - [Studio operating guide](OPERATIONS-001-booking-system.md) explains daily use, attention handling, cancellation and recovery in plain language.

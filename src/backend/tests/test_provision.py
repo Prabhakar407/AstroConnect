@@ -14,6 +14,9 @@ class ProvisionTests(unittest.TestCase):
         self.assertEqual(PRIVILEGES['google_authorizations'], 'SELECT, INSERT, DELETE')
         self.assertNotIn('DELETE', PRIVILEGES['google_connection'])
 
+    def test_recovery_monitor_has_only_status_row_permissions(self):
+        self.assertEqual(PRIVILEGES['recovery_heartbeat'], 'SELECT, INSERT, UPDATE')
+
     def test_housekeeping_tables_allow_row_locks_and_bounded_deletion(self):
         for table in ('rate_limits', 'email_challenges', 'email_verifications'):
             with self.subTest(table=table):

@@ -67,7 +67,8 @@ class HostingTests(unittest.TestCase):
 
     def test_api_rejects_unknown_route_and_never_caches_private_responses(self):
         client = TestClient(importlib.import_module("api.index").app)
-        for route in ("/api/health", "/api/services", "/api/ready", "/api/admin/session", "/api/not-found"):
+        for route in ("/api/health", "/api/services", "/api/ready", "/api/recovery-health",
+                      "/api/admin/session", "/api/not-found"):
             response = client.get(route)
             self.assertEqual(response.headers["cache-control"], "no-store")
             self.assertEqual(response.headers["x-vercel-enable-rewrite-caching"], "0")

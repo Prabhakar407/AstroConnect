@@ -210,6 +210,12 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
         return JSONResponse({"storage_ready": ready, "booking_enabled": booking_ready() if ready else False},
                             status_code=200 if ready else 503)
 
+    @app.get("/api/recovery-health")
+    def recovery_health():
+        healthy = store.recovery_healthy()
+        return JSONResponse({"status": "healthy" if healthy else "attention_required"},
+                            status_code=200 if healthy else 503)
+
     @app.get("/api/services")
     def services():
         return {"services": [{**service, "currency": "INR", "duration_minutes": DURATION_MINUTES} for service in CATALOGUE]}
@@ -300,11 +306,13 @@ def create_app(settings=None, *, store=None, code_sender=None, identity_verifier
         if dispatch_failure:
             raise dispatch_failure
         from .private_attention import pending_count
+        attention = pending_count(store)
+        store.record_recovery_completion(payload.run_id, attention)
         return {'application': APPLICATION, 'environment': ENVIRONMENT,
                 'run_id': str(payload.run_id),
                 'selected': sum(result['selected'] for result in results),
                 'published': sum(result['published'] for result in results),
-                'needs_attention': pending_count(store)}
+                'needs_attention': attention}
 
     @app.post("/api/prashna")
     def prashna(payload: PrashnaInput, request: Request):

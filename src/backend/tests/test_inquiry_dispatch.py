@@ -200,6 +200,20 @@ class DispatchTests(unittest.TestCase):
             **body, 'selected': 4, 'published': 4, 'needs_attention': 0})
         self.assertNotIn(self.payload['email'], response.text)
         self.assertEqual(response.headers['cache-control'], 'no-store')
+        health = client.get('/api/recovery-health')
+        self.assertEqual(health.status_code, 200)
+        self.assertEqual(health.json(), {'status': 'healthy'})
+        self.time += timedelta(minutes=26)
+        self.assertEqual(client.get('/api/recovery-health').status_code, 503)
+
+    def test_recovery_health_exposes_no_counts_identity_or_timestamp(self):
+        client = TestClient(create_app(SETTINGS, store=self.store, queue_publisher=self.publish))
+        self.assertEqual(client.get('/api/recovery-health').json(), {'status': 'attention_required'})
+        self.store.record_recovery_completion(uuid4(), 2)
+        response = client.get('/api/recovery-health')
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json(), {'status': 'attention_required'})
+        self.assertEqual(set(response.json()), {'status'})
 
     def test_recovery_cleans_expired_authentication_without_deleting_inquiry(self):
         with self.store.transaction() as conn:

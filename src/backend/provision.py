@@ -40,6 +40,7 @@ PRIVILEGES = {
     "booking_calendar_events": "SELECT, INSERT, UPDATE",
     "payment_cases": "SELECT, INSERT, UPDATE",
     "google_authorizations": "SELECT, INSERT, DELETE",
+    "recovery_heartbeat": "SELECT, INSERT, UPDATE",
 }
 
 

@@ -1,6 +1,6 @@
 # Plan 2 — Testing and Release Certification
 
-Status: **local and clean GitHub certification passing; exact deployment, alert receipt and handover remain**
+Status: **local and clean GitHub certification passing; watchdog release and non-author handover remain**
 
 Created: 2026-09-15
 Applies to: the Astro Advice website, booking and inquiry system, private studio tools, provider delivery, backups and the official deployment at `astroadvicebykundansingh.com`
@@ -16,8 +16,8 @@ Current position:
 - Browser proof covers 16 public routes, four agreed viewport sizes, detailed Chromium journeys, critical Firefox/WebKit behaviour, automated accessibility checks, private-studio states and 18 synthetic transactional-email renders. Saved screenshots were visually inspected after viewport-triggered animation had settled.
 - The current official deployment passed the read-only/refusal-only production smoke suite and a separate interactive browser inspection without creating a form submission, payment, message, event, Sheet row or database record. This proves the currently deployed site, not the newly pushed candidate commit.
 - The read-only GitHub Actions quality workflow passed [run 34989682911](https://github.com/Prabhakar407/AstroConnect/actions/runs/34989682911) on clean commit `cd8bb55`: all ten groups, 268 Python tests with zero skips and all 11 browser suites passed with zero provider calls. The sanitized artifact is tied to that commit and expires after three days.
-- The production system retains dated provider evidence for Live Razorpay, booking confirmation, Calendar/Meet, participant messages, cancellation, dual Sheets, encrypted backup and isolated restore. Cloudflare and GitHub failure-alert receipt remains a human operational check, not an automated pass.
-- **Resume at P2-07:** after the approved source is merged/deployed, run the safe official-domain check against that exact release; then close the two alert-receipt and non-author handover checks. Do not repeat a real payment or provider write merely to certify the test harness.
+- The production system retains dated provider evidence for Live Razorpay, booking confirmation, Calendar/Meet, participant messages, cancellation, dual Sheets, encrypted backup and isolated restore. A real GitHub backup-failure email proves the repository notification route; Cloudflare has no suitable Worker-error email option in this account.
+- **Resume at P2-07:** release the database heartbeat and read-only GitHub watchdog, observe one real scheduled recovery on the official domain, then close the non-author handover check. Do not repeat a real payment or provider write merely to certify the test harness.
 
 ## 1. Objective and completion rule
 
@@ -445,12 +445,13 @@ Performance is a usability check, not a vanity score competition:
 
 No new monitoring vendor is required for the first implementation.
 
-Use the existing Cloudflare 15-minute scheduled Worker as the application recovery signal and strengthen its proof without turning it into an observability platform:
+Use the existing Cloudflare 15-minute scheduled Worker as the recovery mechanism and one small GitHub watchdog as the application alert, without adding another monitoring vendor:
 
 - Its authenticated recovery call already fails if Vercel/API/database recovery cannot complete or durable work needs attention.
-- Add at most a lightweight homepage/health check if inspection during P2-07 shows the recovery call cannot detect a broken public frontend.
-- Configure and deliberately prove the named Cloudflare email notification. A dashboard log is not an alert.
-- Detect a missed/failed recovery cycle within approximately 20 minutes, allowing one 15-minute interval plus delivery time.
+- A complete call records one privacy-safe database heartbeat; failures before completion leave it stale, while a non-zero attention result records an unhealthy state.
+- The GitHub **Production watchdog** checks the official homepage, API liveness, booking readiness and heartbeat four times an hour. It performs no write and exposes no provider or customer detail.
+- The heartbeat freshness limit is 20 minutes. The check runs eight minutes after each nominal Cloudflare schedule, so one missed recovery normally fails the next check. GitHub itself can occasionally delay a scheduled run, so this is practical low-volume monitoring rather than a guaranteed emergency pager.
+- Cloudflare's available account notifications do not include a suitable Worker-error email alert. Unrelated SSL, Tunnel, Log Explorer, DDoS or billing alerts must not be mislabelled as recovery monitoring.
 
 Use the existing GitHub backup workflow as the independent backup signal:
 
@@ -479,7 +480,7 @@ Do not create a public diagnostics endpoint that exposes provider/account detail
 | P2-04 | Add accessibility, responsive and visual certification | P2-03 | **Complete locally:** 16 routes/four sizes, Axe checks and settled screenshots pass and were inspected |
 | P2-05 | Add security, permission, packaging and dependency checks | P2-02–03 | **Complete locally:** restricted-role, request-boundary, source-secret and dependency checks pass; history scan passed once |
 | P2-06 | Add one GitHub quality workflow and prove failure/success behaviour | P2-02–05 | **Complete:** first clean run correctly blocked a non-portable launcher; the repaired exact commit passed all groups with no secrets/side effects in run 34989682911 |
-| P2-07 | Add safe official-domain verification and close alert/uptime proof | P2-06; authorized deploy for hosted proof | **Partial:** current official deployment passes safe smoke; exact candidate deploy and two alert receipts remain |
+| P2-07 | Add safe official-domain verification and close alert/uptime proof | P2-06; authorized deploy for hosted proof | **In progress:** exact released deployment passed safe smoke and the GitHub email route is proved; heartbeat/watchdog release and first hosted pass remain |
 | P2-08 | Run final certification, fix defects, reconcile docs and hand over | P2-01–07 | **In progress:** local and clean CI certification complete; exact deployment, alerts and non-author handover remain |
 
 Ordinary implementation continues without micro-approval. Stop only for a real external/user-only action, a destructive or material product/security decision, a real payment/refund/notification, or an unresolved blocker.
@@ -514,7 +515,7 @@ Codex can perform the source inspection, implementation, local/CI runs, safe off
 
 The user/client is needed only when the proof cannot be obtained safely from code or authorized read-only access:
 
-1. Confirm receipt of the deliberate Cloudflare and GitHub failure-alert drills.
+1. Confirm GitHub workflow-failure notifications remain enabled for the named operator; the existing backup failure receipt already proves the repository-level email route.
 2. Confirm actual inbox presentation for a genuinely new transactional email when that evidence is due.
 3. Use the approved studio Google account for a real Google login/connection acceptance check if credentials/session access are unavailable to Codex.
 4. Explicitly authorize any new real payment, refund or real-recipient notification test.
@@ -622,9 +623,9 @@ Before Plan 2 can be marked complete:
 - [x] Chromium detailed and Firefox/WebKit critical journeys pass.
 - [x] Security, restricted-role, dependency and tracked-secret checks pass.
 - [x] GitHub quality workflow demonstrably blocks a harmless failure and passes the repaired exact commit.
-- [ ] Official-domain safe smoke check passes for the exact released commit.
-- [ ] Cloudflare application/recovery failure alert is received.
-- [ ] GitHub backup failure alert is received.
+- [x] Official-domain safe smoke check passes for the exact released commit.
+- [ ] Production watchdog is released, observes a real Cloudflare heartbeat and passes on the official domain.
+- [x] GitHub backup failure alert is received.
 - [x] Latest backup is within policy and a current isolated restore drill passes.
 - [x] Remaining provider acceptance boundaries are explicitly proved or named as unexecuted.
 - [x] Current architecture, test instructions, operations guide and evidence index agree.
@@ -634,4 +635,4 @@ Before Plan 2 can be marked complete:
 
 The permanent local and GitHub certification system is implemented and passing: one deterministic harness, one browser runner, one CI workflow, one safe production check and the existing operational signals. It adds no hosted testing product and performs no real provider write.
 
-Plan 2 is intentionally **not yet marked complete**. Completion now depends on evidence that cannot be manufactured by another local or CI rerun: the approved commit must pass the official-domain check after deployment, both independent failure alerts must be received by their operator, and a non-author must follow the runbook successfully.
+Plan 2 is intentionally **not yet marked complete**. The exact released commit has passed the official-domain check and the repository's backup-failure email route is proved. Completion now depends on releasing the heartbeat/watchdog correction, observing its first real scheduled pass on the official domain, and having a non-author follow the plain-language runbook successfully.

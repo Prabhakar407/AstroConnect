@@ -37,7 +37,7 @@ A date or time containing an existing booking or payment in progress cannot be c
 
 - `https://astroadvicebykundansingh.com/api/health` means the website code is responding. It deliberately does not wake the database.
 - `https://astroadvicebykundansingh.com/api/ready` checks the database schema and all connections needed before a booking can start. `storage_ready` and `booking_enabled` must both be `true` for customer checkout.
-- The Cloudflare helper runs every 15 minutes. It recovers saved work even with no visitor on the website. An execution error or a non-zero durable attention count must trigger the Cloudflare email alert.
+- The Cloudflare helper runs every 15 minutes. It recovers saved work even with no visitor on the website. Each complete run records a privacy-safe heartbeat; the GitHub **Production watchdog** checks it and the official website four times an hour.
 - Review the private **Needs attention** tab at the start and end of each working day, even if no alert was received.
 
 ## Backups and recovery
@@ -70,9 +70,11 @@ Current recovery targets:
 
 ## Independent alerts
 
-Use Cloudflare's email notification for uncaught errors on Worker `astro-advice-inquiry-delivery`. It is independent of Resend, so an email-provider outage cannot hide its own failure. Send it to the named NeuraFlow operator address. The scheduled Worker intentionally fails when its recovery call fails or durable payment/booking work needs attention.
+Cloudflare runs Worker `astro-advice-inquiry-delivery`, but this account does not offer a suitable Worker-error email notification. Do not select an unrelated alert merely to fill that gap.
 
-GitHub sends a separate failure notification for the daily backup job. Cloudflare and GitHub are complementary: Cloudflare covers booking/recovery work; GitHub covers missed or failed backup work. Dashboard logs alone are not an alert.
+Instead, every fully completed recovery pass writes one privacy-safe heartbeat containing only completion time, run reference and whether durable work needs attention. The public health result reveals only `healthy` or `attention_required`. GitHub's **Production watchdog** reads that result together with the official homepage, API liveness and booking readiness at 8, 23, 38 and 53 minutes past each hour. It performs four reads and no writes. A missed recovery is normally detected at the first check after the 20-minute freshness limit; GitHub schedules can occasionally be delayed.
+
+GitHub sends workflow-failure notifications to the named operator. The separate daily backup workflow remains the backup signal. Neither alert uses Resend, so a Resend outage cannot hide them. A monitor failure never switches off the website or changes a booking; the operator checks **Needs attention**, provider status and the latest workflow run before deciding what to repair.
 
 ## Permanent account and route map
 
