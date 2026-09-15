@@ -1,6 +1,6 @@
 # Plan 2 — Testing and Release Certification
 
-Status: **local and clean GitHub certification passing; watchdog release and non-author handover remain**
+Status: **automated production certification complete; non-author handover remains**
 
 Created: 2026-09-15
 Applies to: the Astro Advice website, booking and inquiry system, private studio tools, provider delivery, backups and the official deployment at `astroadvicebykundansingh.com`
@@ -12,12 +12,13 @@ This is the permanent plan for turning the project's existing tests into one rep
 Current position:
 
 - `verify:fast`, `verify:release` and `verify:production` are implemented and documented. The release command strips provider/production settings, uses a new local PostgreSQL database and records a machine-readable result.
-- The latest local release-candidate run passed all ten groups: lint, build, 31 Node/Worker contracts, 268 Python tests with zero skips against the restricted database role, real local Cloudflare runtime, 11 browser suites, tracked-secret scanning and both dependency-advisory checks.
+- The latest local release-candidate run passed all ten groups: lint, build, 31 Node/Worker contracts, 271 Python tests with zero skips against the restricted database role, real local Cloudflare runtime, 11 browser suites, tracked-secret scanning and both dependency-advisory checks.
 - Browser proof covers 16 public routes, four agreed viewport sizes, detailed Chromium journeys, critical Firefox/WebKit behaviour, automated accessibility checks, private-studio states and 18 synthetic transactional-email renders. Saved screenshots were visually inspected after viewport-triggered animation had settled.
-- The current official deployment passed the read-only/refusal-only production smoke suite and a separate interactive browser inspection without creating a form submission, payment, message, event, Sheet row or database record. This proves the currently deployed site, not the newly pushed candidate commit.
-- The read-only GitHub Actions quality workflow passed [run 34989682911](https://github.com/Prabhakar407/AstroConnect/actions/runs/34989682911) on clean commit `cd8bb55`: all ten groups, 268 Python tests with zero skips and all 11 browser suites passed with zero provider calls. The sanitized artifact is tied to that commit and expires after three days.
+- The official deployment at merge `032130c` passed the read-only/refusal-only production suite without creating a form submission, payment, message, event, Sheet row or database record. The booking browser contract passed at all four agreed viewport sizes with zero writes.
+- The exact candidate passed GitHub runs [35009346609](https://github.com/Prabhakar407/AstroConnect/actions/runs/35009346609) and [35009408328](https://github.com/Prabhakar407/AstroConnect/actions/runs/35009408328): all ten groups, 271 Python tests with zero skips and all 11 browser suites passed with zero provider calls.
 - The production system retains dated provider evidence for Live Razorpay, booking confirmation, Calendar/Meet, participant messages, cancellation, dual Sheets, encrypted backup and isolated restore. A real GitHub backup-failure email proves the repository notification route; Cloudflare has no suitable Worker-error email option in this account.
-- **Resume at P2-07:** release the database heartbeat and read-only GitHub watchdog, observe one real scheduled recovery on the official domain, then close the non-author handover check. Do not repeat a real payment or provider write merely to certify the test harness.
+- The production heartbeat changed from its correct pre-first-run warning to `healthy` after a real Cloudflare schedule, and GitHub **Production watchdog** run [35011190220](https://github.com/Prabhakar407/AstroConnect/actions/runs/35011190220) passed its four official-domain reads. See [release evidence](evidence/plan-002/2026-09-15-production-watchdog.md).
+- **Resume at P2-08:** have one non-author follow the plain-language testing/operations guide and explain the result; correct any wording they cannot follow. Do not repeat a real payment or provider write merely to certify the handover.
 
 ## 1. Objective and completion rule
 
@@ -480,8 +481,8 @@ Do not create a public diagnostics endpoint that exposes provider/account detail
 | P2-04 | Add accessibility, responsive and visual certification | P2-03 | **Complete locally:** 16 routes/four sizes, Axe checks and settled screenshots pass and were inspected |
 | P2-05 | Add security, permission, packaging and dependency checks | P2-02–03 | **Complete locally:** restricted-role, request-boundary, source-secret and dependency checks pass; history scan passed once |
 | P2-06 | Add one GitHub quality workflow and prove failure/success behaviour | P2-02–05 | **Complete:** first clean run correctly blocked a non-portable launcher; the repaired exact commit passed all groups with no secrets/side effects in run 34989682911 |
-| P2-07 | Add safe official-domain verification and close alert/uptime proof | P2-06; authorized deploy for hosted proof | **In progress:** exact released deployment passed safe smoke and the GitHub email route is proved; heartbeat/watchdog release and first hosted pass remain |
-| P2-08 | Run final certification, fix defects, reconcile docs and hand over | P2-01–07 | **In progress:** local and clean CI certification complete; exact deployment, alerts and non-author handover remain |
+| P2-07 | Add safe official-domain verification and close alert/uptime proof | P2-06; authorized deploy for hosted proof | **Complete:** exact release, real Cloudflare heartbeat, official smoke and GitHub watchdog passed |
+| P2-08 | Run final certification, fix defects, reconcile docs and hand over | P2-01–07 | **In progress:** automated certification and documentation are complete; non-author runbook check remains |
 
 Ordinary implementation continues without micro-approval. Stop only for a real external/user-only action, a destructive or material product/security decision, a real payment/refund/notification, or an unresolved blocker.
 
@@ -624,7 +625,7 @@ Before Plan 2 can be marked complete:
 - [x] Security, restricted-role, dependency and tracked-secret checks pass.
 - [x] GitHub quality workflow demonstrably blocks a harmless failure and passes the repaired exact commit.
 - [x] Official-domain safe smoke check passes for the exact released commit.
-- [ ] Production watchdog is released, observes a real Cloudflare heartbeat and passes on the official domain.
+- [x] Production watchdog is released, observes a real Cloudflare heartbeat and passes on the official domain.
 - [x] GitHub backup failure alert is received.
 - [x] Latest backup is within policy and a current isolated restore drill passes.
 - [x] Remaining provider acceptance boundaries are explicitly proved or named as unexecuted.
@@ -635,4 +636,4 @@ Before Plan 2 can be marked complete:
 
 The permanent local and GitHub certification system is implemented and passing: one deterministic harness, one browser runner, one CI workflow, one safe production check and the existing operational signals. It adds no hosted testing product and performs no real provider write.
 
-Plan 2 is intentionally **not yet marked complete**. The exact released commit has passed the official-domain check and the repository's backup-failure email route is proved. Completion now depends on releasing the heartbeat/watchdog correction, observing its first real scheduled pass on the official domain, and having a non-author follow the plain-language runbook successfully.
+The automated certification and hosted operational proof are complete. The exact source passed local and clean GitHub checks, the production deployment passed its safe official-domain suite, a real Cloudflare recovery wrote a healthy heartbeat, and the permanent GitHub watchdog read it successfully. Plan 2 remains open only for the human handover test: one non-author must follow the plain-language runbook and identify the correct result/action without coaching.
