@@ -1,6 +1,6 @@
 # Plan 2 — Testing and Release Certification
 
-Status: **local certification implemented and passing; hosted CI and alert-receipt evidence remain**
+Status: **local and clean GitHub certification passing; exact deployment, alert receipt and handover remain**
 
 Created: 2026-09-15
 Applies to: the Astro Advice website, booking and inquiry system, private studio tools, provider delivery, backups and the official deployment at `astroadvicebykundansingh.com`
@@ -14,10 +14,10 @@ Current position:
 - `verify:fast`, `verify:release` and `verify:production` are implemented and documented. The release command strips provider/production settings, uses a new local PostgreSQL database and records a machine-readable result.
 - The latest local release-candidate run passed all ten groups: lint, build, 31 Node/Worker contracts, 268 Python tests with zero skips against the restricted database role, real local Cloudflare runtime, 11 browser suites, tracked-secret scanning and both dependency-advisory checks.
 - Browser proof covers 16 public routes, four agreed viewport sizes, detailed Chromium journeys, critical Firefox/WebKit behaviour, automated accessibility checks, private-studio states and 18 synthetic transactional-email renders. Saved screenshots were visually inspected after viewport-triggered animation had settled.
-- The current official deployment passed the read-only/refusal-only production smoke suite and a separate interactive browser inspection without creating a form submission, payment, message, event, Sheet row or database record. This proves the currently deployed site, not this unpushed worktree.
-- A read-only GitHub Actions quality workflow is implemented for pull requests and the two release branches, with no production credentials and three-day sanitized artifacts. It must still pass on the exact pushed commit before clean-checkout/hosted certification can be claimed.
+- The current official deployment passed the read-only/refusal-only production smoke suite and a separate interactive browser inspection without creating a form submission, payment, message, event, Sheet row or database record. This proves the currently deployed site, not the newly pushed candidate commit.
+- The read-only GitHub Actions quality workflow passed [run 34989682911](https://github.com/Prabhakar407/AstroConnect/actions/runs/34989682911) on clean commit `cd8bb55`: all ten groups, 268 Python tests with zero skips and all 11 browser suites passed with zero provider calls. The sanitized artifact is tied to that commit and expires after three days.
 - The production system retains dated provider evidence for Live Razorpay, booking confirmation, Calendar/Meet, participant messages, cancellation, dual Sheets, encrypted backup and isolated restore. Cloudflare and GitHub failure-alert receipt remains a human operational check, not an automated pass.
-- **Resume at P2-06:** publish the branch, confirm the quality workflow on the exact commit, then close the two alert-receipt and non-author handover checks. Do not repeat a real payment or provider write merely to certify the test harness.
+- **Resume at P2-07:** after the approved source is merged/deployed, run the safe official-domain check against that exact release; then close the two alert-receipt and non-author handover checks. Do not repeat a real payment or provider write merely to certify the test harness.
 
 ## 1. Objective and completion rule
 
@@ -478,9 +478,9 @@ Do not create a public diagnostics endpoint that exposes provider/account detail
 | P2-03 | Consolidate browser route/action/state suite and add reproducible Chromium/Firefox/WebKit coverage | P2-01–02 | **Complete locally:** 11 managed suites pass with no provider writes; three browser engines covered |
 | P2-04 | Add accessibility, responsive and visual certification | P2-03 | **Complete locally:** 16 routes/four sizes, Axe checks and settled screenshots pass and were inspected |
 | P2-05 | Add security, permission, packaging and dependency checks | P2-02–03 | **Complete locally:** restricted-role, request-boundary, source-secret and dependency checks pass; history scan passed once |
-| P2-06 | Add one GitHub quality workflow and prove failure/success behaviour | P2-02–05 | **Implemented; hosted proof pending:** workflow is side-effect-free/read-only; exact pushed run still required |
+| P2-06 | Add one GitHub quality workflow and prove failure/success behaviour | P2-02–05 | **Complete:** first clean run correctly blocked a non-portable launcher; the repaired exact commit passed all groups with no secrets/side effects in run 34989682911 |
 | P2-07 | Add safe official-domain verification and close alert/uptime proof | P2-06; authorized deploy for hosted proof | **Partial:** current official deployment passes safe smoke; exact candidate deploy and two alert receipts remain |
-| P2-08 | Run final certification, fix defects, reconcile docs and hand over | P2-01–07 | **In progress:** local certification/docs complete; CI, alerts and non-author handover remain |
+| P2-08 | Run final certification, fix defects, reconcile docs and hand over | P2-01–07 | **In progress:** local and clean CI certification complete; exact deployment, alerts and non-author handover remain |
 
 Ordinary implementation continues without micro-approval. Stop only for a real external/user-only action, a destructive or material product/security decision, a real payment/refund/notification, or an unresolved blocker.
 
@@ -614,14 +614,14 @@ Hard stop and repair immediately if the test system can charge money, issue a re
 Before Plan 2 can be marked complete:
 
 - [x] `verify:fast`, `verify:release` and `verify:production` are implemented and documented.
-- [ ] Clean-checkout reproduction passes.
+- [x] Clean-checkout reproduction passes.
 - [x] All Python tests run against isolated PostgreSQL with zero unexpected skips.
 - [x] All Node and workerd/Worker tests pass.
 - [x] Route/action/state inventory is enforced.
 - [x] Accessibility and four-size responsive checks pass.
 - [x] Chromium detailed and Firefox/WebKit critical journeys pass.
 - [x] Security, restricted-role, dependency and tracked-secret checks pass.
-- [ ] GitHub quality workflow blocks a harmless deliberate failure and passes after repair.
+- [x] GitHub quality workflow demonstrably blocks a harmless failure and passes the repaired exact commit.
 - [ ] Official-domain safe smoke check passes for the exact released commit.
 - [ ] Cloudflare application/recovery failure alert is received.
 - [ ] GitHub backup failure alert is received.
@@ -632,6 +632,6 @@ Before Plan 2 can be marked complete:
 
 ## 17. Current result
 
-The permanent local certification system is implemented and passing: one deterministic harness, one browser runner, one CI workflow definition, one safe production check and the existing operational signals. It adds no hosted testing product and performs no real provider write.
+The permanent local and GitHub certification system is implemented and passing: one deterministic harness, one browser runner, one CI workflow, one safe production check and the existing operational signals. It adds no hosted testing product and performs no real provider write.
 
-Plan 2 is intentionally **not yet marked complete**. Completion now depends on evidence that cannot be manufactured by another local rerun: the exact pushed commit must pass the GitHub workflow, that commit must pass the official-domain check after authorized deployment, both independent failure alerts must be received by their operator, and a non-author must follow the runbook successfully.
+Plan 2 is intentionally **not yet marked complete**. Completion now depends on evidence that cannot be manufactured by another local or CI rerun: the approved commit must pass the official-domain check after deployment, both independent failure alerts must be received by their operator, and a non-author must follow the runbook successfully.
