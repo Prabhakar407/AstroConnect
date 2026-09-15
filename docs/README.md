@@ -30,6 +30,7 @@ Do not create a competing checklist for work already owned by one of these plans
 
 ## Latest production evidence
 
+- [Production recovery watchdog — 2026-09-15](evidence/plan-002/2026-09-15-production-watchdog.md)
 - [Encrypted backup and isolated restore — 2026-09-15](evidence/plan-001/2026-09-15-encrypted-backup-and-restore.md)
 - [Email and dual-Sheet mirroring — 2026-09-14](evidence/plan-001/2026-09-14-email-and-sheet-mirroring.md)
 - [Appointments and service refinement — 2026-09-13](evidence/plan-001/2026-09-13-appointments-and-service-polish.md)
